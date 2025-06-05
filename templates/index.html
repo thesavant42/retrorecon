@@ -6,7 +6,7 @@
   <title>WABAX - Wayback Archive Explorer</title>
   <link rel="stylesheet" href="/static/wabax.css" />
 
-  <!-- Inline styles for existing UI + Tools dropdown + button alignment -->
+  <!-- Inline styles for buttons, layout, pagination, etc. -->
   <style>
     .search-bar input[type="text"] {
       width: 400px;
@@ -22,14 +22,21 @@
       text-decoration: none;
       color: #333;
       font-size: 0.9em;
-      margin-right: 0.5em;
+      margin-right: 0.3em;
       white-space: nowrap;
     }
     .btn-wayback:hover {
       background-color: #e0e0e0;
       border-color: #999;
     }
-    .copy-btn {
+    .copy-btn,
+    .delete-btn,
+    .shodan-btn,
+    .vt-btn,
+    .postman-btn,
+    .github-btn,
+    .google-btn,
+    .crtsh-btn {
       display: inline-block;
       padding: 4px 8px;
       background-color: #f3f3f3;
@@ -37,9 +44,17 @@
       border-radius: 4px;
       font-size: 0.9em;
       cursor: pointer;
+      margin-right: 0.3em;
       white-space: nowrap;
     }
-    .copy-btn:hover {
+    .copy-btn:hover,
+    .delete-btn:hover,
+    .shodan-btn:hover,
+    .vt-btn:hover,
+    .postman-btn:hover,
+    .github-btn:hover,
+    .google-btn:hover,
+    .crtsh-btn:hover {
       background-color: #e0e0e0;
       border-color: #999;
     }
@@ -68,10 +83,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-    .url-row a,
-    .url-row button {
-      vertical-align: middle;
     }
     .import-container {
       position: relative;
@@ -128,6 +139,30 @@
     .dropdown:hover .dropdown-content {
       display: block;
     }
+    /* Pagination styling */
+    .pagination {
+      margin: 1em 0;
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pagination a {
+      padding: 0.3em 0.6em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #333;
+    }
+    .pagination a:hover {
+      background-color: #eee;
+    }
+    .pagination strong {
+      padding: 0.3em 0.6em;
+      border: 1px solid #999;
+      border-radius: 4px;
+      background: #ddd;
+    }
   </style>
 
   <script>
@@ -141,8 +176,6 @@
         'input[name="select_all_matching"]'
       ).value = checkbox.checked ? "true" : "false";
     }
-    // Placeholder for Webpack Exploder toggle; actual handler below
-    window.addEventListener("DOMContentLoaded", function () {});
   </script>
 </head>
 <body>
@@ -190,6 +223,32 @@
   <!-- ===== END CONTROLS ROW ===== -->
 
   {% if urls %}
+
+  <!-- ============================================= -->
+  <!-- TOP PAGINATION BAR (mirrors bottom) -->
+  <div class="pagination">
+    {% if page > 1 %}
+      <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
+      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+    {% endif %}
+
+    {% set start = page - 3 if page - 3 >= 1 else 1 %}
+    {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
+    {% for p in range(start, end + 1) %}
+      {% if p == page %}
+        <strong>{{ p }}</strong>
+      {% else %}
+        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
+    {% endif %}
+  </div>
+  <!-- ============================================= -->
+
   <form method="POST" action="/bulk_action">
     <div class="bulk-controls" style="margin-bottom: 1em;">
       <select name="action">
@@ -232,19 +291,88 @@
           {% if url.tags %}<small>[{{ url.tags }}]</small>{% endif %}
           {% if url.url %}
           <div>
+            <!-- Wayback button -->
             <a
               class="btn-wayback"
               href="https://web.archive.org/web/*/{{ url.url }}"
               target="_blank"
               >⏳ Wayback</a
             >
-            <!-- Copy-URL button -->
+
+            <!-- Copy button -->
             <button
               type="button"
               class="copy-btn"
               data-url="{{ url.url }}"
             >
               📋 Copy
+            </button>
+
+            <!-- Delete button: submits a one-item form to /bulk_action?action=delete -->
+            <form
+              method="POST"
+              action="/bulk_action"
+              style="display:inline;margin-right:0.3em;"
+            >
+              <input type="hidden" name="action" value="delete" />
+              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+              <input type="hidden" name="q" value="{{ q }}" />
+              <input type="hidden" name="tag" value="{{ tag }}" />
+              <button type="submit" class="delete-btn">🗑️ Delete</button>
+            </form>
+
+            <!-- Shodan button -->
+            <button
+              type="button"
+              class="shodan-btn"
+              data-url="{{ url.url }}"
+            >
+              🔍 Shodan
+            </button>
+
+            <!-- VT button -->
+            <button
+              type="button"
+              class="vt-btn"
+              data-url="{{ url.url }}"
+            >
+              VT
+            </button>
+
+            <!-- Postman button -->
+            <button
+              type="button"
+              class="postman-btn"
+              data-url="{{ url.url }}"
+            >
+              postman
+            </button>
+
+            <!-- GitHub button -->
+            <button
+              type="button"
+              class="github-btn"
+              data-url="{{ url.url }}"
+            >
+              github
+            </button>
+
+            <!-- Google button -->
+            <button
+              type="button"
+              class="google-btn"
+              data-url="{{ url.url }}"
+            >
+              google
+            </button>
+
+            <!-- crt.sh button -->
+            <button
+              type="button"
+              class="crtsh-btn"
+              data-url="{{ url.url }}"
+            >
+              crt.sh
             </button>
           </div>
           {% endif %}
@@ -254,25 +382,31 @@
     </ul>
   </form>
 
-  <div class="pagination" style="margin-top: 1em;">
+  <!-- ============================================= -->
+  <!-- BOTTOM PAGINATION BAR -->
+  <div class="pagination">
     {% if page > 1 %}
-    <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-    <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+      <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
+      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
     {% endif %}
 
-    {% for p in range(1, total_pages + 1) %}
-    {% if p == page %}
-    <strong>{{ p }}</strong>
-    {% else %}
-    <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
-    {% endif %}
+    {% set start = page - 3 if page - 3 >= 1 else 1 %}
+    {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
+    {% for p in range(start, end + 1) %}
+      {% if p == page %}
+        <strong>{{ p }}</strong>
+      {% else %}
+        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+      {% endif %}
     {% endfor %}
 
     {% if page < total_pages %}
-    <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-    <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
+      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
     {% endif %}
   </div>
+  <!-- ============================================= -->
+
   {% else %}
   <p>No results found.</p>
   {% endif %}
@@ -300,9 +434,10 @@
       });
   </script>
 
-  <!-- Copy-URL button script -->
+  <!-- Copy-URL and external-service button scripts -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      // Handle Copy buttons
       const copyButtons = document.querySelectorAll(".copy-btn");
       copyButtons.forEach((btn) => {
         btn.addEventListener("click", async function (e) {
@@ -330,6 +465,117 @@
             }
             document.body.removeChild(temp);
           }
+        });
+      });
+
+      // Handle Shodan buttons
+      const shodanButtons = document.querySelectorAll(".shodan-btn");
+      shodanButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(`http://shodan.io/domain/${hostname}`, "_blank");
+        });
+      });
+
+      // Handle VT buttons
+      const vtButtons = document.querySelectorAll(".vt-btn");
+      vtButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(
+            `https://www.virustotal.com/gui/domain/${hostname}/relations`,
+            "_blank"
+          );
+        });
+      });
+
+      // Handle Postman buttons
+      const postmanButtons = document.querySelectorAll(".postman-btn");
+      postmanButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(
+            `https://www.postman.com/search?q=${hostname}&scope=public&type=all`,
+            "_blank"
+          );
+        });
+      });
+
+      // Handle GitHub buttons
+      const githubButtons = document.querySelectorAll(".github-btn");
+      githubButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(
+            `https://github.com/search?q=${hostname}&type=code`,
+            "_blank"
+          );
+        });
+      });
+
+      // Handle Google buttons
+      const googleButtons = document.querySelectorAll(".google-btn");
+      googleButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(
+            `https://www.google.com/search?q=site%3A${hostname}`,
+            "_blank"
+          );
+        });
+      });
+
+      // Handle crt.sh buttons
+      const crtshButtons = document.querySelectorAll(".crtsh-btn");
+      crtshButtons.forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlStr = btn.getAttribute("data-url");
+          let hostname;
+          try {
+            hostname = new URL(urlStr).hostname;
+          } catch (err) {
+            return;
+          }
+          window.open(
+            `https://crt.sh/?Identity=${hostname}&exclude=expired&deduplicate=Y`,
+            "_blank"
+          );
         });
       });
     });
