@@ -1,4 +1,4 @@
-# 🌀 WABAX - Wayback Archive Explorer
+🔎⏳📁 WABAX: Wayback Archive eXplorer 📁⏳🔎
 Source of truth :https://github.com/thesavant42/wabax
 
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
@@ -22,7 +22,7 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - Handles duplicates and bulk insertion cleanly
 
 ### 📥 NDJSON Import
-- Upload Newline Delimeted (NDJSON) `.json` file (in CDX format)
+- Upload Newline Delimeted* (NDJSON) `.json` file (in CDX format) < ok so it's ont really NDJSON, it's a bunch of single line json arrays?
 - Data is inserted into the database
 
 ### 🧩 Filtering + Search
@@ -33,24 +33,15 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - Filters persist through pagination
 
 ### 🏷️ Tag Management
-- Tags displayed as clickable pills
-- Add or delete tags via inline form
-- Tags stored as comma-separated strings
+- Tags displayed as clickable pills (COMING SOON)
 
 ### 🗑️ Bulk Deletion
 - Select rows via checkbox
 - Delete multiple entries at once
 
 ### 📄 Pagination
-- Configurable number of results per page (default 25)
 - "Previous" / "Next" navigation
 - Page number shown
-
-### 🎨 Theme Selector
-- Themes loaded dynamically from `/static/themes/`
-- Dropdown in nav bar allows switching
-- Uses `<link id="theme-style">` for dynamic CSS replacement
-- Themes auto-discovered (no hardcoded list)
 
 ---
 
@@ -62,21 +53,16 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ├── templates/
 │ └── index.html # Jinja2 template
 ├── static/
-│ ├── header/
-│ │ └── wabax_header.png
-│ └── themes/
-│ ├── theme-mint.css
-│ ├── theme-retro.css
-│ └── ...
+│ └── fonts/matterhorn-regular.woff
+│ └── foonts/...
+│ └── wabax.css
+│ └── init_db.py
+│ └── schema.sql
 ```
 ---✅ Known Good State
 cdx.db contains real archived URLs
 
 index.html displays:
-
-Theme switcher
-
-Header image
 
 Import + fetch CDX forms
 
@@ -87,14 +73,12 @@ Pagination both top and bottom
 Tag pills and bulk operations
 
 ✏️ TODO (if desired)
-Add sorting (by file or host)
 
 Export filtered results
 
 Integrate more CDX metadata (status codes, lengths)
 
 💡 Attribution
-Color palettes from: https://www.shecodes.io/palettes
 Wayback Machine API: https://archive.org/help/wayback_api.php
 
 
@@ -103,9 +87,10 @@ Wayback Machine API: https://archive.org/help/wayback_api.php
 
 ```bash
 pip install flask
+python init_db.py
 python app.py
 ```
 Then visit: http://127.0.0.1:5000
 
 ## Known State:
-Still needs bulk edit, bulk tag, project import/export.
+Still needs project import/export.
