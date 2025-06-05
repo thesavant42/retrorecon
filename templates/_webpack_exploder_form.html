@@ -1,25 +1,30 @@
 <!-- File: templates/_webpack_exploder_form.html -->
-<link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}" />
 
 <div class="webpack-exploder-panel">
   <h2>🛠️ Webpack Exploder</h2>
+  <form
+    id="explodeForm"
+    method="post"
+    action="{{ url_for('webpack_zip') }}"
+    style="display: flex; gap: 0.5em; align-items: center;"
+  >
+    <label for="mapUrlInput">.js.map URL:</label>
+    <input
+      type="text"
+      id="mapUrlInput"
+      name="map_url"
+      placeholder="https://example.com/static/js/app.js.map"
+      required
+      style="flex: 1; padding: 0.5em; font-size: 1em;"
+    />
 
-  <!-- We use the SAME map_url input for both operations -->
-<form id="explodeForm" method="post" action="{{ url_for('webpack_zip') }}" style="display:flex;gap:0.5em;align-items:center;">
-  <label for="mapUrlInput">.js.map URL:</label>
-  <input
-    type="text"
-    id="mapUrlInput"
-    name="map_url"
-    placeholder="https://example.com/static/js/app.js.map"
-    required
-    style="flex:1; padding:0.5em; font-size:1em;"
-  />
-  <button type="button" id="explodeBtn">Explode</button>
-  <button type="submit">Download ZIP</button>
-</form>
-<div id="exploder-results"></div>
+    <!-- Explode (client-side listing) -->
+    <button type="button" id="explodeBtn">Explode</button>
+    <!-- Download ZIP (server-side bundling) -->
+    <button type="submit">Download ZIP</button>
+  </form>
+  <div id="exploder-results"></div>
 </div>
 
-<!-- Load the same tools.js we used before, but now it only handles the “Explode” action -->
 <script src="{{ url_for('static', filename='tools.js') }}"></script>

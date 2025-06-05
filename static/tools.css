@@ -1,29 +1,25 @@
 /* File: static/tools.css */
-
-/* Container styling for the Exploder panel */
 .webpack-exploder-panel {
   padding: 1em;
   background: #fafafa;
   border: 1px solid #ccc;
   margin: 1em 0;
+  border-radius: 6px;
 }
 
-/* Headline */
 .webpack-exploder-panel h2 {
   margin-top: 0;
   font-size: 1.2em;
   color: #333;
 }
 
-/* Layout for the form fields */
 .webpack-exploder-panel form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
-  align-items: baseline;
+  align-items: center;
 }
 
-/* Input field styling */
 .webpack-exploder-panel input[type="text"] {
   flex: 1;
   padding: 0.5em;
@@ -32,7 +28,6 @@
   border-radius: 4px;
 }
 
-/* Button styling */
 .webpack-exploder-panel button {
   padding: 0.5em 1em;
   font-size: 1em;
@@ -45,7 +40,6 @@
   background-color: #e0e0e0;
 }
 
-/* Results section (preformatted text) */
 #exploder-results {
   margin-top: 1em;
   white-space: pre-wrap;
