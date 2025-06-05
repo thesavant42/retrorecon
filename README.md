@@ -28,7 +28,6 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ### 🧩 Filtering + Search
 - Filter by:
   - **Query string** (`q`)
-  - **File extension** (`ext`)
   - **Tags**, with support for inclusion/exclusion (`tag`, `-tag`)
 - Filters persist through pagination
 
@@ -46,12 +45,6 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - "Previous" / "Next" navigation
 - Page number shown
 
-### 🎨 Theme Selector
-- Themes loaded dynamically from `/static/themes/`
-- Dropdown in nav bar allows switching
-- Uses `<link id="theme-style">` for dynamic CSS replacement
-- Themes auto-discovered (no hardcoded list)
-
 ---
 
 ## 🗃 Directory Structure
@@ -62,23 +55,13 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ├── templates/
 │ └── index.html # Jinja2 template
 ├── static/
-│ ├── header/
-│ │ └── wabax_header.png
-│ └── themes/
-│ ├── theme-mint.css
-│ ├── theme-retro.css
-│ └── ...
+│ └── wabax..css
 ```
 ---✅ Known Good State
 cdx.db contains real archived URLs
 
 index.html displays:
-
-Theme switcher
-
-Header image
-
-Import + fetch CDX forms
+Import + fetch CDX forms (Tools Dropdown)
 
 Search/filter inputs
 
@@ -87,10 +70,7 @@ Pagination both top and bottom
 Tag pills and bulk operations
 
 ✏️ TODO (if desired)
-Add sorting (by file or host)
-
 Export filtered results
-
 Integrate more CDX metadata (status codes, lengths)
 
 💡 Attribution
@@ -103,6 +83,10 @@ Wayback Machine API: https://archive.org/help/wayback_api.php
 
 ```bash
 pip install flask
+```
+You will have to initialize the database the first time
+```
+python init_db.py
 python app.py
 ```
 Then visit: http://127.0.0.1:5000
