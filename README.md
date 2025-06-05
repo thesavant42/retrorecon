@@ -30,7 +30,6 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ### 🧩 Filtering + Search
 - Filter by:
   - **Query string** (`q`)
-  - **File extension** (`ext`)
   - **Tags**, with support for inclusion/exclusion (`tag`, `-tag`)
 - Filters persist through pagination
 
