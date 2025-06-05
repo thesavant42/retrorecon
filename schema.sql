@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS urls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT UNIQUE,
+    domain TEXT,
+    tags TEXT
+);

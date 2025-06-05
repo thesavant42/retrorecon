@@ -1,0 +1,6 @@
+# Force Unix-style LF line endings for all text files
+* text=auto eol=lf
+
+# You can fine-tune if needed
+*.svg text eol=lf
+*.py text eol=lf
