@@ -1,4 +1,4 @@
-# 🌀 WABAX - Wayback Archive Explorer
+# 🔎⏳📁 WABAX - Wayback Archive Explorer 📁⏳🔎
 Source of truth :https://github.com/thesavant42/wabax
 
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
