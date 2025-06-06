@@ -4,13 +4,12 @@ import sqlite3
 conn = sqlite3.connect("wabax.db")
 c = conn.cursor()
 
-# Drop the old incorrect table
+# Drop old tables if they exist
 c.execute("DROP TABLE IF EXISTS results")
-
-# Drop the correct table too, just in case
 c.execute("DROP TABLE IF EXISTS urls")
+c.execute("DROP TABLE IF EXISTS jobs")
 
-# Create the correct table
+# Create the urls table
 c.execute("""
     CREATE TABLE urls (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +19,19 @@ c.execute("""
     )
 """)
 
+# Create the jobs table
+c.execute("""
+    CREATE TABLE jobs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT,
+        domain TEXT,
+        status TEXT,
+        progress INTEGER,
+        result TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+
 conn.commit()
 conn.close()
-print("✅ WABAX database initialized with 'urls' table.")
+print("✅ WABAX database initialized with 'urls' and 'jobs' tables.")

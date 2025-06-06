@@ -251,11 +251,20 @@ def import_json():
 
 @app.route('/import_progress', methods=['GET'])
 def import_progress():
+    # For debugging, you can return a fixed response if you want to always see the progress bar.
+    # return jsonify({
+    #     'status': 'in_progress',
+    #     'progress': 500000,
+    #     'total': 1000000,
+    #     'detail': ''
+    # })
+    # Production: return actual progress.
+    prog = get_import_progress()
     return jsonify({
-        'status': 'in_progress',
-        'progress': 500000,
-        'total': 1000000,
-        'detail': ''
+        'status': prog.get('status', 'idle'),
+        'progress': prog.get('current', 0),
+        'total': prog.get('total', 0),
+        'detail': prog.get('message', '')
     })
 
 @app.route('/add_tag', methods=['POST'])

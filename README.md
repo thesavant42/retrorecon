@@ -1,4 +1,4 @@
-# 🔎⏳📁 WABAX - Wayback Archive Explorer 📁⏳🔎
+# 🌀 WABAX - Wayback Archive Explorer
 Source of truth :https://github.com/thesavant42/wabax
 
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
@@ -28,6 +28,7 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ### 🧩 Filtering + Search
 - Filter by:
   - **Query string** (`q`)
+  - **File extension** (`ext`)
   - **Tags**, with support for inclusion/exclusion (`tag`, `-tag`)
 - Filters persist through pagination
 
@@ -45,6 +46,12 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - "Previous" / "Next" navigation
 - Page number shown
 
+### 🎨 Theme Selector
+- Themes loaded dynamically from `/static/themes/`
+- Dropdown in nav bar allows switching
+- Uses `<link id="theme-style">` for dynamic CSS replacement
+- Themes auto-discovered (no hardcoded list)
+
 ---
 
 ## 🗃 Directory Structure
@@ -55,13 +62,23 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ├── templates/
 │ └── index.html # Jinja2 template
 ├── static/
-│ └── wabax..css
+│ ├── header/
+│ │ └── wabax_header.png
+│ └── themes/
+│ ├── theme-mint.css
+│ ├── theme-retro.css
+│ └── ...
 ```
 ---✅ Known Good State
 cdx.db contains real archived URLs
 
 index.html displays:
-Import + fetch CDX forms (Tools Dropdown)
+
+Theme switcher
+
+Header image
+
+Import + fetch CDX forms
 
 Search/filter inputs
 
@@ -70,7 +87,10 @@ Pagination both top and bottom
 Tag pills and bulk operations
 
 ✏️ TODO (if desired)
+Add sorting (by file or host)
+
 Export filtered results
+
 Integrate more CDX metadata (status codes, lengths)
 
 💡 Attribution
@@ -83,10 +103,6 @@ Wayback Machine API: https://archive.org/help/wayback_api.php
 
 ```bash
 pip install flask
-```
-You will have to initialize the database the first time
-```
-python init_db.py
 python app.py
 ```
 Then visit: http://127.0.0.1:5000
