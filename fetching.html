@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>Fetching CDX...</title>
+  <style>
+    .spinner { animation: spin 2s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <h2>Fetching CDX Data...</h2>
+  <img src="{{ url_for('static', filename='hourglass.gif') }}" class="spinner" width="64" height="64" />
+  <p id="status">Working...</p>
+  <script>
+    function poll() {
+      fetch('/fetch_cdx_status/{{ job_id }}')
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'done') {
+            document.getElementById('status').innerText = data.result || "Done!";
+            setTimeout(() => { window.location.href = '/'; }, 2000);
+          } else if (data.status === 'error') {
+            document.getElementById('status').innerText = "Error: " + (data.result || "Unknown error");
+          } else {
+            document.getElementById('status').innerText = "Working... " + (data.progress || 0) + "%";
+            setTimeout(poll, 2000);
+          }
+        });
+    }
+    poll();
+  </script>
+</body>
+</html>
