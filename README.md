@@ -74,21 +74,15 @@ cdx.db contains real archived URLs
 
 index.html displays:
 
-Theme switcher
-
-Header image
 
 Import + fetch CDX forms
-
 Search/filter inputs
-
 Pagination both top and bottom
 
-Tag pills and bulk operations
 
 ✏️ TODO (if desired)
 Add sorting (by file or host)
-
+Tag pills and bulk operations
 Export filtered results
 
 Integrate more CDX metadata (status codes, lengths)
@@ -96,13 +90,14 @@ Integrate more CDX metadata (status codes, lengths)
 💡 Attribution
 Color palettes from: https://www.shecodes.io/palettes
 Wayback Machine API: https://archive.org/help/wayback_api.php
+Webpack Exploder
 
 
-
-## 🧪 Running Locall
+## 🧪 Running Local
 
 ```bash
 pip install flask
+pythin init_db.py
 python app.py
 ```
 Then visit: http://127.0.0.1:5000
