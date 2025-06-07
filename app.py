@@ -228,7 +228,7 @@ def _background_import(file_content):
                 set_import_progress('in_progress', '', idx + 1, total)
         db.commit()
         db.close()
-        set_import_progress('done', '', total, total)
+        set_import_progress('done', f"Imported {inserted} of {total} records.", inserted, total)
     except Exception as e:
         set_import_progress('failed', str(e), 0, 0)
 
@@ -251,15 +251,8 @@ def import_json():
 
 @app.route('/import_progress', methods=['GET'])
 def import_progress():
-    # For debugging, you can return a fixed response if you want to always see the progress bar.
-    # return jsonify({
-    #     'status': 'in_progress',
-    #     'progress': 500000,
-    #     'total': 1000000,
-    #     'detail': ''
-    # })
-    # Production: return actual progress.
     prog = get_import_progress()
+    # Always supply progress and total, and message for UI
     return jsonify({
         'status': prog.get('status', 'idle'),
         'progress': prog.get('current', 0),

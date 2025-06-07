@@ -8,7 +8,6 @@
 <body>
   <h1>🔎⏳📁 WABAX: Wayback Archive eXplorer <span style="font-size:0.7em; color:#666;">v1.0.0</span> 📁⏳🔎</h1>
 
-  <!-- Import progress bar/status -->
   <div id="import-status-block">
     <strong>Import status:</strong>
     <span id="import-status-text"></span>
@@ -34,7 +33,7 @@
       </div>
     </div>
     <div class="dropdown" style="position: relative;">
-      <button class="dropbtn" id="main-dropdown-btn">Menu ▾</button>
+      <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
       <div class="dropdown-content" id="main-dropdown-content">
         <div>
           <form method="POST" action="/fetch_cdx" style="margin-bottom: 8px;">
@@ -64,198 +63,151 @@
   </div>
 
   {% if urls %}
-  <div class="pagination">
-    {% if page > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
-    {% endif %}
-    {% set start = page - 3 if page - 3 >= 1 else 1 %}
-    {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
-    {% for p in range(start, end + 1) %}
-      {% if p == page %}
-        <strong>{{ p }}</strong>
-      {% else %}
-        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
-      {% endif %}
-    {% endfor %}
-    {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
-    {% endif %}
-    <span style="margin-left:0.5em;">Page {{page}} of {{total_pages}}</span>
-    <form method="GET" onsubmit="return gotoPage(this);" style="display:inline;">
-      <input type="hidden" name="q" value="{{ q }}">
-      <input type="hidden" name="tag" value="{{ tag }}">
-      <input type="number" name="page" value="{{page}}" min="1" max="{{total_pages}}" style="width:3em;" />
-      <button type="submit">Go</button>
-    </form>
-  </div>
-
-  <form method="POST" action="/bulk_action">
+  <form method="POST" action="/bulk_action" id="bulk-form">
     <div class="bulk-controls">
       <select name="action">
         <option value="add_tag" selected>Add Tag</option>
         <option value="remove_tag">Remove Tag</option>
         <option value="delete">Delete</option>
       </select>
-      <input type="text" name="tag" placeholder="Tag" />
+      <input type="text" name="tag" placeholder="Tag">
       <button type="submit">Apply</button>
-      <div class="bulk-checkbox-group">
-        <label>
-          <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)" />
-          Select all on page
-        </label>
-        <label>
-          <input type="checkbox" id="select-all-matching" onchange="toggleSelectAllMatching(this)" />
-          Select all matching
-        </label>
-      </div>
-      <input type="hidden" name="q" value="{{ q }}" />
-      <input type="hidden" name="tag" value="{{ tag }}" />
-      <input type="hidden" name="select_all_matching" value="false" />
+      <label class="select-all-label">
+        <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)"> Select all visible
+      </label>
+      <label class="select-all-label">
+        <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)"> Select all matching
+        <input type="hidden" name="select_all_matching" value="false">
+      </label>
     </div>
-
-    <ul class="url-list">
-      {% for url in urls %}
-      <li>
-        <div class="url-info">
-          <div class="url-row">
-            <input
-              type="checkbox"
-              class="row-checkbox"
-              name="selected_ids"
-              value="{{ url.id }}"
-            />
-            {% if url.url %}
-            <a href="{{ url.url }}" target="_blank"
-              ><strong>{{ url.url }}</strong></a
-            >
-            {% else %}
-            <strong style="color: red">⚠️ Invalid URL</strong>
-            {% endif %}
-          </div>
-          {% if url.tags %}<small>[{{ url.tags }}]</small>{% endif %}
-          {% if url.url %}
-          <div>
-            <a
-              class="btn-wayback"
-              href="https://web.archive.org/web/*/{{ url.url }}"
-              target="_blank"
-              >Wayback</a
-            >
-            <button
-              type="button"
-              class="copy-btn"
-              data-url="{{ url.url }}"
-            >
-              Copy
-            </button>
-            <form
-              method="POST"
-              action="/bulk_action"
-              style="display:inline;margin-right:0.3em;"
-            >
-              <input type="hidden" name="action" value="delete" />
-              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-              <input type="hidden" name="q" value="{{ q }}" />
-              <input type="hidden" name="tag" value="{{ tag }}" />
-              <button type="submit" class="delete-btn">Delete</button>
-            </form>
-            <button
-              type="button"
-              class="shodan-btn"
-              data-url="{{ url.url }}"
-            >
-            Shodan
-            </button>
-            <button
-              type="button"
-              class="vt-btn"
-              data-url="{{ url.url }}"
-            >
-            VT
-            </button>
-            <button
-              type="button"
-              class="postman-btn"
-              data-url="{{ url.url }}"
-            >
-              postman
-            </button>
-            <button
-              type="button"
-              class="github-btn"
-              data-url="{{ url.url }}"
-            >
-             github
-            </button>
-            <button
-              type="button"
-              class="google-btn"
-              data-url="{{ url.url }}"
-            >
-              google
-            </button>
-            <button
-              type="button"
-              class="crtsh-btn"
-              data-url="{{ url.url }}"
-            >
-             crt.sh
-            </button>
-            {% if url.url and url.url.endswith('.js.map') %}
-            <form method="POST" action="/tools/webpack-zip" style="display:inline;margin:0;padding:0;">
-              <input type="hidden" name="map_url" value="{{ url.url }}">
-              <button type="submit" class="exploder-btn" title="Explode this JS.map file to ZIP" style="margin-left:0.3em;">Explode</button>
-            </form>
-            {% endif %}
-          </div>
-          {% endif %}
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
-  </form>
-
-  <div class="pagination">
-    {% if page > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
-    {% endif %}
-    {% set start = page - 3 if page - 3 >= 1 else 1 %}
-    {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
-    {% for p in range(start, end + 1) %}
-      {% if p == page %}
-        <strong>{{ p }}</strong>
-      {% else %}
-        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+    <div class="pagination">
+      {% if page > 1 %}
+        <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
+        <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
       {% endif %}
-    {% endfor %}
-    {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
-    {% endif %}
-    <span style="margin-left:0.5em;">Page {{page}} of {{total_pages}}</span>
-    <form method="GET" onsubmit="return gotoPage(this);" style="display:inline;">
-      <input type="hidden" name="q" value="{{ q }}">
-      <input type="hidden" name="tag" value="{{ tag }}">
-      <input type="number" name="page" value="{{page}}" min="1" max="{{total_pages}}" style="width:3em;" />
-      <button type="submit">Go</button>
-    </form>
-  </div>
+      {% set start = page - 3 if page - 3 >= 1 else 1 %}
+      {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
+      {% for p in range(start, end + 1) %}
+        {% if p == page %}
+          <strong>{{ p }}</strong>
+        {% else %}
+          <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+        <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
+      {% endif %}
+      <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+        <input type="hidden" name="q" value="{{ q }}">
+        <input type="hidden" name="tag" value="{{ tag }}">
+        <input type="text" name="page" size="2" placeholder="Page">
+        <button type="submit">Go</button>
+      </form>
+      <span style="margin-left:1em; color:#888;">Total: {{ total_count }}</span>
+    </div>
+    <table class="url-table">
+      <thead>
+        <tr>
+          <th style="width:2em;"></th>
+          <th>URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for url in urls %}
+        <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
+          <td>
+            <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation();">
+          </td>
+          <td>
+            {{ url.url }}
+          </td>
+        </tr>
+        <tr class="url-row-buttons">
+          <td></td>
+          <td>
+            <div class="url-tools-row">
+              <form method="POST" action="/add_tag" style="display:inline;" onsubmit="return addTagSubmit(this, {{ url.id }});">
+                <input type="hidden" name="entry_id" value="{{ url.id }}">
+                <input type="text" name="new_tag" class="tag-input" placeholder="Add tag">
+                <button type="submit">➕</button>
+              </form>
+              {% for tag in (url.tags or '').split(',') if tag %}
+                <span class="tag-pill">{{ tag }}
+                  <form method="POST" action="/bulk_action" style="display:inline;">
+                    <input type="hidden" name="action" value="remove_tag">
+                    <input type="hidden" name="tag" value="{{ tag }}">
+                    <input type="hidden" name="selected_ids" value="{{ url.id }}">
+                    <button type="submit" title="Remove tag">&times;</button>
+                  </form>
+                </span>
+              {% endfor %}
+              <a href="https://web.archive.org/web/*/{{ url.url }}" target="_blank" class="btn-wayback" title="Wayback">🕰️</a>
+              <a href="https://www.shodan.io/search?query={{ url.url | urlencode }}" target="_blank" class="shodan-btn" title="Shodan">🤖</a>
+              <a href="https://www.virustotal.com/gui/search/{{ url.url | urlencode }}" target="_blank" class="vt-btn" title="VirusTotal">🦠</a>
+              <a href="https://github.com/search?q={{ url.url | urlencode }}" target="_blank" class="github-btn" title="GitHub">🐙</a>
+              <a href="https://www.google.com/search?q=site:{{ url.url | urlencode }}" target="_blank" class="google-btn" title="Google">🔍</a>
+              <a href="https://crt.sh/?q={{ url.url | urlencode }}" target="_blank" class="crtsh-btn" title="crt.sh">📜</a>
+              {% if ".js.map" in url.url %}
+              <form method="POST" action="/tools/webpack-zip" style="display:inline;">
+                <input type="hidden" name="map_url" value="{{ url.url }}">
+                <button type="submit" class="explode-btn" title="Explode this .js.map">💥 Explode!</button>
+              </form>
+              {% endif %}
+              <button class="copy-btn" type="button" data-url="{{ url.url }}">📋 Copy</button>
+              <form method="POST" action="/bulk_action" style="display:inline;">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="selected_ids" value="{{ url.id }}">
+                <button class="delete-btn" type="submit" title="Delete">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="pagination">
+      {% if page > 1 %}
+        <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
+        <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+      {% endif %}
+      {% set start = page - 3 if page - 3 >= 1 else 1 %}
+      {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
+      {% for p in range(start, end + 1) %}
+        {% if p == page %}
+          <strong>{{ p }}</strong>
+        {% else %}
+          <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+        <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
+      {% endif %}
+      <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+        <input type="hidden" name="q" value="{{ q }}">
+        <input type="hidden" name="tag" value="{{ tag }}">
+        <input type="text" name="page" size="2" placeholder="Page">
+        <button type="submit">Go</button>
+      </form>
+      <span style="margin-left:1em; color:#888;">Total: {{ total_count }}</span>
+    </div>
+  </form>
   {% else %}
-  <p>No results found.</p>
+    <p style="margin:2em auto; text-align:center; color:#666;">No results found.</p>
   {% endif %}
 
+  <div class="footer">
+    &copy; 2025 WABAX - Wayback Archive eXplorer
+  </div>
+
   <script>
-    // Quick search bookmarklets
     function quickSearch(term) {
       var box = document.getElementById('searchbox');
       box.value = term;
       box.form.submit();
     }
 
-    // Dropdown toggle
     document.getElementById("main-dropdown-btn").addEventListener("click", function(e) {
       e.preventDefault();
       var dropdown = this.parentElement;
@@ -272,7 +224,6 @@
       document.querySelectorAll('.row-checkbox').forEach(function(cb){
         cb.checked = box.checked;
       });
-      // If 'select all on page' is unchecked, also uncheck 'select all matching'
       if(!box.checked) {
         document.getElementById('select-all-matching').checked = false;
         document.querySelector('input[name="select_all_matching"]').value = 'false';
@@ -282,7 +233,6 @@
     function toggleSelectAllMatching(checkbox) {
       document.querySelector('input[name="select_all_matching"]').value = checkbox.checked ? "true" : "false";
       if(checkbox.checked){
-        // Uncheck 'select all on page'
         document.getElementById('select-all-page').checked = false;
       }
     }
@@ -300,7 +250,8 @@
     }
 
     // Progress bar poller
-    function updateImportProgressBar() {
+    let importProgressInterval = null;
+    function updateImportProgressBar(stopAfterDone = false) {
       fetch('/import_progress').then(res => res.json()).then(data => {
         const block = document.getElementById('import-status-block');
         const bar = document.getElementById('import-progress-bar');
@@ -328,10 +279,15 @@
           bar.style.width = '100%';
           numbers.style.display = '';
           numbersSpan.textContent = `${data.progress}/${data.total}`;
-          statusText.textContent = "✅ Done!";
+          statusText.textContent = data.detail ? `✅ ${data.detail}` : "✅ Done!";
+          // Stop polling after done, hide after short delay
+          if (importProgressInterval) {
+            clearInterval(importProgressInterval);
+            importProgressInterval = null;
+          }
           setTimeout(() => {
             block.style.display = 'none';
-          }, 2500);
+          }, 4000);
         } else if (data.status === 'failed') {
           block.style.display = '';
           barContainer.style.display = '';
@@ -339,15 +295,29 @@
           numbers.style.display = '';
           statusText.textContent = "❌ Failed: " + (data.detail || "");
           bar.style.background = '#f44336';
+          // Stop polling on failure
+          if (importProgressInterval) {
+            clearInterval(importProgressInterval);
+            importProgressInterval = null;
+          }
         } else {
           block.style.display = 'none';
           barContainer.style.display = 'none';
           numbers.style.display = 'none';
+          // Stop polling if idle
+          if (importProgressInterval) {
+            clearInterval(importProgressInterval);
+            importProgressInterval = null;
+          }
         }
       });
     }
-    setInterval(updateImportProgressBar, 1000);
-    window.addEventListener('DOMContentLoaded', updateImportProgressBar);
+    window.addEventListener('DOMContentLoaded', function() {
+      updateImportProgressBar();
+      if (!importProgressInterval) {
+        importProgressInterval = setInterval(updateImportProgressBar, 1000);
+      }
+    });
 
     // Button actions for shodan, crt.sh, etc
     document.addEventListener("DOMContentLoaded", function () {
@@ -359,7 +329,7 @@
           try {
             await navigator.clipboard.writeText(urlToCopy);
             btn.textContent = "Copied!";
-            setTimeout(() => (btn.textContent = "Copy"), 1000);
+            setTimeout(() => (btn.textContent = "📋 Copy"), 1000);
           } catch (err) {
             const temp = document.createElement("textarea");
             temp.value = urlToCopy;
@@ -368,65 +338,24 @@
             document.body.appendChild(temp);
             temp.focus();
             temp.select();
-            try {
-              document.execCommand("copy");
-              btn.textContent = "Copied!";
-              setTimeout(() => (btn.textContent = "Copy"), 1000);
-            } catch (_) {
-              alert("Copy failed; please copy manually.");
-            }
+            document.execCommand("copy");
             document.body.removeChild(temp);
+            btn.textContent = "Copied!";
+            setTimeout(() => (btn.textContent = "📋 Copy"), 1000);
           }
         });
       });
-      document.querySelectorAll(".shodan-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://www.shodan.io/search?query=${encodeURIComponent(url)}`, '_blank');
-        });
-      });
-      document.querySelectorAll(".vt-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://www.virustotal.com/gui/search/${encodeURIComponent(url)}`, '_blank');
-        });
-      });
-      document.querySelectorAll(".postman-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://web.postman.co/workspace/personal/request/create?url=${encodeURIComponent(url)}`, '_blank');
-        });
-      });
-      document.querySelectorAll(".github-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://github.com/search?q=${encodeURIComponent(url)}`, '_blank');
-        });
-      });
-      document.querySelectorAll(".google-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://www.google.com/search?q=${encodeURIComponent(url)}`, '_blank');
-        });
-      });
-      document.querySelectorAll(".crtsh-btn").forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const url = btn.getAttribute("data-url");
-          if (!url) return;
-          window.open(`https://crt.sh/?q=${encodeURIComponent(url)}`, '_blank');
-        });
-      });
     });
+
+    // Tag add - prevent empty submission
+    function addTagSubmit(form, id) {
+      const input = form.querySelector('input[name="new_tag"]');
+      if (!input.value.trim()) {
+        input.focus();
+        return false;
+      }
+      return true;
+    }
   </script>
-  <footer class="footer" style="text-align:center; margin-top:2em; padding:0.5em; background:#f8f8f8; border-top:1px solid #ccc; font-size:0.9em;">
-    <a href="https://github.com/thesavant42/wabax" target="_blank" style="text-decoration:none; color:#333;">
-      WAYBAX: a yolosint production by thesavant42. Some rights reserved 2025.
-    </a>
-  </footer>
 </body>
 </html>
