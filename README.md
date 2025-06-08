@@ -4,7 +4,10 @@
 ## Source of Truth
 Source of truth: https://github.com/thesavant42/retrorecon
 
+
+
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
+
 
 ---
 
@@ -15,7 +18,6 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - **Frontend**: Jinja2 templates + HTML/CSS + vanilla JS
 - **Dynamic UI**: Pagination, theming, tag-based filtering
 
----
 
 ## 📦 Features
 
@@ -60,29 +62,30 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 
 ---
 
----✅ Known Good State
-cdx.db contains real archived URLs
+Known Bugs, fix me first:
+Bulk Select - "Select all matching"
+  - and delete rows..
+  - and delete tag(s)
+
+✏️ TODO 
+Add sorting (by file or host)
+Tag pills and bulk operations
+Export filtered results
+Still needs bulk edit, bulk tag, project import/export.
+
+Integrate more CDX metadata (status codes, lengths): https://github.com/internetarchive/wayback/blob/master/wayback-cdx-server/README.md
+
+
+
+✅ Known Good State
+
 
 index.html displays:
-
 Import + fetch CDX forms
 Search/filter inputs
 Select all visible checks all results on the page
 Clear button unchecks all buttons and empties searh and tab boxes
 Pagination both top and bottom
-
-
-✏️ TODO (if desired)
-Add sorting (by file or host)
-Tag pills and bulk operations
-Export filtered results
-
-Integrate more CDX metadata (status codes, lengths)
-
-💡 Attribution
-Wayback Machine API: https://archive.org/help/wayback_api.php
-Webpack Exploder: https://spaceraccoon.github.io/webpack-exploder/
-Inspiration: https://indianajones.fandom.com/wiki/Map_Room
 
 
 ## 🧪 Running Local
@@ -94,5 +97,8 @@ python app.py
 ```
 Then visit: http://127.0.0.1:5000
 
-## Known State:
-Still needs bulk edit, bulk tag, project import/export.
+
+💡 Attribution
+Wayback Machine API: https://archive.org/help/wayback_api.php
+Webpack Exploder: https://spaceraccoon.github.io/webpack-exploder/
+Inspiration: https://indianajones.fandom.com/wiki/Map_Room
