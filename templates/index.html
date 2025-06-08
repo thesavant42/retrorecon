@@ -211,6 +211,10 @@
   {% endif %}
 </div>
 
+{% else %}
+  <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
+{% endif %}
+
 <!-- Footer -->
 <div class="footer">&copy; 2025 retroRecon - Archive eXplorer</div>
 
@@ -247,29 +251,32 @@
     document.querySelectorAll('.row-checkbox').forEach(c => c.checked=cb.checked);
   }
   // Submit bulk form
-  document.getElementById('bulk-form').addEventListener('submit', function(e){
-    const action=document.getElementById('bulk-action-selector').value;
-    const checked = Array.from(document.querySelectorAll('.row-checkbox:checked'));
-    if (action==='delete') {
-      if(checked.length===0){
-        alert('Please select at least one host to delete.');
-        e.preventDefault();
-        return false;
+  var bulkForm = document.getElementById('bulk-form');
+  if (bulkForm) {
+    bulkForm.addEventListener('submit', function(e){
+      const action=document.getElementById('bulk-action-selector').value;
+      const checked = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+      if (action==='delete') {
+        if(checked.length===0){
+          alert('Please select at least one host to delete.');
+          e.preventDefault();
+          return false;
+        }
+        const ids=checked.map(c=>c.value).join(',');
+        let inp=document.createElement('input');
+        inp.type='hidden';
+        inp.name='selected_ids';
+        inp.value=ids;
+        this.appendChild(inp);
+      } else if (['add_tag','remove_tag'].includes(action)){
+        if(!document.getElementById('bulk-tag-input').value.trim()){
+          alert('Please enter a tag.');
+          e.preventDefault();
+          return false;
+        }
       }
-      const ids=checked.map(c=>c.value).join(',');
-      let inp=document.createElement('input');
-      inp.type='hidden';
-      inp.name='selected_ids';
-      inp.value=ids;
-      this.appendChild(inp);
-    } else if (['add_tag','remove_tag'].includes(action)){
-      if(!document.getElementById('bulk-tag-input').value.trim()){
-        alert('Please enter a tag.');
-        e.preventDefault();
-        return false;
-      }
-    }
-  });
+    });
+  }
   // Go to page
   function gotoPage(f) {
     const p=f.page.value.trim();
@@ -304,6 +311,5 @@
     });
   });
 </script>
-{% endif %}  <!-- Close the `{% if urls %}` block -->
 </body>
 </html>
