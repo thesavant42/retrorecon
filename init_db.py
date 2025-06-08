@@ -32,6 +32,16 @@ c.execute("""
     )
 """)
 
+# Create the import_status table
+c.execute("""
+    CREATE TABLE IF NOT EXISTS import_status (
+        id INTEGER PRIMARY KEY,
+        status TEXT,
+        detail TEXT,
+        progress INTEGER,
+        total INTEGER
+    )
+""");
 conn.commit()
 conn.close()
-print("✅ WABAX database initialized with 'urls' and 'jobs' tables.")
+print("✅ WABAX database initialized with 'urls', 'jobs', and 'import_status' tables.")
