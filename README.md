@@ -48,7 +48,7 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - Add or delete tags via inline form
 - Tags stored as comma-separated strings
 
-### 🗑️ Bulk Deletion
+### 🗑️ Bulk Deletion : FIX ME!
 - Select rows via checkbox
 - Delete multiple entries at once
 
