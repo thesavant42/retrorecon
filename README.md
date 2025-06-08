@@ -2,7 +2,7 @@
 
 
 ## Source of Truth
-Source of truth: https://github.com/thesavant42/wabax
+Source of truth: https://github.com/thesavant42/retrorecon
 
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
 
