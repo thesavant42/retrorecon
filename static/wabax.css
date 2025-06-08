@@ -1,26 +1,38 @@
+/* --- Updated CSS to emulate Fandom Map Room style --- */
+
 body {
-  background: #f5f5ef;
-  background-image: url('/static/img/background.jpg'); /* Replace with the correct path */
+  background: #f5f5ef url('/static/img/background.jpg') no-repeat center center fixed;
   background-size: cover;
-  background-attachment: fixed;
-  font-family: "Segoe UI", "Arial", sans-serif;
+  font-family: "Segoe UI", "Arial", sans-serif; /* Use system UI fonts for modern look */
   margin: 0;
   padding: 0 0 4em 0;
-  color: #23230a;
+  color: #23230a; /* Slightly softer text color for readability */
+  line-height: 1.5;
 }
+
+/* Main header style */
 h1 {
-  margin: 1.4em 0 1.4em 0;
+  margin: 1.4em 0;
   text-align: center;
   font-size: 2.1em;
   letter-spacing: 0.04em;
+  font-weight: bold;
+  /* Add a subtle text-shadow for depth (optional) */
+  /* text-shadow: 1px 1px 2px rgba(0,0,0,0.1); */
 }
+
+/* Links */
 a {
   color: #1b51a1;
   text-decoration: none;
+  transition: color 0.2s;
 }
 a:hover {
   text-decoration: underline;
+  color: #0d3d80; /* Slightly darker on hover */
 }
+
+/* Controls section - aligned and spaced */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -29,13 +41,20 @@ a:hover {
   justify-content: center;
   margin-bottom: 1em;
 }
+
+/* Search bar container */
 .search-bar {
   min-width: 270px;
   padding: 0.7em;
   background: #f8f8e0;
   border-radius: 8px;
   box-shadow: 0 1px 6px #eaeab0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
+
+/* Search input */
 .search-bar input[type="text"] {
   font-size: 1.05em;
   padding: 3px 7px;
@@ -43,7 +62,10 @@ a:hover {
   border-radius: 5px;
   border: 1px solid #e7e7c0;
   background: #fffbe4;
+  flex: 1;
 }
+
+/* Buttons inside search bar */
 .search-bar button {
   font-size: 1em;
   padding: 3px 8px;
@@ -51,13 +73,14 @@ a:hover {
   border: 1px solid #e7e7c0;
   background: #f8d970;
   color: #443300;
-  margin-left: 2px;
   cursor: pointer;
   transition: background 0.2s;
 }
 .search-bar button:hover {
   background: #ffed93;
 }
+
+/* Quick search buttons */
 #quick-searches button {
   background: #f3f3b3;
   border: 1px solid #e0c600;
@@ -66,9 +89,15 @@ a:hover {
   font-size: 0.95em;
   padding: 2px 11px;
   margin-top: 0.2em;
+  cursor: pointer;
+}
+#quick-searches button:hover {
+  background: #e0e0b3;
 }
 
+/* Dropdown styling (menu) */
 .dropdown {
+  position: relative;
   min-width: 225px;
 }
 .dropbtn {
@@ -79,6 +108,7 @@ a:hover {
   border: 1px solid #e7e7c0;
   border-radius: 7px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 .dropbtn:hover,
 .dropbtn:focus {
@@ -100,12 +130,14 @@ a:hover {
   display: block;
 }
 
+/* Bulk controls section with flex layout */
 .bulk-controls {
   display: flex;
   align-items: center;
   gap: 0.7em;
   margin-bottom: 0.5em;
 }
+/* Tag input and select styling */
 .bulk-controls select,
 .bulk-controls input[type="text"] {
   font-size: 0.98em;
@@ -114,6 +146,7 @@ a:hover {
   border: 1px solid #e7e7c0;
   background: #fffbe4;
 }
+/* Action buttons */
 .bulk-controls button {
   font-size: 1em;
   padding: 2px 11px;
@@ -122,55 +155,73 @@ a:hover {
   background: #f8d970;
   color: #443300;
   cursor: pointer;
+  transition: background 0.2s;
 }
 .bulk-controls button:hover {
   background: #ffed93;
 }
+
+/* Checkbox label */
 .select-all-label {
   font-size: 0.97em;
   margin-right: 0.7em;
   margin-left: 0.2em;
+  cursor: pointer;
 }
 
+/* Table general styling */
 .url-table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px #f3f3b3;
+  font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+/* Table header style */
+.url-table thead {
+  background: #f3f3b3;
 }
 .url-table th {
-  background: #f3f3b3;
   font-weight: bold;
   font-size: 1.05em;
   padding: 0.5em 0.7em;
   border-bottom: 2px solid #dedc8d;
+  text-align: left;
 }
+
+/* Alternating row backgrounds for readability */
 .url-row-main:nth-child(4n),
-.url-row-buttons:nth-child(4n+1) {
+.url-row-buttons:nth-child(4n + 1) {
   background: #f8f8ff;
 }
-.url-row-main:nth-child(4n+2),
-.url-row-buttons:nth-child(4n+3) {
+.url-row-main:nth-child(4n + 2),
+.url-row-buttons:nth-child(4n + 3) {
   background: #f4f4e0;
+}
+
+/* Main row: cursor pointer for entire row */
+.url-row-main {
+  cursor: pointer;
 }
 .url-row-main td {
   font-size: 1.08em;
   padding: 0.43em 0.7em;
   border-bottom: 1px solid #e7e7c0;
+}
+.url-row-main input[type="checkbox"] {
   cursor: pointer;
 }
-.url-row-buttons td {
-  background: #fbfbeb;
-  border-bottom: 1.5px solid #e7e7c0;
-  padding: 0.35em 0.7em;
-}
+
+/* Button-like actions in row tools */
 .url-tools-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.36em;
   align-items: center;
 }
+/* Tag pills styling */
 .tag-pill {
   display: inline-block;
   padding: 2px 8px;
@@ -181,6 +232,9 @@ a:hover {
   font-size: 0.95em;
   margin-bottom: 4px;
 }
+.tag-pill form {
+  display: inline;
+}
 .tag-pill button {
   background: none;
   border: none;
@@ -188,11 +242,13 @@ a:hover {
   font-size: 1em;
   margin-left: 2px;
   cursor: pointer;
+  transition: color 0.2s;
 }
-.tag-input {
-  font-size: 0.95em;
-  width: 70px;
+.tag-pill button:hover {
+  color: #a00;
 }
+
+/* Buttons in row actions */
 .copy-btn,
 .delete-btn,
 .explode-btn,
@@ -212,9 +268,7 @@ a:hover {
   margin-left: 0.1em;
   margin-right: 0.1em;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  text-decoration: none;
-  display: inline-block;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .copy-btn:hover,
 .delete-btn:hover,
@@ -226,14 +280,16 @@ a:hover {
 .google-btn:hover,
 .crtsh-btn:hover {
   background: #fff1a3;
-  color: #333;
   border-color: #dac737;
+  color: #222;
 }
 .copy-btn:active,
 .delete-btn:active,
 .explode-btn:active {
   background: #ffe270;
 }
+
+/* Pagination styling */
 .pagination {
   margin: 1em 0;
   display: flex;
@@ -241,47 +297,45 @@ a:hover {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  font-family: "Segoe UI", "Arial", sans-serif;
+}
+.pagination a,
+.pagination strong {
+  padding: 0.3em 0.8em;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.pagination a:hover {
+  background: #e0e0b3;
+}
+.pagination strong {
+  background: #d0d0d0;
+  font-weight: bold;
 }
 .pagination input[type="text"] {
   width: 40px;
   font-size: 0.9em;
   padding: 1px 4px;
+  text-align: center;
 }
+
+/* Footer text style */
 .footer {
   margin-top: 2em;
   text-align: center;
-  color: #aaa;
+  color: #888;
   font-size: 0.97em;
 }
+
+/* Misc: checkboxes for row selection */
 .row-checkbox {
   margin-right: 4px;
 }
 
-/* Progress Bar */
-#import-status-block {
-  display: none;
-  margin: 0.5em auto 1.5em auto;
-  max-width: 620px;
-  background: #f9f9d0;
-  border: 2px solid #ffb700;
-  border-radius: 8px;
-  padding: 0.7em 1.4em;
-  box-shadow: 0 2px 8px #eee;
+/* Optional: Add hover effect to entire rows for better UX */
+.url-row-main:hover,
+.url-row-buttons:hover {
+  background-color: #eaeaea;
 }
-#import-progress-bar-container {
-  width: 80%;
-  background: #e3e3c0;
-  height: 18px;
-  border-radius: 6px;
-  margin: 7px 0;
-}
-#import-progress-bar {
-  height: 100%;
-  background: #cfcf22;
-  border-radius: 6px;
-  width: 0%;
-  transition: width 0.3s;
-}
-#import-progress-numbers {
-  font-size: 1em;
-}
+
+/* --- End of update --- */

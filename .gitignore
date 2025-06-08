@@ -1,4 +1,5 @@
 *.db
 *.zip
 *.sqlite
+*.json
 uploads/
