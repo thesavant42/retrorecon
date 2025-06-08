@@ -1,4 +1,4 @@
-# 🌀 WABAX - Wayback Archive Explorer
+# retroRecon:
 Source of truth :https://github.com/thesavant42/wabax
 
 A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
@@ -21,8 +21,16 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - Stores results into `cdx.db` under `entries` table
 - Handles duplicates and bulk insertion cleanly
 
-### 📥 NDJSON Import
-- Upload Newline Delimeted (NDJSON) `.json` file (in CDX format)
+### 📥 Multiline JSON Import
+- Upload JSON file (in CDX format)
+```
+[
+  "http://example.com:80/",
+  "https://www.example.com/%22",
+  "https://www.example.com/%22%22",
+  "https://www.example.com/%22,",
+]
+```
 - Data is inserted into the database
 
 ### 🧩 Filtering + Search
@@ -42,41 +50,22 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 - Delete multiple entries at once
 
 ### 📄 Pagination
-- Configurable number of results per page (default 25)
+- TODO: Configurable number of results per page (default 25)
 - "Previous" / "Next" navigation
 - Page number shown
-
-### 🎨 Theme Selector
-- Themes loaded dynamically from `/static/themes/`
-- Dropdown in nav bar allows switching
-- Uses `<link id="theme-style">` for dynamic CSS replacement
-- Themes auto-discovered (no hardcoded list)
+- Input Box to jump to page
 
 ---
 
-## 🗃 Directory Structure
-```
-.
-├── app.py # Main Flask app
-├── cdx.db # SQLite3 database
-├── templates/
-│ └── index.html # Jinja2 template
-├── static/
-│ ├── header/
-│ │ └── wabax_header.png
-│ └── themes/
-│ ├── theme-mint.css
-│ ├── theme-retro.css
-│ └── ...
-```
 ---✅ Known Good State
 cdx.db contains real archived URLs
 
 index.html displays:
 
-
 Import + fetch CDX forms
 Search/filter inputs
+Select all visible checks all results on the page
+Clear button unchecks all buttons and empties searh and tab boxes
 Pagination both top and bottom
 
 
@@ -88,9 +77,9 @@ Export filtered results
 Integrate more CDX metadata (status codes, lengths)
 
 💡 Attribution
-Color palettes from: https://www.shecodes.io/palettes
 Wayback Machine API: https://archive.org/help/wayback_api.php
-Webpack Exploder
+Webpack Exploder: https://spaceraccoon.github.io/webpack-exploder/
+Inspiration: https://indianajones.fandom.com/wiki/Map_Room
 
 
 ## 🧪 Running Local
