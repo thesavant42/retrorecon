@@ -29,12 +29,12 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ### 📥 Multiline JSON Import
 - Upload JSON file (in CDX format)
 ```
-[
-  "http://example.com:80/",
-  "https://www.example.com/%22",
-  "https://www.example.com/%22%22",
-  "https://www.example.com/%22,",
-]
+  [
+    "http://example.com:80/",
+    "https://www.example.com/%22",
+    "https://www.example.com/%22%22",
+    "https://www.example.com/%22,",
+  ]
 ```
 - Data is inserted into the database
 

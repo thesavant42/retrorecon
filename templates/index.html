@@ -1,101 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>retroRecon: </title>
-<link rel="stylesheet" href="/static/wabax.css" />
+  <meta charset="UTF-8" />
+  <title>retroRecon: </title>
+  <link rel="stylesheet" href="/static/wabax.css" />
 </head>
 <body>
-<h1>retroRecon: <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
-<!-- Import Status Block -->
-<div id="import-status-block" style="display:none;">
-  <strong>Import status:</strong>
-  <span id="import-status-text"></span>
-  <div id="import-progress-bar-container">
-    <div id="import-progress-bar"></div>
-  </div>
-  <div id="import-progress-numbers" style="margin-top:0.5em;">
-    <span id="import-progress-numbers-span"></span>
-  </div>
-</div>
-<!-- Control Section -->
-<div class="controls">
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <form method="GET" action="/">
-      <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox"/>
-      <button type="submit">Search</button>
-      <button type="button" onclick="document.getElementById('searchbox').value=''; this.form.submit();">Clear</button>
-    </form>
-    <div id="quick-searches" style="margin-top:0.5em;">
-      <button type="button" onclick="quickSearch('.js.map')">.js.map</button>
-      <button type="button" onclick="quickSearch('.php')">.php</button>
-      <button type="button" onclick="quickSearch('.env')">.env</button>
+  <!-- DEBUG: show how many URLs we're getting -->
+<p style="color: red; margin: 1em;">DEBUG: Loaded {{ urls|length }} URLs</p>
+
+  <h1>retroRecon: <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
+  <!-- Import Status Block -->
+  <div id="import-status-block" style="display:none;">
+    <strong>Import status:</strong>
+    <span id="import-status-text"></span>
+    <div id="import-progress-bar-container">
+      <div id="import-progress-bar"></div>
+    </div>
+    <div id="import-progress-numbers" style="margin-top:0.5em;">
+      <span id="import-progress-numbers-span"></span>
     </div>
   </div>
-  <!-- Menu Dropdown -->
-  <div class="dropdown" style="position: relative;">
-    <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
-    <div class="dropdown-content" id="main-dropdown-content">
-      <!-- Fetch Domain Form -->
-      <div>
-        <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
-          <label>🌐 Domain:
-            <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
-          </label>
-          <button type="submit">Fetch</button>
-        </form>
-        <!-- Import JSON -->
-        <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-          <label>📄 NDJSON:
-            <input type="file" name="json_file" required />
-          </label>
-          <button type="submit">Import</button>
-        </form>
+  <!-- Control Section -->
+  <div class="controls">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <form method="GET" action="/">
+        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox"/>
+        <button type="submit">Search</button>
+        <button type="button" onclick="document.getElementById('searchbox').value=''; this.form.submit();">Clear</button>
+      </form>
+      <div id="quick-searches" style="margin-top:0.5em;">
+        <button type="button" onclick="quickSearch('.js.map')">.js.map</button>
+        <button type="button" onclick="quickSearch('.php')">.php</button>
+        <button type="button" onclick="quickSearch('.env')">.env</button>
       </div>
-      <hr style="margin:8px 0;">
-      <!-- Explode JS Map -->
-      <div>
-        <form method="POST" action="/tools/webpack-zip">
-          <label>🔍 Explode .js.map URL:
-            <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
-          </label>
-          <button type="submit">Explode &amp; Download ZIP</button>
-        </form>
+    </div>
+    <!-- Menu Dropdown -->
+    <div class="dropdown" style="position: relative;">
+      <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
+      <div class="dropdown-content" id="main-dropdown-content">
+        <!-- Fetch Domain Form -->
+        <div>
+          <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
+            <label>🌐 Domain:
+              <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
+            </label>
+            <button type="submit">Fetch</button>
+          </form>
+          <!-- Import JSON -->
+          <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
+            <label>📄 NDJSON:
+              <input type="file" name="json_file" required />
+            </label>
+            <button type="submit">Import</button>
+          </form>
+        </div>
+        <hr style="margin:8px 0;">
+        <!-- Explode JS Map -->
+        <div>
+          <form method="POST" action="/tools/webpack-zip">
+            <label>🔍 Explode .js.map URL:
+              <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+            </label>
+            <button type="submit">Explode &amp; Download ZIP</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<!-- Bulk Actions & Pagination -->
-{% if urls %}
-<form method="POST" action="/bulk_action" id="bulk-form">
-  <!-- Bulk Actions Label -->
-  <div style="margin-top:10px; font-weight:bold;">Bulk Actions</div>
-  
-  <!-- Bulk controls -->
-  <div class="bulk-controls">
-    <select id="bulk-action-selector" name="action" onchange="adjustBulkAction();">
-      <option value="add_tag">Add Tag</option>
-      <option value="remove_tag">Remove Tag</option>
-      <option value="delete">Delete</option>
-    </select>
-    <input type="text" name="tag" id="bulk-tag-input" placeholder="Tag" />
 
-    <button type="submit">Apply</button>
+  <!-- Bulk Actions & Pagination -->
+  {% if urls %}
+  <form method="POST" action="/bulk_action" id="bulk-form">
+    <!-- Bulk Actions Label -->
+    <div style="margin-top:10px; font-weight:bold;">Bulk Actions</div>
+    
+    <!-- Bulk controls -->
+    <div class="bulk-controls">
+      <select id="bulk-action-selector" name="action" onchange="adjustBulkAction();">
+        <option value="add_tag">Add Tag</option>
+        <option value="remove_tag">Remove Tag</option>
+        <option value="delete">Delete</option>
+      </select>
+      <input type="text" name="tag" id="bulk-tag-input" placeholder="Tag" />
 
-    <!-- Select all checkboxes -->
-    <label class="select-all-label" style="margin-left:1em;">
-      <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-      Select all visible
-    </label>
-    <label class="select-all-label">
-      <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-      Select all matching
-      <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
-    </label>
-  </div>
-  
-  <!-- Pagination controls -->
+      <button type="submit">Apply</button>
+
+      <!-- Select all checkboxes on this page -->
+      <label class="select-all-label" style="margin-left:1em;">
+        <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+        Select all visible
+      </label>
+      <!-- Select all matching across pages -->
+      <label class="select-all-label">
+        <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+        Select all matching
+        <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
+      </label>
+    </div>
+    
+    <!-- Pagination controls -->
+    <div class="pagination" style="margin-top:1em;">
+      {% if page > 1 %}
+        <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
+        <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+      {% endif %}
+      {% set start = page - 3 if page - 3 >= 1 else 1 %}
+      {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
+      {% for p in range(start, end + 1) %}
+        {% if p == page %}
+          <strong>{{ p }}</strong>
+        {% else %}
+          <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+        <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
+      {% endif %}
+      <!-- Jump to page form -->
+      <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+        <input type="hidden" name="q" value="{{ q }}" />
+        <input type="hidden" name="tag" value="{{ tag }}" />
+        <input type="text" name="page" size="2" placeholder="Page" />
+        <button type="submit">Go</button>
+      </form>
+      <span style="margin-left:1em; color:#888;">Total: {{ total_count }}</span>
+    </div>
+
+    <!-- Data table -->
+    <table class="url-table">
+      <thead>
+        <tr>
+          <th style="width:2em;">
+            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)">
+          </th>
+          <th>URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for url in urls %}
+        <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
+          <td>
+            <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" />
+          </td>
+          <td>{{ url.url }}</td>
+        </tr>
+        
+        <!-- Buttons row: stay fixed -->
+        <tr class="url-row-buttons">
+          <td></td>
+          <td>
+            <div class="url-tools-row" style="white-space: nowrap;">
+              <a href="https://web.archive.org/web/*/{{ url.url }}" target="_blank" title="Wayback">🕰️</a>
+              <a href="https://www.shodan.io/search?query={{ url.url | urlencode }}" target="_blank" title="Shodan">🤖</a>
+              <a href="https://www.virustotal.com/gui/search/{{ url.url | urlencode }}" target="_blank" title="VirusTotal">🦠</a>
+              <a href="https://github.com/search?q={{ url.url | urlencode }}" target="_blank" title="GitHub">🐙</a>
+              <a href="https://www.google.com/search?q=site:{{ url.url | urlencode }}" target="_blank" title="Google">🔍</a>
+              <a href="https://crt.sh/?q={{ url.url | urlencode }}" target="_blank" title="crt.sh">📜</a>
+              {% if ".js.map" in url.url %}
+              <form method="POST" action="/tools/webpack-zip" style="display:inline;">
+                <input type="hidden" name="map_url" value="{{ url.url }}" />
+                <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
+              </form>
+              {% endif %}
+              <button class="copy-btn" type="button" data-url="{{ url.url }}">📋 Copy</button>
+            </div>
+          </td>
+        </tr>
+        <!-- Tags and per-host add-tag -->
+        <tr class="tags-row">
+          <td></td>
+          <td>
+            {% for tag in (url.tags or '').split(',') if tag %}
+            <span class="tag-pill">{{ tag }}
+              <form method="POST" action="/bulk_action" style="display:inline;">
+                <input type="hidden" name="action" value="remove_tag" />
+                <input type="hidden" name="tag" value="{{ tag }}" />
+                <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                <button type="submit" title="Remove tag">&times;</button>
+              </form>
+            </span>
+            {% endfor %}
+            <!-- per-host add-tag form -->
+            <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
+              <input type="hidden" name="action" value="add_tag" />
+              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+              <input type="text" name="tag" placeholder="Tag" size="8" required />
+              <button type="submit" title="Add tag">+</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+
+  <!-- Bottom pagination (same as above) -->
   <div class="pagination" style="margin-top:1em;">
     {% if page > 1 %}
       <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
@@ -114,202 +216,106 @@
       <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
       <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
     {% endif %}
-    <!-- Jump to page form -->
-    <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
-      <input type="hidden" name="q" value="{{ q }}" />
-      <input type="hidden" name="tag" value="{{ tag }}" />
-      <input type="text" name="page" size="2" placeholder="Page" />
-      <button type="submit">Go</button>
-    </form>
-    <span style="margin-left:1em; color:#888;">Total: {{ total_count }}</span>
   </div>
-
-  <!-- Data table -->
-  <table class="url-table">
-    <thead>
-      <tr>
-        <th style="width:2em;">
-          <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)">
-        </th>
-        <th>URL</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for url in urls %}
-      <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
-        <td>
-          <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" />
-        </td>
-        <td>{{ url.url }}</td>
-      </tr>
-      
-      <!-- Buttons row: stay fixed -->
-      <tr class="url-row-buttons">
-        <td></td>
-        <td>
-          <div class="url-tools-row" style="white-space: nowrap;">
-            <a href="https://web.archive.org/web/*/{{ url.url }}" target="_blank" class="btn-wayback" title="Wayback">🕰️</a>
-            <a href="https://www.shodan.io/search?query={{ url.url | urlencode }}" target="_blank" class="shodan-btn" title="Shodan">🤖</a>
-            <a href="https://www.virustotal.com/gui/search/{{ url.url | urlencode }}" target="_blank" class="vt-btn" title="VirusTotal">🦠</a>
-            <a href="https://github.com/search?q={{ url.url | urlencode }}" target="_blank" class="github-btn" title="GitHub">🐙</a>
-            <a href="https://www.google.com/search?q=site:{{ url.url | urlencode }}" target="_blank" class="google-btn" title="Google">🔍</a>
-            <a href="https://crt.sh/?q={{ url.url | urlencode }}" target="_blank" class="crtsh-btn" title="crt.sh">📜</a>
-            {% if ".js.map" in url.url %}
-            <form method="POST" action="/tools/webpack-zip" style="display:inline;">
-              <input type="hidden" name="map_url" value="{{ url.url }}" />
-              <button type="submit" class="explode-btn" title="Explode this .js.map">💥 Explode!</button>
-            </form>
-            {% endif %}
-            <button class="copy-btn" type="button" data-url="{{ url.url }}">📋 Copy</button>
-            <form method="POST" action="/bulk_action" style="display:inline;">
-              <input type="hidden" name="action" value="delete" />
-              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-              <button class="delete-btn" type="submit" title="Delete">🗑️</button>
-            </form>
-          </div>
-        </td>
-      </tr>
-      <!-- Move tags after buttons -->
-      <tr class="tags-row">
-        <td></td>
-        <td>
-          {% for tag in (url.tags or '').split(',') if tag %}
-          <span class="tag-pill">{{ tag }}
-            <form method="POST" action="/bulk_action" style="display:inline;">
-              <input type="hidden" name="action" value="remove_tag" />
-              <input type="hidden" name="tag" value="{{ tag }}" />
-              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-              <button type="submit" title="Remove tag">&times;</button>
-            </form>
-          </span>
-          {% endfor %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</form>
-
-<!-- Bottom pagination -->
-<div class="pagination" style="margin-top:1em;">
-  {% if page > 1 %}
-    <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-    <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+  {% else %}
+    <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
   {% endif %}
-  {% set start = page - 3 if page - 3 >= 1 else 1 %}
-  {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
-  {% for p in range(start, end + 1) %}
-    {% if p == page %}
-      <strong>{{ p }}</strong>
-    {% else %}
-      <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
-    {% endif %}
-  {% endfor %}
-  {% if page < total_pages %}
-    <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-    <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
-  {% endif %}
-</div>
 
-{% else %}
-  <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
-{% endif %}
+  <!-- Footer -->
+  <div class="footer">&copy; 2025 retroRecon - Archive eXplorer</div>
 
-<!-- Footer -->
-<div class="footer">&copy; 2025 retroRecon - Archive eXplorer</div>
-
-<!-- JS scripts -->
-<script>
-  // Dropdown toggle
-  document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    this.parentElement.classList.toggle('show');
-  });
-  document.addEventListener('click', function(e) {
-    var dropdown = document.querySelector('.dropdown');
-    if (dropdown && !dropdown.contains(e.target)) {
-      dropdown.classList.remove('show');
-    }
-  });
-  // Select all visible
-  function toggleSelectAllPage(cb) {
-    document.querySelectorAll('.row-checkbox').forEach(c => c.checked=cb.checked);
-    if (!cb.checked) {
-      document.getElementById('select-all-matching').checked=false;
-      document.getElementById('select-all-matching-input').value="false";
-    }
-  }
-  // Select all matching
-  function toggleSelectAllMatching(cb) {
-    document.getElementById('select-all-matching-input').value=cb.checked ? "true" : "false";
-    if (cb.checked) {
-      document.getElementById('select-all-page').checked=false;
-    }
-  }
-  // Select all checkboxes in page
-  function toggleSelectAllRows(cb) {
-    document.querySelectorAll('.row-checkbox').forEach(c => c.checked=cb.checked);
-  }
-  // Submit bulk form
-  var bulkForm = document.getElementById('bulk-form');
-  if (bulkForm) {
-    bulkForm.addEventListener('submit', function(e){
-      const action=document.getElementById('bulk-action-selector').value;
-      const checked = Array.from(document.querySelectorAll('.row-checkbox:checked'));
-      if (action==='delete') {
-        if(checked.length===0){
-          alert('Please select at least one host to delete.');
-          e.preventDefault();
-          return false;
-        }
-        const ids=checked.map(c=>c.value).join(',');
-        let inp=document.createElement('input');
-        inp.type='hidden';
-        inp.name='selected_ids';
-        inp.value=ids;
-        this.appendChild(inp);
-      } else if (['add_tag','remove_tag'].includes(action)){
-        if(!document.getElementById('bulk-tag-input').value.trim()){
-          alert('Please enter a tag.');
-          e.preventDefault();
-          return false;
-        }
+  <!-- JS scripts -->
+  <script>
+    // Dropdown toggle
+    document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      this.parentElement.classList.toggle('show');
+    });
+    document.addEventListener('click', function(e) {
+      var dropdown = document.querySelector('.dropdown');
+      if (dropdown && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
       }
     });
-  }
-  // Go to page
-  function gotoPage(f) {
-    const p=f.page.value.trim();
-    if(p){
-      const params=new URLSearchParams();
-      if(f.q && f.q.value) params.set('q',f.q.value);
-      if(f.tag && f.tag.value) params.set('tag',f.tag.value);
-      params.set('page',p);
-      window.location='/?'+params.toString();
+
+    // Select all visible on current page
+    function toggleSelectAllPage(cb) {
+      document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
+      // reset matching if page toggle
+      document.getElementById('select-all-matching').checked = false;
+      document.getElementById('select-all-matching-input').value = "false";
     }
-    return false;
-  }
-  // Copy button
-  document.querySelectorAll('.copy-btn').forEach(b => {
-    b.addEventListener('click', async () => {
-      const url=b.getAttribute('data-url');
-      try{
-        await navigator.clipboard.writeText(url);
-        b.textContent='Copied!';
-        setTimeout(()=>{b.textContent='📋 Copy';},1000);
-      }catch{
-        const t=document.createElement('textarea');
-        t.value=url;
-        document.body.appendChild(t);
-        t.focus();
-        t.select();
-        document.execCommand('copy');
-        document.body.removeChild(t);
-        b.textContent='Copied!';
-        setTimeout(()=>{b.textContent='📋 Copy';},1000);
+
+    // Select all matching across pages
+    function toggleSelectAllMatching(cb) {
+      document.getElementById('select-all-matching-input').value = cb.checked ? "true" : "false";
+      // clear page-select when matching is used
+      document.getElementById('select-all-page').checked = false;
+      if (cb.checked) {
+        document.querySelectorAll('.row-checkbox').forEach(c => c.checked = true);
       }
+    }
+
+    // Select all checkboxes in table
+    function toggleSelectAllRows(cb) {
+      document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
+    }
+
+    // Bulk form submit validation
+    var bulkForm = document.getElementById('bulk-form');
+    if (bulkForm) {
+      bulkForm.addEventListener('submit', function(e){
+        const action = document.getElementById('bulk-action-selector').value;
+        if (action === 'delete') {
+          if (document.getElementById('select-all-matching-input').value !== 'true') {
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length === 0) {
+              alert('Please select at least one entry to delete.');
+              e.preventDefault();
+            }
+          }
+        } else if (['add_tag','remove_tag'].includes(action)) {
+          if (!document.getElementById('bulk-tag-input').value.trim()) {
+            alert('Please enter a tag.');
+            e.preventDefault();
+          }
+        }
+      });
+    }
+
+    // Go to page
+    function gotoPage(f) {
+      const p = f.page.value.trim();
+      if(p) {
+        const params = new URLSearchParams();
+        if(f.q && f.q.value) params.set('q', f.q.value);
+        if(f.tag && f.tag.value) params.set('tag', f.tag.value);
+        params.set('page', p);
+        window.location = '/?' + params.toString();
+      }
+      return false;
+    }
+
+    // Copy button
+    document.querySelectorAll('.copy-btn').forEach(b => {
+      b.addEventListener('click', async () => {
+        const url = b.getAttribute('data-url');
+        try {
+          await navigator.clipboard.writeText(url);
+          b.textContent = 'Copied!';
+          setTimeout(() => { b.textContent = '📋 Copy'; }, 1000);
+        } catch {
+          const t = document.createElement('textarea');
+          t.value = url;
+          document.body.appendChild(t);
+          t.select();
+          document.execCommand('copy');
+          document.body.removeChild(t);
+          b.textContent = 'Copied!';
+          setTimeout(() => { b.textContent = '📋 Copy'; }, 1000);
+        }
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
