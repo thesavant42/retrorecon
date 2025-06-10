@@ -99,6 +99,7 @@ Then visit: http://127.0.0.1:5000
 
 
 💡 Attribution
-Wayback Machine API: https://archive.org/help/wayback_api.php
-Webpack Exploder: https://spaceraccoon.github.io/webpack-exploder/
-Inspiration: https://indianajones.fandom.com/wiki/Map_Room
+
+- Wayback Machine API:   https://archive.org/help/wayback_api.php
+- Webpack Exploder:      https://spaceraccoon.github.io/webpack-exploder/
+- Visual Inspiration:    https://indianajones.fandom.com/wiki/Map_Room
