@@ -1,7 +1,9 @@
 /* OpenAI-inspired light theme */
 body {
-  background: #f7f7f8;
-  color: #303030;
+  --bg-color: #f7f7f8;
+  --fg-color: #303030;
+  background: var(--bg-color);
+  color: var(--fg-color);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -14,27 +16,30 @@ a {
 }
 
 .search-bar {
-  background: #ffffff;
-  border: 1px solid #dcdcdc;
+  background: var(--bg-color);
+  border: 1px solid var(--fg-color);
 }
 
 .search-bar input[type="text"] {
-  background: #ffffff;
-  border: 1px solid #cccccc;
+  background: var(--bg-color);
+  border: 1px solid var(--fg-color);
+  color: var(--fg-color);
 }
 
 .search-bar button {
-  background: #10a37f;
+  background: var(--fg-color);
   border: none;
-  color: #ffffff;
+  color: var(--bg-color);
 }
 .search-bar button:hover {
-  background: #0e8c6a;
+  opacity: 0.8;
 }
 
 .url-table th {
-  background: #ebebeb;
+  background: var(--fg-color);
+  color: var(--bg-color);
 }
 .url-table td {
-  background: #ffffff;
+  background: var(--bg-color);
+  color: var(--fg-color);
 }
