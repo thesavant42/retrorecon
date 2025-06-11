@@ -45,6 +45,7 @@
   {% endmacro %}
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <div class="page-grid">
+  <aside class="sidebar">
   <div class="header-bar">
     <!-- Menu Dropdown -->
     <div class="dropdown menu-dropdown">
@@ -114,17 +115,6 @@
     </div>
     <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
   </div>
-  <!-- Import Status Block -->
-  <div id="import-status-block" style="display:none;">
-    <strong>Import status:</strong>
-    <span id="import-status-text"></span>
-    <div id="import-progress-bar-container">
-      <div id="import-progress-bar"></div>
-    </div>
-    <div id="import-progress-numbers" style="margin-top:0.5em;">
-      <span id="import-progress-numbers-span"></span>
-    </div>
-  </div>
   <!-- Control Section -->
   <div class="controls">
     <!-- Search Bar -->
@@ -154,18 +144,19 @@
       </table>
     </div>
   </div>
-  <!-- Import Status Block -->
-  <div id="import-status-block" style="display:none;">
-    <strong>Import status:</strong>
-    <span id="import-status-text"></span>
-    <div id="import-progress-bar-container">
-      <div id="import-progress-bar"></div>
-    </div>
-    <div id="import-progress-numbers" style="margin-top:0.5em;">
-      <span id="import-progress-numbers-span"></span>
-    </div>
   </div>
-  <!-- Control Section removed: search bar now in page grid -->
+  </aside>
+  <main class="results">
+    <div id="import-status-block" style="display:none;">
+      <strong>Import status:</strong>
+      <span id="import-status-text"></span>
+      <div id="import-progress-bar-container">
+        <div id="import-progress-bar"></div>
+      </div>
+      <div id="import-progress-numbers" style="margin-top:0.5em;">
+        <span id="import-progress-numbers-span"></span>
+      </div>
+    </div>
 
   <!-- Bulk Actions & Pagination -->
   {% if urls %}
@@ -263,6 +254,9 @@
     <a href="https://github.com/thesavant42/retrorecon" target="_blank" style="text-decoration:none; color:#888;">
       &copy; 2025 hindsite - Archive Explorer
     </a>
+  </div>
+
+  </main>
   </div>
 
   <!-- JS scripts -->
