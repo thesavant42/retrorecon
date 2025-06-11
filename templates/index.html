@@ -52,20 +52,21 @@
         <div class="dropdown menu-dropdown">
           <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
           <div class="dropdown-content" id="main-dropdown-content">
-            <div>
-              <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
+            <div class="import-controls">
+              <div style="font-weight:bold;">Import Options</div>
+              <form class="import-row" method="POST" action="/fetch_cdx">
                 <label>⏳ Import from CDX API:
-                  <input type="text" name="domain" placeholder="example.com" required style="width:120px;" />
+                  <input type="text" name="domain" placeholder="example.com" required />
                 </label>
                 <button type="submit">Fetch</button>
               </form>
-              <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
+              <form class="import-row" method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
                 <label>📄 Import from JSON:
                   <input type="file" name="json_file" required />
                 </label>
                 <button type="submit">Import</button>
               </form>
-              <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
+              <form class="import-row" method="POST" action="/load_db" enctype="multipart/form-data">
                 <label>📂 SQLite DB:
                   <input type="file" name="db_file" required />
                 </label>
@@ -96,14 +97,16 @@
                 <button type="submit" form="bulk-form" name="action" value="remove_tag" class="bulk-action-btn">➖🏷️ Remove Tag Selected</button>
                 <button type="submit" form="bulk-form" name="action" value="delete" class="bulk-action-btn">✂🗑️ Delete Selected</button>
                 <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
-                <label class="select-all-label" style="margin-left:1em;">
-                  <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-                  Select all visible
-                </label>
-                <label class="select-all-label">
-                  <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-                  Select all matching
-                </label>
+                <div class="checkbox-row">
+                  <label class="select-all-label" style="margin-left:1em;">
+                    <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+                    Select all visible
+                  </label>
+                  <label class="select-all-label">
+                    <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+                    Select all matching
+                  </label>
+                </div>
               </div>
           </div>
         </div>
