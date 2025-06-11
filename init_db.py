@@ -15,7 +15,7 @@ c.execute("""
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         url TEXT UNIQUE NOT NULL,
         domain TEXT,
-        timestamp TEXT,
+        timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
         status_code INTEGER,
         mime_type TEXT,
         tags TEXT DEFAULT ''

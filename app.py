@@ -55,7 +55,7 @@ def init_db():
         id   INTEGER PRIMARY KEY AUTOINCREMENT,
         url  TEXT UNIQUE NOT NULL,
         domain TEXT,
-        timestamp TEXT,
+        timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
         status_code INTEGER,
         mime_type TEXT,
         tags TEXT
@@ -95,8 +95,20 @@ def create_new_db():
     init_db()
     load_demo_data()
 
+def ensure_schema():
+    conn = sqlite3.connect(app.config['DATABASE'])
+    c = conn.cursor()
+    c.execute("PRAGMA table_info('urls')")
+    cols = [row[1] for row in c.fetchall()]
+    if 'timestamp' not in cols:
+        c.execute("ALTER TABLE urls ADD COLUMN timestamp TEXT")
+    conn.commit()
+    conn.close()
+
 if not os.path.exists(app.config['DATABASE']):
     create_new_db()
+else:
+    ensure_schema()
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -156,7 +168,7 @@ def index():
 
     offset = (page - 1) * ITEMS_PER_PAGE
     select_sql = f"""
-        SELECT id, url, timestamp, status_code, mime_type, tags
+        SELECT id, url, IFNULL(timestamp, '') AS timestamp, status_code, mime_type, tags
         FROM urls
         {where_sql}
         ORDER BY id DESC
