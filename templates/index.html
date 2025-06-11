@@ -132,7 +132,7 @@
       <thead>
         <tr>
           <th style="width:2em;">
-            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)">
+            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
           </th>
           <th>URL</th>
         </tr>
@@ -141,7 +141,7 @@
         {% for url in urls %}
         <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
           <td>
-            <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" />
+            <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
           </td>
           <td>{{ url.url }}</td>
         </tr>
