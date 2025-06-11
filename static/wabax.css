@@ -505,3 +505,5 @@ a:hover {
 }
 
 /* --- End of update --- */
+body.bg-hidden { background-image: none !important; }
+
