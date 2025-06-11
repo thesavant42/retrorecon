@@ -169,10 +169,21 @@ a:hover {
 
 /* Fixed menu placement */
 .menu-dropdown {
-  position: fixed;
-  top: 1em;
-  left: 1em;
-  z-index: 1000;
+  position: relative;
+}
+
+/* Header bar layout */
+.header-bar {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 1em;
+}
+
+.header-bar h1 {
+  margin: 0;
+  font-size: 1.8em;
+  text-align: left;
 }
 
 /* Bulk controls section with flex layout */
