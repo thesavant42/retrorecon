@@ -373,6 +373,14 @@ a:hover {
   gap: 0.36em;
   align-items: center;
 }
+.url-tools-row input[type="text"] {
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+}
 /* Tag pills styling */
 .tag-pill {
   display: inline-block;
@@ -440,6 +448,26 @@ a:hover {
   opacity: 0.6;
 }
 
+/* Glowing style for all buttons */
+button {
+  background: var(--fg-color);
+  border: 1px solid var(--fg-color);
+  color: var(--bg-color);
+  border-radius: 7px;
+  padding: 2px 11px;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.3s, opacity 0.2s;
+}
+button:hover {
+  box-shadow: 0 0 6px var(--fg-color);
+  opacity: 0.9;
+}
+button:active {
+  box-shadow: 0 0 10px var(--fg-color);
+  opacity: 0.8;
+}
+
 /* Pagination styling */
 .pagination {
   margin: 1em 0;
@@ -468,6 +496,13 @@ a:hover {
   font-size: 0.9em;
   padding: 1px 4px;
   text-align: center;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+}
+.pagination button {
+  margin-left: 0.2em;
 }
 
 /* Style for the total results count */
@@ -489,6 +524,10 @@ a:hover {
 /* Misc: checkboxes for row selection */
 .row-checkbox {
   margin-right: 4px;
+}
+input[type="checkbox"] {
+  accent-color: var(--fg-color);
+  cursor: pointer;
 }
 
 /* Optional: Add hover effect to entire rows for better UX */
