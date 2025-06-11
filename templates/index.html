@@ -131,6 +131,9 @@
       <div class="history-title">Search history</div>
       <div id="search-history" class="search-history"></div>
     </div>
+  </div>
+  </aside>
+  <main class="results">
     <div class="search-history">
       <table class="history-table">
         <thead><tr><th>Search History</th></tr></thead>
@@ -143,20 +146,20 @@
         </tbody>
       </table>
     </div>
-  </div>
-  </div>
-  </aside>
-  <main class="results">
-    <div id="import-status-block" style="display:none;">
-      <strong>Import status:</strong>
-      <span id="import-status-text"></span>
-      <div id="import-progress-bar-container">
-        <div id="import-progress-bar"></div>
-      </div>
-      <div id="import-progress-numbers" style="margin-top:0.5em;">
-        <span id="import-progress-numbers-span"></span>
-      </div>
+</main>
+</div>
+
+<div class="results-grid">
+  <div id="import-status-block" style="display:none;">
+    <strong>Import status:</strong>
+    <span id="import-status-text"></span>
+    <div id="import-progress-bar-container">
+      <div id="import-progress-bar"></div>
     </div>
+    <div id="import-progress-numbers" style="margin-top:0.5em;">
+      <span id="import-progress-numbers-span"></span>
+    </div>
+  </div>
 
   <!-- Bulk Actions & Pagination -->
   {% if urls %}
@@ -164,7 +167,7 @@
     <input type="hidden" name="q" value="{{ q }}" />
     <input type="hidden" name="tag" value="{{ tag }}" />
     <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
-    
+
     {{ render_pagination(page, total_pages, q, tag, total_count) }}
 
     <!-- Data table -->
@@ -235,7 +238,7 @@
               </form>
             </div>
 
-            
+
           </td>
         </tr>
         {% endfor %}
@@ -256,8 +259,7 @@
     </a>
   </div>
 
-  </main>
-  </div>
+</div>
 
   <!-- JS scripts -->
   <script>
