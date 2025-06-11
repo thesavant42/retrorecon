@@ -84,7 +84,7 @@ index.html displays:
 Import + fetch CDX forms
 Search/filter inputs
 Select all visible checks all results on the page
-Clear button unchecks all buttons and empties searh and tab boxes
+Clear button unchecks all buttons and empties search and tag boxes
 Pagination both top and bottom
 
 
@@ -92,7 +92,7 @@ Pagination both top and bottom
 
 ```bash
 pip install flask
-pythin init_db.py
+python init_db.py
 python app.py
 ```
 Then visit: http://127.0.0.1:5000
