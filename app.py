@@ -51,7 +51,7 @@ def init_db():
     schema = """
     CREATE TABLE IF NOT EXISTS urls (
         id   INTEGER PRIMARY KEY AUTOINCREMENT,
-        url  TEXT NOT NULL,
+        url  TEXT UNIQUE NOT NULL,
         tags TEXT
     );
     """
