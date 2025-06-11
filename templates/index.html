@@ -121,7 +121,10 @@
               <form method="POST" action="/set_theme" class="theme-row" style="margin-bottom:4px; display:inline-block;">
                 <select name="theme">
                   {% for t in themes %}
-                  <option value="{{ t }}" {% if t == current_theme %}selected{% endif %}>{{ t.replace('theme-','').replace('.css','') }}</option>
+                  {% set cols = theme_swatches.get(t) %}
+                  <option value="{{ t }}" style="background: {{ cols[0] }}; color: {{ cols[1] }};" {% if t == current_theme %}selected{% endif %}>
+                    {{ t.replace('theme-','').replace('.css','') }}
+                  </option>
                   {% endfor %}
                 </select>
                 <button type="submit">Apply</button>
@@ -447,9 +450,10 @@
       });
     }
 
-    // Apply solid background and alignments on the URL results table
+    // Apply theme colors on the URL results table
     document.querySelectorAll('.url-table tr').forEach(tr => {
-      tr.style.backgroundColor = '#ffffff';
+      tr.style.backgroundColor = 'var(--bg-color)';
+      tr.style.color = 'var(--fg-color)';
     });
     document.querySelectorAll('.url-table tbody tr').forEach(tr => {
       const cells = tr.querySelectorAll('td');

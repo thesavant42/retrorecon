@@ -22,6 +22,24 @@ if os.path.isdir(THEMES_DIR):
 else:
     AVAILABLE_THEMES = []
 
+def _parse_theme_colors(filename):
+    bg = '#000000'
+    fg = '#ffffff'
+    try:
+        with open(os.path.join(THEMES_DIR, filename)) as fh:
+            for line in fh:
+                if '--bg-color' in line:
+                    bg = line.split(':')[1].strip().rstrip(';')
+                elif '--fg-color' in line:
+                    fg = line.split(':')[1].strip().rstrip(';')
+                if 'font-family' in line:
+                    break
+    except OSError:
+        pass
+    return bg, fg
+
+THEME_SWATCHES = {t: _parse_theme_colors(t) for t in AVAILABLE_THEMES}
+
 BACKGROUNDS_DIR = os.path.join(app.root_path, 'static', 'img')
 if os.path.isdir(BACKGROUNDS_DIR):
     AVAILABLE_BACKGROUNDS = sorted([
@@ -203,6 +221,7 @@ def index():
         q=q,
         tag=tag_filter,
         themes=AVAILABLE_THEMES,
+        theme_swatches=THEME_SWATCHES,
         current_theme=current_theme,
         backgrounds=AVAILABLE_BACKGROUNDS,
         current_background=current_background,

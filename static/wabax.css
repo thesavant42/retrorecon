@@ -45,13 +45,14 @@ a:hover {
 .search-bar {
   min-width: 270px;
   padding: 0.7em;
-  background: #f8f8e0;
+  background: var(--bg-color);
   border-radius: 8px;
   box-shadow: 0 1px 6px #eaeab0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5em;
+  color: var(--fg-color);
 }
 
 /* Layout for form inside search bar */
@@ -81,8 +82,9 @@ a:hover {
   font-size: 1.2em;
   padding: 6px 10px;
   border-radius: 5px;
-  border: 1px solid #e7e7c0;
-  background: #fffbe4;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
   flex: 2;
   min-width: 0;
 }
@@ -92,14 +94,14 @@ a:hover {
   font-size: 1.1em;
   padding: 6px 12px;
   border-radius: 5px;
-  border: 1px solid #e7e7c0;
-  background: #f8d970;
-  color: #443300;
+  border: 1px solid var(--fg-color);
+  background: var(--fg-color);
+  color: var(--bg-color);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
 }
 .search-bar button:hover {
-  background: #ffed93;
+  opacity: 0.8;
 }
 
 #quick-searches {
@@ -155,30 +157,31 @@ a:hover {
   min-width: 225px;
 }
 .dropbtn {
-  background-color: #f8d970;
-  color: #443300;
+  background-color: var(--fg-color);
+  color: var(--bg-color);
   padding: 8px 16px;
   font-size: 1.4em;
-  border: 1px solid #e7e7c0;
+  border: 1px solid var(--fg-color);
   border-radius: 7px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
 }
 .dropbtn:hover,
 .dropbtn:focus {
-  background-color: #fffbe4;
+  opacity: 0.8;
 }
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #fffbe4;
+  background-color: var(--bg-color);
   min-width: 220px;
-  box-shadow: 0px 8px 20px #dac737;
+  box-shadow: 0px 8px 20px #00000033;
   z-index: 1;
   padding: 11px 17px;
   border-radius: 9px;
-  border: 1px solid #e7e7c0;
+  border: 1px solid var(--fg-color);
   margin-top: 8px;
+  color: var(--fg-color);
 }
 .dropdown.show .dropdown-content {
   display: block;
@@ -315,7 +318,7 @@ a:hover {
 .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--bg-color);
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px #f3f3b3;
   font-family: "Segoe UI", "Arial", sans-serif;
@@ -323,7 +326,8 @@ a:hover {
 
 /* Table header style */
 .url-table thead {
-  background: #f3f3b3;
+  background: var(--fg-color);
+  color: var(--bg-color);
 }
 .url-table th {
   font-weight: bold;
@@ -336,11 +340,11 @@ a:hover {
 /* Alternating row backgrounds for readability */
 .url-row-main:nth-child(4n),
 .url-row-buttons:nth-child(4n + 1) {
-  background: #f8f8ff;
+  background: var(--bg-color);
 }
 .url-row-main:nth-child(4n + 2),
 .url-row-buttons:nth-child(4n + 3) {
-  background: #f4f4e0;
+  background: var(--bg-color);
 }
 
 /* Main row: cursor pointer for entire row */
@@ -353,7 +357,7 @@ a:hover {
 }
 .url-row-buttons td {
   padding: 0.43em 0.7em;
-  border-bottom: 1px solid #e7e7c0;
+  border-bottom: 1px solid var(--fg-color);
 }
 .url-row-main input[type="checkbox"] {
   cursor: pointer;
@@ -370,12 +374,13 @@ a:hover {
 .tag-pill {
   display: inline-block;
   padding: 2px 8px;
-  background: #f3f3b3;
+  background: var(--fg-color);
   border-radius: 10px;
-  border: 1px solid #e0c600;
+  border: 1px solid var(--fg-color);
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
+  color: var(--bg-color);
 }
 .tag-pill form {
   display: inline;
@@ -383,14 +388,14 @@ a:hover {
 .tag-pill button {
   background: none;
   border: none;
-  color: #c80;
+  color: inherit;
   font-size: 1em;
   margin-left: 2px;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: opacity 0.2s;
 }
 .tag-pill button:hover {
-  color: #a00;
+  opacity: 0.8;
 }
 
 /* Buttons in row actions */
@@ -403,17 +408,17 @@ a:hover {
 .github-btn,
 .google-btn,
 .crtsh-btn {
-  background: #fffbe4;
-  border: 1px solid #e7e7c0;
+  background: var(--fg-color);
+  border: 1px solid var(--fg-color);
   border-radius: 7px;
-  color: #222;
+  color: var(--bg-color);
   font-size: 1em;
   line-height: 1.15em;
   padding: 2px 11px;
   margin-left: 0.1em;
   margin-right: 0.1em;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: opacity 0.2s;
 }
 .copy-btn:hover,
 .delete-btn:hover,
@@ -424,14 +429,12 @@ a:hover {
 .github-btn:hover,
 .google-btn:hover,
 .crtsh-btn:hover {
-  background: #fff1a3;
-  border-color: #dac737;
-  color: #222;
+  opacity: 0.8;
 }
 .copy-btn:active,
 .delete-btn:active,
 .explode-btn:active {
-  background: #ffe270;
+  opacity: 0.6;
 }
 
 /* Pagination styling */
@@ -501,7 +504,8 @@ a:hover {
 #layout-a td,
 #layout-c td,
 #layout-d td {
-  background: #fffbe4;
+  background: var(--bg-color);
+  color: var(--fg-color);
 }
 
 /* --- End of update --- */

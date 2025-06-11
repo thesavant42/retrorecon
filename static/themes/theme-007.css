@@ -1,6 +1,8 @@
 body {
-  background: #0d011e;
-  color: #62b9e5;
+  --bg-color: #0d011e;
+  --fg-color: #62b9e5;
+  background: var(--bg-color);
+  color: var(--fg-color);
   font-family: system-ui, sans-serif;
 }
 body.bg-hidden { background-image: none !important; }
