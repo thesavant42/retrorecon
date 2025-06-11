@@ -2,6 +2,9 @@ CREATE TABLE IF NOT EXISTS urls (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     url TEXT UNIQUE NOT NULL,
     domain TEXT,
+    timestamp TEXT,
+    status_code INTEGER,
+    mime_type TEXT,
     tags TEXT DEFAULT ''
 );
 
