@@ -6,9 +6,6 @@
   <link rel="stylesheet" href="/static/wabax.css" />
 </head>
 <body>
-  <!-- DEBUG: show how many URLs we're getting -->
-<p style="color: red; margin: 1em;">DEBUG: Loaded {{ urls|length }} URLs</p>
-
   <h1>retroRecon: <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
   <!-- Import Status Block -->
   <div id="import-status-block" style="display:none;">
@@ -153,20 +150,22 @@
           <td></td>
           <td>
             <div class="url-tools-row" style="white-space: nowrap;">
-              <a href="https://web.archive.org/web/*/{{ url.url }}" target="_blank" title="Wayback">🕰️</a>
-              <a href="https://www.shodan.io/search?query={{ url.url | urlencode }}" target="_blank" title="Shodan">🤖</a>
-              <a href="https://www.virustotal.com/gui/search/{{ url.url | urlencode }}" target="_blank" title="VirusTotal">🦠</a>
-              <a href="https://github.com/search?q={{ url.url | urlencode }}" target="_blank" title="GitHub">🐙</a>
-              <a href="https://www.google.com/search?q=site:{{ url.url | urlencode }}" target="_blank" title="Google">🔍</a>
-              <a href="https://crt.sh/?q={{ url.url | urlencode }}" target="_blank" title="crt.sh">📜</a>
+              <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
+              <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
+              <button class="explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
+              <button class="explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
+              <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
+              <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
               {% if ".js.map" in url.url %}
               <form method="POST" action="/tools/webpack-zip" style="display:inline;">
                 <input type="hidden" name="map_url" value="{{ url.url }}" />
                 <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
               </form>
               {% endif %}
-              <button class="copy-btn" type="button" data-url="{{ url.url }}">📋 Copy</button>
+              <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
             </div>
+
+            
           </td>
         </tr>
         <!-- Tags and per-host add-tag -->
@@ -226,6 +225,16 @@
 
   <!-- JS scripts -->
   <script>
+    function adjustBulkAction(){
+      const action = document.getElementById('bulk-action-selector').value;
+      const tagInput = document.getElementById('bulk-tag-input');
+      if(action === 'add_tag' || action === 'remove_tag'){
+        tagInput.style.display = 'inline-block';
+      } else {
+        tagInput.style.display = 'none';
+      }
+    }
+
     // Dropdown toggle
     document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
       e.preventDefault();
