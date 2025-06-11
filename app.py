@@ -50,20 +50,25 @@ def clear_import_progress():
             os.remove(IMPORT_PROGRESS_FILE)
 
 def init_db():
-    schema = """
-    CREATE TABLE IF NOT EXISTS urls (
-        id   INTEGER PRIMARY KEY AUTOINCREMENT,
-        url  TEXT UNIQUE NOT NULL,
-        domain TEXT,
-        timestamp TEXT,
-        status_code INTEGER,
-        mime_type TEXT,
-        tags TEXT
-    );
-    """
+    """Initialize the database using the schema.sql file."""
+    schema_path = os.path.join(app.root_path, "schema.sql")
+    if not os.path.exists(schema_path):
+        raise FileNotFoundError("schema.sql not found")
+    with open(schema_path, "r", encoding="utf-8") as f:
+        sql = f.read()
+
     conn = sqlite3.connect(app.config['DATABASE'])
-    conn.executescript(schema)
+    for statement in sql.split(';'):
+        stmt = statement.strip()
+        if stmt.upper().startswith("CREATE TABLE IF NOT EXISTS"):
+            conn.execute(stmt)
+    conn.commit()
     conn.close()
+
+def ensure_schema():
+    """Apply schema.sql to an existing database if tables are missing."""
+    if os.path.exists(app.config['DATABASE']):
+        init_db()
 
 def load_demo_data():
     if not os.path.exists(DEMO_DATA_FILE):
@@ -97,6 +102,8 @@ def create_new_db():
 
 if not os.path.exists(app.config['DATABASE']):
     create_new_db()
+else:
+    ensure_schema()
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -504,6 +511,7 @@ def load_db_route():
     close_connection(None)
     try:
         file.save(app.config['DATABASE'])
+        ensure_schema()
         flash("Database loaded.", "success")
     except Exception as e:
         flash(f"Error loading database: {e}", "error")
@@ -527,4 +535,6 @@ def save_db():
 if __name__ == '__main__':
     if not os.path.exists(app.config['DATABASE']):
         create_new_db()
+    else:
+        ensure_schema()
     app.run(debug=True)
