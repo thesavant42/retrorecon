@@ -250,12 +250,12 @@ a:hover {
 /* Bulk controls section with flex layout */
 .bulk-controls {
   display: flex;
-  align-items: center;
-  gap: 0.7em;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5em;
   margin-bottom: 0.5em;
 }
-/* Tag input and select styling */
-.bulk-controls select,
+/* Tag input */
 .bulk-controls input[type="text"] {
   font-size: 0.98em;
   padding: 2px 8px;

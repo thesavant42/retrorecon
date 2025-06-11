@@ -54,29 +54,31 @@
           <div class="dropdown-content" id="main-dropdown-content">
             <div>
               <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
-                <label>🌐 Domain:
-                  <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
+                <label>⏳ Import from CDX API:
+                  <input type="text" name="domain" placeholder="example.com" required style="width:120px;" />
                 </label>
                 <button type="submit">Fetch</button>
               </form>
               <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-                <label>📄 NDJSON:
+                <label>📄 Import from JSON:
                   <input type="file" name="json_file" required />
                 </label>
                 <button type="submit">Import</button>
               </form>
               <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
-                <label>📂 Load DB:
+                <label>📂 SQLite DB:
                   <input type="file" name="db_file" required />
                 </label>
-                <button type="submit">Load</button>
+                <button type="submit">Import</button>
               </form>
-              <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
-                <button type="submit">💾 Save As</button>
-              </form>
-              <form method="POST" action="/new_db" style="margin-top:8px;">
-                <button type="submit">🆕 New DB</button>
-              </form>
+              <div style="margin-top:8px;">
+                <form method="GET" action="/save_db" id="save-db-form" style="display:inline;">
+                  <button type="submit">💾 Save As</button>
+                </form>
+                <form method="POST" action="/new_db" style="display:inline; margin-left:4px;">
+                  <button type="submit">🆕 New DB</button>
+                </form>
+              </div>
             </div>
             <hr style="margin:8px 0;">
             <div>
@@ -88,24 +90,21 @@
               </form>
             </div>
             <hr style="margin:8px 0;">
-            <div style="font-weight:bold;">Bulk Actions</div>
-            <div class="bulk-controls">
-              <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
-                <option value="add_tag">➕🏷️ Add Tag Selected</option>
-                <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
-                <option value="delete">✂🗑️ Delete Selected</option>
-              </select>
-              <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
-              <button type="submit" form="bulk-form">Apply</button>
-              <label class="select-all-label" style="margin-left:1em;">
-                <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-                Select all visible
-              </label>
-              <label class="select-all-label">
-                <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-                Select all matching
-              </label>
-            </div>
+              <div style="font-weight:bold;">Bulk Actions</div>
+              <div class="bulk-controls">
+                <button type="submit" form="bulk-form" name="action" value="add_tag" class="bulk-action-btn">➕🏷️ Add Tag All Selected</button>
+                <button type="submit" form="bulk-form" name="action" value="remove_tag" class="bulk-action-btn">➖🏷️ Remove Tag Selected</button>
+                <button type="submit" form="bulk-form" name="action" value="delete" class="bulk-action-btn">✂🗑️ Delete Selected</button>
+                <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
+                <label class="select-all-label" style="margin-left:1em;">
+                  <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+                  Select all visible
+                </label>
+                <label class="select-all-label">
+                  <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+                  Select all matching
+                </label>
+              </div>
           </div>
         </div>
       </td>
@@ -259,15 +258,6 @@
   </table>
 
   <script>
-    function adjustBulkAction(){
-      const action = document.getElementById('bulk-action-selector').value;
-      const tagInput = document.getElementById('bulk-tag-input');
-      if(action === 'add_tag' || action === 'remove_tag'){
-        tagInput.style.display = 'inline-block';
-      } else {
-        tagInput.style.display = 'none';
-      }
-    }
 
     document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
       e.preventDefault();
@@ -301,7 +291,7 @@
     var bulkForm = document.getElementById('bulk-form');
     if (bulkForm) {
       bulkForm.addEventListener('submit', function(e){
-        const action = document.getElementById('bulk-action-selector').value;
+        const action = e.submitter ? e.submitter.value : '';
         if (action === 'delete') {
           if (document.getElementById('select-all-matching-input').value !== 'true') {
             const checked = document.querySelectorAll('.row-checkbox:checked');
