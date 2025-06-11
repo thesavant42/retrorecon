@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>retroRecon: </title>
+  <title>hindsite </title>
   <link rel="stylesheet" href="/static/wabax.css" />
 </head>
 <body>
-  <h1>retroRecon: <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
+  <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
   <!-- Import Status Block -->
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <div id="import-status-block" style="display:none;">
     <strong>Import status:</strong>
     <span id="import-status-text"></span>
@@ -76,9 +77,9 @@
     <!-- Bulk controls -->
     <div class="bulk-controls">
       <select id="bulk-action-selector" name="action" onchange="adjustBulkAction();">
-        <option value="add_tag">Add Tag</option>
-        <option value="remove_tag">Remove Tag</option>
-        <option value="delete">Delete</option>
+        <option value="add_tag">➕🏷️ Add Tag Selected</option>
+        <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
+        <option value="delete">✂🗑️ Delete Selected</option>
       </select>
       <input type="text" name="tag" id="bulk-tag-input" placeholder="Tag" />
 
@@ -221,7 +222,7 @@
   {% endif %}
 
   <!-- Footer -->
-  <div class="footer">&copy; 2025 retroRecon - Archive eXplorer</div>
+  <div class="footer">&copy; 2025 hindsite - Archive Explorer</div>
 
   <!-- JS scripts -->
   <script>
