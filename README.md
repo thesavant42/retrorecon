@@ -68,12 +68,8 @@ Bulk Select - "Select all matching"
   - and delete tag(s)
 
 ✏️ TODO 
-Add sorting (by file or host)
 Tag pills and bulk operations
 Export filtered results
-Still needs bulk edit, bulk tag, project import/export.
-Integrate more CDX metadata (status codes, lengths): https://github.com/internetarchive/wayback/blob/master/wayback-cdx-server/README.md
-
 
 
 ✅ Known Good State
