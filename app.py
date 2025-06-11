@@ -290,7 +290,6 @@ def bulk_action():
     selected_ids = request.form.getlist('selected_ids')
     select_all_matching = (request.form.get('select_all_matching', 'false').lower() == 'true')
 
-    # If “select all matching” is checked, override selected_ids with every matching ID
     if select_all_matching:
         q = request.form.get('q', '').strip()
         tag_filter = request.form.get('tag', '').strip()
@@ -303,7 +302,9 @@ def bulk_action():
         if tag_filter:
             where_clauses.append("tags LIKE ?")
             params.append(f"%{tag_filter}%")
-        where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+        where_sql = ""
+        if where_clauses:
+            where_sql = "WHERE " + " AND ".join(where_clauses)
 
         rows = query_db(f"SELECT id FROM urls {where_sql}", params)
         selected_ids = [str(r['id']) for r in rows]
@@ -347,35 +348,16 @@ def bulk_action():
         flash(f"Removed tag '{tag}' from {count} entries.", "success")
 
     elif action == 'delete':
-        if select_all_matching:
-            # Bulk delete all matching rows in one SQL statement
-            q = request.form.get('q', '').strip()
-            tag_filter = request.form.get('tag', '').strip()
-
-            where_clauses = []
-            params = []
-            if q:
-                where_clauses.append("url LIKE ?")
-                params.append(f"%{q}%")
-            if tag_filter:
-                where_clauses.append("tags LIKE ?")
-                params.append(f"%{tag_filter}%")
-            where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
-
-            execute_db(f"DELETE FROM urls {where_sql}", params)
-            flash("Deleted all entries matching your filters.", "success")
-        else:
-            count = 0
-            for sid in selected_ids:
-                execute_db("DELETE FROM urls WHERE id = ?", [sid])
-                count += 1
-            flash(f"Deleted {count} entries.", "success")
+        count = 0
+        for sid in selected_ids:
+            execute_db("DELETE FROM urls WHERE id = ?", [sid])
+            count += 1
+        flash(f"Deleted {count} entries.", "success")
 
     else:
         flash(f"Unknown bulk action: {action}", "error")
 
     return redirect(url_for('index'))
-
 
 @app.route('/set_theme', methods=['POST'])
 def set_theme():
