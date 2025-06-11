@@ -61,7 +61,7 @@
             <button type="submit">Load</button>
           </form>
           <!-- Save DB -->
-          <form method="GET" action="/save_db" style="margin-top:8px;">
+          <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
             <button type="submit">💾 Save As</button>
           </form>
           <!-- New DB -->
@@ -351,6 +351,45 @@
         }
       });
     });
+
+    // Poll import progress and refresh when done
+    function pollImport() {
+      fetch('/import_progress')
+        .then(r => r.json())
+        .then(data => {
+          if (data.status && data.status !== 'idle') {
+            document.getElementById('import-status-block').style.display = 'block';
+            document.getElementById('import-status-text').textContent = data.detail || data.status;
+            if (data.total) {
+              const pct = Math.floor(data.progress / data.total * 100);
+              document.getElementById('import-progress-bar').style.width = pct + '%';
+              document.getElementById('import-progress-numbers-span').textContent = data.progress + '/' + data.total;
+            }
+            if (['done', 'failed'].includes(data.status)) {
+              setTimeout(() => { window.location.reload(); }, 1000);
+              return;
+            }
+          }
+          setTimeout(pollImport, 2000);
+        })
+        .catch(() => setTimeout(pollImport, 5000));
+    }
+    pollImport();
+
+    // Prompt for DB name on save
+    const saveForm = document.getElementById('save-db-form');
+    if (saveForm) {
+      saveForm.addEventListener('submit', function(e) {
+        if (!/name=/.test(this.action)) {
+          e.preventDefault();
+          const nm = prompt('Enter database name:', 'wabax');
+          if (nm) {
+            const enc = encodeURIComponent(nm.trim());
+            window.location = '/save_db?name=' + enc;
+          }
+        }
+      });
+    }
   </script>
 </body>
 </html>
