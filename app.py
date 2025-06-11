@@ -163,6 +163,8 @@ def index():
     """
     rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
 
+    db_name = os.path.basename(app.config['DATABASE'])
+
     current_theme = session.get('theme', AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
 
     return render_template(
@@ -174,7 +176,8 @@ def index():
         tag=tag_filter,
         themes=AVAILABLE_THEMES,
         current_theme=current_theme,
-        total_count=total_count
+        total_count=total_count,
+        db_name=db_name
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
