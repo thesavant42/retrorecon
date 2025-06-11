@@ -7,6 +7,11 @@
   {% if current_theme %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
+  {% if current_background %}
+  <style>
+    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
+  </style>
+  {% endif %}
 </head>
 <body>
   {% macro render_pagination(page, total_pages, q, tag, total_count) %}
@@ -113,7 +118,7 @@
               </div>
               <hr style="margin:8px 0;">
               <div style="font-weight:bold;">Themes</div>
-              <form method="POST" action="/set_theme" class="theme-row" style="margin-bottom:4px;">
+              <form method="POST" action="/set_theme" class="theme-row" style="margin-bottom:4px; display:inline-block;">
                 <select name="theme">
                   {% for t in themes %}
                   <option value="{{ t }}" {% if t == current_theme %}selected{% endif %}>{{ t.replace('theme-','').replace('.css','') }}</option>
@@ -121,6 +126,11 @@
                 </select>
                 <button type="submit">Apply</button>
               </form>
+              <select id="background-select" style="margin-left:4px;">
+                {% for bg in backgrounds %}
+                <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
+                {% endfor %}
+              </select>
               <label style="display:block;">
                 <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)">
                 Show background image
@@ -459,6 +469,19 @@
       } else {
         document.body.classList.add('bg-hidden');
       }
+    }
+
+    const bgSelect = document.getElementById('background-select');
+    if(bgSelect){
+      bgSelect.addEventListener('change', function(){
+        const bg = this.value;
+        document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
+        fetch('/set_background', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'background=' + encodeURIComponent(bg)
+        });
+      });
     }
   </script>
 </body>
