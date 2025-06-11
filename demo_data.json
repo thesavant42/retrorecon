@@ -1,0 +1,5 @@
+[
+  {"url": "https://example.com", "tags": "demo"},
+  {"url": "https://example.org/about", "tags": "demo"},
+  {"url": "https://test.com/home", "tags": ""}
+]

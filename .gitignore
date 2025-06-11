@@ -2,4 +2,5 @@
 *.zip
 *.sqlite
 *.json
+!demo_data.json
 uploads/

@@ -53,6 +53,21 @@
             </label>
             <button type="submit">Import</button>
           </form>
+          <!-- Load DB -->
+          <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
+            <label>📂 Load DB:
+              <input type="file" name="db_file" required />
+            </label>
+            <button type="submit">Load</button>
+          </form>
+          <!-- Save DB -->
+          <form method="GET" action="/save_db" style="margin-top:8px;">
+            <button type="submit">💾 Save As</button>
+          </form>
+          <!-- New DB -->
+          <form method="POST" action="/new_db" style="margin-top:8px;">
+            <button type="submit">🆕 New DB</button>
+          </form>
         </div>
         <hr style="margin:8px 0;">
         <!-- Explode JS Map -->

@@ -23,6 +23,7 @@ else:
 
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
+DEMO_DATA_FILE = os.path.join(app.root_path, 'demo_data.json')
 
 def set_import_progress(status, message='', current=0, total=0):
     with IMPORT_LOCK:
@@ -59,8 +60,38 @@ def init_db():
     conn.executescript(schema)
     conn.close()
 
-if not os.path.exists(app.config['DATABASE']):
+def load_demo_data():
+    if not os.path.exists(DEMO_DATA_FILE):
+        return
+    try:
+        with open(DEMO_DATA_FILE, 'r') as f:
+            data = json.load(f)
+    except Exception:
+        return
+    db = sqlite3.connect(app.config['DATABASE'])
+    for rec in data:
+        if isinstance(rec, dict):
+            url = rec.get('url', '').strip()
+            tags = rec.get('tags', '').strip()
+        else:
+            url = str(rec).strip()
+            tags = ''
+        if url:
+            db.execute(
+                "INSERT OR IGNORE INTO urls (url, tags) VALUES (?, ?)",
+                (url, tags),
+            )
+    db.commit()
+    db.close()
+
+def create_new_db():
+    if os.path.exists(app.config['DATABASE']):
+        os.remove(app.config['DATABASE'])
     init_db()
+    load_demo_data()
+
+if not os.path.exists(app.config['DATABASE']):
+    create_new_db()
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -426,7 +457,36 @@ def webpack_zip():
         flash(f"Unexpected server error: {e}", "error")
         return redirect(url_for('index'))
 
+@app.route('/new_db', methods=['POST'])
+def new_db():
+    close_connection(None)
+    create_new_db()
+    flash("New demo database created.", "success")
+    return redirect(url_for('index'))
+
+@app.route('/load_db', methods=['POST'])
+def load_db_route():
+    file = request.files.get('db_file')
+    if not file:
+        flash("No database file uploaded.", "error")
+        return redirect(url_for('index'))
+    close_connection(None)
+    try:
+        file.save(app.config['DATABASE'])
+        flash("Database loaded.", "success")
+    except Exception as e:
+        flash(f"Error loading database: {e}", "error")
+    return redirect(url_for('index'))
+
+@app.route('/save_db', methods=['GET'])
+def save_db():
+    return send_file(
+        app.config['DATABASE'],
+        as_attachment=True,
+        download_name=os.path.basename(app.config['DATABASE'])
+    )
+
 if __name__ == '__main__':
     if not os.path.exists(app.config['DATABASE']):
-        init_db()
+        create_new_db()
     app.run(debug=True)
