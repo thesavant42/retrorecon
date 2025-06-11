@@ -34,12 +34,11 @@ a:hover {
 
 /* Controls section - aligned and spaced */
 .controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5em;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
   align-items: flex-start;
-  justify-content: center;
-  margin-bottom: 1em;
+  margin: 1em;
 }
 
 /* Search bar container */
@@ -91,13 +90,32 @@ a:hover {
 }
 
 #quick-searches {
+  display: none;
+}
+
+.search-history-box {
+  min-width: 270px;
+  padding: 0.7em;
+  background: #f8f8e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px #eaeab0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.history-title {
+  font-weight: bold;
+  margin-top: 0.5em;
+}
+
+.search-history {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3em;
 }
-
-/* Quick search buttons */
-#quick-searches button {
+.search-history button {
   background: #f3f3b3;
   border: 1px solid #e0c600;
   border-radius: 6px;
@@ -106,8 +124,17 @@ a:hover {
   margin-top: 0.2em;
   cursor: pointer;
 }
-#quick-searches button:hover {
+.search-history button:hover {
   background: #e0e0b3;
+}
+
+.db-buttons {
+  display: flex;
+  gap: 0.5em;
+  margin-top: 8px;
+}
+.db-buttons form {
+  margin: 0;
 }
 
 /* Dropdown styling (menu) */
@@ -181,6 +208,24 @@ a:hover {
 
 .search-history tbody tr:nth-child(even) {
   background: #f8f8ff;
+  
+/* Header bar layout */
+.header-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 1em;
+  margin: 1em;
+}
+.header-bar .menu-dropdown {
+  justify-self: start;
+}
+
+.header-bar h1 {
+  justify-self: start;
+  margin: 0;
+  font-size: 1.8em;
+  text-align: left;
 }
 
 /* Bulk controls section with flex layout */

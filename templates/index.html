@@ -8,6 +8,8 @@
 <body>
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <div class="page-grid">
+  <div class="header-bar">
+    <!-- Menu Dropdown -->
     <div class="dropdown menu-dropdown">
       <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
       <div class="dropdown-content" id="main-dropdown-content">
@@ -53,16 +55,6 @@
         </form>
       </div>
       <hr style="margin:8px 0;">
-      <!-- Explode JS Map -->
-      <div>
-        <form method="POST" action="/tools/webpack-zip">
-          <label>🔍 Explode .js.map URL:
-            <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
-          </label>
-          <button type="submit">Explode &amp; Download ZIP</button>
-        </form>
-      </div>
-      <hr style="margin:8px 0;">
       <!-- Bulk Actions -->
       <div style="font-weight:bold;">Bulk Actions</div>
       <div class="bulk-controls">
@@ -84,17 +76,33 @@
       </div>
     </div>
     <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
+  </div>
+  <!-- Import Status Block -->
+  <div id="import-status-block" style="display:none;">
+    <strong>Import status:</strong>
+    <span id="import-status-text"></span>
+    <div id="import-progress-bar-container">
+      <div id="import-progress-bar"></div>
+    </div>
+    <div id="import-progress-numbers" style="margin-top:0.5em;">
+      <span id="import-progress-numbers-span"></span>
+    </div>
+  </div>
+  <!-- Control Section -->
+  <div class="controls">
+    <!-- Search Bar -->
+
     <div class="search-bar">
       <form method="GET" action="/">
         <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" />
         <button type="submit">Search</button>
         <button type="button" onclick="document.getElementById('searchbox').value=''; this.form.submit();">Clear</button>
       </form>
-      <div id="quick-searches">
-        <button type="button" onclick="quickSearch('.js.map')">.js.map</button>
-        <button type="button" onclick="quickSearch('.php')">.php</button>
-        <button type="button" onclick="quickSearch('.env')">.env</button>
-      </div>
+      <button type="button" id="save-tag-btn">Save Tag</button>
+    </div>
+    <div class="search-history-box">
+      <div class="history-title">Search history</div>
+      <div id="search-history" class="search-history"></div>
     </div>
     <div class="search-history">
       <table class="history-table">
@@ -134,10 +142,9 @@
       {% if page > 1 %}
         <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
         <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+        <a href="?page={{ page - 5 if page - 5 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">« Prev 5</a>
       {% endif %}
-      {% set start = page - 3 if page - 3 >= 1 else 1 %}
-      {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
-      {% for p in range(start, end + 1) %}
+      {% for p in range(1, total_pages + 1) %}
         {% if p == page %}
           <strong>{{ p }}</strong>
         {% else %}
@@ -146,6 +153,8 @@
       {% endfor %}
       {% if page < total_pages %}
         <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+        <a href="?page={{ page + 5 if page + 5 <= total_pages else total_pages }}&q={{ q }}&tag={{ tag }}">Next 5 »</a>
+        <a href="?page={{ total_pages - 4 if total_pages - 4 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">Last 5</a>
         <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
       {% endif %}
       <!-- Jump to page form -->
@@ -239,10 +248,9 @@
     {% if page > 1 %}
       <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
       <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
+      <a href="?page={{ page - 5 if page - 5 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">« Prev 5</a>
     {% endif %}
-    {% set start = page - 3 if page - 3 >= 1 else 1 %}
-    {% set end = page + 3 if page + 3 <= total_pages else total_pages %}
-    {% for p in range(start, end + 1) %}
+    {% for p in range(1, total_pages + 1) %}
       {% if p == page %}
         <strong>{{ p }}</strong>
       {% else %}
@@ -251,6 +259,8 @@
     {% endfor %}
     {% if page < total_pages %}
       <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
+      <a href="?page={{ page + 5 if page + 5 <= total_pages else total_pages }}&q={{ q }}&tag={{ tag }}">Next 5 »</a>
+      <a href="?page={{ total_pages - 4 if total_pages - 4 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">Last 5</a>
       <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
     {% endif %}
     <!-- Jump to page form -->
@@ -401,6 +411,43 @@
         .catch(() => setTimeout(pollImport, 5000));
     }
     pollImport();
+
+    function quickSearch(term){
+      document.getElementById('searchbox').value = term;
+      document.querySelector('.search-bar form').submit();
+    }
+
+    function addHistoryButton(text){
+      const historyDiv = document.getElementById('search-history');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = text;
+      btn.addEventListener('click', () => quickSearch(text));
+      historyDiv.appendChild(btn);
+    }
+
+    function loadHistory(){
+      const defaults = ['.js.map','.php','.env','.zip','.rar','.svg','.docx'];
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
+      const all = Array.from(new Set(defaults.concat(saved)));
+      all.forEach(addHistoryButton);
+    }
+
+    function saveTag(){
+      const val = document.getElementById('searchbox').value.trim();
+      if(!val) return;
+      addHistoryButton(val);
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
+      if(!saved.includes(val)){
+        saved.push(val);
+        localStorage.setItem('searchHistory', JSON.stringify(saved));
+      }
+    }
+
+    document.getElementById('save-tag-btn').addEventListener('click', saveTag);
+    loadHistory();
 
     // Prompt for DB name on save
     const saveForm = document.getElementById('save-db-form');
