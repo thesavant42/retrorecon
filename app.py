@@ -321,6 +321,8 @@ def import_json():
 @app.route('/import_progress', methods=['GET'])
 def import_progress():
     prog = get_import_progress()
+    if request.args.get('clear') == '1' and prog.get('status') in ('done', 'failed'):
+        clear_import_progress()
     # Always supply progress and total, and message for UI
     return jsonify({
         'status': prog.get('status', 'idle'),

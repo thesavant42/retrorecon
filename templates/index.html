@@ -372,7 +372,9 @@
               document.getElementById('import-progress-numbers-span').textContent = data.progress + '/' + data.total;
             }
             if (['done', 'failed'].includes(data.status)) {
-              setTimeout(() => { window.location.reload(); }, 1000);
+              fetch('/import_progress?clear=1').then(() => {
+                setTimeout(() => { window.location.reload(); }, 1000);
+              });
               return;
             }
           }
