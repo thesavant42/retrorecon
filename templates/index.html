@@ -6,6 +6,43 @@
   <link rel="stylesheet" href="/static/wabax.css" />
 </head>
 <body>
+  {% macro render_pagination(page, total_pages, q, tag, total_count) %}
+  <div class="pagination" style="margin-top:1em;">
+    <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
+    {% if page > 1 %}
+      <a href="?page=1&q={{ q }}&tag={{ tag }}">&#171;&#171;</a>
+      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">&#171;</a>
+    {% endif %}
+    {% set start = page - 2 if page - 2 > 2 else 1 %}
+    {% set end = page + 2 if page + 2 < total_pages - 1 else total_pages %}
+    {% if start > 1 %}
+      <a href="?page=1&q={{ q }}&tag={{ tag }}">1</a>
+      {% if start > 2 %}<span>...</span>{% endif %}
+    {% endif %}
+    {% for p in range(start, end + 1) %}
+      {% if p == page %}
+        <strong>{{ p }}</strong>
+      {% else %}
+        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if end < total_pages %}
+      {% if end < total_pages - 1 %}<span>...</span>{% endif %}
+      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">{{ total_pages }}</a>
+    {% endif %}
+    {% if page < total_pages %}
+      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">&#187;</a>
+      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">&#187;&#187;</a>
+    {% endif %}
+    <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+      <input type="hidden" name="q" value="{{ q }}" />
+      <input type="hidden" name="tag" value="{{ tag }}" />
+      <input type="text" name="page" size="2" placeholder="Page" />
+      <button type="submit">Go</button>
+    </form>
+    <span class="total-count">Total: {{ total_count }}</span>
+  </div>
+  {% endmacro %}
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <div class="page-grid">
   <div class="header-bar">
@@ -137,35 +174,7 @@
     <input type="hidden" name="tag" value="{{ tag }}" />
     <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
     
-    <!-- Pagination controls -->
-    <div class="pagination" style="margin-top:1em;">
-      {% if page > 1 %}
-        <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-        <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
-        <a href="?page={{ page - 5 if page - 5 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">« Prev 5</a>
-      {% endif %}
-      {% for p in range(1, total_pages + 1) %}
-        {% if p == page %}
-          <strong>{{ p }}</strong>
-        {% else %}
-          <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
-        {% endif %}
-      {% endfor %}
-      {% if page < total_pages %}
-        <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-        <a href="?page={{ page + 5 if page + 5 <= total_pages else total_pages }}&q={{ q }}&tag={{ tag }}">Next 5 »</a>
-        <a href="?page={{ total_pages - 4 if total_pages - 4 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">Last 5</a>
-        <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
-      {% endif %}
-      <!-- Jump to page form -->
-      <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
-        <input type="hidden" name="q" value="{{ q }}" />
-        <input type="hidden" name="tag" value="{{ tag }}" />
-        <input type="text" name="page" size="2" placeholder="Page" />
-        <button type="submit">Go</button>
-      </form>
-      <span class="total-count">Total: {{ total_count }}</span>
-    </div>
+    {{ render_pagination(page, total_pages, q, tag, total_count) }}
 
     <!-- Data table -->
     <table class="url-table">
@@ -244,34 +253,7 @@
   </form>
 
   <!-- Bottom pagination (same as above) -->
-  <div class="pagination" style="margin-top:1em;">
-    {% if page > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}">⏮ First</a>
-      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">◀ Prev</a>
-      <a href="?page={{ page - 5 if page - 5 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">« Prev 5</a>
-    {% endif %}
-    {% for p in range(1, total_pages + 1) %}
-      {% if p == page %}
-        <strong>{{ p }}</strong>
-      {% else %}
-        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
-      {% endif %}
-    {% endfor %}
-    {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
-      <a href="?page={{ page + 5 if page + 5 <= total_pages else total_pages }}&q={{ q }}&tag={{ tag }}">Next 5 »</a>
-      <a href="?page={{ total_pages - 4 if total_pages - 4 > 1 else 1 }}&q={{ q }}&tag={{ tag }}">Last 5</a>
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
-    {% endif %}
-    <!-- Jump to page form -->
-    <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
-      <input type="hidden" name="q" value="{{ q }}" />
-      <input type="hidden" name="tag" value="{{ tag }}" />
-      <input type="text" name="page" size="2" placeholder="Page" />
-      <button type="submit">Go</button>
-    </form>
-    <span class="total-count">Total: {{ total_count }}</span>
-  </div>
+  {{ render_pagination(page, total_pages, q, tag, total_count) }}
   {% else %}
     <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
   {% endif %}
