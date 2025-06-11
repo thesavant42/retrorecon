@@ -167,6 +167,14 @@ a:hover {
   display: block;
 }
 
+/* Fixed menu placement */
+.menu-dropdown {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  z-index: 1000;
+}
+
 /* Bulk controls section with flex layout */
 .bulk-controls {
   display: flex;
