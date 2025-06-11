@@ -173,7 +173,8 @@ def index():
 
     db_name = os.path.basename(app.config['DATABASE'])
 
-    current_theme = session.get('theme', AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
+    default_theme = 'theme-openai.css' if 'theme-openai.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
+    current_theme = session.get('theme', default_theme)
 
     search_history = session.get('search_history', [])
     if q:

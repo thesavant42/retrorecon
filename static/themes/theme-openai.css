@@ -1,0 +1,40 @@
+/* OpenAI-inspired light theme */
+body {
+  background: #f7f7f8;
+  color: #303030;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body.bg-hidden {
+  background-image: none !important;
+}
+
+a {
+  color: #10a37f;
+}
+
+.search-bar {
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
+}
+
+.search-bar input[type="text"] {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+}
+
+.search-bar button {
+  background: #10a37f;
+  border: none;
+  color: #ffffff;
+}
+.search-bar button:hover {
+  background: #0e8c6a;
+}
+
+.url-table th {
+  background: #ebebeb;
+}
+.url-table td {
+  background: #ffffff;
+}
