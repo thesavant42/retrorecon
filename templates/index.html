@@ -19,6 +19,83 @@
       <span id="import-progress-numbers-span"></span>
     </div>
   </div>
+  <!-- Menu Dropdown -->
+  <div class="dropdown menu-dropdown">
+    <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
+    <div class="dropdown-content" id="main-dropdown-content">
+      <!-- Fetch Domain Form -->
+      <div>
+        <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
+          <label>🌐 Domain:
+            <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
+          </label>
+          <button type="submit">Fetch</button>
+        </form>
+        <!-- Import JSON -->
+        <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
+          <label>📄 NDJSON:
+            <input type="file" name="json_file" required />
+          </label>
+          <button type="submit">Import</button>
+        </form>
+        <!-- Load DB -->
+        <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
+          <label>📂 Load DB:
+            <input type="file" name="db_file" required />
+          </label>
+          <button type="submit">Load</button>
+        </form>
+        <!-- Save DB -->
+        <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
+          <button type="submit">💾 Save As</button>
+        </form>
+        <!-- New DB -->
+        <form method="POST" action="/new_db" style="margin-top:8px;">
+          <button type="submit">🆕 New DB</button>
+        </form>
+      </div>
+      <hr style="margin:8px 0;">
+      <!-- Explode JS Map -->
+      <div>
+        <form method="POST" action="/tools/webpack-zip">
+          <label>🔍 Explode .js.map URL:
+            <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+          </label>
+          <button type="submit">Explode &amp; Download ZIP</button>
+        </form>
+      </div>
+      <hr style="margin:8px 0;">
+      <!-- Explode JS Map -->
+      <div>
+        <form method="POST" action="/tools/webpack-zip">
+          <label>🔍 Explode .js.map URL:
+            <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+          </label>
+          <button type="submit">Explode &amp; Download ZIP</button>
+        </form>
+      </div>
+      <hr style="margin:8px 0;">
+      <!-- Bulk Actions -->
+      <div style="font-weight:bold;">Bulk Actions</div>
+      <div class="bulk-controls">
+        <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
+          <option value="add_tag">➕🏷️ Add Tag Selected</option>
+          <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
+          <option value="delete">✂🗑️ Delete Selected</option>
+        </select>
+        <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
+        <button type="submit" form="bulk-form">Apply</button>
+        <label class="select-all-label" style="margin-left:1em;">
+          <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+          Select all visible
+        </label>
+        <label class="select-all-label">
+          <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+          Select all matching
+        </label>
+      </div>
+    </div>
+  </div>
   <!-- Control Section -->
   <div class="controls">
     <!-- Search Bar -->
@@ -32,83 +109,6 @@
         <button type="button" onclick="quickSearch('.js.map')">.js.map</button>
         <button type="button" onclick="quickSearch('.php')">.php</button>
         <button type="button" onclick="quickSearch('.env')">.env</button>
-      </div>
-    </div>
-    <!-- Menu Dropdown -->
-    <div class="dropdown" style="position: relative;">
-      <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
-      <div class="dropdown-content" id="main-dropdown-content">
-        <!-- Fetch Domain Form -->
-        <div>
-          <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
-            <label>🌐 Domain:
-              <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
-            </label>
-            <button type="submit">Fetch</button>
-          </form>
-          <!-- Import JSON -->
-          <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-            <label>📄 NDJSON:
-              <input type="file" name="json_file" required />
-            </label>
-            <button type="submit">Import</button>
-          </form>
-          <!-- Load DB -->
-          <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
-            <label>📂 Load DB:
-              <input type="file" name="db_file" required />
-            </label>
-            <button type="submit">Load</button>
-          </form>
-          <!-- Save DB -->
-          <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
-            <button type="submit">💾 Save As</button>
-          </form>
-          <!-- New DB -->
-          <form method="POST" action="/new_db" style="margin-top:8px;">
-            <button type="submit">🆕 New DB</button>
-          </form>
-        </div>
-        <hr style="margin:8px 0;">
-        <!-- Explode JS Map -->
-        <div>
-          <form method="POST" action="/tools/webpack-zip">
-            <label>🔍 Explode .js.map URL:
-              <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
-            </label>
-            <button type="submit">Explode &amp; Download ZIP</button>
-          </form>
-        </div>
-        <hr style="margin:8px 0;">
-        <!-- Explode JS Map -->
-        <div>
-          <form method="POST" action="/tools/webpack-zip">
-            <label>🔍 Explode .js.map URL:
-              <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
-            </label>
-            <button type="submit">Explode &amp; Download ZIP</button>
-          </form>
-        </div>
-        <hr style="margin:8px 0;">
-        <!-- Bulk Actions -->
-        <div style="font-weight:bold;">Bulk Actions</div>
-        <div class="bulk-controls">
-          <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
-            <option value="add_tag">➕🏷️ Add Tag Selected</option>
-            <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
-            <option value="delete">✂🗑️ Delete Selected</option>
-          </select>
-          <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
-          <button type="submit" form="bulk-form">Apply</button>
-          <label class="select-all-label" style="margin-left:1em;">
-            <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-            Select all visible
-          </label>
-          <label class="select-all-label">
-            <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-            Select all matching
-          </label>
-        </div>
       </div>
     </div>
   </div>
