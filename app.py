@@ -22,6 +22,15 @@ if os.path.isdir(THEMES_DIR):
 else:
     AVAILABLE_THEMES = []
 
+BACKGROUNDS_DIR = os.path.join(app.root_path, 'static', 'img')
+if os.path.isdir(BACKGROUNDS_DIR):
+    AVAILABLE_BACKGROUNDS = sorted([
+        f for f in os.listdir(BACKGROUNDS_DIR)
+        if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+    ])
+else:
+    AVAILABLE_BACKGROUNDS = []
+
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
 DEMO_DATA_FILE = os.path.join(app.root_path, 'demo_data.json')
@@ -176,6 +185,9 @@ def index():
     default_theme = 'theme-openai.css' if 'theme-openai.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
 
+    default_background = 'background.jpg' if 'background.jpg' in AVAILABLE_BACKGROUNDS else (AVAILABLE_BACKGROUNDS[0] if AVAILABLE_BACKGROUNDS else '')
+    current_background = session.get('background', default_background)
+
     search_history = session.get('search_history', [])
     if q:
         if q in search_history:
@@ -192,6 +204,8 @@ def index():
         tag=tag_filter,
         themes=AVAILABLE_THEMES,
         current_theme=current_theme,
+        backgrounds=AVAILABLE_BACKGROUNDS,
+        current_background=current_background,
         total_count=total_count,
         db_name=db_name,
         search_history=search_history
@@ -448,6 +462,15 @@ def set_theme():
     else:
         flash("Invalid theme selection.", "error")
     return redirect(url_for('index'))
+
+
+@app.route('/set_background', methods=['POST'])
+def set_background():
+    bg = request.form.get('background', '')
+    if bg in AVAILABLE_BACKGROUNDS:
+        session['background'] = bg
+        return ('', 204)
+    return ('Invalid background', 400)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip():
