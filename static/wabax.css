@@ -319,6 +319,14 @@ a:hover {
   text-align: center;
 }
 
+/* Style for the total results count */
+.total-count {
+  margin-left: 1em;
+  color: #000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 /* Footer text style */
 .footer {
   margin-top: 2em;
