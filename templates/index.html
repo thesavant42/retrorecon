@@ -124,28 +124,20 @@
             <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" style="width:95%;" />
           </td>
         </tr>
-        <tr>
-          <td style="text-align:right;">
-            <button type="button" id="save-tag-btn">Save Tag</button>
-            <button type="submit">Search</button>
-            <button type="button" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
-          </td>
-        </tr>
       </table>
+      <div class="search-actions">
+        <div id="search-history" class="search-history"></div>
+        <div class="search-buttons">
+          <button type="button" id="save-tag-btn">Save Tag</button>
+          <button type="submit">Search</button>
+          <button type="button" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
+        </div>
+      </div>
     </form>
   </div>
 
   <!-- Table C : Pagination and saved tags -->
   <table id="layout-c" style="width:100%; margin-top:1em;">
-    <tr>
-      <td style="width:50%;"></td>
-      <td rowspan="2" style="width:50%; vertical-align:top;">
-        <div class="search-history-box">
-          <div class="history-title">Search history</div>
-          <div id="search-history" class="search-history"></div>
-        </div>
-      </td>
-    </tr>
     <tr>
       <td style="text-align:left;">
         {{ render_pagination(page, total_pages, q, tag, total_count) }}
