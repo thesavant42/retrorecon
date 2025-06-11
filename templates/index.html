@@ -166,32 +166,25 @@
               </form>
               {% endif %}
               <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
+              {% for tag in (url.tags or '').split(',') if tag %}
+              <span class="tag-pill">{{ tag }}
+                <form method="POST" action="/bulk_action" style="display:inline;">
+                  <input type="hidden" name="action" value="remove_tag" />
+                  <input type="hidden" name="tag" value="{{ tag }}" />
+                  <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                  <button type="submit" title="Remove tag">&times;</button>
+                </form>
+              </span>
+              {% endfor %}
+              <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
+                <input type="hidden" name="action" value="add_tag" />
+                <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                <input type="text" name="tag" placeholder="Tag" size="8" required/>
+                <button type="submit" title="Add tag">+</button>
+              </form>
             </div>
 
             
-          </td>
-        </tr>
-        <!-- Tags and per-host add-tag -->
-        <tr class="tags-row">
-          <td></td>
-          <td>
-            {% for tag in (url.tags or '').split(',') if tag %}
-            <span class="tag-pill">{{ tag }}
-              <form method="POST" action="/bulk_action" style="display:inline;">
-                <input type="hidden" name="action" value="remove_tag" />
-                <input type="hidden" name="tag" value="{{ tag }}" />
-                <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                <button type="submit" title="Remove tag">&times;</button>
-              </form>
-            </span>
-            {% endfor %}
-            <!-- per-host add-tag form -->
-            <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
-              <input type="hidden" name="action" value="add_tag" />
-              <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-              <input type="text" name="tag" placeholder="Tag" size="8" required />
-              <button type="submit" title="Add tag">+</button>
-            </form>
           </td>
         </tr>
         {% endfor %}
