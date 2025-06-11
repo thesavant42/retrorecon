@@ -71,6 +71,8 @@
   <!-- Bulk Actions & Pagination -->
   {% if urls %}
   <form method="POST" action="/bulk_action" id="bulk-form">
+    <input type="hidden" name="q" value="{{ q }}" />
+    <input type="hidden" name="tag" value="{{ tag }}" />
     <!-- Bulk Actions Label -->
     <div style="margin-top:10px; font-weight:bold;">Bulk Actions</div>
     
