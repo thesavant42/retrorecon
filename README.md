@@ -96,6 +96,8 @@ python app.py
 ```
 Then visit: http://127.0.0.1:5000
 
+Both the application and `init_db.py` read the database schema from `schema.sql`.
+
 
 💡 Attribution
 
