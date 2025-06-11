@@ -44,224 +44,228 @@
   </div>
   {% endmacro %}
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <div class="page-grid">
-  <aside class="sidebar">
-  <div class="header-bar">
-    <!-- Menu Dropdown -->
-    <div class="dropdown menu-dropdown">
-      <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
-      <div class="dropdown-content" id="main-dropdown-content">
-        <!-- Fetch Domain Form -->
-        <div>
-          <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
-          <label>🌐 Domain:
-            <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
-          </label>
-          <button type="submit">Fetch</button>
-        </form>
-        <!-- Import JSON -->
-        <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-          <label>📄 NDJSON:
-            <input type="file" name="json_file" required />
-          </label>
-          <button type="submit">Import</button>
-        </form>
-        <!-- Load DB -->
-        <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
-          <label>📂 Load DB:
-            <input type="file" name="db_file" required />
-          </label>
-          <button type="submit">Load</button>
-        </form>
-        <!-- Save DB -->
-        <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
-          <button type="submit">💾 Save As</button>
-        </form>
-        <!-- New DB -->
-        <form method="POST" action="/new_db" style="margin-top:8px;">
-          <button type="submit">🆕 New DB</button>
-        </form>
-      </div>
-      <hr style="margin:8px 0;">
-      <!-- Explode JS Map -->
-      <div>
-        <form method="POST" action="/tools/webpack-zip">
-          <label>🔍 Explode .js.map URL:
-            <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
-          </label>
-          <button type="submit">Explode &amp; Download ZIP</button>
-        </form>
-      </div>
-      <hr style="margin:8px 0;">
-      <!-- Bulk Actions -->
-      <div style="font-weight:bold;">Bulk Actions</div>
-      <div class="bulk-controls">
-        <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
-          <option value="add_tag">➕🏷️ Add Tag Selected</option>
-          <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
-          <option value="delete">✂🗑️ Delete Selected</option>
-        </select>
-        <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
-        <button type="submit" form="bulk-form">Apply</button>
-        <label class="select-all-label" style="margin-left:1em;">
-          <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-          Select all visible
-        </label>
-        <label class="select-all-label">
-          <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-          Select all matching
-        </label>
-      </div>
-    </div>
-    <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
-  </div>
-  <!-- Control Section -->
-  <div class="controls">
-    <!-- Search Bar -->
 
-    <div class="search-bar">
-      <form method="GET" action="/">
-        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" />
-        <button type="submit">Search</button>
-        <button type="button" onclick="document.getElementById('searchbox').value=''; this.form.submit();">Clear</button>
-      </form>
-      <button type="button" id="save-tag-btn">Save Tag</button>
-    </div>
-    <div class="search-history-box">
-      <div class="history-title">Search history</div>
-      <div id="search-history" class="search-history"></div>
-    </div>
-  </div>
-  </aside>
-  <main class="results">
-    <div class="search-history">
-      <table class="history-table">
-        <thead><tr><th>Search History</th></tr></thead>
-        <tbody>
-          {% for term in search_history %}
-          <tr><td><a href="?q={{ term|urlencode }}">{{ term }}</a></td></tr>
-          {% else %}
-          <tr><td style="color:#888;">No history</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-</main>
-</div>
-
-<div class="results-grid">
-  <div id="import-status-block" style="display:none;">
-    <strong>Import status:</strong>
-    <span id="import-status-text"></span>
-    <div id="import-progress-bar-container">
-      <div id="import-progress-bar"></div>
-    </div>
-    <div id="import-progress-numbers" style="margin-top:0.5em;">
-      <span id="import-progress-numbers-span"></span>
-    </div>
-  </div>
-
-  <!-- Bulk Actions & Pagination -->
-  {% if urls %}
-  <form method="POST" action="/bulk_action" id="bulk-form">
-    <input type="hidden" name="q" value="{{ q }}" />
-    <input type="hidden" name="tag" value="{{ tag }}" />
-    <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
-
-    {{ render_pagination(page, total_pages, q, tag, total_count) }}
-
-    <!-- Data table -->
-    <table class="url-table">
-      <thead>
-        <tr>
-          <th style="width:2em;">
-            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
-          </th>
-          <th>URL</th>
-          <th>Timestamp</th>
-          <th>HTTP</th>
-          <th>MIME</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for url in urls %}
-        <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
-          <td>
-            <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
-          </td>
-          <td>{{ url.url }}</td>
-          <td>{{ url.timestamp or '-' }}</td>
-          <td class="status {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
-          <td>{{ url.mime_type or '-' }}</td>
-        </tr>
-
-        <!-- Buttons row: stay fixed -->
-        <tr class="url-row-buttons">
-          <td></td>
-          <td colspan="4">
-            <div class="url-tools-row" style="white-space: nowrap;">
-              <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
-              <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
-              <button class="explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
-              <button class="explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
-              <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
-              <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
-              {% if ".js.map" in url.url %}
-              <form method="POST" action="/tools/webpack-zip" style="display:inline;">
-                <input type="hidden" name="map_url" value="{{ url.url }}" />
-                <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
+  <!-- Table A : Header -->
+  <table id="layout-a" style="width:100%;">
+    <tr>
+      <td style="text-align:left;">
+        <div class="dropdown menu-dropdown">
+          <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
+          <div class="dropdown-content" id="main-dropdown-content">
+            <div>
+              <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
+                <label>🌐 Domain:
+                  <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
+                </label>
+                <button type="submit">Fetch</button>
               </form>
-              {% endif %}
-              <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
-              <form method="POST" action="/bulk_action" style="display:inline;margin-right:0.3em;">
-                <input type="hidden" name="action" value="delete" />
-                <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                <input type="hidden" name="q" value="{{ q }}" />
-                <input type="hidden" name="tag" value="{{ tag }}" />
-                <button type="submit" class="delete-btn" title="Delete">🗑️</button>
+              <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
+                <label>📄 NDJSON:
+                  <input type="file" name="json_file" required />
+                </label>
+                <button type="submit">Import</button>
               </form>
-              {% for tag in (url.tags or '').split(',') if tag %}
-              <span class="tag-pill">{{ tag }}
-                <form method="POST" action="/bulk_action" style="display:inline;">
-                  <input type="hidden" name="action" value="remove_tag" />
-                  <input type="hidden" name="tag" value="{{ tag }}" />
-                  <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                  <button type="submit" title="Remove tag">&times;</button>
-                </form>
-              </span>
-              {% endfor %}
-              <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
-                <input type="hidden" name="action" value="add_tag" />
-                <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                <input type="text" name="tag" placeholder="Tag" size="8" required/>
-                <button type="submit" title="Add tag">+</button>
+              <form method="POST" action="/load_db" enctype="multipart/form-data" style="margin-top:8px;">
+                <label>📂 Load DB:
+                  <input type="file" name="db_file" required />
+                </label>
+                <button type="submit">Load</button>
+              </form>
+              <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
+                <button type="submit">💾 Save As</button>
+              </form>
+              <form method="POST" action="/new_db" style="margin-top:8px;">
+                <button type="submit">🆕 New DB</button>
               </form>
             </div>
+            <hr style="margin:8px 0;">
+            <div>
+              <form method="POST" action="/tools/webpack-zip">
+                <label>🔍 Explode .js.map URL:
+                  <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+                </label>
+                <button type="submit">Explode &amp; Download ZIP</button>
+              </form>
+            </div>
+            <hr style="margin:8px 0;">
+            <div style="font-weight:bold;">Bulk Actions</div>
+            <div class="bulk-controls">
+              <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
+                <option value="add_tag">➕🏷️ Add Tag Selected</option>
+                <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
+                <option value="delete">✂🗑️ Delete Selected</option>
+              </select>
+              <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
+              <button type="submit" form="bulk-form">Apply</button>
+              <label class="select-all-label" style="margin-left:1em;">
+                <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+                Select all visible
+              </label>
+              <label class="select-all-label">
+                <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+                Select all matching
+              </label>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td style="text-align:left;">
+        <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
+      </td>
+    </tr>
+  </table>
 
-
+  <!-- Table B : Search bar and buttons -->
+  <div class="search-bar">
+    <form method="GET" action="/" id="search-form">
+      <table style="width:100%;">
+        <tr>
+          <td style="text-align:center;">
+            <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" style="width:95%;" />
           </td>
         </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </form>
-
-  <!-- Bottom pagination (same as above) -->
-  {{ render_pagination(page, total_pages, q, tag, total_count) }}
-  {% else %}
-    <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
-  {% endif %}
-
-  <!-- Footer -->
-  <div class="footer">
-    <a href="https://github.com/thesavant42/retrorecon" target="_blank" style="text-decoration:none; color:#888;">
-      &copy; 2025 hindsite - Archive Explorer
-    </a>
+        <tr>
+          <td style="text-align:right;">
+            <button type="button" id="save-tag-btn">Save Tag</button>
+            <button type="submit">Search</button>
+            <button type="button" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
+          </td>
+        </tr>
+      </table>
+    </form>
   </div>
 
-</div>
+  <!-- Table C : Pagination and saved tags -->
+  <table id="layout-c" style="width:100%; margin-top:1em;">
+    <tr>
+      <td style="width:50%;"></td>
+      <td rowspan="2" style="width:50%; vertical-align:top;">
+        <div class="search-history-box">
+          <div class="history-title">Search history</div>
+          <div id="search-history" class="search-history"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left;">
+        {{ render_pagination(page, total_pages, q, tag, total_count) }}
+      </td>
+    </tr>
+  </table>
 
-  <!-- JS scripts -->
+  <!-- Table D : Results -->
+  <table id="layout-d" style="width:100%; margin-top:1em;">
+    <tr>
+      <td>
+        <div class="results-grid">
+          <div id="import-status-block" style="display:none;">
+            <strong>Import status:</strong>
+            <span id="import-status-text"></span>
+            <div id="import-progress-bar-container">
+              <div id="import-progress-bar"></div>
+            </div>
+            <div id="import-progress-numbers" style="margin-top:0.5em;">
+              <span id="import-progress-numbers-span"></span>
+            </div>
+          </div>
+
+          {% if urls %}
+          <form method="POST" action="/bulk_action" id="bulk-form">
+            <input type="hidden" name="q" value="{{ q }}" />
+            <input type="hidden" name="tag" value="{{ tag }}" />
+            <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
+
+            <!-- Data table -->
+            <table class="url-table">
+              <thead>
+                <tr>
+                  <th style="width:2em;">
+                    <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
+                  </th>
+                  <th>URL</th>
+                  <th>Timestamp</th>
+                  <th>HTTP</th>
+                  <th>MIME</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for url in urls %}
+                <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
+                  <td>
+                    <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
+                  </td>
+                  <td>{{ url.url }}</td>
+                  <td>{{ url.timestamp or '-' }}</td>
+                  <td class="status {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
+                  <td>{{ url.mime_type or '-' }}</td>
+                </tr>
+                <tr class="url-row-buttons">
+                  <td></td>
+                  <td colspan="4">
+                    <div class="url-tools-row" style="white-space: nowrap;">
+                      <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
+                      <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
+                      <button class="explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
+                      <button class="explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
+                      <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
+                      <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
+                      {% if ".js.map" in url.url %}
+                      <form method="POST" action="/tools/webpack-zip" style="display:inline;">
+                        <input type="hidden" name="map_url" value="{{ url.url }}" />
+                        <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
+                      </form>
+                      {% endif %}
+                      <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
+                      <form method="POST" action="/bulk_action" style="display:inline;margin-right:0.3em;">
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                        <input type="hidden" name="q" value="{{ q }}" />
+                        <input type="hidden" name="tag" value="{{ tag }}" />
+                        <button type="submit" class="delete-btn" title="Delete">🗑️</button>
+                      </form>
+                      {% for tag in (url.tags or '').split(',') if tag %}
+                      <span class="tag-pill">{{ tag }}
+                        <form method="POST" action="/bulk_action" style="display:inline;">
+                          <input type="hidden" name="action" value="remove_tag" />
+                          <input type="hidden" name="tag" value="{{ tag }}" />
+                          <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                          <button type="submit" title="Remove tag">&times;</button>
+                        </form>
+                      </span>
+                      {% endfor %}
+                      <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
+                        <input type="hidden" name="action" value="add_tag" />
+                        <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                        <input type="text" name="tag" placeholder="Tag" size="8" required/>
+                        <button type="submit" title="Add tag">+</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </form>
+          {% else %}
+            <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1em;">
+          <div>{{ render_pagination(page, total_pages, q, tag, total_count) }}</div>
+          <div class="footer">
+            <a href="https://github.com/thesavant42/retrorecon" target="_blank" style="text-decoration:none; color:#888;">
+              &copy; 2025 hindsite - Archive Explorer
+            </a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
   <script>
     function adjustBulkAction(){
       const action = document.getElementById('bulk-action-selector').value;
@@ -273,7 +277,6 @@
       }
     }
 
-    // Dropdown toggle
     document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
       e.preventDefault();
       this.parentElement.classList.toggle('show');
@@ -285,30 +288,24 @@
       }
     });
 
-    // Select all visible on current page
     function toggleSelectAllPage(cb) {
       document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
-      // reset matching if page toggle
       document.getElementById('select-all-matching').checked = false;
       document.getElementById('select-all-matching-input').value = "false";
     }
 
-    // Select all matching across pages
     function toggleSelectAllMatching(cb) {
       document.getElementById('select-all-matching-input').value = cb.checked ? "true" : "false";
-      // clear page-select when matching is used
       document.getElementById('select-all-page').checked = false;
       if (cb.checked) {
         document.querySelectorAll('.row-checkbox').forEach(c => c.checked = true);
       }
     }
 
-    // Select all checkboxes in table
     function toggleSelectAllRows(cb) {
       document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
     }
 
-    // Bulk form submit validation
     var bulkForm = document.getElementById('bulk-form');
     if (bulkForm) {
       bulkForm.addEventListener('submit', function(e){
@@ -330,7 +327,6 @@
       });
     }
 
-    // Go to page
     function gotoPage(f) {
       const p = f.page.value.trim();
       if(p) {
@@ -343,7 +339,6 @@
       return false;
     }
 
-    // Copy button
     document.querySelectorAll('.copy-btn').forEach(b => {
       b.addEventListener('click', async () => {
         const url = b.getAttribute('data-url');
@@ -364,7 +359,6 @@
       });
     });
 
-    // Poll import progress and refresh when done
     function pollImport() {
       fetch('/import_progress')
         .then(r => r.json())
@@ -392,7 +386,7 @@
 
     function quickSearch(term){
       document.getElementById('searchbox').value = term;
-      document.querySelector('.search-bar form').submit();
+      document.getElementById('search-form').submit();
     }
 
     function addHistoryButton(text){
@@ -427,7 +421,6 @@
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
     loadHistory();
 
-    // Prompt for DB name on save
     const saveForm = document.getElementById('save-db-form');
     if (saveForm) {
       saveForm.addEventListener('submit', function(e) {
