@@ -53,6 +53,10 @@ def init_db():
     CREATE TABLE IF NOT EXISTS urls (
         id   INTEGER PRIMARY KEY AUTOINCREMENT,
         url  TEXT UNIQUE NOT NULL,
+        domain TEXT,
+        timestamp TEXT,
+        status_code INTEGER,
+        mime_type TEXT,
         tags TEXT
     );
     """
@@ -151,7 +155,7 @@ def index():
 
     offset = (page - 1) * ITEMS_PER_PAGE
     select_sql = f"""
-        SELECT id, url, tags
+        SELECT id, url, timestamp, status_code, mime_type, tags
         FROM urls
         {where_sql}
         ORDER BY id DESC
@@ -182,7 +186,7 @@ def fetch_cdx():
 
     cdx_api = (
         'http://web.archive.org/cdx/search/cdx'
-        '?url={domain}/*&output=json&fl=original&collapse=urlkey'
+        '?url={domain}/*&output=json&fl=original,timestamp,statuscode,mimetype&collapse=urlkey'
     ).format(domain=domain)
 
     try:
@@ -198,6 +202,9 @@ def fetch_cdx():
         if idx == 0:
             continue
         original_url = row[0]
+        timestamp = row[1] if len(row) > 1 else None
+        status_code = int(row[2]) if len(row) > 2 and row[2] else None
+        mime_type = row[3] if len(row) > 3 else None
         existing = query_db(
             "SELECT id FROM urls WHERE url = ?",
             [original_url],
@@ -206,8 +213,8 @@ def fetch_cdx():
         if existing:
             continue
         execute_db(
-            "INSERT INTO urls (url, tags) VALUES (?, ?)",
-            [original_url, ""]
+            "INSERT INTO urls (url, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?)",
+            [original_url, timestamp, status_code, mime_type, ""]
         )
         inserted += 1
 
@@ -226,7 +233,13 @@ def _background_import(file_content):
                 records = [{"url": url, "tags": ""} for url in data]
             elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
                 records = [
-                    {"url": rec.get('url', '').strip(), "tags": rec.get('tags', '').strip()}
+                    {
+                        "url": rec.get('url', '').strip(),
+                        "timestamp": rec.get('timestamp'),
+                        "status_code": rec.get('status_code'),
+                        "mime_type": rec.get('mime_type'),
+                        "tags": rec.get('tags', '').strip()
+                    }
                     for rec in data if rec.get('url', '').strip()
                 ]
         except Exception:
@@ -237,9 +250,14 @@ def _background_import(file_content):
                 try:
                     rec = json.loads(line)
                     url = rec.get('url', '').strip()
-                    tags = rec.get('tags', '').strip()
                     if url:
-                        records.append({"url": url, "tags": tags})
+                        records.append({
+                            "url": url,
+                            "timestamp": rec.get('timestamp'),
+                            "status_code": rec.get('status_code'),
+                            "mime_type": rec.get('mime_type'),
+                            "tags": rec.get('tags', '').strip()
+                        })
                 except Exception:
                     continue
 
@@ -250,7 +268,16 @@ def _background_import(file_content):
         inserted = 0
         for idx, rec in enumerate(records):
             try:
-                c.execute("INSERT OR IGNORE INTO urls (url, tags) VALUES (?, ?)", (rec['url'], rec['tags']))
+                c.execute(
+                    "INSERT OR IGNORE INTO urls (url, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?)",
+                    (
+                        rec['url'],
+                        rec.get('timestamp'),
+                        rec.get('status_code'),
+                        rec.get('mime_type'),
+                        rec['tags']
+                    )
+                )
             except Exception:
                 continue
             inserted += 1

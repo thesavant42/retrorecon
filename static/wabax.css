@@ -363,4 +363,10 @@ a:hover {
   background-color: #eaeaea;
 }
 
+/* Status code colors */
+.status-2 { color: blue; }
+.status-3 { color: green; }
+.status-4 { color: orange; }
+.status-5 { color: red; }
+
 /* --- End of update --- */

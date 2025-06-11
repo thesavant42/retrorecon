@@ -152,6 +152,9 @@
             <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
           </th>
           <th>URL</th>
+          <th>Timestamp</th>
+          <th>HTTP</th>
+          <th>MIME</th>
         </tr>
       </thead>
       <tbody>
@@ -161,12 +164,15 @@
             <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
           </td>
           <td>{{ url.url }}</td>
+          <td>{{ url.timestamp or '-' }}</td>
+          <td class="status {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
+          <td>{{ url.mime_type or '-' }}</td>
         </tr>
-        
+
         <!-- Buttons row: stay fixed -->
         <tr class="url-row-buttons">
           <td></td>
-          <td>
+          <td colspan="4">
             <div class="url-tools-row" style="white-space: nowrap;">
               <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
               <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
