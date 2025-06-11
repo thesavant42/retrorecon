@@ -91,13 +91,26 @@ a:hover {
 }
 
 #quick-searches {
+  display: none;
+}
+
+.search-history-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.history-title {
+  font-weight: bold;
+  margin-top: 0.5em;
+}
+
+.search-history {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3em;
 }
-
-/* Quick search buttons */
-#quick-searches button {
+.search-history button {
   background: #f3f3b3;
   border: 1px solid #e0c600;
   border-radius: 6px;
@@ -106,8 +119,17 @@ a:hover {
   margin-top: 0.2em;
   cursor: pointer;
 }
-#quick-searches button:hover {
+.search-history button:hover {
   background: #e0e0b3;
+}
+
+.db-buttons {
+  display: flex;
+  gap: 0.5em;
+  margin-top: 8px;
+}
+.db-buttons form {
+  margin: 0;
 }
 
 /* Dropdown styling (menu) */
