@@ -211,6 +211,14 @@
       <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">Next ▶</a>
       <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">Last ⏭</a>
     {% endif %}
+    <!-- Jump to page form -->
+    <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+      <input type="hidden" name="q" value="{{ q }}" />
+      <input type="hidden" name="tag" value="{{ tag }}" />
+      <input type="text" name="page" size="2" placeholder="Page" />
+      <button type="submit">Go</button>
+    </form>
+    <span class="total-count">Total: {{ total_count }}</span>
   </div>
   {% else %}
     <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
