@@ -14,7 +14,7 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 ## 🔧 Tech Stack
 
 - **Backend**: Python 3 + Flask
-- **Database**: SQLite (`cdx.db`)
+- **Database**: SQLite (`wabax.db`)
 - **Frontend**: Jinja2 templates + HTML/CSS + vanilla JS
 - **Dynamic UI**: Pagination, theming, tag-based filtering
 
@@ -23,7 +23,7 @@ A Flask-based tool for exploring, filtering, and tagging CDX data from the Inter
 
 ### 🔍 CDX Fetching
 - Query the Wayback CDX API using a domain (e.g. `example.com`)
-- Stores results into `cdx.db` under `entries` table
+- Stores results into `wabax.db` under `urls` table
 - Handles duplicates and bulk insertion cleanly
 
 ### 📥 Multiline JSON Import
