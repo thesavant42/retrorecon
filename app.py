@@ -5,6 +5,7 @@ import sqlite3
 import zipfile
 import threading
 import requests
+import urllib.parse
 from flask import (
     Flask, g, render_template, request,
     redirect, url_for, flash, send_file, session, jsonify
@@ -510,10 +511,17 @@ def load_db_route():
 
 @app.route('/save_db', methods=['GET'])
 def save_db():
+    name = request.args.get('name', '').strip()
+    if name:
+        safe_name = urllib.parse.quote(name, safe='')
+        if not safe_name.lower().endswith('.db'):
+            safe_name += '.db'
+    else:
+        safe_name = os.path.basename(app.config['DATABASE'])
     return send_file(
         app.config['DATABASE'],
         as_attachment=True,
-        download_name=os.path.basename(app.config['DATABASE'])
+        download_name=safe_name
     )
 
 if __name__ == '__main__':
