@@ -28,11 +28,11 @@
         <button type="submit">Search</button>
         <button type="button" onclick="document.getElementById('searchbox').value=''; this.form.submit();">Clear</button>
       </form>
-      <div id="quick-searches">
-        <button type="button" onclick="quickSearch('.js.map')">.js.map</button>
-        <button type="button" onclick="quickSearch('.php')">.php</button>
-        <button type="button" onclick="quickSearch('.env')">.env</button>
-      </div>
+      <button type="button" id="save-tag-btn">Save Tag</button>
+    </div>
+    <div class="search-history-box">
+      <div class="history-title">Search history</div>
+      <div id="search-history" class="search-history"></div>
     </div>
     <!-- Menu Dropdown -->
     <div class="dropdown" style="position: relative;">
@@ -60,14 +60,16 @@
             </label>
             <button type="submit">Load</button>
           </form>
-          <!-- Save DB -->
-          <form method="GET" action="/save_db" style="margin-top:8px;" id="save-db-form">
-            <button type="submit">💾 Save As</button>
-          </form>
-          <!-- New DB -->
-          <form method="POST" action="/new_db" style="margin-top:8px;">
-            <button type="submit">🆕 New DB</button>
-          </form>
+          <div class="db-buttons">
+            <!-- Save DB -->
+            <form method="GET" action="/save_db" id="save-db-form">
+              <button type="submit">💾 Save As</button>
+            </form>
+            <!-- New DB -->
+            <form method="POST" action="/new_db">
+              <button type="submit">🆕 New DB</button>
+            </form>
+          </div>
         </div>
         <hr style="margin:8px 0;">
         <!-- Explode JS Map -->
@@ -392,6 +394,43 @@
         .catch(() => setTimeout(pollImport, 5000));
     }
     pollImport();
+
+    function quickSearch(term){
+      document.getElementById('searchbox').value = term;
+      document.querySelector('.search-bar form').submit();
+    }
+
+    function addHistoryButton(text){
+      const historyDiv = document.getElementById('search-history');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = text;
+      btn.addEventListener('click', () => quickSearch(text));
+      historyDiv.appendChild(btn);
+    }
+
+    function loadHistory(){
+      const defaults = ['.js.map','.php','.env'];
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
+      const all = Array.from(new Set(defaults.concat(saved)));
+      all.forEach(addHistoryButton);
+    }
+
+    function saveTag(){
+      const val = document.getElementById('searchbox').value.trim();
+      if(!val) return;
+      addHistoryButton(val);
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
+      if(!saved.includes(val)){
+        saved.push(val);
+        localStorage.setItem('searchHistory', JSON.stringify(saved));
+      }
+    }
+
+    document.getElementById('save-tag-btn').addEventListener('click', saveTag);
+    loadHistory();
 
     // Prompt for DB name on save
     const saveForm = document.getElementById('save-db-form');
