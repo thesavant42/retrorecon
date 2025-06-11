@@ -58,8 +58,8 @@ a:hover {
 /* Layout for form inside search bar */
 .search-bar form {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-direction: row;
+  align-items: center;
   gap: 0.5em;
   width: 100%;
 }
@@ -68,11 +68,11 @@ a:hover {
 .search-bar input[type="text"] {
   font-size: 1.2em;
   padding: 6px 10px;
-  width: 100%;
   border-radius: 5px;
   border: 1px solid #e7e7c0;
   background: #fffbe4;
-  flex: 1;
+  flex: 2;
+  min-width: 0;
 }
 
 /* Buttons inside search bar */
