@@ -1,0 +1,6 @@
+body {
+  background: #0d011e;
+  color: #b3ecff;
+  font-family: system-ui, sans-serif;
+}
+body.bg-hidden { background-image: none !important; }
