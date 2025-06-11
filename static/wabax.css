@@ -38,7 +38,7 @@ a:hover {
   grid-template-columns: 1fr 1fr;
   gap: 1em;
   align-items: flex-start;
-  margin: 1em;
+  margin: 10px;
 }
 
 /* Search bar container */
@@ -53,7 +53,7 @@ a:hover {
   align-items: flex-start;
   gap: 0.5em;
   color: var(--fg-color);
-  margin: 1em;
+  margin: 10px;
 }
 
 /* Layout for form inside search bar */
@@ -211,6 +211,11 @@ a:hover {
 .import-row input[type="file"] {
   flex: 1;
   max-width: 160px;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
 }
 
 /* Layout grid for header and search */
@@ -219,13 +224,13 @@ a:hover {
   grid-template-columns: 270px 1fr;
   gap: 1em;
   align-items: start;
-  margin: 1em;
+  margin: 10px;
 }
 
 .results-grid {
   display: grid;
   grid-template-columns: 1fr;
-  margin: 1em;
+  margin: 10px;
   gap: 1em;
 }
 
@@ -258,7 +263,7 @@ a:hover {
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 1em;
-  margin: 1em;
+  margin: 10px;
 }
 .header-bar .menu-dropdown {
   justify-self: start;
@@ -284,8 +289,9 @@ a:hover {
   font-size: 0.98em;
   padding: 2px 8px;
   border-radius: 5px;
-  border: 1px solid #e7e7c0;
-  background: #fffbe4;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
 }
 /* Action buttons */
 .bulk-controls button {
@@ -335,7 +341,7 @@ a:hover {
 .url-table th {
   font-weight: bold;
   font-size: 1.05em;
-  padding: 0.5em 0.7em;
+  padding: 0.5em 1em;
   border-bottom: 2px solid #dedc8d;
   text-align: left;
 }
@@ -468,6 +474,26 @@ button:active {
   opacity: 0.8;
 }
 
+/* Generic theming for inputs and selects */
+input[type="text"],
+input[type="file"],
+select {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 var(--fg-color); }
+  50% { box-shadow: 0 0 8px var(--fg-color); }
+  100% { box-shadow: 0 0 0 var(--fg-color); }
+}
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
 /* Pagination styling */
 .pagination {
   margin: 1em 0;
@@ -483,12 +509,17 @@ button:active {
   padding: 0.3em 0.8em;
   border-radius: 4px;
   transition: background 0.2s;
+  border: 1px solid var(--fg-color);
+  color: var(--fg-color);
+  background: var(--bg-color);
 }
 .pagination a:hover {
-  background: #e0e0b3;
+  background: var(--fg-color);
+  color: var(--bg-color);
 }
 .pagination strong {
-  background: #d0d0d0;
+  background: var(--fg-color);
+  color: var(--bg-color);
   font-weight: bold;
 }
 .pagination input[type="text"] {
