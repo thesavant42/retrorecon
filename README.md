@@ -1,100 +1,43 @@
 # retrorecon
 
+A Flask web application for exploring Wayback Machine data. It fetches CDX records, stores them in SQLite, and provides a UI to search, tag and manage the results.
 
-## Source of Truth
-Source of truth: https://github.com/thesavant42/retrorecon
+## Project Home
+<https://github.com/thesavant42/retrorecon>
 
+## Features
+- **CDX import** from the Wayback Machine API
+- **JSON import** of URL lists or records
+- Background import with progress indicator
+- Search and filter by text and tags
+- Inline and bulk tag management
+- Bulk actions with "select all visible" or "select all matching"
+- Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
+- Download, load or create databases from the menu
+- Optional theming via CSS files in `static/themes/`
+- Browser-side search history for quick queries
+- Pagination with jump-to-page and total counts
+- Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
 
-
-A Flask-based tool for exploring, filtering, and tagging CDX data from the Internet Archive’s Wayback Machine.
-
-
----
-
-## 🔧 Tech Stack
-
-- **Backend**: Python 3 + Flask
-- **Database**: SQLite (`wabax.db`)
-- **Frontend**: Jinja2 templates + HTML/CSS + vanilla JS
-- **Dynamic UI**: Pagination, theming, tag-based filtering
-
-
-## 📦 Features
-
-### 🔍 CDX Fetching
-- Query the Wayback CDX API using a domain (e.g. `example.com`)
-- Stores results into `wabax.db` under `urls` table
-- Handles duplicates and bulk insertion cleanly
-
-### 📥 Multiline JSON Import
-- Upload JSON file (in CDX format)
-```
-  [
-    "http://example.com:80/",
-    "https://www.example.com/%22",
-    "https://www.example.com/%22%22",
-    "https://www.example.com/%22,",
-  ]
-```
-- Data is inserted into the database
-
-### 🧩 Filtering + Search
-- Filter by:
-  - **Query string** (`q`)
-  - **File extension** (`ext`)
-  - **Tags**, with support for inclusion/exclusion (`tag`, `-tag`)
-- Filters persist through pagination
-
-### 🏷️ Tag Management
-- Tags displayed as clickable pills
-- Add or delete tags via inline form
-- Tags stored as comma-separated strings
-
-### 🗑️ Bulk Deletion : FIX ME!
-- Select rows via checkbox
-- Delete multiple entries at once
-
-### 📄 Pagination
-- TODO: Configurable number of results per page (default 25)
-- "Previous" / "Next" navigation
-- Page number shown
-- Input Box to jump to page
-
----
-
-Known Bugs, fix me first:
-Bulk Select - "Select all matching"
-  - and delete rows..
-  - and delete tag(s)
-
-✏️ TODO 
-Tag pills and bulk operations
-Export filtered results
-
-
-✅ Known Good State
-
-
-index.html displays:
-Import + fetch CDX forms
-Search/filter inputs
-Select all visible checks all results on the page
-Clear button unchecks all buttons and empties search and tag boxes
-Pagination both top and bottom
-
-
-## 🧪 Running Local
-
+## Installation
 ```bash
-pip install flask
-python init_db.py
+pip install flask requests
+python init_db.py  # set up wabax.db with demo data
 python app.py
 ```
-Then visit: http://127.0.0.1:5000
+Then open <http://127.0.0.1:5000> in your browser.
 
+## Usage
+1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
+2. **Import from JSON**: upload a JSON file containing URLs or full CDX records.
+3. Use the search box and tag filters to narrow results.
+4. Add or remove tags individually or use the bulk actions.
+5. Save the current database, load another or start a new one using the menu.
 
-💡 Attribution
+## License
+MIT
 
-- Wayback Machine API:   https://archive.org/help/wayback_api.php
-- Webpack Exploder:      https://spaceraccoon.github.io/webpack-exploder/
-- Visual Inspiration:    https://indianajones.fandom.com/wiki/Map_Room
+## Attribution
+- [Wayback Machine API](https://archive.org/help/wayback_api.php)
+- [Webpack Exploder](https://spaceraccoon.github.io/webpack-exploder/)
+- [Map Room visual inspiration](https://indianajones.fandom.com/wiki/Map_Room)
