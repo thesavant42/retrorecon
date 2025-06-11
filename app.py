@@ -175,6 +175,13 @@ def index():
 
     current_theme = session.get('theme', AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
 
+    search_history = session.get('search_history', [])
+    if q:
+        if q in search_history:
+            search_history.remove(q)
+        search_history.insert(0, q)
+        session['search_history'] = search_history[:10]
+
     return render_template(
         'index.html',
         urls=rows,
@@ -185,7 +192,8 @@ def index():
         themes=AVAILABLE_THEMES,
         current_theme=current_theme,
         total_count=total_count,
-        db_name=db_name
+        db_name=db_name,
+        search_history=search_history
     )
 
 @app.route('/fetch_cdx', methods=['POST'])

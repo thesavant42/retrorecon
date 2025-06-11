@@ -7,6 +7,7 @@
 </head>
 <body>
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <div class="page-grid">
   <div class="header-bar">
     <!-- Menu Dropdown -->
     <div class="dropdown menu-dropdown">
@@ -90,6 +91,7 @@
   <!-- Control Section -->
   <div class="controls">
     <!-- Search Bar -->
+
     <div class="search-bar">
       <form method="GET" action="/">
         <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" />
@@ -102,7 +104,31 @@
       <div class="history-title">Search history</div>
       <div id="search-history" class="search-history"></div>
     </div>
+    <div class="search-history">
+      <table class="history-table">
+        <thead><tr><th>Search History</th></tr></thead>
+        <tbody>
+          {% for term in search_history %}
+          <tr><td><a href="?q={{ term|urlencode }}">{{ term }}</a></td></tr>
+          {% else %}
+          <tr><td style="color:#888;">No history</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
+  <!-- Import Status Block -->
+  <div id="import-status-block" style="display:none;">
+    <strong>Import status:</strong>
+    <span id="import-status-text"></span>
+    <div id="import-progress-bar-container">
+      <div id="import-progress-bar"></div>
+    </div>
+    <div id="import-progress-numbers" style="margin-top:0.5em;">
+      <span id="import-progress-numbers-span"></span>
+    </div>
+  </div>
+  <!-- Control Section removed: search bar now in page grid -->
 
   <!-- Bulk Actions & Pagination -->
   {% if urls %}
