@@ -1,7 +1,0 @@
-/* Midnight City combo */
-body {
-  background: #ff5555;
-  color: #f8f8f2;
-  font-family: system-ui, sans-serif;
-}
-body.bg-hidden { background-image: none !important; }
