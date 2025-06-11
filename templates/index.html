@@ -79,6 +79,36 @@
             <button type="submit">Explode &amp; Download ZIP</button>
           </form>
         </div>
+        <hr style="margin:8px 0;">
+        <!-- Explode JS Map -->
+        <div>
+          <form method="POST" action="/tools/webpack-zip">
+            <label>🔍 Explode .js.map URL:
+              <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+            </label>
+            <button type="submit">Explode &amp; Download ZIP</button>
+          </form>
+        </div>
+        <hr style="margin:8px 0;">
+        <!-- Bulk Actions -->
+        <div style="font-weight:bold;">Bulk Actions</div>
+        <div class="bulk-controls">
+          <select id="bulk-action-selector" name="action" form="bulk-form" onchange="adjustBulkAction();">
+            <option value="add_tag">➕🏷️ Add Tag Selected</option>
+            <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
+            <option value="delete">✂🗑️ Delete Selected</option>
+          </select>
+          <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
+          <button type="submit" form="bulk-form">Apply</button>
+          <label class="select-all-label" style="margin-left:1em;">
+            <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+            Select all visible
+          </label>
+          <label class="select-all-label">
+            <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+            Select all matching
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -88,32 +118,7 @@
   <form method="POST" action="/bulk_action" id="bulk-form">
     <input type="hidden" name="q" value="{{ q }}" />
     <input type="hidden" name="tag" value="{{ tag }}" />
-    <!-- Bulk Actions Label -->
-    <div style="margin-top:10px; font-weight:bold;">Bulk Actions</div>
-    
-    <!-- Bulk controls -->
-    <div class="bulk-controls">
-      <select id="bulk-action-selector" name="action" onchange="adjustBulkAction();">
-        <option value="add_tag">➕🏷️ Add Tag Selected</option>
-        <option value="remove_tag">➖🏷️ Remove Tag Selected</option>
-        <option value="delete">✂🗑️ Delete Selected</option>
-      </select>
-      <input type="text" name="tag" id="bulk-tag-input" placeholder="Tag" />
-
-      <button type="submit">Apply</button>
-
-      <!-- Select all checkboxes on this page -->
-      <label class="select-all-label" style="margin-left:1em;">
-        <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
-        Select all visible
-      </label>
-      <!-- Select all matching across pages -->
-      <label class="select-all-label">
-        <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
-        Select all matching
-        <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
-      </label>
-    </div>
+    <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
     
     <!-- Pagination controls -->
     <div class="pagination" style="margin-top:1em;">
