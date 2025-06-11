@@ -6,26 +6,14 @@
   <link rel="stylesheet" href="/static/wabax.css" />
 </head>
 <body>
-  <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
-  <!-- Import Status Block -->
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <div id="import-status-block" style="display:none;">
-    <strong>Import status:</strong>
-    <span id="import-status-text"></span>
-    <div id="import-progress-bar-container">
-      <div id="import-progress-bar"></div>
-    </div>
-    <div id="import-progress-numbers" style="margin-top:0.5em;">
-      <span id="import-progress-numbers-span"></span>
-    </div>
-  </div>
-  <!-- Menu Dropdown -->
-  <div class="dropdown menu-dropdown">
-    <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
-    <div class="dropdown-content" id="main-dropdown-content">
-      <!-- Fetch Domain Form -->
-      <div>
-        <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
+  <div class="page-grid">
+    <div class="dropdown menu-dropdown">
+      <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
+      <div class="dropdown-content" id="main-dropdown-content">
+        <!-- Fetch Domain Form -->
+        <div>
+          <form method="POST" action="/fetch_cdx" style="margin-bottom:8px;">
           <label>🌐 Domain:
             <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
           </label>
@@ -95,10 +83,7 @@
         </label>
       </div>
     </div>
-  </div>
-  <!-- Control Section -->
-  <div class="controls">
-    <!-- Search Bar -->
+    <h1>hindsite <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
     <div class="search-bar">
       <form method="GET" action="/">
         <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" />
@@ -111,7 +96,31 @@
         <button type="button" onclick="quickSearch('.env')">.env</button>
       </div>
     </div>
+    <div class="search-history">
+      <table class="history-table">
+        <thead><tr><th>Search History</th></tr></thead>
+        <tbody>
+          {% for term in search_history %}
+          <tr><td><a href="?q={{ term|urlencode }}">{{ term }}</a></td></tr>
+          {% else %}
+          <tr><td style="color:#888;">No history</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
+  <!-- Import Status Block -->
+  <div id="import-status-block" style="display:none;">
+    <strong>Import status:</strong>
+    <span id="import-status-text"></span>
+    <div id="import-progress-bar-container">
+      <div id="import-progress-bar"></div>
+    </div>
+    <div id="import-progress-numbers" style="margin-top:0.5em;">
+      <span id="import-progress-numbers-span"></span>
+    </div>
+  </div>
+  <!-- Control Section removed: search bar now in page grid -->
 
   <!-- Bulk Actions & Pagination -->
   {% if urls %}

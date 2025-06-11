@@ -147,10 +147,40 @@ a:hover {
 
 /* Fixed menu placement */
 .menu-dropdown {
-  position: fixed;
-  top: 1em;
-  left: 1em;
-  z-index: 1000;
+  position: relative;
+}
+
+/* Layout grid for header and search */
+.page-grid {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 1em;
+  align-items: start;
+  margin: 1em;
+}
+
+.page-grid h1 {
+  margin: 0;
+  font-size: 1.8em;
+  align-self: center;
+}
+
+.search-history table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 1px 6px #eaeab0;
+}
+
+.search-history th,
+.search-history td {
+  padding: 0.4em 0.6em;
+  border-bottom: 1px solid #e7e7c0;
+  text-align: left;
+}
+
+.search-history tbody tr:nth-child(even) {
+  background: #f8f8ff;
 }
 
 /* Bulk controls section with flex layout */
