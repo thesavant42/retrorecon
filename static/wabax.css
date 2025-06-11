@@ -186,6 +186,13 @@ a:hover {
   margin: 1em;
 }
 
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 1em;
+  gap: 1em;
+}
+
 .page-grid h1 {
   margin: 0;
   font-size: 1.8em;
