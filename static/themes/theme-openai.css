@@ -1,7 +1,10 @@
 /* OpenAI-inspired light theme */
-body {
+:root {
   --bg-color: #f7f7f8;
   --fg-color: #303030;
+}
+
+.retrorecon-root {
   background: var(--bg-color);
   color: var(--fg-color);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

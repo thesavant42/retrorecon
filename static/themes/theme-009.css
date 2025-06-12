@@ -1,8 +1,12 @@
-body {
+:root {
   --bg-color: #21222c;
   --fg-color: #f8f8f2;
+}
+
+.retrorecon-root {
   background: var(--bg-color);
   color: var(--fg-color);
   font-family: system-ui, sans-serif;
 }
+
 body.bg-hidden { background-image: none !important; }

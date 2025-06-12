@@ -29,41 +29,41 @@
   cursor: pointer;
 }
 
-.hidden { display: none; }
+.retrorecon-root .hidden { display: none; }
 
-.spinner {
+.retrorecon-root .spinner {
   animation: spin 2s linear infinite;
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-.mt-1 { margin-top: 1em; }
-.mt-05 { margin-top: 0.5em; }
-.ml-1 { margin-left: 1em; }
-.ml-05 { margin-left: 0.5em; }
-.ml-4px { margin-left: 4px; }
-.mr-03 { margin-right: 0.3em; }
-.mb-4px { margin-bottom: 4px; }
-.m-2em { margin: 2em; }
-.my-8px { margin: 8px 0; }
-.w-100 { width: 100%; }
-.w-95 { width: 95%; }
-.w-2em { width: 2em; }
-.text-left { text-align: left; }
-.text-center { text-align: center; }
-.text-muted { color: #888; }
-.no-underline { text-decoration: none; }
-.d-inline { display: inline; }
-.d-inline-block { display: inline-block; }
-.d-block { display: block; }
-.d-flex { display: flex; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.nowrap { white-space: nowrap; }
-.d-none { display: none; }
-.cursor-pointer { cursor: pointer; }
-.fw-bold { font-weight: bold; }
-.version-text { font-size: 0.7em; color: #666; }
-.ml-01 { margin-left: 0.1em; }
+.retrorecon-root .mt-1 { margin-top: 1em; }
+.retrorecon-root .mt-05 { margin-top: 0.5em; }
+.retrorecon-root .ml-1 { margin-left: 1em; }
+.retrorecon-root .ml-05 { margin-left: 0.5em; }
+.retrorecon-root .ml-4px { margin-left: 4px; }
+.retrorecon-root .mr-03 { margin-right: 0.3em; }
+.retrorecon-root .mb-4px { margin-bottom: 4px; }
+.retrorecon-root .m-2em { margin: 2em; }
+.retrorecon-root .my-8px { margin: 8px 0; }
+.retrorecon-root .w-100 { width: 100%; }
+.retrorecon-root .w-95 { width: 95%; }
+.retrorecon-root .w-2em { width: 2em; }
+.retrorecon-root .text-left { text-align: left; }
+.retrorecon-root .text-center { text-align: center; }
+.retrorecon-root .text-muted { color: #888; }
+.retrorecon-root .no-underline { text-decoration: none; }
+.retrorecon-root .d-inline { display: inline; }
+.retrorecon-root .d-inline-block { display: inline-block; }
+.retrorecon-root .d-block { display: block; }
+.retrorecon-root .d-flex { display: flex; }
+.retrorecon-root .flex-between { display: flex; justify-content: space-between; align-items: center; }
+.retrorecon-root .nowrap { white-space: nowrap; }
+.retrorecon-root .d-none { display: none; }
+.retrorecon-root .cursor-pointer { cursor: pointer; }
+.retrorecon-root .fw-bold { font-weight: bold; }
+.retrorecon-root .version-text { font-size: 0.7em; color: #666; }
+.retrorecon-root .ml-01 { margin-left: 0.1em; }
 
 /* Generic form styles */
 .retrorecon-root .btn {
