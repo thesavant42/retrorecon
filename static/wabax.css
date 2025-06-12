@@ -375,15 +375,6 @@
 .retrorecon-root .bulk-action-btn {
   font-size: 1em;
   padding: 2px 11px;
-  border-radius: 6px;
-  border: 1px solid var(--fg-color);
-  background: var(--fg-color);
-  color: var(--bg-color);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.retrorecon-root .bulk-action-btn:hover {
-  opacity: 0.85;
 }
 
 /* Row for bulk action checkboxes */
