@@ -13,10 +13,18 @@
     body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
   </style>
   {% endif %}
+  <style>
+    /* stylelint-disable */
+    {% for t in themes %}
+    {% set cols = theme_swatches.get(t) %}
+    #theme-opt-{{ loop.index }} { background: {{ cols[0] }}; color: {{ cols[1] }}; }
+    {% endfor %}
+    /* stylelint-enable */
+  </style>
 </head>
-<body>
+<body class="app">
   {% macro render_pagination(page, total_pages, q, tag, total_count) %}
-  <div class="pagination" style="margin-top:1em;">
+  <div class="pagination mt-1">
     <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
       <a href="?page=1&q={{ q }}&tag={{ tag }}">&#171;&#171;</a>
@@ -43,7 +51,7 @@
       <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">&#187;</a>
       <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">&#187;&#187;</a>
     {% endif %}
-    <form style="display:inline; margin-left:1em;" onsubmit="return gotoPage(this);">
+    <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
       <input type="hidden" name="tag" value="{{ tag }}" />
       <input type="text" name="page" size="2" placeholder="Page" />
@@ -55,14 +63,14 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
   <!-- Table A : Header -->
-  <table id="layout-a" style="width:100%;">
+  <table id="layout-a" class="w-100">
     <tr>
-      <td style="text-align:left;">
+      <td class="text-left">
         <div class="dropdown menu-dropdown">
           <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
           <div class="dropdown-content" id="main-dropdown-content">
             <div class="import-controls">
-              <div style="font-weight:bold;">Import Options</div>
+              <div class="fw-bold">Import Options</div>
               <form class="import-row" method="POST" action="/fetch_cdx">
                 <label>⏳ Import from CDX API:
                   <input type="text" name="domain" placeholder="example.com" required />
@@ -81,16 +89,16 @@
                 </label>
                 <button type="submit">Import</button>
               </form>
-              <div style="margin-top:8px;">
-                <form method="GET" action="/save_db" id="save-db-form" style="display:inline;">
+              <div class="mt-05">
+                <form method="GET" action="/save_db" id="save-db-form" class="d-inline">
                   <button type="submit">💾 Save As</button>
                 </form>
-                <form method="POST" action="/new_db" style="display:inline; margin-left:4px;">
+                <form method="POST" action="/new_db" class="d-inline ml-4px">
                   <button type="submit">🆕 New DB</button>
                 </form>
               </div>
             </div>
-            <hr style="margin:8px 0;">
+            <hr class="my-8px">
             <div>
               <form method="POST" action="/tools/webpack-zip" class="import-row">
                 <label>🔍 Explode .js.map URL:
@@ -99,15 +107,15 @@
                 <button type="submit" class="explode-btn">Explode &amp; Download ZIP</button>
               </form>
             </div>
-            <hr style="margin:8px 0;">
-              <div style="font-weight:bold;">Bulk Actions</div>
+            <hr class="my-8px">
+              <div class="fw-bold">Bulk Actions</div>
               <div class="bulk-controls">
                 <button type="submit" form="bulk-form" name="action" value="add_tag" class="bulk-action-btn">➕🏷️ Add Tag All Selected</button>
                 <button type="submit" form="bulk-form" name="action" value="remove_tag" class="bulk-action-btn">➖🏷️ Remove Tag Selected</button>
                 <button type="submit" form="bulk-form" name="action" value="delete" class="bulk-action-btn">✂🗑️ Delete Selected</button>
                 <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
                 <div class="checkbox-row">
-                  <label class="select-all-label" style="margin-left:1em;">
+                  <label class="select-all-label ml-1">
                     <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
                     Select all visible
                   </label>
@@ -117,33 +125,33 @@
                   </label>
                 </div>
               </div>
-              <hr style="margin:8px 0;">
-              <div style="font-weight:bold;">Themes</div>
-              <form method="POST" action="/set_theme" class="theme-row" style="margin-bottom:4px; display:inline-block;">
+              <hr class="my-8px">
+              <div class="fw-bold">Themes</div>
+              <form method="POST" action="/set_theme" class="theme-row mb-4px d-inline-block">
                 <select name="theme">
                   {% for t in themes %}
                   {% set cols = theme_swatches.get(t) %}
-                  <option value="{{ t }}" style="background: {{ cols[0] }}; color: {{ cols[1] }};" {% if t == current_theme %}selected{% endif %}>
+                  <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
                     {{ t.replace('theme-','').replace('.css','') }}
                   </option>
                   {% endfor %}
                 </select>
                 <button type="submit">Apply</button>
               </form>
-              <select id="background-select" style="margin-left:4px;">
+              <select id="background-select" class="ml-4px">
                 {% for bg in backgrounds %}
                 <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
                 {% endfor %}
               </select>
-              <label style="display:block;">
+              <label class="d-block">
                 <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)">
                 Show background image
               </label>
           </div>
         </div>
       </td>
-      <td style="text-align:left;">
-        <h1>retrorecon <span style="font-size:0.7em; color:#666;">v1.0.0</span></h1>
+      <td class="text-left">
+        <h1>retrorecon <span class="version-text">v1.0.0</span></h1>
       </td>
     </tr>
   </table>
@@ -151,10 +159,10 @@
   <!-- Table B : Search bar and buttons -->
   <div class="search-bar">
     <form method="GET" action="/" id="search-form">
-      <table style="width:100%;">
+      <table class="w-100">
         <tr>
-          <td style="text-align:center;">
-            <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" style="width:95%;" />
+          <td class="text-center">
+            <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-95" />
           </td>
         </tr>
       </table>
@@ -170,26 +178,26 @@
   </div>
 
   <!-- Table C : Pagination and saved tags -->
-  <table id="layout-c" style="width:100%; margin-top:1em;">
+  <table id="layout-c" class="w-100 mt-1">
     <tr>
-      <td style="text-align:left;">
+      <td class="text-left">
         {{ render_pagination(page, total_pages, q, tag, total_count) }}
       </td>
     </tr>
   </table>
 
   <!-- Table D : Results -->
-  <table id="layout-d" style="width:100%; margin-top:1em;">
+  <table id="layout-d" class="w-100 mt-1">
     <tr>
       <td>
         <div class="results-grid">
-          <div id="import-status-block" style="display:none;">
+          <div id="import-status-block" class="d-none">
             <strong>Import status:</strong>
             <span id="import-status-text"></span>
             <div id="import-progress-bar-container">
               <div id="import-progress-bar"></div>
             </div>
-            <div id="import-progress-numbers" style="margin-top:0.5em;">
+            <div id="import-progress-numbers" class="mt-05">
               <span id="import-progress-numbers-span"></span>
             </div>
           </div>
@@ -204,7 +212,7 @@
             <table class="url-table">
               <thead>
                 <tr>
-                  <th style="width:2em;">
+                  <th class="w-2em">
                     <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
                   </th>
                   <th>URL</th>
@@ -215,7 +223,7 @@
               </thead>
               <tbody>
                 {% for url in urls %}
-                <tr class="url-row-main" onclick="window.open('{{ url.url }}', '_blank');" style="cursor:pointer;">
+                <tr class="url-row-main cursor-pointer" onclick="window.open('{{ url.url }}', '_blank');">
                   <td>
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
@@ -227,7 +235,7 @@
                 <tr class="url-row-buttons">
                   <td></td>
                   <td colspan="4">
-                    <div class="url-tools-row" style="white-space: nowrap;">
+                    <div class="url-tools-row nowrap">
                       <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
                       <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
                       <button class="explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
@@ -235,7 +243,7 @@
                       <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
                       <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
                       <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
-                      <form method="POST" action="/bulk_action" style="display:inline;margin-right:0.3em;">
+                      <form method="POST" action="/bulk_action" class="d-inline mr-03">
                         <input type="hidden" name="action" value="delete" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
                         <input type="hidden" name="q" value="{{ q }}" />
@@ -243,7 +251,7 @@
                         <button type="submit" class="delete-btn" title="Delete">🗑️</button>
                       </form>
                       {% if ".js.map" in url.url %}
-                      <form method="POST" action="/tools/webpack-zip" style="display:inline; margin-left:0.1em;">
+                      <form method="POST" action="/tools/webpack-zip" class="d-inline ml-01">
                         <input type="hidden" name="map_url" value="{{ url.url }}" />
                         <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
                       </form>
@@ -252,7 +260,7 @@
                       {% endif %}
                       {% for tag in (url.tags or '').split(',') if tag %}
                       <span class="tag-pill">{{ tag }}
-                        <form method="POST" action="/bulk_action" style="display:inline;">
+                        <form method="POST" action="/bulk_action" class="d-inline">
                           <input type="hidden" name="action" value="remove_tag" />
                           <input type="hidden" name="tag" value="{{ tag }}" />
                           <input type="hidden" name="selected_ids" value="{{ url.id }}" />
@@ -260,7 +268,7 @@
                         </form>
                       </span>
                       {% endfor %}
-                      <form method="POST" action="/bulk_action" style="display:inline; margin-left:0.5em;">
+                      <form method="POST" action="/bulk_action" class="d-inline ml-05">
                         <input type="hidden" name="action" value="add_tag" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
                         <input type="text" name="tag" placeholder="Tag" size="8" required/>
@@ -274,17 +282,17 @@
             </table>
           </form>
           {% else %}
-            <div style="margin:2em; color:#888; text-align:center;">No URLs found for this query.</div>
+            <div class="m-2em text-muted text-center">No URLs found for this query.</div>
           {% endif %}
         </div>
       </td>
     </tr>
     <tr>
       <td>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1em;">
+        <div class="flex-between mt-1">
           <div>{{ render_pagination(page, total_pages, q, tag, total_count) }}</div>
           <div class="footer">
-            <a href="https://github.com/thesavant42/retrorecon" target="_blank" style="text-decoration:none; color:#888;">
+            <a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline text-muted">
               &copy; 2025 retrorecon - Archive Explorer
             </a>
           </div>

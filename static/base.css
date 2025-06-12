@@ -4,7 +4,7 @@
   --accent-color: #1b51a1;
 }
 
-body {
+.app {
   background: var(--bg-color);
   color: var(--fg-color);
   font-family: "Segoe UI", Arial, sans-serif;
@@ -13,22 +13,23 @@ body {
   line-height: 1.5;
 }
 
-h1, h2 {
+.app h1,
+.app h2 {
   margin: 1em 0;
   text-align: center;
   font-weight: bold;
 }
 
-a {
+.app a {
   color: var(--accent-color);
   text-decoration: none;
 }
 
-a:hover {
+.app a:hover {
   text-decoration: underline;
 }
 
-button {
+.app button {
   cursor: pointer;
 }
 
@@ -39,3 +40,31 @@ button {
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+.mt-1 { margin-top: 1em; }
+.mt-05 { margin-top: 0.5em; }
+.ml-1 { margin-left: 1em; }
+.ml-05 { margin-left: 0.5em; }
+.ml-4px { margin-left: 4px; }
+.mr-03 { margin-right: 0.3em; }
+.mb-4px { margin-bottom: 4px; }
+.m-2em { margin: 2em; }
+.my-8px { margin: 8px 0; }
+.w-100 { width: 100%; }
+.w-95 { width: 95%; }
+.w-2em { width: 2em; }
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-muted { color: #888; }
+.no-underline { text-decoration: none; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.nowrap { white-space: nowrap; }
+.d-none { display: none; }
+.cursor-pointer { cursor: pointer; }
+.fw-bold { font-weight: bold; }
+.version-text { font-size: 0.7em; color: #666; }
+.ml-01 { margin-left: 0.1em; }

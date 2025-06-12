@@ -3,4 +3,7 @@
 *.sqlite
 *.json
 !demo_data.json
-uploads/
+!package.json
+!.stylelintrc.json
+node_modules/
+package-lock.json
