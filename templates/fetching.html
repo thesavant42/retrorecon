@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
 </head>
 <body class="app">
+  <div class="retrorecon-root">
   <h2>Fetching CDX Data...</h2>
   <img src="{{ url_for('static', filename='hourglass.gif') }}" class="spinner" width="64" height="64" />
   <p id="status">Working...</p>
@@ -26,5 +27,6 @@
     }
     poll();
   </script>
+  </div>
 </body>
 </html>

@@ -23,6 +23,7 @@
   </style>
 </head>
 <body class="app">
+  <div class="retrorecon-root">
   {% macro render_pagination(page, total_pages, q, tag, total_count) %}
   <div class="pagination mt-1">
     <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
@@ -499,5 +500,6 @@
       });
     }
   </script>
+  </div>
 </body>
 </html>
