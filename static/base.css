@@ -10,16 +10,6 @@
   text-align: center;
   font-weight: bold;
 }
-.retrorecon-root a {
-  color: var(--accent-color);
-  text-decoration: none;
-}
-.retrorecon-root a:hover {
-  text-decoration: underline;
-}
-.retrorecon-root button {
-  cursor: pointer;
-}
 
 .retrorecon-root .hidden { display: none; }
 
@@ -97,6 +87,39 @@
 
 .retrorecon-root .form-checkbox {
   accent-color: var(--fg-color);
+}
+/* Glowing style for all buttons */
+.retrorecon-root button {
+  background: var(--fg-color);
+  border: 1px solid var(--fg-color);
+  color: var(--bg-color);
+  border-radius: 7px;
+  padding: 2px 11px;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.3s, opacity 0.2s;
+}
+.retrorecon-root button:hover {
+  box-shadow: 0 0 6px var(--fg-color);
+  opacity: 0.9;
+}
+.retrorecon-root button:active {
+  box-shadow: 0 0 10px var(--fg-color);
+  opacity: 0.8;
+}
+/* Generic theming for inputs and selects */
+.retrorecon-root input[type="text"],
+.retrorecon-root input[type="file"],
+.retrorecon-root select {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+.retrorecon-root input[type="checkbox"] {
+  accent-color: var(--fg-color);
+  cursor: pointer;
 }
 /* Minimal CSS reset */
 .retrorecon-root *,
@@ -211,9 +234,6 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.retrorecon-root .search-bar button:hover{
-  opacity: 0.8;
-}
 
 .retrorecon-root #quick-searches{
   display: none;
@@ -251,9 +271,6 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.retrorecon-root .search-history button:hover{
-  opacity: 0.8;
-}
 
 .retrorecon-root .db-buttons{
   display: flex;
@@ -271,9 +288,6 @@
   border-radius: 6px;
   cursor: pointer;
   transition: opacity 0.2s;
-}
-.retrorecon-root .db-buttons button:hover{
-  opacity: 0.85;
 }
 
 /* Dropdown styling (menu) */
@@ -347,13 +361,8 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.retrorecon-root .import-row button:hover{
-  opacity: 0.85;
-}
 
 /* Theme selection row */
-.retrorecon-root .theme-row select, .retrorecon-root #background-select{
-}
 /* Map URL input inside dropdown */
 .retrorecon-root #map-url-input {
   max-width: 160px;
@@ -373,9 +382,6 @@
   border-radius: 6px;
   cursor: pointer;
   transition: opacity 0.2s;
-}
-.retrorecon-root .theme-row button:hover {
-  opacity: 0.85;
 }
 /* Standalone exploder form input */
 .retrorecon-root #mapUrlInput {
@@ -517,16 +523,6 @@
 }
 
 /* Alternating row backgrounds for readability */
-.retrorecon-root .url-row-main:nth-child(4n),
-.retrorecon-root .url-row-buttons:nth-child(4n + 1) {
-  background: var(--bg-color);
-}
-.retrorecon-root .url-row-main:nth-child(4n + 2),
-.retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: var(--bg-color);
-}
-
-/* Main row: cursor pointer for entire row */
 .retrorecon-root .url-row-main {
   cursor: pointer;
 }
@@ -541,6 +537,16 @@
 .retrorecon-root .url-row-main input[type="checkbox"] {
   cursor: pointer;
 }
+.retrorecon-root .url-row-main:nth-child(4n),
+.retrorecon-root .url-row-buttons:nth-child(4n + 1) {
+  background: var(--bg-color);
+}
+.retrorecon-root .url-row-main:nth-child(4n + 2),
+.retrorecon-root .url-row-buttons:nth-child(4n + 3) {
+  background: var(--bg-color);
+}
+
+/* Main row: cursor pointer for entire row */
 
 /* Button-like actions in row tools */
 .retrorecon-root .url-tools-row {
@@ -580,9 +586,6 @@
   margin-left: 2px;
   cursor: pointer;
   transition: opacity 0.2s;
-}
-.retrorecon-root .tag-pill button:hover {
-  opacity: 0.8;
 }
 
 /* Buttons in row actions */
@@ -631,36 +634,7 @@
   cursor: not-allowed;
 }
 
-/* Glowing style for all buttons */
-.retrorecon-root button {
-  background: var(--fg-color);
-  border: 1px solid var(--fg-color);
-  color: var(--bg-color);
-  border-radius: 7px;
-  padding: 2px 11px;
-  cursor: pointer;
-  position: relative;
-  transition: box-shadow 0.3s, opacity 0.2s;
-}
-.retrorecon-root button:hover {
-  box-shadow: 0 0 6px var(--fg-color);
-  opacity: 0.9;
-}
-.retrorecon-root button:active {
-  box-shadow: 0 0 10px var(--fg-color);
-  opacity: 0.8;
-}
 
-/* Generic theming for inputs and selects */
-.retrorecon-root input[type="text"],
-.retrorecon-root input[type="file"],
-.retrorecon-root select {
-  border: 1px solid var(--fg-color);
-  border-radius: 5px;
-  background: var(--bg-color);
-  color: var(--fg-color);
-  padding: 2px 6px;
-}
 
 @keyframes pulse { 0% { box-shadow: 0 0 0 var(--fg-color); } 50% { box-shadow: 0 0 8px var(--fg-color); } 100% { box-shadow: 0 0 0 var(--fg-color); } }
 .retrorecon-root .pulse {
@@ -670,16 +644,6 @@
 /* Pagination styling */
 .retrorecon-root .pagination {
   margin: 1em 0;
-  display: flex;
-  gap: 0.5em;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  font-family: "Segoe UI", "Arial", sans-serif;
-}
-.retrorecon-root .pagination a,
-.retrorecon-root .pagination strong {
-  padding: 0.3em 0.8em;
   border-radius: 4px;
   transition: background 0.2s;
   border: 1px solid var(--fg-color);
@@ -709,7 +673,25 @@
   margin-left: 0.2em;
 }
 
+.retrorecon-root .search-bar button:hover{
+  opacity: 0.8;
+}
 /* Style for the total results count */
+.retrorecon-root .search-history button:hover{
+  opacity: 0.8;
+}
+.retrorecon-root .db-buttons button:hover{
+  opacity: 0.85;
+}
+.retrorecon-root .import-row button:hover{
+  opacity: 0.85;
+}
+.retrorecon-root .theme-row button:hover {
+  opacity: 0.85;
+}
+.retrorecon-root .tag-pill button:hover {
+  opacity: 0.8;
+}
 .retrorecon-root .total-count {
   margin-left: 1em;
   color: var(--fg-color);
@@ -728,10 +710,6 @@
 /* Misc: checkboxes for row selection */
 .retrorecon-root .row-checkbox {
   margin-right: 4px;
-}
-.retrorecon-root input[type="checkbox"] {
-  accent-color: var(--fg-color);
-  cursor: pointer;
 }
 
 /* Optional: Add hover effect to entire rows for better UX */
