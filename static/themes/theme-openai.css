@@ -14,35 +14,35 @@ body.bg-hidden {
   background-image: none !important;
 }
 
-a {
+.retrorecon-root a {
   color: #10a37f;
 }
 
-.search-bar {
+.retrorecon-root .search-bar {
   background: var(--bg-color);
   border: 1px solid var(--fg-color);
 }
 
-.search-bar input[type="text"] {
+.retrorecon-root .search-bar input[type="text"] {
   background: var(--bg-color);
   border: 1px solid var(--fg-color);
   color: var(--fg-color);
 }
 
-.search-bar button {
+.retrorecon-root .search-bar button {
   background: var(--fg-color);
   border: none;
   color: var(--bg-color);
 }
-.search-bar button:hover {
+.retrorecon-root .search-bar button:hover {
   opacity: 0.8;
 }
 
-.url-table th {
+.retrorecon-root .url-table th {
   background: var(--fg-color);
   color: var(--bg-color);
 }
-.url-table td {
+.retrorecon-root .url-table td {
   background: var(--bg-color);
   color: var(--fg-color);
 }

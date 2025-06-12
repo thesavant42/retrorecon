@@ -316,7 +316,7 @@
   box-shadow: 0 1px 6px #eaeab0;
 }
 
-.search-history th,
+.retrorecon-root .search-history th,
 .retrorecon-root .search-history td {
   padding: 0.4em 0.6em;
   border-bottom: 1px solid #e7e7c0;
@@ -425,11 +425,11 @@
 }
 
 /* Alternating row backgrounds for readability */
-.url-row-main:nth-child(4n),
+.retrorecon-root .url-row-main:nth-child(4n),
 .retrorecon-root .url-row-buttons:nth-child(4n + 1) {
   background: var(--bg-color);
 }
-.url-row-main:nth-child(4n + 2),
+.retrorecon-root .url-row-main:nth-child(4n + 2),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
   background: var(--bg-color);
 }
@@ -570,11 +570,7 @@
   padding: 2px 6px;
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 var(--fg-color); }
-  50% { box-shadow: 0 0 8px var(--fg-color); }
-  100% { box-shadow: 0 0 0 var(--fg-color); }
-}
+@keyframes pulse { 0% { box-shadow: 0 0 0 var(--fg-color); } 50% { box-shadow: 0 0 8px var(--fg-color); } 100% { box-shadow: 0 0 0 var(--fg-color); } }
 .retrorecon-root .pulse {
   animation: pulse 1.5s infinite;
 }
@@ -589,7 +585,7 @@
   align-items: center;
   font-family: "Segoe UI", "Arial", sans-serif;
 }
-.pagination a,
+.retrorecon-root .pagination a,
 .retrorecon-root .pagination strong {
   padding: 0.3em 0.8em;
   border-radius: 4px;
@@ -647,7 +643,7 @@
 }
 
 /* Optional: Add hover effect to entire rows for better UX */
-.url-row-main:hover,
+.retrorecon-root .url-row-main:hover,
 .retrorecon-root .url-row-buttons:hover {
   background-color: #eaeaea;
 }
@@ -659,8 +655,8 @@
 .retrorecon-root .status-5 { color: red; }
 
 /* Solid background for layout tables */
-#layout-a td,
-#layout-c td,
+.retrorecon-root #layout-a td,
+.retrorecon-root #layout-c td,
 .retrorecon-root #layout-d td {
   background: var(--bg-color);
   color: var(--fg-color);
