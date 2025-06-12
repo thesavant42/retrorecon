@@ -89,6 +89,15 @@
   padding: 2px 6px;
 }
 
+/* Ensure file inputs inherit base form styling */
+.retrorecon-root input[type="file"] {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+
 .retrorecon-root .form-label {
   margin-right: 0.3em;
   font-size: 0.96em;
