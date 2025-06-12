@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <title>retrorecon - {{ db_name }} - {{ total_count }} results</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
-  <link rel="stylesheet" href="/static/wabax.css" />
   {% if current_theme %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
+  <link rel="stylesheet" href="/static/wabax.css" />
   {% if current_background %}
   <style>
     body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
