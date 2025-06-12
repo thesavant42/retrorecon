@@ -217,6 +217,25 @@ a:hover {
   color: var(--fg-color);
   padding: 2px 6px;
 }
+/* Map URL input inside dropdown */
+#map-url-input {
+  max-width: 160px;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+/* Standalone exploder form input */
+#mapUrlInput {
+  flex: 1;
+  font-size: 1em;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 0.5em;
+}
 
 /* Layout grid for header and search */
 .page-grid {
@@ -286,6 +305,15 @@ a:hover {
 }
 /* Tag input */
 .bulk-controls input[type="text"] {
+  font-size: 0.98em;
+  padding: 2px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
+}
+/* Specific bulk tag input */
+#bulk-tag-input {
   font-size: 0.98em;
   padding: 2px 8px;
   border-radius: 5px;
