@@ -353,7 +353,7 @@
 
 /* Theme selection row */
 .retrorecon-root .theme-row select, .retrorecon-root #background-select{
-
+}
 /* Map URL input inside dropdown */
 .retrorecon-root #map-url-input {
   max-width: 160px;
