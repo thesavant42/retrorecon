@@ -298,7 +298,7 @@
 }
 .retrorecon-root .dropbtn{
   background-color: var(--bg-color);
-  color: var(--bg-color);
+  color: var(--fg-color);
   padding: 5px 10px;
   font-size: 1.05em;
   border: 1px solid var(--fg-color);
@@ -312,7 +312,7 @@
 .retrorecon-root .dropdown-content {
     display: none;
     position: absolute;
-    background-color: var(--bg-color);
+    background-color: #0e0120fc;
     min-width: 220px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
