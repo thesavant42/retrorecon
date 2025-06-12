@@ -426,7 +426,7 @@
 
 .retrorecon-root .search-history tbody tr:nth-child(even) {
   background: var(--bg-color);
-  
+} 
 /* Header bar layout */
 .retrorecon-root .header-bar {
   display: grid;
