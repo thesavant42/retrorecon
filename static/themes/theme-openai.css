@@ -1,7 +1,8 @@
-/* OpenAI-inspired light theme */
+/* OpenAI-inspired dark theme */
 :root {
-  --bg-color: #0d011e00;
-  --fg-color: #303030;
+  --bg-color: #202123;
+  --fg-color: #ececf1;
+  --accent-color: #10a37f;
 }
 
 .retrorecon-root {

@@ -200,7 +200,7 @@ def index():
 
     db_name = os.path.basename(app.config['DATABASE'])
 
-    default_theme = 'theme-openai.css' if 'theme-openai.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
+    default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
 
     default_background = 'background.jpg' if 'background.jpg' in AVAILABLE_BACKGROUNDS else (AVAILABLE_BACKGROUNDS[0] if AVAILABLE_BACKGROUNDS else '')

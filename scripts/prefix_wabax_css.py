@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 REPORT_PATH = Path('report.json')
-CSS_PATH = Path('static/wabax.css')
+CSS_PATH = Path('static/base.css')
 PREFIX = '.retrorecon-root '
 
 # Load report.json
