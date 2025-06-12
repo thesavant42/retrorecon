@@ -494,14 +494,14 @@
 }
 
 /* Buttons in row actions */
-.copy-btn,
-.delete-btn,
-.explode-btn,
-.btn-wayback,
-.shodan-btn,
-.vt-btn,
-.github-btn,
-.google-btn,
+.retrorecon-root .copy-btn,
+.retrorecon-root .delete-btn,
+.retrorecon-root .explode-btn,
+.retrorecon-root .btn-wayback,
+.retrorecon-root .shodan-btn,
+.retrorecon-root .vt-btn,
+.retrorecon-root .github-btn,
+.retrorecon-root .google-btn,
 .retrorecon-root .crtsh-btn {
   background: var(--fg-color);
   border: 1px solid var(--fg-color);
@@ -515,25 +515,25 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.copy-btn:hover,
-.delete-btn:hover,
-.explode-btn:hover,
-.btn-wayback:hover,
-.shodan-btn:hover,
-.vt-btn:hover,
-.github-btn:hover,
-.google-btn:hover,
+.retrorecon-root .copy-btn:hover,
+.retrorecon-root .delete-btn:hover,
+.retrorecon-root .explode-btn:hover,
+.retrorecon-root .btn-wayback:hover,
+.retrorecon-root .shodan-btn:hover,
+.retrorecon-root .vt-btn:hover,
+.retrorecon-root .github-btn:hover,
+.retrorecon-root .google-btn:hover,
 .retrorecon-root .crtsh-btn:hover {
   opacity: 0.8;
 }
-.copy-btn:active,
-.delete-btn:active,
+.retrorecon-root .copy-btn:active,
+.retrorecon-root .delete-btn:active,
 .retrorecon-root .explode-btn:active {
   opacity: 0.6;
 }
 
 /* Disabled state for explode buttons */
-.disabled-btn,
+.retrorecon-root .disabled-btn,
 .retrorecon-root .explode-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
