@@ -15,7 +15,7 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 - Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
 - Download, load or create databases from the menu
 - Theme switching via Menu dropdown with optional background image toggle
-- Optional theming via CSS files in `static/themes/`, including an OpenAI-inspired style and hundreds of Midnight City combinations (generated via `scripts/generate_midnight_themes.py`)
+- Optional theming via CSS files in `static/themes/`, including a dark OpenAI-inspired style and hundreds of Midnight City combinations (generated via `scripts/generate_midnight_themes.py`)
 - Browser-side search history for quick queries
 - Pagination with jump-to-page and total counts
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
