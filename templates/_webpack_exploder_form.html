@@ -10,13 +10,14 @@
     action="{{ url_for('webpack_zip') }}"
     class="d-flex"
   >
-    <label for="mapUrlInput">.js.map URL:</label>
+    <label for="mapUrlInput" class="form-label">.js.map URL:</label>
     <input
       type="text"
       id="mapUrlInput"
       name="map_url"
       placeholder="https://example.com/static/js/app.js.map"
       required
+      class="form-input"
     />
 
     <!-- Explode (client-side listing) -->

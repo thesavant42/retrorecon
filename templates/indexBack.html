@@ -198,8 +198,8 @@
     <!-- Search bar -->
     <div class="search-bar">
       <form method="GET" action="/">
-        <input type="text" name="q" placeholder="Search..." value="{{ q }}" />
-        <button type="submit">Search</button>
+        <input type="text" name="q" placeholder="Search..." value="{{ q }}" class="form-input" />
+        <button type="submit" class="btn">Search</button>
       </form>
     </div>
 
@@ -209,26 +209,26 @@
       <div class="dropdown-content" id="main-dropdown-content">
         <div>
           <form method="POST" action="/fetch_cdx" style="margin-bottom: 8px;">
-            <label>🌐 Domain:
-              <input type="text" name="domain" placeholder="example.com" required style="width:120px;"/>
+            <label class="form-label">🌐 Domain:
+              <input type="text" name="domain" placeholder="example.com" required style="width:120px;" class="form-input" />
             </label>
-            <button type="submit">Fetch</button>
+            <button type="submit" class="btn">Fetch</button>
           </form>
           <form method="POST" action="/import_json" enctype="multipart/form-data">
-            <label>📄 NDJSON:
-              <input type="file" name="json_file" required />
+            <label class="form-label">📄 NDJSON:
+              <input type="file" name="json_file" required class="form-file" />
             </label>
-            <button type="submit">Import</button>
+            <button type="submit" class="btn">Import</button>
           </form>
         </div>
         <hr style="margin:8px 0;">
         <!-- Webpack Exploder Form inside Dropdown -->
         <div>
           <form method="POST" action="/webpack_exploder" enctype="multipart/form-data">
-            <label>🔍 Explode JS/MSP URL:
-              <input type="text" name="js_url" placeholder="https://example.com/file.js.msp" required style="width:160px;" />
+            <label class="form-label">🔍 Explode JS/MSP URL:
+              <input type="text" name="js_url" placeholder="https://example.com/file.js.msp" required style="width:160px;" class="form-input" />
             </label>
-            <button type="submit">Explode &amp; Download ZIP</button>
+            <button type="submit" class="btn">Explode &amp; Download ZIP</button>
           </form>
         </div>
       </div>
@@ -262,17 +262,18 @@
 
   <form method="POST" action="/bulk_action">
     <div class="bulk-controls" style="margin-bottom: 1em;">
-      <select name="action">
+      <select name="action" class="form-select">
         <option value="add_tag" selected>Add Tag</option>
         <option value="remove_tag">Remove Tag</option>
         <option value="delete">Delete</option>
       </select>
-      <input type="text" name="tag" placeholder="Tag" />
-      <button type="submit">Apply</button>
-      <label>
+      <input type="text" name="tag" placeholder="Tag" class="form-input" />
+      <button type="submit" class="btn">Apply</button>
+      <label class="form-label">
         <input
           type="checkbox"
           onchange="toggleSelectAllMatching(this)"
+          class="form-checkbox"
         />Select all matching
       </label>
       <input type="hidden" name="q" value="{{ q }}" />
@@ -289,6 +290,7 @@
               type="checkbox"
               name="selected_ids"
               value="{{ url.id }}"
+              class="form-checkbox"
             />
             {% if url.url %}
             <a href="{{ url.url }}" target="_blank"
