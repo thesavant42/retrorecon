@@ -1,0 +1,41 @@
+:root {
+  --bg-color: #f5f5ef;
+  --fg-color: #23230a;
+  --accent-color: #1b51a1;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--fg-color);
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+h1, h2 {
+  margin: 1em 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.spinner {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
