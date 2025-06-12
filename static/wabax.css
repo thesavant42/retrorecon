@@ -229,6 +229,7 @@ a:hover {
   color: var(--fg-color);
   padding: 2px 6px;
 }
+
 .import-row button {
   border: 1px solid var(--fg-color);
   background: var(--fg-color);
@@ -245,12 +246,18 @@ a:hover {
 /* Theme selection row */
 .theme-row select,
 #background-select {
+
+/* Map URL input inside dropdown */
+#map-url-input {
+  max-width: 160px;
+
   border: 1px solid var(--fg-color);
   border-radius: 5px;
   background: var(--bg-color);
   color: var(--fg-color);
   padding: 2px 6px;
 }
+
 .theme-row button {
   border: 1px solid var(--fg-color);
   background: var(--fg-color);
@@ -262,6 +269,16 @@ a:hover {
 }
 .theme-row button:hover {
   opacity: 0.85;
+
+/* Standalone exploder form input */
+#mapUrlInput {
+  flex: 1;
+  font-size: 1em;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 0.5em;
 }
 
 /* Layout grid for header and search */
@@ -332,6 +349,15 @@ a:hover {
 }
 /* Tag input */
 .bulk-controls input[type="text"] {
+  font-size: 0.98em;
+  padding: 2px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
+}
+/* Specific bulk tag input */
+#bulk-tag-input {
   font-size: 0.98em;
   padding: 2px 8px;
   border-radius: 5px;
@@ -498,6 +524,13 @@ a:hover {
 .delete-btn:active,
 .explode-btn:active {
   opacity: 0.6;
+}
+
+/* Disabled state for explode buttons */
+.disabled-btn,
+.explode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Glowing style for all buttons */
