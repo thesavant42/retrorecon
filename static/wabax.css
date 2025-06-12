@@ -254,7 +254,7 @@
 .retrorecon-root .theme-row select, .retrorecon-root #background-select{
 
 /* Map URL input inside dropdown */
-#map-url-input {
+.retrorecon-root #map-url-input {
   max-width: 160px;
 
   border: 1px solid var(--fg-color);
@@ -264,7 +264,7 @@
   padding: 2px 6px;
 }
 
-.theme-row button {
+.retrorecon-root .theme-row button {
   border: 1px solid var(--fg-color);
   background: var(--fg-color);
   color: var(--bg-color);
@@ -273,11 +273,11 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.theme-row button:hover {
+.retrorecon-root .theme-row button:hover {
   opacity: 0.85;
 
 /* Standalone exploder form input */
-#mapUrlInput {
+.retrorecon-root #mapUrlInput {
   flex: 1;
   font-size: 1em;
   border: 1px solid var(--fg-color);
@@ -288,7 +288,7 @@
 }
 
 /* Layout grid for header and search */
-.page-grid {
+.retrorecon-root .page-grid {
   display: grid;
   grid-template-columns: 270px 1fr;
   gap: 1em;
@@ -296,20 +296,20 @@
   margin: 10px;
 }
 
-.results-grid {
+.retrorecon-root .results-grid {
   display: grid;
   grid-template-columns: 1fr;
   margin: 10px;
   gap: 1em;
 }
 
-.page-grid h1 {
+.retrorecon-root .page-grid h1 {
   margin: 0;
   font-size: 1.8em;
   align-self: center;
 }
 
-.search-history table {
+.retrorecon-root .search-history table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
@@ -317,28 +317,28 @@
 }
 
 .search-history th,
-.search-history td {
+.retrorecon-root .search-history td {
   padding: 0.4em 0.6em;
   border-bottom: 1px solid #e7e7c0;
   text-align: left;
 }
 
-.search-history tbody tr:nth-child(even) {
+.retrorecon-root .search-history tbody tr:nth-child(even) {
   background: #f8f8ff;
   
 /* Header bar layout */
-.header-bar {
+.retrorecon-root .header-bar {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 1em;
   margin: 10px;
 }
-.header-bar .menu-dropdown {
+.retrorecon-root .header-bar .menu-dropdown {
   justify-self: start;
 }
 
-.header-bar h1 {
+.retrorecon-root .header-bar h1 {
   justify-self: start;
   margin: 0;
   font-size: 1.8em;
@@ -346,7 +346,7 @@
 }
 
 /* Bulk controls section with flex layout */
-.bulk-controls {
+.retrorecon-root .bulk-controls {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -354,7 +354,7 @@
   margin-bottom: 0.5em;
 }
 /* Tag input */
-.bulk-controls input[type="text"] {
+.retrorecon-root .bulk-controls input[type="text"] {
   font-size: 0.98em;
   padding: 2px 8px;
   border-radius: 5px;
@@ -363,7 +363,7 @@
   color: var(--fg-color);
 }
 /* Specific bulk tag input */
-#bulk-tag-input {
+.retrorecon-root #bulk-tag-input {
   font-size: 0.98em;
   padding: 2px 8px;
   border-radius: 5px;
@@ -372,7 +372,7 @@
   color: var(--fg-color);
 }
 /* Action buttons */
-.bulk-controls button {
+.retrorecon-root .bulk-controls button {
   font-size: 1em;
   padding: 2px 11px;
   border-radius: 6px;
@@ -382,19 +382,19 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.bulk-controls button:hover {
+.retrorecon-root .bulk-controls button:hover {
   opacity: 0.85;
 }
 
 /* Row for bulk action checkboxes */
-.checkbox-row {
+.retrorecon-root .checkbox-row {
   display: flex;
   align-items: center;
   gap: 0.5em;
 }
 
 /* Checkbox label */
-.select-all-label {
+.retrorecon-root .select-all-label {
   font-size: 0.97em;
   margin-right: 0.7em;
   margin-left: 0.2em;
@@ -402,7 +402,7 @@
 }
 
 /* Table general styling */
-.url-table {
+.retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-color);
@@ -412,11 +412,11 @@
 }
 
 /* Table header style */
-.url-table thead {
+.retrorecon-root .url-table thead {
   background: var(--fg-color);
   color: var(--bg-color);
 }
-.url-table th {
+.retrorecon-root .url-table th {
   font-weight: bold;
   font-size: 1.05em;
   padding: 0.5em 1em;
@@ -426,38 +426,38 @@
 
 /* Alternating row backgrounds for readability */
 .url-row-main:nth-child(4n),
-.url-row-buttons:nth-child(4n + 1) {
+.retrorecon-root .url-row-buttons:nth-child(4n + 1) {
   background: var(--bg-color);
 }
 .url-row-main:nth-child(4n + 2),
-.url-row-buttons:nth-child(4n + 3) {
+.retrorecon-root .url-row-buttons:nth-child(4n + 3) {
   background: var(--bg-color);
 }
 
 /* Main row: cursor pointer for entire row */
-.url-row-main {
+.retrorecon-root .url-row-main {
   cursor: pointer;
 }
-.url-row-main td {
+.retrorecon-root .url-row-main td {
   font-size: 1.08em;
   padding: 0.43em 0.7em;
 }
-.url-row-buttons td {
+.retrorecon-root .url-row-buttons td {
   padding: 0.43em 0.7em;
   border-bottom: 1px solid var(--fg-color);
 }
-.url-row-main input[type="checkbox"] {
+.retrorecon-root .url-row-main input[type="checkbox"] {
   cursor: pointer;
 }
 
 /* Button-like actions in row tools */
-.url-tools-row {
+.retrorecon-root .url-tools-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.36em;
   align-items: center;
 }
-.url-tools-row input[type="text"] {
+.retrorecon-root .url-tools-row input[type="text"] {
   font-size: 0.9em;
   padding: 2px 6px;
   border: 1px solid var(--fg-color);
@@ -466,7 +466,7 @@
   color: var(--fg-color);
 }
 /* Tag pills styling */
-.tag-pill {
+.retrorecon-root .tag-pill {
   display: inline-block;
   padding: 2px 8px;
   background: var(--fg-color);
@@ -477,10 +477,10 @@
   margin-bottom: 4px;
   color: var(--bg-color);
 }
-.tag-pill form {
+.retrorecon-root .tag-pill form {
   display: inline;
 }
-.tag-pill button {
+.retrorecon-root .tag-pill button {
   background: none;
   border: none;
   color: inherit;
@@ -489,7 +489,7 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.tag-pill button:hover {
+.retrorecon-root .tag-pill button:hover {
   opacity: 0.8;
 }
 
@@ -502,7 +502,7 @@
 .vt-btn,
 .github-btn,
 .google-btn,
-.crtsh-btn {
+.retrorecon-root .crtsh-btn {
   background: var(--fg-color);
   border: 1px solid var(--fg-color);
   border-radius: 7px;
@@ -523,24 +523,24 @@
 .vt-btn:hover,
 .github-btn:hover,
 .google-btn:hover,
-.crtsh-btn:hover {
+.retrorecon-root .crtsh-btn:hover {
   opacity: 0.8;
 }
 .copy-btn:active,
 .delete-btn:active,
-.explode-btn:active {
+.retrorecon-root .explode-btn:active {
   opacity: 0.6;
 }
 
 /* Disabled state for explode buttons */
 .disabled-btn,
-.explode-btn:disabled {
+.retrorecon-root .explode-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* Glowing style for all buttons */
-button {
+.retrorecon-root button {
   background: var(--fg-color);
   border: 1px solid var(--fg-color);
   color: var(--bg-color);
@@ -550,11 +550,11 @@ button {
   position: relative;
   transition: box-shadow 0.3s, opacity 0.2s;
 }
-button:hover {
+.retrorecon-root button:hover {
   box-shadow: 0 0 6px var(--fg-color);
   opacity: 0.9;
 }
-button:active {
+.retrorecon-root button:active {
   box-shadow: 0 0 10px var(--fg-color);
   opacity: 0.8;
 }
@@ -562,7 +562,7 @@ button:active {
 /* Generic theming for inputs and selects */
 input[type="text"],
 input[type="file"],
-select {
+.retrorecon-root select {
   border: 1px solid var(--fg-color);
   border-radius: 5px;
   background: var(--bg-color);
@@ -575,12 +575,12 @@ select {
   50% { box-shadow: 0 0 8px var(--fg-color); }
   100% { box-shadow: 0 0 0 var(--fg-color); }
 }
-.pulse {
+.retrorecon-root .pulse {
   animation: pulse 1.5s infinite;
 }
 
 /* Pagination styling */
-.pagination {
+.retrorecon-root .pagination {
   margin: 1em 0;
   display: flex;
   gap: 0.5em;
@@ -590,7 +590,7 @@ select {
   font-family: "Segoe UI", "Arial", sans-serif;
 }
 .pagination a,
-.pagination strong {
+.retrorecon-root .pagination strong {
   padding: 0.3em 0.8em;
   border-radius: 4px;
   transition: background 0.2s;
@@ -598,16 +598,16 @@ select {
   color: var(--fg-color);
   background: var(--bg-color);
 }
-.pagination a:hover {
+.retrorecon-root .pagination a:hover {
   background: var(--fg-color);
   color: var(--bg-color);
 }
-.pagination strong {
+.retrorecon-root .pagination strong {
   background: var(--fg-color);
   color: var(--bg-color);
   font-weight: bold;
 }
-.pagination input[type="text"] {
+.retrorecon-root .pagination input[type="text"] {
   width: 40px;
   font-size: 0.9em;
   padding: 1px 4px;
@@ -617,12 +617,12 @@ select {
   background: var(--bg-color);
   color: var(--fg-color);
 }
-.pagination button {
+.retrorecon-root .pagination button {
   margin-left: 0.2em;
 }
 
 /* Style for the total results count */
-.total-count {
+.retrorecon-root .total-count {
   margin-left: 1em;
   color: #000;
   font-weight: bold;
@@ -630,7 +630,7 @@ select {
 }
 
 /* Footer text style */
-.footer {
+.retrorecon-root .footer {
   margin-top: 2em;
   text-align: center;
   color: #888;
@@ -638,30 +638,30 @@ select {
 }
 
 /* Misc: checkboxes for row selection */
-.row-checkbox {
+.retrorecon-root .row-checkbox {
   margin-right: 4px;
 }
-input[type="checkbox"] {
+.retrorecon-root input[type="checkbox"] {
   accent-color: var(--fg-color);
   cursor: pointer;
 }
 
 /* Optional: Add hover effect to entire rows for better UX */
 .url-row-main:hover,
-.url-row-buttons:hover {
+.retrorecon-root .url-row-buttons:hover {
   background-color: #eaeaea;
 }
 
 /* Status code colors */
-.status-2 { color: blue; }
-.status-3 { color: green; }
-.status-4 { color: orange; }
-.status-5 { color: red; }
+.retrorecon-root .status-2 { color: blue; }
+.retrorecon-root .status-3 { color: green; }
+.retrorecon-root .status-4 { color: orange; }
+.retrorecon-root .status-5 { color: red; }
 
 /* Solid background for layout tables */
 #layout-a td,
 #layout-c td,
-#layout-d td {
+.retrorecon-root #layout-d td {
   background: var(--bg-color);
   color: var(--fg-color);
 }
