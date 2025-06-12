@@ -261,15 +261,15 @@
   flex-wrap: wrap;
   gap: 0.3em;
 }
-.retrorecon-root .search-history button{
-  background: var(--fg-color);
-  border: 1px solid var(--fg-color);
-  color: var(--bg-color);
-  border-radius: 12px;
-  font-size: 0.95em;
-  padding: 2px 12px;
-  cursor: pointer;
-  transition: opacity 0.2s;
+.retrorecon-root .search-history button {
+    background: var(--bg-color
+    border: 1px solid var(--fg-color);
+    color: var(--fg-color);
+    border-radius: 12px;
+    font-size: 0.95em;
+    padding: 2px 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
 }
 
 .retrorecon-root .db-buttons{
@@ -282,8 +282,8 @@
 }
 .retrorecon-root .db-buttons button{
   border: 1px solid var(--fg-color);
-  background: var(--fg-color);
-  color: var(--bg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
   padding: 2px 10px;
   border-radius: 6px;
   cursor: pointer;
@@ -296,11 +296,11 @@
   min-width: 225px;
 }
 .retrorecon-root .dropbtn{
-  background-color: var(--fg-color);
+  background-color: var(--bg-color);
   color: var(--bg-color);
   padding: 5px 10px;
   font-size: 1.05em;
-  border: 1px solid var(--fg-color);
+  border: 1px solid var(--bg-color);
   border-radius: 7px;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -308,18 +308,18 @@
 .retrorecon-root .dropbtn:hover, .retrorecon-root .dropbtn:focus{
   opacity: 0.8;
 }
-.retrorecon-root .dropdown-content{
-  display: none;
-  position: absolute;
-  background-color: var(--bg-color);
-  min-width: 220px;
-  box-shadow: 0px 8px 20px #00000033;
-  z-index: 1;
-  padding: 8px 12px;
-  border-radius: 9px;
-  border: 1px solid var(--fg-color);
-  margin-top: 8px;
-  color: var(--fg-color);
+.retrorecon-root .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #1c1b38;
+    min-width: 220px;
+    box-shadow: 0px 8px 20px #00000033;
+    z-index: 1;
+    padding: 8px 12px;
+    border-radius: 9px;
+    border: 1px solid var(--fg-color);
+    margin-top: 8px;
+    color: var(--fg-color);
 }
 .retrorecon-root .dropdown.show .dropdown-content{
   display: block;
@@ -354,8 +354,8 @@
 
 .retrorecon-root .import-row button {
     border: 1px solid var(--fg-color);
-    background: #5336a700;
-    color: #ffffff;
+    background: var(--bg-color);
+    color: var(--fg-color);
     padding: 2px 10px;
     border-radius: 6px;
     cursor: pointer;
@@ -366,7 +366,6 @@
 /* Map URL input inside dropdown */
 .retrorecon-root #map-url-input {
   max-width: 160px;
-
   border: 1px solid var(--fg-color);
   border-radius: 5px;
   background: var(--bg-color);
@@ -376,8 +375,8 @@
 
 .retrorecon-root .theme-row button {
     border: 1px solid var(--fg-color);
-    background: var(--fg-color);
-    color: var(--bg-color);
+    background: var(--bg-color);
+    color: var(--fg-color);
     padding: 2px 10px;
     border-radius: 6px;
     cursor: pointer;
@@ -509,7 +508,7 @@
   font-family: "Segoe UI", "Arial", sans-serif;
 }
 
-/* Table header style */
+/* Table header style this seems wrong to me JB*/
 .retrorecon-root .url-table thead {
   background: var(--fg-color);
   color: var(--bg-color);
@@ -567,13 +566,13 @@
 .retrorecon-root .tag-pill {
   display: inline-block;
   padding: 2px 8px;
-  background: var(--fg-color);
+  background: var(--bg-color);
   border-radius: 10px;
-  border: 1px solid #0d011e
+  border: 1px solid #0d011e   /* Purple sparklies */
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
-  color: var(--bg-color);
+  color: var(--fg-color);
 }
 .retrorecon-root .tag-pill form {
   display: inline;
@@ -598,7 +597,7 @@
 .retrorecon-root .github-btn,
 .retrorecon-root .google-btn,
 .retrorecon-root .crtsh-btn {
-  background: #e1e9ff00;
+  background: var(--bg-color);
   border: 1px solid var(--fg-color);
   border-radius: 7px;
   color: #2cbaf3;
@@ -642,21 +641,25 @@
 }
 
 /* Pagination styling */
-.retrorecon-root .pagination {
-  margin: 1em 0;
-  border-radius: 4px;
-  transition: background 0.2s;
-  border: 1px solid var(--fg-color);
-  color: var(--fg-color);
-  background: var(--bg-color);
+retrorecon-root .pagination {
+    margin: 1em 0;
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    border-radius: 4px;
+    transition: background 0.2s;
+    /* border: 1px solid var(--fg-color); */
+    color: var(--fg-color);
+    background: var(--bg-color);
 }
 .retrorecon-root .pagination a:hover {
-  background: var(--fg-color);
-  color: var(--bg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
 }
 .retrorecon-root .pagination strong {
-  background: var(--fg-color);
-  color: var(--bg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
   font-weight: bold;
 }
 .retrorecon-root .pagination input[type="text"] {
@@ -703,7 +706,7 @@
 .retrorecon-root .footer {
   margin-top: 2em;
   text-align: center;
-  color: #888;
+  color: var(--fg-color);
   font-size: 0.97em;
 }
 
