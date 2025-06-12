@@ -105,7 +105,7 @@
                 <label class="form-label">🔍 Explode .js.map URL:
                   <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
                 </label>
-                <button type="submit" class="explode-btn">Explode &amp; Download ZIP</button>
+                <button type="submit" class="btn explode-btn">Explode &amp; Download ZIP</button>
               </form>
             </div>
             <hr class="my-8px">
@@ -237,27 +237,27 @@
                   <td></td>
                   <td colspan="4">
                     <div class="url-tools-row nowrap">
-                      <button class="explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
-                      <button class="explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
-                      <button class="explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
-                      <button class="explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
-                      <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
-                      <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
-                      <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
+                      <button class="btn explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
+                      <button class="btn explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
+                      <button class="btn explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
+                      <button class="btn explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
+                      <button class="btn explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
+                      <button class="btn explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
+                      <button class="btn explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
                       <form method="POST" action="/bulk_action" class="d-inline mr-03">
                         <input type="hidden" name="action" value="delete" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
                         <input type="hidden" name="q" value="{{ q }}" />
                         <input type="hidden" name="tag" value="{{ tag }}" />
-                        <button type="submit" class="delete-btn" title="Delete">🗑️</button>
+                        <button type="submit" class="btn delete-btn" title="Delete">🗑️</button>
                       </form>
                       {% if ".js.map" in url.url %}
                       <form method="POST" action="/tools/webpack-zip" class="d-inline ml-01">
                         <input type="hidden" name="map_url" value="{{ url.url }}" />
-                        <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
+                        <button type="submit" class="btn explode-btn" title="Explode .js.map">💥 Explode!</button>
                       </form>
                       {% else %}
-                      <button type="button" class="explode-btn disabled-btn" title="Not a .js.map" disabled>💥 Explode!</button>
+                      <button type="button" class="btn explode-btn disabled-btn" title="Not a .js.map" disabled>💥 Explode!</button>
                       {% endif %}
                       {% for tag in (url.tags or '').split(',') if tag %}
                       <span class="tag-pill">{{ tag }}
