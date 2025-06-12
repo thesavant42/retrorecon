@@ -4,7 +4,7 @@
   --accent-color: #1b51a1;
 }
 
-.app {
+.retrorecon-root {
   background: var(--bg-color);
   color: var(--fg-color);
   font-family: "Segoe UI", Arial, sans-serif;
@@ -12,24 +12,20 @@
   padding: 0;
   line-height: 1.5;
 }
-
-.app h1,
-.app h2 {
+.retrorecon-root h1,
+.retrorecon-root h2 {
   margin: 1em 0;
   text-align: center;
   font-weight: bold;
 }
-
-.app a {
+.retrorecon-root a {
   color: var(--accent-color);
   text-decoration: none;
 }
-
-.app a:hover {
+.retrorecon-root a:hover {
   text-decoration: underline;
 }
-
-.app button {
+.retrorecon-root button {
   cursor: pointer;
 }
 

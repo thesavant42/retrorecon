@@ -1,5 +1,5 @@
 /* File: static/tools.css */
-.webpack-exploder-panel {
+.retrorecon-root .webpack-exploder-panel {
   padding: 1em;
   background: #fafafa;
   border: 1px solid #ccc;
@@ -7,20 +7,20 @@
   border-radius: 6px;
 }
 
-.webpack-exploder-panel h2 {
+.retrorecon-root .webpack-exploder-panel h2 {
   margin-top: 0;
   font-size: 1.2em;
   color: #333;
 }
 
-.webpack-exploder-panel form {
+.retrorecon-root .webpack-exploder-panel form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
   align-items: center;
 }
 
-.webpack-exploder-panel input[type="text"] {
+.retrorecon-root .webpack-exploder-panel input[type="text"] {
   flex: 1;
   padding: 0.5em;
   font-size: 1em;
@@ -28,7 +28,7 @@
   border-radius: 4px;
 }
 
-.webpack-exploder-panel button {
+.retrorecon-root .webpack-exploder-panel button {
   padding: 0.5em 1em;
   font-size: 1em;
   background-color: #f3f3f3;
@@ -36,11 +36,11 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.webpack-exploder-panel button:hover {
+.retrorecon-root .webpack-exploder-panel button:hover {
   background-color: #e0e0e0;
 }
 
-#exploder-results {
+.retrorecon-root #exploder-results {
   margin-top: 1em;
   white-space: pre-wrap;
   font-family: monospace;
