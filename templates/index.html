@@ -91,11 +91,11 @@
             </div>
             <hr style="margin:8px 0;">
             <div>
-              <form method="POST" action="/tools/webpack-zip">
+              <form method="POST" action="/tools/webpack-zip" class="import-row">
                 <label>🔍 Explode .js.map URL:
-                  <input type="text" name="map_url" placeholder="https://example.com/file.js.map" required style="width:160px;" />
+                  <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required />
                 </label>
-                <button type="submit">Explode &amp; Download ZIP</button>
+                <button type="submit" class="explode-btn">Explode &amp; Download ZIP</button>
               </form>
             </div>
             <hr style="margin:8px 0;">
