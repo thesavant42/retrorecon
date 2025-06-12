@@ -376,7 +376,7 @@
 }
 .retrorecon-root .theme-row button:hover {
   opacity: 0.85;
-
+}
 /* Standalone exploder form input */
 .retrorecon-root #mapUrlInput {
   flex: 1;
