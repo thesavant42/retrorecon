@@ -372,7 +372,7 @@
   background: var(--bg-color);
   color: var(--fg-color);
 }
-/* Action buttons */
+/* Bulk action buttons use the generic .btn style */
 .retrorecon-root .bulk-action-btn {
   font-size: 1em;
   padding: 2px 11px;
