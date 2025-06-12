@@ -482,6 +482,13 @@ a:hover {
   opacity: 0.6;
 }
 
+/* Disabled state for explode buttons */
+.disabled-btn,
+.explode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Glowing style for all buttons */
 button {
   background: var(--fg-color);

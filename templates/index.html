@@ -233,12 +233,6 @@
                       <button class="explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
                       <button class="explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
                       <button class="explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
-                      {% if ".js.map" in url.url %}
-                      <form method="POST" action="/tools/webpack-zip" style="display:inline;">
-                        <input type="hidden" name="map_url" value="{{ url.url }}" />
-                        <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
-                      </form>
-                      {% endif %}
                       <button class="explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
                       <form method="POST" action="/bulk_action" style="display:inline;margin-right:0.3em;">
                         <input type="hidden" name="action" value="delete" />
@@ -247,6 +241,14 @@
                         <input type="hidden" name="tag" value="{{ tag }}" />
                         <button type="submit" class="delete-btn" title="Delete">🗑️</button>
                       </form>
+                      {% if ".js.map" in url.url %}
+                      <form method="POST" action="/tools/webpack-zip" style="display:inline; margin-left:0.1em;">
+                        <input type="hidden" name="map_url" value="{{ url.url }}" />
+                        <button type="submit" class="explode-btn" title="Explode .js.map">💥 Explode!</button>
+                      </form>
+                      {% else %}
+                      <button type="button" class="explode-btn disabled-btn" title="Not a .js.map" disabled>💥 Explode!</button>
+                      {% endif %}
                       {% for tag in (url.tags or '').split(',') if tag %}
                       <span class="tag-pill">{{ tag }}
                         <form method="POST" action="/bulk_action" style="display:inline;">
