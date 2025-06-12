@@ -1,7 +1,7 @@
 /* --- Updated CSS to emulate Fandom Map Room style --- */
 
-body {
-  background: #f5f5ef url('/static/img/background.jpg') no-repeat center center fixed;
+.retrorecon-root body{
+  background: #f5f5ef url("/static/img/background.jpg") no-repeat center center fixed;
   background-size: cover;
   font-family: "Segoe UI", "Arial", sans-serif; /* Use system UI fonts for modern look */
   margin: 0;
@@ -11,7 +11,7 @@ body {
 }
 
 /* Main header style */
-h1 {
+.retrorecon-root h1{
   margin: 1.4em 0;
   text-align: center;
   font-size: 1.6em;
@@ -22,18 +22,18 @@ h1 {
 }
 
 /* Links */
-a {
+.retrorecon-root a{
   color: #1b51a1;
   text-decoration: none;
   transition: color 0.2s;
 }
-a:hover {
+.retrorecon-root a:hover{
   text-decoration: underline;
   color: #0d3d80; /* Slightly darker on hover */
 }
 
 /* Controls section - aligned and spaced */
-.controls {
+.retrorecon-root .controls{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1em;
@@ -42,7 +42,7 @@ a:hover {
 }
 
 /* Search bar container */
-.search-bar {
+.retrorecon-root .search-bar{
   min-width: 270px;
   padding: 0.7em;
   background: var(--bg-color);
@@ -57,7 +57,7 @@ a:hover {
 }
 
 /* Layout for form inside search bar */
-.search-bar form {
+.retrorecon-root .search-bar form{
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -66,20 +66,20 @@ a:hover {
 }
 
 /* Row below search input containing history pills and buttons */
-.search-actions {
+.retrorecon-root .search-actions{
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 }
 
-.search-buttons {
+.retrorecon-root .search-buttons{
   display: flex;
   gap: 0.5em;
 }
 
 /* Search input */
-.search-bar input[type="text"] {
+.retrorecon-root .search-bar input[type="text"]{
   font-size: 1.2em;
   padding: 6px 10px;
   border-radius: 5px;
@@ -91,7 +91,7 @@ a:hover {
 }
 
 /* Buttons inside search bar */
-.search-bar button {
+.retrorecon-root .search-bar button{
   font-size: 1.05em;
   padding: 5px 10px;
   border-radius: 5px;
@@ -101,15 +101,15 @@ a:hover {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.search-bar button:hover {
+.retrorecon-root .search-bar button:hover{
   opacity: 0.8;
 }
 
-#quick-searches {
+.retrorecon-root #quick-searches{
   display: none;
 }
 
-.search-history-box {
+.retrorecon-root .search-history-box{
   min-width: 270px;
   padding: 0.7em;
   background: #f8f8e0;
@@ -121,17 +121,17 @@ a:hover {
   gap: 0.5em;
 }
 
-.history-title {
+.retrorecon-root .history-title{
   font-weight: bold;
   margin-top: 0.5em;
 }
 
-.search-history {
+.retrorecon-root .search-history{
   display: flex;
   flex-wrap: wrap;
   gap: 0.3em;
 }
-.search-history button {
+.retrorecon-root .search-history button{
   background: var(--fg-color);
   border: 1px solid var(--fg-color);
   color: var(--bg-color);
@@ -141,19 +141,19 @@ a:hover {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.search-history button:hover {
+.retrorecon-root .search-history button:hover{
   opacity: 0.8;
 }
 
-.db-buttons {
+.retrorecon-root .db-buttons{
   display: flex;
   gap: 0.5em;
   margin-top: 8px;
 }
-.db-buttons form {
+.retrorecon-root .db-buttons form{
   margin: 0;
 }
-.db-buttons button {
+.retrorecon-root .db-buttons button{
   border: 1px solid var(--fg-color);
   background: var(--fg-color);
   color: var(--bg-color);
@@ -162,16 +162,16 @@ a:hover {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.db-buttons button:hover {
+.retrorecon-root .db-buttons button:hover{
   opacity: 0.85;
 }
 
 /* Dropdown styling (menu) */
-.dropdown {
+.retrorecon-root .dropdown{
   position: relative;
   min-width: 225px;
 }
-.dropbtn {
+.retrorecon-root .dropbtn{
   background-color: var(--fg-color);
   color: var(--bg-color);
   padding: 5px 10px;
@@ -181,11 +181,10 @@ a:hover {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.dropbtn:hover,
-.dropbtn:focus {
+.retrorecon-root .dropbtn:hover, .retrorecon-root .dropbtn:focus{
   opacity: 0.8;
 }
-.dropdown-content {
+.retrorecon-root .dropdown-content{
   display: none;
   position: absolute;
   background-color: var(--bg-color);
@@ -198,29 +197,28 @@ a:hover {
   margin-top: 8px;
   color: var(--fg-color);
 }
-.dropdown.show .dropdown-content {
+.retrorecon-root .dropdown.show .dropdown-content{
   display: block;
 }
 
 /* Fixed menu placement */
-.menu-dropdown {
+.retrorecon-root .menu-dropdown{
   position: relative;
 }
 
 /* Import controls layout */
-.import-controls {
+.retrorecon-root .import-controls{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5em;
 }
-.import-row {
+.retrorecon-root .import-row{
   display: flex;
   align-items: center;
   gap: 0.4em;
 }
-.import-row input[type="text"],
-.import-row input[type="file"] {
+.retrorecon-root .import-row input[type="text"], .retrorecon-root .import-row input[type="file"]{
   flex: 1;
   max-width: 160px;
   border: 1px solid var(--fg-color);
@@ -230,7 +228,7 @@ a:hover {
   padding: 2px 6px;
 }
 
-.import-row button {
+.retrorecon-root .import-row button{
   border: 1px solid var(--fg-color);
   background: var(--fg-color);
   color: var(--bg-color);
@@ -239,13 +237,12 @@ a:hover {
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.import-row button:hover {
+.retrorecon-root .import-row button:hover{
   opacity: 0.85;
 }
 
 /* Theme selection row */
-.theme-row select,
-#background-select {
+.retrorecon-root .theme-row select, .retrorecon-root #background-select{
 
 /* Map URL input inside dropdown */
 #map-url-input {
@@ -662,4 +659,3 @@ input[type="checkbox"] {
 
 /* --- End of update --- */
 body.bg-hidden { background-image: none !important; }
-
