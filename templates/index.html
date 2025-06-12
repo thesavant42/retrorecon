@@ -55,8 +55,8 @@
     <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
       <input type="hidden" name="tag" value="{{ tag }}" />
-      <input type="text" name="page" size="2" placeholder="Page" />
-      <button type="submit">Go</button>
+      <input type="text" name="page" size="2" placeholder="Page" class="form-input" />
+      <button type="submit" class="btn">Go</button>
     </form>
     <span class="total-count">Total: {{ total_count }}</span>
   </div>
@@ -73,37 +73,37 @@
             <div class="import-controls">
               <div class="fw-bold">Import Options</div>
               <form class="import-row" method="POST" action="/fetch_cdx">
-                <label>⏳ Import from CDX API:
-                  <input type="text" name="domain" placeholder="example.com" required />
+                <label class="form-label">⏳ Import from CDX API:
+                  <input type="text" name="domain" placeholder="example.com" required class="form-input" />
                 </label>
-                <button type="submit">Fetch</button>
+                <button type="submit" class="btn">Fetch</button>
               </form>
               <form class="import-row" method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-                <label>📄 Import from JSON:
-                  <input type="file" name="json_file" required />
+                <label class="form-label">📄 Import from JSON:
+                  <input type="file" name="json_file" required class="form-file" />
                 </label>
-                <button type="submit">Import</button>
+                <button type="submit" class="btn">Import</button>
               </form>
               <form class="import-row" method="POST" action="/load_db" enctype="multipart/form-data">
-                <label>📂 SQLite DB:
-                  <input type="file" name="db_file" required />
+                <label class="form-label">📂 SQLite DB:
+                  <input type="file" name="db_file" required class="form-file" />
                 </label>
-                <button type="submit">Import</button>
+                <button type="submit" class="btn">Import</button>
               </form>
               <div class="mt-05">
                 <form method="GET" action="/save_db" id="save-db-form" class="d-inline">
-                  <button type="submit">💾 Save As</button>
+                  <button type="submit" class="btn">💾 Save As</button>
                 </form>
                 <form method="POST" action="/new_db" class="d-inline ml-4px">
-                  <button type="submit">🆕 New DB</button>
+                  <button type="submit" class="btn">🆕 New DB</button>
                 </form>
               </div>
             </div>
             <hr class="my-8px">
             <div>
               <form method="POST" action="/tools/webpack-zip" class="import-row">
-                <label>🔍 Explode .js.map URL:
-                  <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required />
+                <label class="form-label">🔍 Explode .js.map URL:
+                  <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
                 </label>
                 <button type="submit" class="explode-btn">Explode &amp; Download ZIP</button>
               </form>
@@ -114,14 +114,14 @@
                 <button type="submit" form="bulk-form" name="action" value="add_tag" class="bulk-action-btn">➕🏷️ Add Tag All Selected</button>
                 <button type="submit" form="bulk-form" name="action" value="remove_tag" class="bulk-action-btn">➖🏷️ Remove Tag Selected</button>
                 <button type="submit" form="bulk-form" name="action" value="delete" class="bulk-action-btn">✂🗑️ Delete Selected</button>
-                <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" />
+                <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
                 <div class="checkbox-row">
-                  <label class="select-all-label ml-1">
-                    <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)">
+                  <label class="select-all-label ml-1 form-label">
+                    <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)" class="form-checkbox">
                     Select all visible
                   </label>
-                  <label class="select-all-label">
-                    <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)">
+                  <label class="select-all-label form-label">
+                    <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)" class="form-checkbox">
                     Select all matching
                   </label>
                 </div>
@@ -129,7 +129,7 @@
               <hr class="my-8px">
               <div class="fw-bold">Themes</div>
               <form method="POST" action="/set_theme" class="theme-row mb-4px d-inline-block">
-                <select name="theme">
+                <select name="theme" class="form-select">
                   {% for t in themes %}
                   {% set cols = theme_swatches.get(t) %}
                   <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
@@ -137,15 +137,15 @@
                   </option>
                   {% endfor %}
                 </select>
-                <button type="submit">Apply</button>
+                <button type="submit" class="btn">Apply</button>
               </form>
-              <select id="background-select" class="ml-4px">
+              <select id="background-select" class="ml-4px form-select">
                 {% for bg in backgrounds %}
                 <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
                 {% endfor %}
               </select>
-              <label class="d-block">
-                <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)">
+              <label class="d-block form-label">
+                <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
                 Show background image
               </label>
           </div>
@@ -163,16 +163,16 @@
       <table class="w-100">
         <tr>
           <td class="text-center">
-            <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-95" />
+            <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-95 form-input" />
           </td>
         </tr>
       </table>
       <div class="search-actions">
         <div id="search-history" class="search-history"></div>
         <div class="search-buttons">
-          <button type="button" id="save-tag-btn">Save Tag</button>
-          <button type="submit">Search</button>
-          <button type="button" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
+          <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
+          <button type="submit" class="btn">Search</button>
+          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
     </form>
@@ -214,7 +214,7 @@
               <thead>
                 <tr>
                   <th class="w-2em">
-                    <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" />
+                    <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" class="form-checkbox" />
                   </th>
                   <th>URL</th>
                   <th>Timestamp</th>
@@ -265,15 +265,15 @@
                           <input type="hidden" name="action" value="remove_tag" />
                           <input type="hidden" name="tag" value="{{ tag }}" />
                           <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                          <button type="submit" title="Remove tag">&times;</button>
+                          <button type="submit" title="Remove tag" class="btn">&times;</button>
                         </form>
                       </span>
                       {% endfor %}
                       <form method="POST" action="/bulk_action" class="d-inline ml-05">
                         <input type="hidden" name="action" value="add_tag" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                        <input type="text" name="tag" placeholder="Tag" size="8" required/>
-                        <button type="submit" title="Add tag">+</button>
+                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input" />
+                        <button type="submit" title="Add tag" class="btn">+</button>
                       </form>
                     </div>
                   </td>
