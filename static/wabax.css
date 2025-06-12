@@ -372,7 +372,7 @@
   color: var(--fg-color);
 }
 /* Action buttons */
-.retrorecon-root .bulk-controls button {
+.retrorecon-root .bulk-action-btn {
   font-size: 1em;
   padding: 2px 11px;
   border-radius: 6px;
@@ -382,7 +382,7 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.retrorecon-root .bulk-controls button:hover {
+.retrorecon-root .bulk-action-btn:hover {
   opacity: 0.85;
 }
 
@@ -560,8 +560,8 @@
 }
 
 /* Generic theming for inputs and selects */
-input[type="text"],
-input[type="file"],
+.retrorecon-root input[type="text"],
+.retrorecon-root input[type="file"],
 .retrorecon-root select {
   border: 1px solid var(--fg-color);
   border-radius: 5px;
