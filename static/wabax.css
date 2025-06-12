@@ -10,7 +10,7 @@
 /* --- Updated CSS to emulate Fandom Map Room style --- */
 
 .retrorecon-root {
-  background: #f5f5ef url("/static/img/background.jpg") no-repeat center center fixed;
+  background: #0d011e00 url("/static/img/background.jpg") no-repeat center center fixed;
   background-size: cover;
   font-family: "Segoe UI", "Arial", sans-serif; /* Use system UI fonts for modern look */
   margin: 0;
