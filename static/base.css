@@ -790,6 +790,7 @@
   text-align: center;
   color: var(--fg-color);
   font-size: 0.97em;
+  margin-right: 50px;
 }
 
 /* Misc: checkboxes for row selection */
