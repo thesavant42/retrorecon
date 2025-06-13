@@ -87,22 +87,19 @@
           <div class="dropdown-content" id="main-dropdown-content">
             <div class="import-controls">
               <div class="fw-bold">Import Options</div>
-              <form class="import-row" method="POST" action="/fetch_cdx">
-                <label class="form-label">⏳ Import from CDX API:
-                  <input type="text" name="domain" placeholder="example.com" required class="form-input" />
-                </label>
+              <form class="import-row menu-row" method="POST" action="/fetch_cdx">
+                <label for="domain-input" class="form-label menu-label">⏳ Import from CDX API:</label>
+                <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
                 <button type="submit" class="btn">Fetch</button>
               </form>
-              <form class="import-row" method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-                <label class="form-label">📄 Import from JSON:
-                  <input type="file" name="json_file" required class="form-file" />
-                </label>
+              <form class="import-row menu-row" method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
+                <label for="json-file" class="form-label menu-label">📄 Import from JSON:</label>
+                <input id="json-file" type="file" name="json_file" required class="form-file" />
                 <button type="submit" class="btn">Import</button>
               </form>
-              <form class="import-row" method="POST" action="/load_db" enctype="multipart/form-data">
-                <label class="form-label">📂 SQLite DB:
-                  <input type="file" name="db_file" required class="form-file" />
-                </label>
+              <form class="import-row menu-row" method="POST" action="/load_db" enctype="multipart/form-data">
+                <label for="db-file" class="form-label menu-label">📂 SQLite DB:</label>
+                <input id="db-file" type="file" name="db_file" required class="form-file" />
                 <button type="submit" class="btn">Import</button>
               </form>
               <div class="mt-05">
@@ -116,10 +113,9 @@
             </div>
             <hr class="my-8px">
             <div>
-              <form method="POST" action="/tools/webpack-zip" class="import-row">
-                <label class="form-label">🔍 Explode .js.map URL:
-                  <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
-                </label>
+              <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
+                <label for="map-url-input" class="form-label menu-label">🔍 Explode .js.map URL:</label>
+                <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
                 <button type="submit" class="btn explode-btn">Explode &amp; Download ZIP</button>
               </form>
             </div>
@@ -143,8 +139,9 @@
               </div>
               <hr class="my-8px">
               <div class="fw-bold">Themes</div>
-              <form method="POST" action="/set_theme" class="theme-row mb-4px d-inline-block">
-                <select name="theme" class="form-select">
+              <form method="POST" action="/set_theme" class="theme-row menu-row mb-4px">
+                <label for="theme-select" class="form-label menu-label">Theme:</label>
+                <select name="theme" id="theme-select" class="form-select">
                   {% for t in themes %}
                   {% set cols = theme_swatches.get(t) %}
                   <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
@@ -154,15 +151,20 @@
                 </select>
                 <button type="submit" class="btn">Apply</button>
               </form>
-              <select id="background-select" class="ml-4px form-select">
-                {% for bg in backgrounds %}
-                <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
-                {% endfor %}
-              </select>
-              <label class="d-block form-label">
-                <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
-                Show background image
-              </label>
+              <div class="menu-row mb-4px">
+                <label for="background-select" class="form-label menu-label">Background:</label>
+                <select id="background-select" class="form-select">
+                  {% for bg in backgrounds %}
+                  <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="menu-row">
+                <label class="form-label menu-label">
+                  <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
+                  Show background image
+                </label>
+              </div>
           </div>
         </div>
       </td>
