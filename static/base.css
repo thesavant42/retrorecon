@@ -48,6 +48,12 @@
 .retrorecon-root .cursor-pointer { cursor: pointer; }
 .retrorecon-root .fw-bold { font-weight: bold; }
 .retrorecon-root .version-text { font-size: 0.7em; color: #666; }
+.retrorecon-root .db-info {
+  font-size: 1.6em;
+  letter-spacing: 0.04em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
 /* Generic form styles */
