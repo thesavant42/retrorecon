@@ -33,12 +33,12 @@ body.bg-hidden {
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: 7px;
-  box-shadow: 0 0 12px 2px rgba(139, 233, 253, 0.12);
+  box-shadow: 0 0 12px 2px rgb(139 233 253 / 0%);
 }
 
 .retrorecon-root .url-table th,
 .retrorecon-root .url-table td {
-  background: rgb(20 18 34 / 28%);
+  background: #14122200;
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
 }
@@ -47,7 +47,7 @@ body.bg-hidden {
 .retrorecon-root button,
 .retrorecon-root select,
 .retrorecon-root textarea {
-  background: rgb(34 39 50 / 24%);
+  background: rgb(255 255 255 / 3%);
   color: var(--font-main);
   border: 1px solid var(--input-border);
   border-radius: 4px;

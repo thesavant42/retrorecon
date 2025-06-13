@@ -1,9 +1,9 @@
 :root {
-  --bg-color: #0d011e;
+  --bg-color: #0d011e00;
   --bg-rgb: 13 1 30;
   --fg-color: #ffffff;
   --accent-color: #1ea1ff;
-  --panel-opacity: 0.75;
+  --panel-opacity: 0.25;
 }
 
 .retrorecon-root h1,
@@ -331,7 +331,7 @@
     display: none;
     position: absolute;
     background-color: #0e0120fc;
-  min-width: 340px;
+    min-width: 340px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
     padding: 8px 12px;
@@ -532,7 +532,7 @@
 .retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: rgb(var(--bg-rgb) / var(--panel-opacity));
+  background: #1412225c;
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px var(--fg-color);
   font-family: "Segoe UI", "Arial", sans-serif;
@@ -797,7 +797,7 @@
 .retrorecon-root #layout-a td,
 .retrorecon-root #layout-c td,
 .retrorecon-root #layout-d td {
-  background: rgb(var(--bg-rgb) / var(--panel-opacity));
+  background: #14122200;
   color: var(--fg-color);
 }
 
