@@ -15,13 +15,14 @@
 
 .retrorecon-root .webpack-exploder-panel form {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5em;
   align-items: center;
 }
 
 .retrorecon-root .webpack-exploder-panel input[type="text"] {
-  flex: 1;
+  flex: 1 0 auto;
+  width: 250px;
   padding: 0.5em;
   font-size: 1em;
   border: 1px solid #ccc;
