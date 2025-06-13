@@ -2,6 +2,7 @@
   --bg-color: #0d011e75;
   --fg-color: #ffffff;
   --accent-color: #1ea1ff;
+  --table-opacity: 1;
 }
 
 .retrorecon-root h1,
@@ -69,6 +70,9 @@
   background: var(--bg-color);
   color: var(--fg-color);
   padding: 2px 6px;
+}
+.retrorecon-root .form-range {
+  width: 100%;
 }
 
 /* Ensure file inputs inherit base form styling */
@@ -314,7 +318,7 @@
     display: none;
     position: absolute;
     background-color: #0e0120fc;
-    min-width: 440px;
+  min-width: 340px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
     padding: 8px 12px;
@@ -512,6 +516,7 @@
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-color);
+  opacity: var(--table-opacity);
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px var(--fg-color);
   font-family: "Segoe UI", "Arial", sans-serif;
@@ -521,6 +526,7 @@
 .retrorecon-root .url-table thead {
   background: var(--fg-color);
   color: var(--bg-color);
+  opacity: var(--table-opacity);
 }
 .retrorecon-root .url-table th {
   font-weight: bold;
@@ -548,10 +554,12 @@
 .retrorecon-root .url-row-main:nth-child(4n),
 .retrorecon-root .url-row-buttons:nth-child(4n + 1) {
   background: var(--bg-color);
+  opacity: var(--table-opacity);
 }
 .retrorecon-root .url-row-main:nth-child(4n + 2),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
   background: var(--bg-color);
+  opacity: var(--table-opacity);
 }
 
 /* Main row: cursor pointer for entire row */
@@ -765,6 +773,7 @@
 .retrorecon-root #layout-d td {
   background: var(--bg-color);
   color: var(--fg-color);
+  opacity: var(--table-opacity);
 }
 
 /* --- End of update --- */
