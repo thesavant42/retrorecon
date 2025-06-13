@@ -356,18 +356,26 @@
   align-items: flex-start;
   gap: 0.5em;
 }
-.retrorecon-root .import-row,
 .retrorecon-root .menu-row {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.4em;
 }
+
+.retrorecon-root .import-row {
+  display: grid;
+  grid-template-columns: max-content 1fr auto;
+  align-items: center;
+  gap: 0.4em;
+}
 .retrorecon-root .menu-label {
   white-space: nowrap;
+  width: 130px;
+  display: inline-block;
 }
 .retrorecon-root .import-row input[type="text"], .retrorecon-root .import-row input[type="file"]{
-  flex: 1 0 auto;
+  width: 100%;
   max-width: 250px;
   border: 1px solid var(--fg-color);
   border-radius: 5px;
