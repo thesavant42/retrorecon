@@ -669,6 +669,9 @@
   color: var(--fg-color);
   font-weight: bold;
 }
+.retrorecon-root .pagination .page-info {
+  margin-right: 0.5em;
+}
 .retrorecon-root .pagination input[type="text"] {
   width: 40px;
   font-size: 0.9em;
