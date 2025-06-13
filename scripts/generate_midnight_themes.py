@@ -85,6 +85,8 @@ body.bg-hidden {{
 
 
 def main() -> None:
+    """Generate themed CSS files and a markdown table of combos."""
+
     combos = [(c, bg, fg) for c, bg, fg in parse_combos() if not is_yellowish(fg)]
 
     os.makedirs(THEME_DIR, exist_ok=True)

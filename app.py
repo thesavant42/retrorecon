@@ -4,11 +4,22 @@ import json
 import sqlite3
 import zipfile
 import threading
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import requests
 import urllib.parse
 from flask import (
-    Flask, g, render_template, request,
-    redirect, url_for, flash, send_file, session, jsonify
+    Flask,
+    g,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_file,
+    session,
+    jsonify,
+    Response,
 )
 
 app = Flask(__name__)
@@ -22,7 +33,9 @@ if os.path.isdir(THEMES_DIR):
 else:
     AVAILABLE_THEMES = []
 
-def _parse_theme_colors(filename):
+def _parse_theme_colors(filename: str) -> Tuple[str, str]:
+    """Return ``(bg, fg)`` colors parsed from the given theme file."""
+
     bg = '#000000'
     fg = '#ffffff'
     try:
@@ -53,7 +66,8 @@ IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
 DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
 
-def set_import_progress(status, message='', current=0, total=0):
+def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
+    """Write progress information to ``IMPORT_PROGRESS_FILE``."""
     with IMPORT_LOCK:
         progress = {
             'status': status,
@@ -64,19 +78,23 @@ def set_import_progress(status, message='', current=0, total=0):
         with open(IMPORT_PROGRESS_FILE, 'w') as f:
             json.dump(progress, f)
 
-def get_import_progress():
+def get_import_progress() -> Dict[str, Any]:
+    """Return the current import progress state."""
+
     with IMPORT_LOCK:
         if not os.path.exists(IMPORT_PROGRESS_FILE):
             return {'status': 'idle', 'message': '', 'current': 0, 'total': 0}
         with open(IMPORT_PROGRESS_FILE, 'r') as f:
             return json.load(f)
 
-def clear_import_progress():
+def clear_import_progress() -> None:
+    """Remove ``IMPORT_PROGRESS_FILE`` if it exists."""
+
     with IMPORT_LOCK:
         if os.path.exists(IMPORT_PROGRESS_FILE):
             os.remove(IMPORT_PROGRESS_FILE)
 
-def init_db():
+def init_db() -> None:
     """Initialize the database using the schema.sql file."""
     schema_path = os.path.join(app.root_path, 'db', 'schema.sql')
     if not os.path.exists(schema_path):
@@ -92,12 +110,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-def ensure_schema():
-    """Apply schema.sql to an existing database if tables are missing."""
+def ensure_schema() -> None:
+    """Apply ``schema.sql`` to an existing database if tables are missing."""
     if os.path.exists(app.config['DATABASE']):
         init_db()
 
-def load_demo_data():
+def load_demo_data() -> None:
+    """Populate the database with entries from ``DEMO_DATA_FILE`` if present."""
     if not os.path.exists(DEMO_DATA_FILE):
         return
     try:
@@ -121,7 +140,8 @@ def load_demo_data():
     db.commit()
     db.close()
 
-def create_new_db():
+def create_new_db() -> None:
+    """Reset the database and load demo records."""
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
@@ -132,7 +152,9 @@ if not os.path.exists(app.config['DATABASE']):
 else:
     ensure_schema()
 
-def get_db():
+def get_db() -> sqlite3.Connection:
+    """Return a SQLite connection stored on the Flask ``g`` object."""
+
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(app.config['DATABASE'])
@@ -140,25 +162,32 @@ def get_db():
     return db
 
 @app.teardown_appcontext
-def close_connection(exception):
+def close_connection(exception: Optional[BaseException]) -> None:
+    """Close the SQLite connection at app teardown."""
+
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
 
-def query_db(query, args=(), one=False):
+def query_db(query: str, args: Union[Tuple, List] = (), one: bool = False) -> Any:
+    """Execute ``query`` and return rows or a single row."""
+
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
-def execute_db(query, args=()):
+def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
+    """Execute ``query`` that modifies the DB and return ``lastrowid``."""
+
     db = get_db()
     cur = db.execute(query, args)
     db.commit()
     return cur.lastrowid
 
 @app.route('/', methods=['GET'])
-def index():
+def index() -> str:
+    """Render the main search page."""
     q = request.args.get('q', '').strip()
     tag_filter = request.args.get('tag', '').strip()
     try:
@@ -234,7 +263,8 @@ def index():
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
-def fetch_cdx():
+def fetch_cdx() -> Response:
+    """Fetch CDX data for a domain and insert new URLs."""
     domain = request.form.get('domain', '').strip()
     if not domain:
         flash("No domain provided for CDX fetch.", "error")
@@ -281,7 +311,8 @@ def fetch_cdx():
     flash(f"Fetched CDX for {domain}: inserted {inserted} new URLs.", "success")
     return redirect(url_for('index'))
 
-def _background_import(file_content):
+def _background_import(file_content: bytes) -> None:
+    """Background thread handler for JSON/line-delimited imports."""
     try:
         content = file_content.decode('utf-8').strip()
         records = []
@@ -351,7 +382,8 @@ def _background_import(file_content):
         set_import_progress('failed', str(e), 0, 0)
 
 @app.route('/import_json', methods=['POST'])
-def import_json():
+def import_json() -> Response:
+    """Start a background import from the uploaded JSON file."""
     file = request.files.get('json_file')
     if not file:
         flash("No file uploaded for import.", "error")
@@ -368,7 +400,8 @@ def import_json():
     return redirect(url_for('index'))
 
 @app.route('/import_progress', methods=['GET'])
-def import_progress():
+def import_progress() -> Response:
+    """Return JSON describing the current import progress."""
     prog = get_import_progress()
     if request.args.get('clear') == '1' and prog.get('status') in ('done', 'failed'):
         clear_import_progress()
@@ -381,7 +414,8 @@ def import_progress():
     })
 
 @app.route('/add_tag', methods=['POST'])
-def add_tag():
+def add_tag() -> Response:
+    """Append a tag to the selected URL entry."""
     entry_id = request.form.get('entry_id')
     new_tag = request.form.get('new_tag', '').strip()
     if not entry_id or not new_tag:
@@ -404,7 +438,8 @@ def add_tag():
     return redirect(url_for('index'))
 
 @app.route('/bulk_action', methods=['POST'])
-def bulk_action():
+def bulk_action() -> Response:
+    """Apply a bulk action (tag or delete) to selected URLs."""
     action = request.form.get('action', '')
     tag = request.form.get('tag', '').strip()
     selected_ids = request.form.getlist('selected_ids')
@@ -480,7 +515,8 @@ def bulk_action():
     return redirect(url_for('index'))
 
 @app.route('/set_theme', methods=['POST'])
-def set_theme():
+def set_theme() -> Response:
+    """Store the selected theme in the session."""
     theme = request.form.get('theme', '')
     if theme in AVAILABLE_THEMES:
         session['theme'] = theme
@@ -491,7 +527,8 @@ def set_theme():
 
 
 @app.route('/set_background', methods=['POST'])
-def set_background():
+def set_background() -> Response:
+    """Persist the selected background image in the session."""
     bg = request.form.get('background', '')
     if bg in AVAILABLE_BACKGROUNDS:
         session['background'] = bg
@@ -500,7 +537,8 @@ def set_background():
 
 
 @app.route('/set_panel_opacity', methods=['POST'])
-def set_panel_opacity():
+def set_panel_opacity() -> Response:
+    """Update and store the UI panel opacity setting."""
     try:
         opacity = float(request.form.get('opacity', '1'))
     except ValueError:
@@ -510,7 +548,8 @@ def set_panel_opacity():
     return ('', 204)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
-def webpack_zip():
+def webpack_zip() -> Response:
+    """Package sources from a Webpack ``.map`` file into a ZIP archive."""
     map_url = request.form.get('map_url', '').strip()
     if not map_url:
         flash("No .js.map URL provided.", "error")
@@ -567,7 +606,8 @@ def webpack_zip():
         return redirect(url_for('index'))
 
 @app.route('/new_db', methods=['POST'])
-def new_db():
+def new_db() -> Response:
+    """Create a fresh database and load demo entries."""
     close_connection(None)
     create_new_db()
     session['db_display_name'] = os.path.basename(app.config['DATABASE'])
@@ -575,7 +615,8 @@ def new_db():
     return redirect(url_for('index'))
 
 @app.route('/load_db', methods=['POST'])
-def load_db_route():
+def load_db_route() -> Response:
+    """Upload and load a database file provided by the user."""
     file = request.files.get('db_file')
     if not file:
         flash("No database file uploaded.", "error")
@@ -591,7 +632,8 @@ def load_db_route():
     return redirect(url_for('index'))
 
 @app.route('/save_db', methods=['GET'])
-def save_db():
+def save_db() -> Response:
+    """Return the database file for download."""
     name = request.args.get('name', '').strip()
     if name:
         safe_name = urllib.parse.quote(name, safe='')
