@@ -1,8 +1,9 @@
 :root {
-  --bg-color: #0d011e75;
+  --bg-color: #0d011e;
+  --bg-rgb: 13 1 30;
   --fg-color: #ffffff;
   --accent-color: #1ea1ff;
-  --table-opacity: 1;
+  --panel-opacity: 0.75;
 }
 
 .retrorecon-root h1,
@@ -70,6 +71,11 @@
   background: var(--bg-color);
   color: var(--fg-color);
   padding: 2px 6px;
+}
+.retrorecon-root #theme-select,
+.retrorecon-root #background-select {
+  width: auto;
+  max-width: 180px;
 }
 .retrorecon-root .form-range {
   width: 100%;
@@ -515,8 +521,7 @@
 .retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--bg-color);
-  opacity: var(--table-opacity);
+  background: rgb(var(--bg-rgb) / var(--panel-opacity));
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px var(--fg-color);
   font-family: "Segoe UI", "Arial", sans-serif;
@@ -526,7 +531,7 @@
 .retrorecon-root .url-table thead {
   background: var(--fg-color);
   color: var(--bg-color);
-  opacity: var(--table-opacity);
+  opacity: var(--panel-opacity);
 }
 .retrorecon-root .url-table th {
   font-weight: bold;
@@ -553,13 +558,11 @@
 }
 .retrorecon-root .url-row-main:nth-child(4n),
 .retrorecon-root .url-row-buttons:nth-child(4n + 1) {
-  background: var(--bg-color);
-  opacity: var(--table-opacity);
+  background: rgb(var(--bg-rgb) / var(--panel-opacity));
 }
 .retrorecon-root .url-row-main:nth-child(4n + 2),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: var(--bg-color);
-  opacity: var(--table-opacity);
+  background: rgb(var(--bg-rgb) / var(--panel-opacity));
 }
 
 /* Main row: cursor pointer for entire row */
@@ -771,9 +774,8 @@
 .retrorecon-root #layout-a td,
 .retrorecon-root #layout-c td,
 .retrorecon-root #layout-d td {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb) / var(--panel-opacity));
   color: var(--fg-color);
-  opacity: var(--table-opacity);
 }
 
 /* --- End of update --- */

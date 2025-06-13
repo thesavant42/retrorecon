@@ -206,7 +206,7 @@ def index():
     default_background = 'background.jpg' if 'background.jpg' in AVAILABLE_BACKGROUNDS else (AVAILABLE_BACKGROUNDS[0] if AVAILABLE_BACKGROUNDS else '')
     current_background = session.get('background', default_background)
 
-    table_opacity = float(session.get('table_opacity', 1.0))
+    panel_opacity = float(session.get('panel_opacity', 0.75))
 
     search_history = session.get('search_history', [])
     if q:
@@ -227,7 +227,7 @@ def index():
         current_theme=current_theme,
         backgrounds=AVAILABLE_BACKGROUNDS,
         current_background=current_background,
-        table_opacity=table_opacity,
+        panel_opacity=panel_opacity,
         total_count=total_count,
         db_name=db_name,
         search_history=search_history
@@ -499,14 +499,14 @@ def set_background():
     return ('Invalid background', 400)
 
 
-@app.route('/set_table_opacity', methods=['POST'])
-def set_table_opacity():
+@app.route('/set_panel_opacity', methods=['POST'])
+def set_panel_opacity():
     try:
         opacity = float(request.form.get('opacity', '1'))
     except ValueError:
         return ('Invalid value', 400)
     opacity = max(0.1, min(opacity, 1.0))
-    session['table_opacity'] = opacity
+    session['panel_opacity'] = opacity
     return ('', 204)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
