@@ -78,3 +78,174 @@ body.bg-hidden {
   color: var(--font-accent);
   text-shadow: 0 0 12px var(--font-accent), 0 0 24px #222;
 }
+
+/*--- Overrides migrated from base.css to give the theme priority ---*/
+
+.retrorecon-root .dropdown {
+  position: relative;
+  min-width: 225px;
+}
+
+.retrorecon-root .dropbtn {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  padding: 5px 10px;
+  font-size: 1.05em;
+  border: 1px solid var(--fg-color);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-left: 50px;
+}
+
+.retrorecon-root .dropbtn:hover,
+.retrorecon-root .dropbtn:focus {
+  opacity: 0.8;
+}
+
+.retrorecon-root .db-info {
+  font-size: 1.6em;
+  letter-spacing: 0.04em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.retrorecon-root .search-bar input[type="text"] {
+  font-size: 1.2em;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
+  flex: 2;
+  min-width: 0;
+}
+
+.retrorecon-root .tag-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-color);
+  border-radius: 10px;
+  border: 1px solid #0d011e;
+  margin-right: 4px;
+  font-size: 0.95em;
+  margin-bottom: 4px;
+  color: var(--fg-color);
+}
+
+.retrorecon-root .tag-pill form {
+  display: inline;
+}
+
+.retrorecon-root .tag-pill button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1em;
+  margin-left: 2px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.retrorecon-root .search-bar button {
+  font-size: 1.05em;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.retrorecon-root .pagination {
+  margin: 1em;
+  border-radius: 4px;
+  transition: background 0.2s;
+  color: var(--fg-color);
+  background: var(--bg-color);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.2em;
+  gap: 0.6em;
+}
+
+.retrorecon-root .url-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1412225c;
+  margin-bottom: 0.7em;
+  box-shadow: 0 1px 8px var(--fg-color);
+}
+
+.retrorecon-root .explode-btn,
+.retrorecon-root .copy-btn,
+.retrorecon-root .delete-btn,
+.retrorecon-root .btn-wayback,
+.retrorecon-root .shodan-btn,
+.retrorecon-root .vt-btn,
+.retrorecon-root .github-btn,
+.retrorecon-root .google-btn,
+.retrorecon-root .crtsh-btn {
+  background: var(--bg-color);
+  border: 1px solid var(--fg-color);
+  border-radius: 7px;
+  color: #2cbaf3;
+  font-size: 1em;
+  line-height: 1.15em;
+  padding: 2px 11px;
+  margin-left: 0.1em;
+  margin-right: 0.1em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.retrorecon-root #bulk-tag-input {
+  font-size: 0.98em;
+  padding: 2px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--fg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
+}
+
+.retrorecon-root .bulk-action-btn {
+  font-size: 1em;
+  padding: 2px 11px;
+}
+
+.retrorecon-root .footer {
+  margin-top: 0;
+  text-align: center;
+  color: var(--fg-color);
+  font-size: 0.97em;
+}
+
+.retrorecon-root .fw-bold {
+  font-weight: bold;
+}
+
+.retrorecon-root #domain-input {
+  width: 250px;
+}
+
+.retrorecon-root .form-file {
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+
+.retrorecon-root #map-url-input {
+  width: 250px;
+  max-width: 100%;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
