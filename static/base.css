@@ -314,7 +314,7 @@
     display: none;
     position: absolute;
     background-color: #0e0120fc;
-    min-width: 220px;
+    min-width: 440px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
     padding: 8px 12px;
@@ -352,7 +352,7 @@
 }
 .retrorecon-root .import-row input[type="text"], .retrorecon-root .import-row input[type="file"]{
   flex: 1;
-  max-width: 160px;
+  max-width: 320px;
   border: 1px solid var(--fg-color);
   border-radius: 5px;
   background: var(--bg-color);
@@ -373,7 +373,7 @@
 /* Theme selection row */
 /* Map URL input inside dropdown */
 .retrorecon-root #map-url-input {
-  max-width: 160px;
+  max-width: 320px;
   border: 1px solid var(--fg-color);
   border-radius: 5px;
   background: var(--bg-color);
@@ -462,10 +462,11 @@
 /* Bulk controls section with flex layout */
 .retrorecon-root .bulk-controls {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
+  flex-wrap: wrap;
 }
 /* Tag input */
 .retrorecon-root .bulk-controls input[type="text"] {
