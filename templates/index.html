@@ -108,7 +108,12 @@
                   <button type="submit" class="btn">💾 Save As</button>
                 </form>
                 <form method="POST" action="/new_db" class="d-inline ml-4px">
+                  <input type="text" name="db_name" placeholder="Name" class="form-input w-8em" />
                   <button type="submit" class="btn">🆕 New DB</button>
+                </form>
+                <form method="POST" action="/rename_db" class="d-inline ml-4px">
+                  <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
+                  <button type="submit" class="btn">✏️ Rename DB</button>
                 </form>
               </div>
             </div>
@@ -479,7 +484,7 @@
       saveForm.addEventListener('submit', function(e) {
         if (!/name=/.test(this.action)) {
           e.preventDefault();
-          const nm = prompt('Enter database name:', 'wabax');
+          const nm = prompt('Enter database name:', 'waybax');
           if (nm) {
             const enc = encodeURIComponent(nm.trim());
             window.location = '/save_db?name=' + enc;

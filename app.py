@@ -4,6 +4,7 @@ import json
 import sqlite3
 import zipfile
 import threading
+import re
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
@@ -23,7 +24,7 @@ from flask import (
 )
 
 app = Flask(__name__)
-app.config['DATABASE'] = os.path.join(app.root_path, 'wabax.db')
+app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
 ITEMS_PER_PAGE = 20
 
@@ -140,12 +141,32 @@ def load_demo_data() -> None:
     db.commit()
     db.close()
 
-def create_new_db() -> None:
-    """Reset the database and load demo records."""
-    if os.path.exists(app.config['DATABASE']):
-        os.remove(app.config['DATABASE'])
+def _sanitize_db_name(name: str) -> Optional[str]:
+    """Return a safe ``name.db`` or ``None`` if invalid."""
+    nm = name.strip()
+    if not nm:
+        return None
+    if len(nm) > 64 or any(sep in nm for sep in ('/', '\\')):
+        return None
+    if not re.match(r'^[A-Za-z0-9_-]+(\.db)?$', nm):
+        return None
+    if not nm.lower().endswith('.db'):
+        nm += '.db'
+    return nm
+
+
+def create_new_db(name: Optional[str] = None) -> str:
+    """Reset the database and load demo records, returning the filename."""
+    nm = _sanitize_db_name(name) if name else 'waybax.db'
+    if nm is None:
+        raise ValueError('Invalid database name.')
+    db_path = os.path.join(app.root_path, nm)
+    if os.path.exists(db_path):
+        os.remove(db_path)
+    app.config['DATABASE'] = db_path
     init_db()
     load_demo_data()
+    return nm
 
 if not os.path.exists(app.config['DATABASE']):
     create_new_db()
@@ -609,9 +630,13 @@ def webpack_zip() -> Response:
 def new_db() -> Response:
     """Create a fresh database and load demo entries."""
     close_connection(None)
-    create_new_db()
-    session['db_display_name'] = os.path.basename(app.config['DATABASE'])
-    flash("New demo database created.", "success")
+    name = request.form.get('db_name', '').strip()
+    try:
+        db_name = create_new_db(name or None)
+        session['db_display_name'] = db_name
+        flash("New demo database created.", "success")
+    except ValueError as e:
+        flash(str(e), "error")
     return redirect(url_for('index'))
 
 @app.route('/load_db', methods=['POST'])
@@ -646,6 +671,27 @@ def save_db() -> Response:
         as_attachment=True,
         download_name=safe_name
     )
+
+
+@app.route('/rename_db', methods=['POST'])
+def rename_db() -> Response:
+    """Rename the current database file."""
+    new_name = request.form.get('new_name', '').strip()
+    safe = _sanitize_db_name(new_name or '')
+    if not safe:
+        flash('Invalid database name.', 'error')
+        return redirect(url_for('index'))
+    close_connection(None)
+    new_path = os.path.join(app.root_path, safe)
+    try:
+        os.rename(app.config['DATABASE'], new_path)
+    except OSError as e:
+        flash(f'Error renaming database: {e}', 'error')
+        return redirect(url_for('index'))
+    app.config['DATABASE'] = new_path
+    session['db_display_name'] = safe
+    flash('Database renamed.', 'success')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['DATABASE']):
