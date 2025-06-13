@@ -644,11 +644,7 @@
 
 /* Pagination styling */
 .retrorecon-root .pagination {
-    margin: 1em 0;
-    margin-top: 1em;
-    margin-right: 1em;
-    margin-bottom: 1em;
-    margin-left: 1em;
+    margin: 1em;
     border-radius: 4px;
     transition: background 0.2s;
     /* border: 1px solid var(--fg-color); */
@@ -659,6 +655,14 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    font-size: 1.2em;
+    gap: 0.6em;
+}
+.retrorecon-root .pagination a,
+.retrorecon-root .pagination strong,
+.retrorecon-root .pagination span,
+.retrorecon-root .pagination form {
+  margin: 0 0.2em;
 }
 .retrorecon-root .pagination a:hover {
   background: var(--bg-color);
@@ -670,7 +674,7 @@
   font-weight: bold;
 }
 .retrorecon-root .pagination .page-info {
-  margin-right: 0.5em;
+  margin-right: 1em;
 }
 .retrorecon-root .pagination input[type="text"] {
   width: 40px;
@@ -683,7 +687,18 @@
   color: var(--fg-color);
 }
 .retrorecon-root .pagination button {
-  margin-left: 0.2em;
+  margin-left: 0.5em;
+}
+
+.retrorecon-root .pagination-arrow {
+  display: inline-flex;
+  align-items: center;
+}
+
+.retrorecon-root .pagination .icon {
+  width: 1.4em;
+  height: 1.4em;
+  fill: var(--accent-color);
 }
 
 .retrorecon-root .search-bar button:hover{
