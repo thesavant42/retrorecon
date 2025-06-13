@@ -760,7 +760,7 @@
 
 /* Footer text style */
 .retrorecon-root .footer {
-  margin-top: 2em;
+  margin-top: 0;
   text-align: center;
   color: var(--fg-color);
   font-size: 0.97em;
