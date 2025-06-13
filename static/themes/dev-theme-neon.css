@@ -1,7 +1,7 @@
 /* Neon midnight dark theme */
 :root {
   --bg-main: #0d011e00;
-  --bg-panel: rgba(20, 18, 34, 0.92);
+  --bg-panel: rgb(20 18 34 / 0%);
   --font-main: #e1e9ff;
   --font-accent: #8be9fd;
   --border-color: rgba(139, 233, 253, 0.4);
@@ -9,7 +9,7 @@
   --input-border: #8be9fd;
 
   /* compatibility with base styles */
-  --bg-color: #141222;
+  --bg-color: #14122226;
   --bg-rgb: 20 18 34;
   --panel-opacity: 0.92;
   --fg-color: var(--font-main);
@@ -17,7 +17,7 @@
 }
 
 .retrorecon-root {
-  background: linear-gradient(180deg, #18192e 0%, #23234473 100%);
+  background: linear-gradient(180deg, #18192e00 0%, #23234473 100%);
   background-image: linear-gradient(rgb(24, 25, 46) 0%, rgba(35, 35, 68, 0.45) 100%);
   background-position-x: initial;
   background-position-y: initial;
@@ -47,7 +47,7 @@ body.bg-hidden {
 
 .retrorecon-root .url-table th,
 .retrorecon-root .url-table td {
-  background: rgba(20, 18, 34, 0.80);
+  background: rgb(20 18 34 / 17%);
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
 }
@@ -56,7 +56,7 @@ body.bg-hidden {
 .retrorecon-root button,
 .retrorecon-root select,
 .retrorecon-root textarea {
-  background: rgb(34 39 50);
+  background: rgb(34 39 50 / 20%);
   color: var(--font-main);
   border: 1px solid var(--input-border);
   border-radius: 4px;
