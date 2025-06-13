@@ -29,7 +29,7 @@
     {% if page > 1 %}
       <a href="?page=1&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="First">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M16 4 L8 12 L16 20 Z M8 4 L8 20" />
+          <path d="M16 4 L8 12 L16 20 Z M8 4 L0 12 L8 20 Z" />
         </svg>
       </a>
       <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Prev">
@@ -240,9 +240,9 @@
                     <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" class="form-checkbox" />
                   </th>
                   <th>URL</th>
-                  <th>Timestamp</th>
-                  <th>HTTP</th>
-                  <th>MIME</th>
+                  <th class="text-center">Timestamp</th>
+                  <th class="text-center">HTTP</th>
+                  <th class="text-center">MIME</th>
                 </tr>
               </thead>
               <tbody>
@@ -252,9 +252,9 @@
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
                   <td>{{ url.url }}</td>
-                  <td>{{ url.timestamp or '-' }}</td>
-                  <td class="status {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
-                  <td>{{ url.mime_type or '-' }}</td>
+                  <td class="text-center">{{ url.timestamp or '-' }}</td>
+                  <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
+                  <td class="text-center">{{ url.mime_type or '-' }}</td>
                 </tr>
                 <tr class="url-row-buttons">
                   <td></td>
