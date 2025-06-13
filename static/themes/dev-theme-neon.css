@@ -17,7 +17,16 @@
 }
 
 .retrorecon-root {
-  background: linear-gradient(180deg, #18192e 0%, #232344 100%);
+  background: linear-gradient(180deg, #18192e 0%, #23234473 100%);
+  background-image: linear-gradient(rgb(24, 25, 46) 0%, rgba(35, 35, 68, 0.45) 100%);
+  background-position-x: initial;
+  background-position-y: initial;
+  background-size: initial;
+  background-repeat: initial;
+  background-attachment: initial;
+  background-origin: initial;
+  background-clip: initial;
+  background-color: initial;
   color: var(--font-main);
   font-family: 'Share Tech Mono', 'Consolas', monospace;
 }
