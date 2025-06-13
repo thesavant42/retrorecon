@@ -331,7 +331,7 @@
     display: none;
     position: absolute;
     background-color: #0e0120fc;
-    min-width: 340px;
+    min-width: 420px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
     padding: 8px 12px;
@@ -549,7 +549,7 @@
 .retrorecon-root .url-table thead {
   background: var(--fg-color);
   color: var(--bg-color);
-  opacity: var(--panel-opacity);
+  opacity: 1;
 }
 .retrorecon-root .url-table th {
   font-weight: bold;
@@ -583,6 +583,11 @@
 */
 
 /* URL row button cells */
+.retrorecon-root .url-row-buttons {
+  background: var(--bg-color);
+  opacity: var(--panel-opacity);
+  transition: opacity 0.2s;
+}
 .retrorecon-root .url-row-buttons td {
   padding: 0.43em 0.7em;
   border-bottom: 1px solid var(--fg-color);
