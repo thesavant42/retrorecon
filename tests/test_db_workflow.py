@@ -126,3 +126,13 @@ def test_session_name_reset(tmp_path, monkeypatch):
         with client.session_transaction() as sess:
             assert sess['db_display_name'] == 'waybax.db'
 
+
+def test_new_after_rename_preserves_old_file(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'orig'})
+        client.post('/rename_db', data={'new_name': 'renamed'})
+        client.post('/new_db')
+        assert (tmp_path / 'renamed.db').exists()
+        assert (tmp_path / 'waybax.db').exists()
+
