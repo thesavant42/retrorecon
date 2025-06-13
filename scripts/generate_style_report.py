@@ -1,4 +1,6 @@
 import os
+from typing import Dict, List
+
 import cssutils
 from bs4 import BeautifulSoup
 
@@ -7,8 +9,10 @@ cssutils.log.setLevel('FATAL')
 
 # Collect :root variables from CSS
 
-def parse_root_vars(path):
-    vars = {}
+def parse_root_vars(path: str) -> Dict[str, str]:
+    """Extract CSS custom properties from ``:root`` in the given file."""
+
+    vars: Dict[str, str] = {}
     sheet = cssutils.parseFile(path)
     for rule in sheet:
         if rule.type == rule.STYLE_RULE and rule.selectorText.strip() == ':root':
@@ -19,8 +23,10 @@ def parse_root_vars(path):
 
 # Collect selectors with color-related properties
 
-def collect_color_rules(path):
-    results = []
+def collect_color_rules(path: str) -> List[Dict[str, object]]:
+    """Return rules with color properties from ``path``."""
+
+    results: List[Dict[str, object]] = []
     sheet = cssutils.parseFile(path)
     for rule in sheet:
         if rule.type == rule.STYLE_RULE:
@@ -34,8 +40,10 @@ def collect_color_rules(path):
 
 # Parse HTML to gather used tags
 
-def collect_tags(directory='templates'):
-    tags = {}
+def collect_tags(directory: str = 'templates') -> Dict[str, int]:
+    """Count HTML tag usage under ``directory``."""
+
+    tags: Dict[str, int] = {}
     for root, _, files in os.walk(directory):
         for f in files:
             if f.endswith('.html'):
@@ -47,7 +55,8 @@ def collect_tags(directory='templates'):
 
 # Generate HTML report
 
-def main():
+def main() -> None:
+    """Generate ``reports/style_report.html`` summarizing project styles."""
     base_vars = parse_root_vars(os.path.join('static', 'base.css'))
     theme_vars = {}
     theme_dir = os.path.join('static', 'themes')

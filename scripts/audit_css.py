@@ -15,7 +15,9 @@ styled_classes = {
     'checkbox': {'form-checkbox', 'row-checkbox'},
 }
 
-def audit_html(path):
+def audit_html(path: str) -> None:
+    """Update ``coverage`` counts based on the HTML file at ``path``."""
+
     with open(path, 'r', encoding='utf-8') as f:
         soup = BeautifulSoup(f, 'html.parser')
     for b in soup.find_all('button'):
@@ -39,8 +41,10 @@ def audit_html(path):
         if set(sel.get('class', [])) & styled_classes['select']:
             coverage['select']['styled'] += 1
 
-def audit_css(path):
-    conflicts = []
+def audit_css(path: str) -> list[str]:
+    """Return selectors in ``path`` that are not scoped under ``.retrorecon-root``."""
+
+    conflicts: list[str] = []
     with open(path, 'r', encoding='utf-8') as f:
         css = f.read()
     for line in css.splitlines():
