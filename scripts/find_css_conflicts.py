@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-REPORT_PATH = Path('report.json')
+REPORT_PATH = Path('reports/report.json')
 report = json.loads(REPORT_PATH.read_text())
 
 files = report.get('unscoped_selectors', {})

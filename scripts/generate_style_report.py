@@ -94,7 +94,7 @@ def main():
 
     html.append("</body></html>")
 
-    with open('style_report.html', 'w', encoding='utf-8') as fh:
+    with open('reports/style_report.html', 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(html))
 
 if __name__ == '__main__':

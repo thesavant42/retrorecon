@@ -51,7 +51,7 @@ else:
 
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
-DEMO_DATA_FILE = os.path.join(app.root_path, 'demo_data.json')
+DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
 
 def set_import_progress(status, message='', current=0, total=0):
     with IMPORT_LOCK:
@@ -78,7 +78,7 @@ def clear_import_progress():
 
 def init_db():
     """Initialize the database using the schema.sql file."""
-    schema_path = os.path.join(app.root_path, "schema.sql")
+    schema_path = os.path.join(app.root_path, 'db', 'schema.sql')
     if not os.path.exists(schema_path):
         raise FileNotFoundError("schema.sql not found")
     with open(schema_path, "r", encoding="utf-8") as f:
