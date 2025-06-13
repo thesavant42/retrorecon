@@ -15,7 +15,12 @@ class FakeResponse:
 
 def test_fetch_cdx_inserts_status(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
-    monkeypatch.setattr(app.app, 'config', {**app.app.config, 'DATABASE': str(db_path)})
+    orig = Path(__file__).resolve().parents[1]
+    monkeypatch.setattr(app.app, "root_path", str(tmp_path))
+    monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
+    monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
+    (tmp_path / "db").mkdir()
+    (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
     app.init_db()
 
     sample = [
@@ -39,7 +44,12 @@ def test_fetch_cdx_inserts_status(tmp_path, monkeypatch):
 
 def test_fetch_cdx_handles_dash_status(tmp_path, monkeypatch):
     db_path = tmp_path / "dash.db"
-    monkeypatch.setattr(app.app, 'config', {**app.app.config, 'DATABASE': str(db_path)})
+    orig = Path(__file__).resolve().parents[1]
+    monkeypatch.setattr(app.app, "root_path", str(tmp_path))
+    monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
+    monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
+    (tmp_path / "db").mkdir()
+    (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
     app.init_db()
 
     sample = [
