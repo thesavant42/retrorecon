@@ -13,6 +13,7 @@ def setup_tmp(monkeypatch, tmp_path):
     (tmp_path / "db").mkdir()
     (tmp_path / "data").mkdir()
     orig = Path(__file__).resolve().parents[1]
+    monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
     demo = orig / "data" / "demo_data.json"
     if demo.exists():
@@ -112,4 +113,16 @@ def test_save_db_custom_name(tmp_path, monkeypatch):
         assert 'attachment' in cd_header
         assert 'mybackup.db' in cd_header
         assert resp.data.startswith(b'SQLite format 3')
+
+
+def test_session_name_reset(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db')
+        with client.session_transaction() as sess:
+            sess['db_display_name'] = 'stale.db'
+        resp = client.get('/')
+        assert b'loaded&gt; waybax.db' in resp.data
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == 'waybax.db'
 
