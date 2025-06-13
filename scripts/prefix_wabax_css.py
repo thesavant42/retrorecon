@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 
-REPORT_PATH = Path('report.json')
+REPORT_PATH = Path('reports/report.json')
 CSS_PATH = Path('static/base.css')
 PREFIX = '.retrorecon-root '
 

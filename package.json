@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint:css": "stylelint \"static/**/*.css\"",
-    "lint:inline": "node check_inline_styles.js",
+    "lint:inline": "node scripts/check_inline_styles.js",
     "lint": "npm run lint:css && npm run lint:inline"
   }
 }
