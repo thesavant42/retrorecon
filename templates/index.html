@@ -250,7 +250,7 @@
               </thead>
               <tbody>
                 {% for url in urls %}
-                <tr class="url-row-main cursor-pointer" onclick="window.open('{{ url.url }}', '_blank');">
+                <tr class="url-row-main url-result cursor-pointer" onclick="window.open('{{ url.url }}', '_blank');">
                   <td>
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
@@ -491,7 +491,6 @@
     // Apply theme colors on the URL results table
     document.querySelectorAll('.url-table tr').forEach(tr => {
       tr.style.backgroundColor = 'var(--bg-color)';
-      tr.style.color = 'var(--fg-color)';
     });
     document.querySelectorAll('.url-table tbody tr').forEach(tr => {
       const cells = tr.querySelectorAll('td');

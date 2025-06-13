@@ -567,7 +567,15 @@
 }
 
 /* Apply pagination text styling to URL results */
+/*
 .retrorecon-root .url-result {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+*/
+
+.retrorecon-root .url-row-main.url-result td {
   font-size: 1.2em;
   font-weight: bold;
   color: var(--accent-color);
