@@ -558,11 +558,11 @@
 }
 .retrorecon-root .url-row-main:nth-child(4n),
 .retrorecon-root .url-row-buttons:nth-child(4n + 1) {
-  background: rgb(var(--bg-rgb) / var(--panel-opacity));
+  background: var(--bg-color);
 }
 .retrorecon-root .url-row-main:nth-child(4n + 2),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: rgb(var(--bg-rgb) / var(--panel-opacity));
+  background: var(--bg-color);
 }
 
 /* Main row: cursor pointer for entire row */
