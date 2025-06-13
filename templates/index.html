@@ -167,6 +167,10 @@
                   Show background image
                 </label>
               </div>
+              <div class="menu-row">
+                <label for="opacity-range" class="form-label menu-label">Table opacity:</label>
+                <input type="range" id="opacity-range" min="10" max="100" value="{{ int(table_opacity * 100) }}" class="form-range">
+              </div>
           </div>
         </div>
       </td>
@@ -517,6 +521,23 @@
           body: 'background=' + encodeURIComponent(bg)
         });
       });
+    }
+
+    const opacityRange = document.getElementById('opacity-range');
+    function updateOpacity(val){
+      const op = val / 100;
+      document.documentElement.style.setProperty('--table-opacity', op);
+      fetch('/set_table_opacity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'opacity=' + op
+      });
+    }
+    if(opacityRange){
+      opacityRange.addEventListener('input', function(){
+        updateOpacity(this.value);
+      });
+      updateOpacity(opacityRange.value);
     }
   </script>
   </div>
