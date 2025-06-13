@@ -689,6 +689,7 @@ def rename_db() -> Response:
         flash(f'Error renaming database: {e}', 'error')
         return redirect(url_for('index'))
     app.config['DATABASE'] = new_path
+    ensure_schema()
     session['db_display_name'] = safe
     flash('Database renamed.', 'success')
     return redirect(url_for('index'))
