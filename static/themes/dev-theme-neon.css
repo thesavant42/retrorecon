@@ -33,6 +33,7 @@
 
 body.bg-hidden {
   background-image: none !important;
+  background-color: #000 !important;
 }
 
 .retrorecon-root .panel,

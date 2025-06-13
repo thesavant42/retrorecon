@@ -810,4 +810,7 @@
 }
 
 /* --- End of update --- */
-body.bg-hidden { background-image: none !important; }
+body.bg-hidden {
+  background-image: none !important;
+  background-color: #000 !important;
+}

@@ -55,7 +55,10 @@ CSS_TEMPLATE = """/* Midnight City combo */
   font-family: system-ui, sans-serif;
 }}
 
-body.bg-hidden {{ background-image: none !important; }}
+body.bg-hidden {{
+    background-image: none !important;
+    background-color: #000 !important;
+}}
 
 /* Apply colors to all control types */
 .retrorecon-root button,
