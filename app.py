@@ -184,9 +184,9 @@ def get_db() -> sqlite3.Connection:
 
 @app.teardown_appcontext
 def close_connection(exception: Optional[BaseException]) -> None:
-    """Close the SQLite connection at app teardown."""
+    """Close the SQLite connection at app teardown and remove it from ``g``."""
 
-    db = getattr(g, '_database', None)
+    db = g.pop('_database', None)
     if db is not None:
         db.close()
 
