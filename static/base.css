@@ -541,6 +541,11 @@
   text-align: left;
 }
 
+/* Allow center alignment on specific header cells */
+.retrorecon-root .url-table th.text-center {
+  text-align: center;
+}
+
 /* Alternating row backgrounds for readability */
 .retrorecon-root .url-row-main {
   cursor: pointer;
