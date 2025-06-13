@@ -229,8 +229,8 @@
   padding: 5px 10px;
   border-radius: 5px;
   border: 1px solid var(--fg-color);
-  background: var(--fg-color);
-  color: var(--bg-color);
+  background: var(--bg-color);
+  color: var(--fg-color);
   cursor: pointer;
   transition: opacity 0.2s;
 }
