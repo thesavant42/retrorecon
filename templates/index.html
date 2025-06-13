@@ -27,8 +27,16 @@
   <div class="pagination mt-1">
     <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}">&#171;&#171;</a>
-      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}">&#171;</a>
+      <a href="?page=1&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="First">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M16 4 L8 12 L16 20 Z M8 4 L8 20" />
+        </svg>
+      </a>
+      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Prev">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 4 L7 12 L15 20 Z" />
+        </svg>
+      </a>
     {% endif %}
     {% set start = page - 2 if page - 2 > 2 else 1 %}
     {% set end = page + 2 if page + 2 < total_pages - 1 else total_pages %}
@@ -48,8 +56,16 @@
       <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">{{ total_pages }}</a>
     {% endif %}
     {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}">&#187;</a>
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">&#187;&#187;</a>
+      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Next">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 4 L17 12 L9 20 Z" />
+        </svg>
+      </a>
+      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Last">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 4 L16 12 L8 20 Z M16 4 L24 12 L16 20 Z" />
+        </svg>
+      </a>
     {% endif %}
     <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
