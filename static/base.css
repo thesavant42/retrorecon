@@ -584,9 +584,8 @@
 
 /* URL row button cells */
 .retrorecon-root .url-row-buttons {
-  background: var(--bg-color);
-  opacity: var(--panel-opacity);
-  transition: opacity 0.2s;
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  transition: background-color 0.2s;
 }
 .retrorecon-root .url-row-buttons td {
   padding: 0.43em 0.7em;
@@ -601,12 +600,12 @@
   cursor: pointer;
 }
 .retrorecon-root .url-row-main:nth-child(4n),
-.retrorecon-root .url-row-buttons:nth-child(4n + 1) {
-  background: var(--bg-color);
+.retrorecon-root .url-row-main:nth-child(4n + 2) {
+  background: rgb(var(--bg-rgb));
 }
-.retrorecon-root .url-row-main:nth-child(4n + 2),
+.retrorecon-root .url-row-buttons:nth-child(4n + 1),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
 
 /* Main row: cursor pointer for entire row */
