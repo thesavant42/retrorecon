@@ -256,7 +256,11 @@ def fetch_cdx():
             continue
         original_url = row[0]
         timestamp = row[1] if len(row) > 1 else None
-        status_code = int(row[2]) if len(row) > 2 and row[2] else None
+        if len(row) > 2:
+            status_raw = str(row[2])
+            status_code = int(status_raw) if status_raw.isdigit() else None
+        else:
+            status_code = None
         mime_type = row[3] if len(row) > 3 else None
         existing = query_db(
             "SELECT id FROM urls WHERE url = ?",
