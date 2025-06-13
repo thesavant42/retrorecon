@@ -807,7 +807,7 @@
 .retrorecon-root #layout-c td,
 .retrorecon-root #layout-d td {
   background: #14122200;
-  color: var(--fg-color);
+  color: inherit;
 }
 
 /* --- End of update --- */
