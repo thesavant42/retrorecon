@@ -490,7 +490,11 @@
 
     // Apply theme colors on the URL results table
     document.querySelectorAll('.url-table tr').forEach(tr => {
-      tr.style.backgroundColor = 'var(--bg-color)';
+      if(tr.classList.contains('url-row-buttons')){
+        tr.style.backgroundColor = 'rgb(var(--bg-rgb)/var(--panel-opacity))';
+      } else {
+        tr.style.backgroundColor = 'rgb(var(--bg-rgb))';
+      }
     });
     document.querySelectorAll('.url-table tbody tr').forEach(tr => {
       const cells = tr.querySelectorAll('td');
