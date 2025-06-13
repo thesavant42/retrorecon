@@ -251,7 +251,7 @@
                   <td>
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
-                  <td>{{ url.url }}</td>
+                  <td class="url-result">{{ url.url }}</td>
                   <td class="text-center">{{ url.timestamp or '-' }}</td>
                   <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
                   <td class="text-center">{{ url.mime_type or '-' }}</td>
