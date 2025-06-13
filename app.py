@@ -248,7 +248,10 @@ def index() -> str:
     """
     rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
 
-    db_name = session.get('db_display_name') or os.path.basename(app.config['DATABASE'])
+    actual_name = os.path.basename(app.config['DATABASE'])
+    if session.get('db_display_name') != actual_name:
+        session['db_display_name'] = actual_name
+    db_name = session['db_display_name']
 
     default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
