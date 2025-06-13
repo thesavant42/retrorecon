@@ -102,6 +102,7 @@
                 <input id="db-file" type="file" name="db_file" required class="form-file" />
                 <button type="submit" class="btn">Import</button>
               </form>
+              <div class="fw-bold">Export Options</div>
               <div class="mt-05">
                 <form method="GET" action="/save_db" id="save-db-form" class="d-inline">
                   <button type="submit" class="btn">💾 Save As</button>
@@ -112,19 +113,20 @@
               </div>
             </div>
             <hr class="my-8px">
+            <div class="fw-bold">WebPack Tools</div>
             <div>
               <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
-                <label for="map-url-input" class="form-label menu-label">🔍 Explode .js.map URL:</label>
+                <label for="map-url-input" class="form-label menu-label">🔍 .js.map URL:</label>
                 <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
-                <button type="submit" class="btn explode-btn">Explode &amp; Download ZIP</button>
+                <button type="submit" class="btn explode-btn"> 💥 </button>
               </form>
             </div>
             <hr class="my-8px">
               <div class="fw-bold">Bulk Actions</div>
               <div class="bulk-controls">
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">➕🏷️ Tag URLs</button>
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">➖🏷️ Rem Tags</button>
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">✂🗑️ Del URLs</button>
+                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag"> ➕🏷️ </button>
+                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag"> ➖🏷️ </button>
+                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete"> ✂🗑️ URLs </button>
                 <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
                 <div class="checkbox-row">
                   <label class="select-all-label ml-1 form-label">
