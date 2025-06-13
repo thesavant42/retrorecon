@@ -339,10 +339,16 @@
   align-items: flex-start;
   gap: 0.5em;
 }
-.retrorecon-root .import-row{
-  display: flex;
+.retrorecon-root .import-row,
+.retrorecon-root .menu-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
   align-items: center;
-  gap: 0.4em;
+  column-gap: 0.4em;
+}
+.retrorecon-root .menu-label {
+  width: 150px;
+  flex-shrink: 0;
 }
 .retrorecon-root .import-row input[type="text"], .retrorecon-root .import-row input[type="file"]{
   flex: 1;
