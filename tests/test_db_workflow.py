@@ -77,3 +77,39 @@ def test_rename_while_open(tmp_path, monkeypatch):
         client.post('/rename_db', data={'new_name': 'fail'})
         assert (tmp_path / 'open.db').exists()
         conn.close()
+
+import io
+import json
+
+
+def test_load_json_populates_db(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db')
+        sample = [{"url": "http://wb.example/", "timestamp": "20240101010101", "status_code": 200, "mime_type": "text/html"}]
+        data = json.dumps(sample).encode('utf-8')
+
+        class DummyThread:
+            def __init__(self, target, args=()):
+                self.target = target
+                self.args = args
+            def start(self):
+                self.target(*self.args)
+
+        monkeypatch.setattr(app.threading, 'Thread', DummyThread)
+        client.post('/import_json', data={'json_file': (io.BytesIO(data), 'cdx.json')})
+        with app.app.app_context():
+            rows = app.query_db('SELECT url, timestamp, status_code, mime_type FROM urls WHERE url = ?', ['http://wb.example/'])
+            assert rows and rows[0]['timestamp'] == '20240101010101'
+
+
+def test_save_db_custom_name(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'export'})
+        resp = client.get('/save_db?name=mybackup')
+        cd_header = resp.headers.get('Content-Disposition', '')
+        assert 'attachment' in cd_header
+        assert 'mybackup.db' in cd_header
+        assert resp.data.startswith(b'SQLite format 3')
+
