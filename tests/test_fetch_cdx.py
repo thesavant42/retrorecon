@@ -35,3 +35,22 @@ def test_fetch_cdx_inserts_status(tmp_path, monkeypatch):
     assert row['timestamp'] == "20250101010101"
     assert row['status_code'] == 200
     assert row['mime_type'] == "text/html"
+
+
+def test_fetch_cdx_handles_dash_status(tmp_path, monkeypatch):
+    db_path = tmp_path / "dash.db"
+    monkeypatch.setattr(app.app, 'config', {**app.app.config, 'DATABASE': str(db_path)})
+    app.init_db()
+
+    sample = [
+        ["original", "timestamp", "statuscode", "mimetype"],
+        ["http://dash.com/", "20250101010101", "-", "text/html"]
+    ]
+    monkeypatch.setattr(app.requests, 'get', lambda *a, **k: FakeResponse(sample))
+
+    client = app.app.test_client()
+    client.post('/fetch_cdx', data={'domain': 'dash.com'})
+
+    with app.app.app_context():
+        rows = app.query_db('SELECT status_code FROM urls')
+    assert rows[0]['status_code'] is None
