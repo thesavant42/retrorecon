@@ -575,14 +575,15 @@
 }
 */
 
+/* URL row button cells */
+.retrorecon-root .url-row-buttons td {
+  padding: 0.43em 0.7em;
+  border-bottom: 1px solid var(--fg-color);
+}
 .retrorecon-root .url-row-main.url-result td {
   font-size: 1.2em;
   font-weight: bold;
   color: var(--accent-color);
-}
-.retrorecon-root .url-row-buttons td {
-  padding: 0.43em 0.7em;
-  border-bottom: 1px solid var(--fg-color);
 }
 .retrorecon-root .url-row-main input[type="checkbox"] {
   cursor: pointer;
