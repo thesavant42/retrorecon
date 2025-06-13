@@ -168,8 +168,8 @@
                 </label>
               </div>
               <div class="menu-row">
-                <label for="opacity-range" class="form-label menu-label">Table opacity:</label>
-                <input type="range" id="opacity-range" min="10" max="100" value="{{ (table_opacity * 100)|int }}" class="form-range">
+                <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
+                <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
               </div>
           </div>
         </div>
@@ -526,8 +526,8 @@
     const opacityRange = document.getElementById('opacity-range');
     function updateOpacity(val){
       const op = val / 100;
-      document.documentElement.style.setProperty('--table-opacity', op);
-      fetch('/set_table_opacity', {
+      document.documentElement.style.setProperty('--panel-opacity', op);
+      fetch('/set_panel_opacity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'opacity=' + op

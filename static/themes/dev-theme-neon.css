@@ -9,7 +9,9 @@
   --input-border: #8be9fd;
 
   /* compatibility with base styles */
-  --bg-color: var(--bg-main);
+  --bg-color: #141222;
+  --bg-rgb: 20 18 34;
+  --panel-opacity: 0.92;
   --fg-color: var(--font-main);
   --accent-color: var(--font-accent);
 }
