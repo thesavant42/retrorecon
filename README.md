@@ -16,6 +16,7 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 - Download, load or create databases from the menu, including naming your new
   database
 - Rename the current database without leaving the application
+- Remembers and reloads the most recently used database on launch
 - Theme switching via Menu dropdown with optional background image toggle
 - Optional theming via CSS files in `static/themes/`, including a dark OpenAI-inspired style and hundreds of Midnight City combinations (generated via `scripts/generate_midnight_themes.py`)
 - Browser-side search history for quick queries
@@ -38,6 +39,7 @@ Then open <http://127.0.0.1:5000> in your browser.
 5. Save the current database, load another or start a new one (and give it a
    name) using the menu. You can also rename the active database from the same
    dropdown.
+6. When you relaunch the app, it automatically reloads the last database you used.
 
 ## License
 MIT
