@@ -198,7 +198,7 @@ def index():
     """
     rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
 
-    db_name = os.path.basename(app.config['DATABASE'])
+    db_name = session.get('db_display_name') or os.path.basename(app.config['DATABASE'])
 
     default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
@@ -570,6 +570,7 @@ def webpack_zip():
 def new_db():
     close_connection(None)
     create_new_db()
+    session['db_display_name'] = os.path.basename(app.config['DATABASE'])
     flash("New demo database created.", "success")
     return redirect(url_for('index'))
 
@@ -583,6 +584,7 @@ def load_db_route():
     try:
         file.save(app.config['DATABASE'])
         ensure_schema()
+        session['db_display_name'] = os.path.basename(file.filename or app.config['DATABASE'])
         flash("Database loaded.", "success")
     except Exception as e:
         flash(f"Error loading database: {e}", "error")

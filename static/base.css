@@ -35,6 +35,7 @@
 .retrorecon-root .w-2em { width: 2em; }
 .retrorecon-root .text-left { text-align: left; }
 .retrorecon-root .text-center { text-align: center; }
+.retrorecon-root .text-right { text-align: right; }
 .retrorecon-root .text-muted { color: #888; }
 .retrorecon-root .no-underline { text-decoration: none; }
 .retrorecon-root .d-inline { display: inline; }
