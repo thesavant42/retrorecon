@@ -42,6 +42,11 @@ body.bg-hidden {
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
 }
+.retrorecon-root .url-row-main.url-result td {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
 
 .retrorecon-root input,
 .retrorecon-root button,
