@@ -115,6 +115,16 @@ def test_save_db_custom_name(tmp_path, monkeypatch):
         assert resp.data.startswith(b'SQLite format 3')
 
 
+def test_save_db_sanitizes_period(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'export'})
+        resp = client.get('/save_db?name=my.backup')
+        cd_header = resp.headers.get('Content-Disposition', '')
+        assert 'attachment' in cd_header
+        assert 'my_backup.db' in cd_header
+
+
 def test_session_name_reset(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:

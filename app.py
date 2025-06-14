@@ -143,16 +143,27 @@ def load_demo_data() -> None:
 
 def _sanitize_db_name(name: str) -> Optional[str]:
     """Return a safe ``name.db`` or ``None`` if invalid."""
+
     nm = name.strip()
     if not nm:
         return None
-    if len(nm) > 64 or any(sep in nm for sep in ('/', '\\')):
+    if len(nm) > 64 or any(sep in nm for sep in ("/", "\\")):
         return None
-    if not re.match(r'^[A-Za-z0-9_-]+(\.db)?$', nm):
+    if not re.match(r"^[A-Za-z0-9_]+(\.db)?$", nm):
         return None
-    if not nm.lower().endswith('.db'):
-        nm += '.db'
+    if not nm.lower().endswith(".db"):
+        nm += ".db"
     return nm
+
+
+def _sanitize_export_name(name: str) -> str:
+    """Return a filename safe for download containing only allowed chars."""
+
+    safe = re.sub(r"[^A-Za-z0-9_]", "_", name.strip())
+    safe = safe.strip("_") or "download"
+    if not safe.lower().endswith(".db"):
+        safe += ".db"
+    return safe
 
 
 def create_new_db(name: Optional[str] = None) -> str:
@@ -662,13 +673,12 @@ def load_db_route() -> Response:
 @app.route('/save_db', methods=['GET'])
 def save_db() -> Response:
     """Return the database file for download."""
-    name = request.args.get('name', '').strip()
+
+    name = request.args.get("name", "").strip()
     if name:
-        safe_name = urllib.parse.quote(name, safe='')
-        if not safe_name.lower().endswith('.db'):
-            safe_name += '.db'
+        safe_name = _sanitize_export_name(name)
     else:
-        safe_name = os.path.basename(app.config['DATABASE'])
+        safe_name = os.path.basename(app.config["DATABASE"])
     return send_file(
         app.config['DATABASE'],
         as_attachment=True,
