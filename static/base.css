@@ -353,9 +353,20 @@
   margin-top: 6px;
   color: var(--fg-color);
 }
+/* Square styling for all navbar controls */
+.retrorecon-root .navbar input,
+.retrorecon-root .navbar select,
+.retrorecon-root .navbar button,
+.retrorecon-root .navbar .menu-btn,
+.retrorecon-root .navbar .dropdown-content {
+  border-radius: 0 !important;
+}
+
 .retrorecon-root .dropdown.show .dropdown-content {
   display: block;
 }
+
+
 
 /* Fixed menu placement */
 .retrorecon-root .menu-dropdown{
