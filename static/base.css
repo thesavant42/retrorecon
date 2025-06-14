@@ -308,6 +308,59 @@
   transition: opacity 0.2s;
 }
 
+/* Navbar layout */
+.retrorecon-root .navbar {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 10px;
+}
+.retrorecon-root .navbar__menu {
+  list-style: none;
+  display: flex;
+  gap: 0.6em;
+  margin: 0;
+  padding: 0;
+}
+.retrorecon-root .navbar__item {
+  position: relative;
+}
+.retrorecon-root .navbar__link {
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 5px 10px;
+  font-size: 1.05em;
+  border: 1px solid var(--fg-color);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.retrorecon-root .navbar__link:hover {
+  opacity: 0.8;
+}
+.retrorecon-root .navbar__dropdown {
+  display: none;
+  position: absolute;
+  background: #000000fc;
+  min-width: 260px;
+  box-shadow: 0 8px 20px #00000033;
+  z-index: 1;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--fg-color);
+  margin-top: 6px;
+  color: var(--fg-color);
+}
+.retrorecon-root .navbar__item.show .navbar__dropdown {
+  display: block;
+}
+.retrorecon-root .navbar__title {
+  flex: 1;
+}
+.retrorecon-root .navbar__info {
+  margin-left: auto;
+}
+
 /* Dropdown styling (menu) */
 .retrorecon-root .dropdown{
   position: relative;
