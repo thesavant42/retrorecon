@@ -329,10 +329,8 @@
 .retrorecon-root .dropbtn {
   background-color: var(--bg-color);
   color: var(--fg-color);
-  padding: 5px 10px;
-  font-size: 1.05em;
-  border: 1px solid var(--fg-color);
-  border-radius: 7px;
+  padding: 0.4em 0.6em;
+  font-size: 1em;
   cursor: pointer;
   transition: opacity 0.2s;
 }
