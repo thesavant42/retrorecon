@@ -141,7 +141,6 @@
               </option>
               {% endfor %}
             </select>
-            <button type="button" class="menu-btn" id="apply-theme-btn">Apply</button>
           </div>
           <div class="menu-row mb-4px">
             <label for="background-select" class="form-label menu-label">Background:</label>
@@ -564,13 +563,12 @@
       });
     }
 
-    const themeBtn = document.getElementById('apply-theme-btn');
     const themeSelect = document.getElementById('theme-select');
     const themeForm = document.getElementById('set-theme-form');
     const themeInput = document.getElementById('set-theme-input');
     const themeDomain = document.getElementById('set-theme-domain');
-    if (themeBtn && themeSelect && themeForm && themeInput && themeDomain) {
-      themeBtn.addEventListener('click', () => {
+    if (themeSelect && themeForm && themeInput && themeDomain) {
+      themeSelect.addEventListener('change', () => {
         const domain = prompt('Enter domain for theme:');
         if (domain) {
           themeInput.value = themeSelect.value;
