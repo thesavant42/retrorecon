@@ -94,9 +94,9 @@
             <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
             <button type="submit" class="menu-btn">Rename DB</button>
           </form>
-          <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row">
-            <input type="file" name="import_file" accept=".json,.db" required class="form-file" />
-            <button type="submit" class="menu-btn">Import Records</button>
+          <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row" id="import-form">
+            <input type="file" name="import_file" accept=".json,.db" required class="form-file d-none" id="import-file-input" />
+            <button type="button" class="menu-btn" id="import-file-btn">Import Records</button>
           </form>
           <form method="POST" action="/fetch_cdx" class="menu-row">
             <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
@@ -501,6 +501,18 @@
               this.submit();
             }
           }
+        }
+      });
+    }
+
+    const importBtn = document.getElementById('import-file-btn');
+    const importInput = document.getElementById('import-file-input');
+    const importForm = document.getElementById('import-form');
+    if (importBtn && importInput && importForm) {
+      importBtn.addEventListener('click', () => importInput.click());
+      importInput.addEventListener('change', () => {
+        if (importInput.files.length) {
+          importForm.submit();
         }
       });
     }
