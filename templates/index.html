@@ -82,7 +82,7 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="file-menu">File ▼</button>
       <div class="dropdown-content" id="file-menu">
-          <form method="POST" action="/new_db" class="menu-row">
+          <form method="POST" action="/new_db" class="menu-row" id="new-db-form">
             <input type="hidden" name="db_name" id="new-db-name" />
             <button type="submit" class="menu-btn">New DB</button>
           </form>
@@ -495,7 +495,7 @@
           e.preventDefault();
           const nm = prompt('Enter new database name:', 'waybax');
           if (nm) {
-            const cleaned = nm.replace(/[^A-Za-z0-9_]/g, '').slice(0, 64);
+            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
             if (cleaned) {
               input.value = cleaned;
               this.submit();
