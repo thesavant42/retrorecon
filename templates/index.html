@@ -90,8 +90,8 @@
             <input type="file" name="db_file" accept=".db,.json" required class="form-file d-none" id="load-db-file" />
             <button type="button" class="menu-btn" id="load-db-btn">Open DB</button>
           </form>
-          <form method="POST" action="/rename_db" class="menu-row">
-            <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
+          <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
+            <input type="hidden" name="new_name" id="rename-db-name" />
             <button type="submit" class="menu-btn">Rename DB</button>
           </form>
           <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row" id="import-form">
@@ -491,6 +491,24 @@
     if (newForm) {
       newForm.addEventListener('submit', function(e) {
         const input = document.getElementById('new-db-name');
+        if (!input.value.trim()) {
+          e.preventDefault();
+          const nm = prompt('Enter new database name:', 'waybax');
+          if (nm) {
+            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+            if (cleaned) {
+              input.value = cleaned;
+              this.submit();
+            }
+          }
+        }
+      });
+    }
+
+    const renameForm = document.getElementById('rename-db-form');
+    if (renameForm) {
+      renameForm.addEventListener('submit', function(e) {
+        const input = document.getElementById('rename-db-name');
         if (!input.value.trim()) {
           e.preventDefault();
           const nm = prompt('Enter new database name:', 'waybax');
