@@ -24,12 +24,7 @@ from flask import (
 )
 
 app = Flask(__name__)
-# Allow overriding the startup database via environment variable
-env_db = os.environ.get('RETRORECON_DB')
-if env_db:
-    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app.root_path, env_db)
-else:
-    app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
+app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
 ITEMS_PER_PAGE = 20
 
@@ -185,13 +180,17 @@ def create_new_db(name: Optional[str] = None) -> str:
     return nm
 
 if not os.path.exists(app.config['DATABASE']):
-    if env_db:
-        init_db()
-        load_demo_data()
-    else:
-        create_new_db()
+    create_new_db()
 else:
     ensure_schema()
+
+
+@app.before_request
+def _update_display_name() -> None:
+    """Ensure ``session['db_display_name']`` matches the current DB file."""
+    actual_name = os.path.basename(app.config['DATABASE'])
+    if session.get('db_display_name') != actual_name:
+        session['db_display_name'] = actual_name
 
 def get_db() -> sqlite3.Connection:
     """Return a SQLite connection stored on the Flask ``g`` object."""
