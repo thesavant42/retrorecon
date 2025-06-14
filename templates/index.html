@@ -86,9 +86,9 @@
             <input type="hidden" name="db_name" id="new-db-name" />
             <button type="submit" class="menu-btn">New DB</button>
           </form>
-          <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row">
-            <input type="file" name="db_file" accept=".db,.json" required class="form-file" />
-            <button type="submit" class="menu-btn">Open DB</button>
+          <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row" id="load-db-form">
+            <input type="file" name="db_file" accept=".db,.json" required class="form-file d-none" id="load-db-file" />
+            <button type="button" class="menu-btn" id="load-db-btn">Open DB</button>
           </form>
           <form method="POST" action="/rename_db" class="menu-row">
             <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
@@ -501,6 +501,18 @@
               this.submit();
             }
           }
+        }
+      });
+    }
+
+    const loadBtn = document.getElementById('load-db-btn');
+    const loadInput = document.getElementById('load-db-file');
+    const loadForm = document.getElementById('load-db-form');
+    if (loadBtn && loadInput && loadForm) {
+      loadBtn.addEventListener('click', () => loadInput.click());
+      loadInput.addEventListener('change', () => {
+        if (loadInput.files.length) {
+          loadForm.submit();
         }
       });
     }
