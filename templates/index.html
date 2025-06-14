@@ -169,10 +169,9 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
       <div class="dropdown-content" id="tools-menu">
-          <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
-            <label for="map-url-input" class="form-label menu-label">Webpack Exploder:</label>
-            <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
-            <button type="submit" class="menu-btn">Explode</button>
+          <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
+            <input type="hidden" name="map_url" id="webpack-url-input" />
+            <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
           </form>
           <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
           <div class="menu-row"><a href="#" class="menu-btn">Base64 Tool</a></div>
@@ -565,6 +564,19 @@
         if (domain) {
           fetchInput.value = domain;
           fetchForm.submit();
+        }
+      });
+    }
+
+    const webpackBtn = document.getElementById('webpack-btn');
+    const webpackInput = document.getElementById('webpack-url-input');
+    const webpackForm = document.getElementById('webpack-form');
+    if (webpackBtn && webpackInput && webpackForm) {
+      webpackBtn.addEventListener('click', () => {
+        const url = prompt('Enter .js.map URL to explode:');
+        if (url) {
+          webpackInput.value = url;
+          webpackForm.submit();
         }
       });
     }
