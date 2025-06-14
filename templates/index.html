@@ -153,7 +153,6 @@
               <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
               {% endfor %}
             </select>
-            <button type="button" class="menu-btn" id="apply-bg-btn">Apply</button>
           </div>
           <div class="menu-row">
             <label class="form-label menu-label">
@@ -611,13 +610,12 @@
       }
     }
 
-    const bgBtn = document.getElementById('apply-bg-btn');
     const bgSelect = document.getElementById('background-select');
     const bgForm = document.getElementById('set-bg-form');
     const bgInput = document.getElementById('set-bg-input');
     const bgDomain = document.getElementById('set-bg-domain');
-    if (bgBtn && bgSelect && bgForm && bgInput && bgDomain) {
-      bgBtn.addEventListener('click', () => {
+    if (bgSelect && bgForm && bgInput && bgDomain) {
+      bgSelect.addEventListener('change', () => {
         const domain = prompt('Enter domain for background:');
         if (domain) {
           const bg = bgSelect.value;
