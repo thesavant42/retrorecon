@@ -9,7 +9,7 @@ coverage = {
 }
 
 styled_classes = {
-    'button': {'btn', 'dropbtn', 'explode-btn', 'bulk-action-btn', 'delete-btn', 'copy-btn', 'disabled-btn'},
+    'button': {'btn', 'menu-btn', 'dropbtn', 'explode-btn', 'bulk-action-btn', 'delete-btn', 'copy-btn', 'disabled-btn'},
     'input': {'form-input', 'form-file', 'bulk-tag-input'},
     'select': {'form-select'},
     'checkbox': {'form-checkbox', 'row-checkbox'},
