@@ -98,19 +98,10 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="import-label"><label for="json-file" class="form-label">📄 Import from JSON:</label></td>
+                  <td class="import-label"><label for="upload-file" class="form-label">📁 Import JSON or DB:</label></td>
                   <td>
-                    <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form" class="import-form">
-                      <input id="json-file" type="file" name="json_file" required class="form-file" />
-                      <button type="submit" class="btn">Import</button>
-                    </form>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="import-label"><label for="db-file" class="form-label">📂 SQLite DB:</label></td>
-                  <td>
-                    <form method="POST" action="/load_db" enctype="multipart/form-data" class="import-form">
-                      <input id="db-file" type="file" name="db_file" required class="form-file" />
+                    <form method="POST" action="/import_file" enctype="multipart/form-data" id="import-form" class="import-form">
+                      <input id="upload-file" type="file" name="import_file" accept=".json,.db" required class="form-file" />
                       <button type="submit" class="btn">Import</button>
                     </form>
                   </td>
