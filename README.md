@@ -5,6 +5,28 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 ## Project Home
 <https://github.com/thesavant42/retrorecon>
 
+## Background
+
+Time spent on reconaissance pays off in silence on the wire when it counts. In terms of packet economy, nothing beats free. And the Internet Archive's Wayback Machine is free (as in beer) as can be, so let's utilize it.
+
+The Wayback Machine crawls all sorts of sites, but their primary search interface doesn't allow for wildcard matches left-of-domain; if you don't know the subdomain already, you're out of luck. You could brute force it (noisy) or guess (sad/lucky), or you could ask someone who already knows.
+
+The Wayback Machine CDX API allows us to search for `*.example.com` and will return results for `www.example.com/123` but also `dev.example.com/abc` and `old.internal.corp.example.com`; DNS subdomain enumeration for free.
+
+But savant, you ask, so what? Who gives a hoot about old data? 
+
+Great question. Subdomains don't change as often as IP addresses do, so they're likely to still be relevant or at least historically interesting. Exploit Genealogy. Also, by learning from the mistakes of the past, we can hope to avoid them in the future. But really, we can more probably predict them, or find where they still are.
+
+System names and subdomains, internal hostnames, etc, can reveal their function, or design intention. ZIP files containing internal tooling and meant for internal distribution but unintentionally indexed. IDOR vulnerabilities, JWTs and application tokens revealed in GET request strings... For free. Why wouldn't you want to at least take a look?
+
+## Problem Statement
+
+The CDX API is powerful but not particularly robust and not the fastest, and a single query often returns multiple-hundred megabyte responses. This can slow down research, but it also creates unecessary strain on the CDX API servers.
+
+## Solution?
+
+ `retrorecon` attempts to ease that pain by enabling offline storage of the CDX records in a local sqlite database, to allow for tagging, sorting, and searching of Wayback CDX records.
+
 ## Features
 - **CDX import** from the Wayback Machine API
 - **JSON import** of URL lists or records
