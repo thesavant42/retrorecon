@@ -84,44 +84,44 @@
       <div class="dropdown-content" id="file-menu">
           <form method="POST" action="/new_db" class="menu-row">
             <input type="hidden" name="db_name" id="new-db-name" />
-            <button type="submit" class="btn">🆕 New DB</button>
+            <button type="submit" class="menu-btn">New DB</button>
           </form>
           <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row">
             <input type="file" name="db_file" accept=".db" required class="form-file" />
-            <button type="submit" class="btn">Open DB</button>
+            <button type="submit" class="menu-btn">Open DB</button>
           </form>
           <form method="POST" action="/rename_db" class="menu-row">
             <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
-            <button type="submit" class="btn">Rename DB</button>
+            <button type="submit" class="menu-btn">Rename DB</button>
           </form>
           <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row">
             <input type="file" name="import_file" accept=".json,.db" required class="form-file" />
-            <button type="submit" class="btn">Import Records</button>
+            <button type="submit" class="menu-btn">Import Records</button>
           </form>
           <form method="POST" action="/fetch_cdx" class="menu-row">
             <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
-            <button type="submit" class="btn">Import from CDX</button>
+            <button type="submit" class="menu-btn">Import from CDX</button>
           </form>
       </div>
     </div>
     <div class="dropdown">
       <button class="dropbtn" data-menu="export-menu">Export ▼</button>
       <div class="dropdown-content" id="export-menu">
-          <div class="menu-row"><a href="#" class="btn">Export JSON</a></div>
-          <div class="menu-row"><a href="#" class="btn">Export CSV</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn">Export JSON</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn">Export CSV</a></div>
           <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
-            <button type="submit" class="btn">Export DB</button>
+            <button type="submit" class="menu-btn">Export DB</button>
           </form>
       </div>
     </div>
     <div class="dropdown">
       <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
       <div class="dropdown-content" id="edit-menu">
-          <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
-          <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
-          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
-          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
-          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
       </div>
     </div>
     <div class="dropdown">
@@ -137,7 +137,7 @@
               </option>
               {% endfor %}
             </select>
-            <button type="submit" class="btn">Apply</button>
+            <button type="submit" class="menu-btn">Apply</button>
           </form>
           <div class="menu-row mb-4px">
             <label for="background-select" class="form-label menu-label">Background:</label>
@@ -165,11 +165,11 @@
           <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
             <label for="map-url-input" class="form-label menu-label">Webpack Exploder:</label>
             <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
-            <button type="submit" class="btn explode-btn">💥</button>
+            <button type="submit" class="menu-btn">Explode</button>
           </form>
-          <div class="menu-row"><a href="#" class="btn">Site-to-zip</a></div>
-          <div class="menu-row"><a href="#" class="btn">Base64 Tool</a></div>
-          <div class="menu-row"><a href="#" class="btn">JWT Tool</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn">Base64 Tool</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn">JWT Tool</a></div>
       </div>
     </div>
     <div class="navbar__title">
