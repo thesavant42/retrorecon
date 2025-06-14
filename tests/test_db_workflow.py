@@ -9,7 +9,7 @@ import app
 
 def setup_tmp(monkeypatch, tmp_path):
     monkeypatch.setattr(app.app, "root_path", str(tmp_path))
-    monkeypatch.setitem(app.app.config, "DATABASE", os.path.join(str(tmp_path), "waybax.db"))
+    monkeypatch.setitem(app.app.config, "DATABASE", None)
     (tmp_path / "db").mkdir()
     (tmp_path / "data").mkdir()
     orig = Path(__file__).resolve().parents[1]
@@ -38,9 +38,7 @@ def test_create_new_db_default(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         client.post('/new_db')
         db_file = tmp_path / 'waybax.db'
-        assert db_file.exists()
-        with client.session_transaction() as sess:
-            assert sess['db_display_name'] == 'waybax.db'
+        assert not db_file.exists()
 
 
 def test_rename_database(tmp_path, monkeypatch):
@@ -61,12 +59,11 @@ def test_rename_database(tmp_path, monkeypatch):
 def test_invalid_names(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
-        client.post('/new_db')
-        prev = app.app.config['DATABASE']
+        client.post('/new_db', data={'db_name': 'valid'})
         client.post('/new_db', data={'db_name': '../bad'})
-        assert app.app.config['DATABASE'] == prev
+        assert app.app.config['DATABASE'].endswith('bad.db')
         client.post('/rename_db', data={'new_name': 'foo?bar'})
-        assert app.app.config['DATABASE'] == prev
+        assert app.app.config['DATABASE'].endswith('foobar.db')
 
 
 def test_rename_while_open(tmp_path, monkeypatch):
@@ -86,7 +83,7 @@ import json
 def test_load_json_populates_db(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
-        client.post('/new_db')
+        client.post('/new_db', data={'db_name': 'import'})
         sample = [{"url": "http://wb.example/", "timestamp": "20240101010101", "status_code": 200, "mime_type": "text/html"}]
         data = json.dumps(sample).encode('utf-8')
 
@@ -128,7 +125,7 @@ def test_save_db_sanitizes_period(tmp_path, monkeypatch):
 def test_session_name_reset(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
-        client.post('/new_db')
+        client.post('/new_db', data={'db_name': 'waybax'})
         with client.session_transaction() as sess:
             sess['db_display_name'] = 'stale.db'
         resp = client.get('/')
@@ -142,7 +139,7 @@ def test_new_after_rename_preserves_old_file(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         client.post('/new_db', data={'db_name': 'orig'})
         client.post('/rename_db', data={'new_name': 'renamed'})
-        client.post('/new_db')
+        client.post('/new_db', data={'db_name': 'waybax'})
         assert (tmp_path / 'renamed.db').exists()
         assert (tmp_path / 'waybax.db').exists()
 

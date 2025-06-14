@@ -29,7 +29,7 @@ env_db = os.environ.get('RETRORECON_DB')
 if env_db:
     app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app.root_path, env_db)
 else:
-    app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
+    app.config['DATABASE'] = None
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
 ITEMS_PER_PAGE = 20
 
@@ -71,6 +71,12 @@ else:
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
 DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
+
+
+def _db_loaded() -> bool:
+    """Return True if a database file is currently configured and exists."""
+
+    return bool(app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']))
 
 def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
     """Write progress information to ``IMPORT_PROGRESS_FILE``."""
@@ -147,18 +153,13 @@ def load_demo_data() -> None:
     db.close()
 
 def _sanitize_db_name(name: str) -> Optional[str]:
-    """Return a safe ``name.db`` or ``None`` if invalid."""
+    """Return a sanitized ``name.db`` or ``None`` if empty after cleaning."""
 
-    nm = name.strip()
-    if not nm:
+    base, _ = os.path.splitext(name)
+    safe = re.sub(r"[^A-Za-z0-9_]", "", base)[:64]
+    if not safe:
         return None
-    if len(nm) > 64 or any(sep in nm for sep in ("/", "\\")):
-        return None
-    if not re.match(r"^[A-Za-z0-9_]+(\.db)?$", nm):
-        return None
-    if not nm.lower().endswith(".db"):
-        nm += ".db"
-    return nm
+    return safe + ".db"
 
 
 def _sanitize_export_name(name: str) -> str:
@@ -184,22 +185,25 @@ def create_new_db(name: Optional[str] = None) -> str:
     load_demo_data()
     return nm
 
-if not os.path.exists(app.config['DATABASE']):
-    create_new_db()
-else:
+if app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']):
     ensure_schema()
 
 
 @app.before_request
 def _update_display_name() -> None:
     """Ensure ``session['db_display_name']`` matches the current DB file."""
-    actual_name = os.path.basename(app.config['DATABASE'])
+    if app.config.get('DATABASE'):
+        actual_name = os.path.basename(app.config['DATABASE'])
+    else:
+        actual_name = '(none)'
     if session.get('db_display_name') != actual_name:
         session['db_display_name'] = actual_name
 
 def get_db() -> sqlite3.Connection:
     """Return a SQLite connection stored on the Flask ``g`` object."""
 
+    if not app.config.get('DATABASE'):
+        raise RuntimeError('No database loaded.')
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(app.config['DATABASE'])
@@ -240,39 +244,47 @@ def index() -> str:
     except ValueError:
         page = 1
 
-    where_clauses = []
-    params = []
-    if q:
-        where_clauses.append("url LIKE ?")
-        params.append(f"%{q}%")
-    if tag_filter:
-        where_clauses.append("tags LIKE ?")
-        params.append(f"%{tag_filter}%")
-    where_sql = ""
-    if where_clauses:
-        where_sql = "WHERE " + " AND ".join(where_clauses)
+    if _db_loaded():
+        where_clauses = []
+        params = []
+        if q:
+            where_clauses.append("url LIKE ?")
+            params.append(f"%{q}%")
+        if tag_filter:
+            where_clauses.append("tags LIKE ?")
+            params.append(f"%{tag_filter}%")
+        where_sql = ""
+        if where_clauses:
+            where_sql = "WHERE " + " AND ".join(where_clauses)
 
-    count_sql = f"SELECT COUNT(*) AS cnt FROM urls {where_sql}"
-    count_row = query_db(count_sql, params, one=True)
-    total_count = count_row['cnt'] if count_row else 0
-    total_pages = max(1, (total_count + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE)
+        count_sql = f"SELECT COUNT(*) AS cnt FROM urls {where_sql}"
+        count_row = query_db(count_sql, params, one=True)
+        total_count = count_row['cnt'] if count_row else 0
+        total_pages = max(1, (total_count + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE)
 
-    if page < 1:
-        page = 1
-    elif page > total_pages:
-        page = total_pages
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
 
-    offset = (page - 1) * ITEMS_PER_PAGE
-    select_sql = f"""
-        SELECT id, url, timestamp, status_code, mime_type, tags
-        FROM urls
-        {where_sql}
-        ORDER BY id DESC
-        LIMIT ? OFFSET ?
-    """
-    rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
+        offset = (page - 1) * ITEMS_PER_PAGE
+        select_sql = f"""
+            SELECT id, url, timestamp, status_code, mime_type, tags
+            FROM urls
+            {where_sql}
+            ORDER BY id DESC
+            LIMIT ? OFFSET ?
+        """
+        rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
+    else:
+        rows = []
+        total_pages = 1
+        total_count = 0
 
-    actual_name = os.path.basename(app.config['DATABASE'])
+    if _db_loaded():
+        actual_name = os.path.basename(app.config['DATABASE'])
+    else:
+        actual_name = '(none)'
     if session.get('db_display_name') != actual_name:
         session['db_display_name'] = actual_name
     db_name = session['db_display_name']
@@ -316,6 +328,9 @@ def fetch_cdx() -> Response:
     domain = request.form.get('domain', '').strip()
     if not domain:
         flash("No domain provided for CDX fetch.", "error")
+        return redirect(url_for('index'))
+    if not _db_loaded():
+        flash("No database loaded.", "error")
         return redirect(url_for('index'))
 
     cdx_api = (
@@ -436,6 +451,9 @@ def import_json() -> Response:
     if not file:
         flash("No file uploaded for import.", "error")
         return redirect(url_for('index'))
+    if not _db_loaded():
+        flash("No database loaded.", "error")
+        return redirect(url_for('index'))
 
     clear_import_progress()
     file_content = file.read()
@@ -464,6 +482,9 @@ def import_progress() -> Response:
 @app.route('/add_tag', methods=['POST'])
 def add_tag() -> Response:
     """Append a tag to the selected URL entry."""
+    if not _db_loaded():
+        flash('No database loaded.', 'error')
+        return redirect(url_for('index'))
     entry_id = request.form.get('entry_id')
     new_tag = request.form.get('new_tag', '').strip()
     if not entry_id or not new_tag:
@@ -488,6 +509,9 @@ def add_tag() -> Response:
 @app.route('/bulk_action', methods=['POST'])
 def bulk_action() -> Response:
     """Apply a bulk action (tag or delete) to selected URLs."""
+    if not _db_loaded():
+        flash('No database loaded.', 'error')
+        return redirect(url_for('index'))
     action = request.form.get('action', '')
     tag = request.form.get('tag', '').strip()
     selected_ids = request.form.getlist('selected_ids')
@@ -656,14 +680,18 @@ def webpack_zip() -> Response:
 @app.route('/new_db', methods=['POST'])
 def new_db() -> Response:
     """Create a fresh database and load demo entries."""
-    close_connection(None)
     name = request.form.get('db_name', '').strip()
+    safe = _sanitize_db_name(name)
+    if not safe:
+        flash('Invalid database name.', 'error')
+        return redirect(url_for('index'))
+    close_connection(None)
     try:
-        db_name = create_new_db(name or None)
+        db_name = create_new_db(safe)
         session['db_display_name'] = db_name
-        flash("New demo database created.", "success")
+        flash('New demo database created.', 'success')
     except ValueError as e:
-        flash(str(e), "error")
+        flash(str(e), 'error')
     return redirect(url_for('index'))
 
 @app.route('/load_db', methods=['POST'])
@@ -673,11 +701,17 @@ def load_db_route() -> Response:
     if not file:
         flash("No database file uploaded.", "error")
         return redirect(url_for('index'))
+    filename = _sanitize_db_name(file.filename or '')
+    if not filename:
+        flash('Invalid database file.', 'error')
+        return redirect(url_for('index'))
+    db_path = os.path.join(app.root_path, filename)
     close_connection(None)
     try:
-        file.save(app.config['DATABASE'])
+        file.save(db_path)
+        app.config['DATABASE'] = db_path
         ensure_schema()
-        session['db_display_name'] = os.path.basename(file.filename or app.config['DATABASE'])
+        session['db_display_name'] = filename
         flash("Database loaded.", "success")
     except Exception as e:
         flash(f"Error loading database: {e}", "error")
@@ -687,6 +721,9 @@ def load_db_route() -> Response:
 def save_db() -> Response:
     """Return the database file for download."""
 
+    if not _db_loaded():
+        flash('No database loaded.', 'error')
+        return redirect(url_for('index'))
     name = request.args.get("name", "").strip()
     if name:
         safe_name = _sanitize_export_name(name)
@@ -707,6 +744,9 @@ def rename_db() -> Response:
     if not safe:
         flash('Invalid database name.', 'error')
         return redirect(url_for('index'))
+    if not _db_loaded():
+        flash('No database loaded.', 'error')
+        return redirect(url_for('index'))
     close_connection(None)
     new_path = os.path.join(app.root_path, safe)
     try:
@@ -721,8 +761,9 @@ def rename_db() -> Response:
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    if not os.path.exists(app.config['DATABASE']):
-        create_new_db()
-    else:
-        ensure_schema()
+    if env_db and app.config.get('DATABASE'):
+        if not os.path.exists(app.config['DATABASE']):
+            create_new_db(os.path.splitext(os.path.basename(env_db))[0])
+        else:
+            ensure_schema()
     app.run(debug=True)
