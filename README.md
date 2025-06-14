@@ -26,7 +26,7 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 ## Installation
 ```bash
 pip install -r requirements.txt
-python scripts/init_db.py  # set up wabax.db with demo data
+python scripts/init_db.py  # initialize wabax.db
 python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
 # RETRORECON_DB=dsprings.db python app.py
