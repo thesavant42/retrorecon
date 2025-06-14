@@ -313,13 +313,16 @@
   display: flex;
   align-items: center;
   gap: 0.6em;
-  margin: 10px;
+  margin: 0 10px;
 }
 .retrorecon-root .navbar__title {
   flex: 1;
 }
 .retrorecon-root .navbar__info {
-  margin-left: auto;
+  margin-left: 0;
+}
+.retrorecon-root .navbar__title h1 {
+  margin: 0;
 }
 
 /* Dropdown styling (menu) */
