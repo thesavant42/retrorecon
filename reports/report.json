@@ -1,127 +1,21 @@
 {
   "coverage": {
     "button": {
-      "total": 44,
-      "styled": 37
+      "total": 30,
+      "styled": 30
     },
     "input": {
-      "total": 21,
-      "styled": 14
+      "total": 17,
+      "styled": 11
     },
     "select": {
-      "total": 3,
-      "styled": 3
+      "total": 2,
+      "styled": 2
     },
     "checkbox": {
-      "total": 7,
-      "styled": 7
+      "total": 5,
+      "styled": 5
     }
   },
-  "unscoped_selectors": {
-    "static/base.css": [
-      ".hidden",
-      ".spinner",
-      ".mt-1",
-      ".mt-05",
-      ".ml-1",
-      ".ml-05",
-      ".ml-4px",
-      ".mr-03",
-      ".mb-4px",
-      ".m-2em",
-      ".my-8px",
-      ".w-100",
-      ".w-95",
-      ".w-2em",
-      ".text-left",
-      ".text-center",
-      ".text-muted",
-      ".no-underline",
-      ".d-inline",
-      ".d-inline-block",
-      ".d-block",
-      ".d-flex",
-      ".flex-between",
-      ".nowrap",
-      ".d-none",
-      ".cursor-pointer",
-      ".fw-bold",
-      ".version-text",
-      ".ml-01"
-    ],
-    "static/wabax.css": [
-      "#map-url-input",
-      ".theme-row button",
-      ".theme-row button:hover",
-      "#mapUrlInput",
-      ".page-grid",
-      ".results-grid",
-      ".page-grid h1",
-      ".search-history table",
-      ".search-history td",
-      ".search-history tbody tr:nth-child(even)",
-      ".header-bar",
-      ".header-bar .menu-dropdown",
-      ".header-bar h1",
-      ".bulk-controls",
-      ".bulk-controls input[type=\"text\"]",
-      "#bulk-tag-input",
-      ".bulk-controls button",
-      ".bulk-controls button:hover",
-      ".checkbox-row",
-      ".select-all-label",
-      ".url-table",
-      ".url-table thead",
-      ".url-table th",
-      ".url-row-buttons:nth-child(4n + 1)",
-      ".url-row-buttons:nth-child(4n + 3)",
-      ".url-row-main",
-      ".url-row-main td",
-      ".url-row-buttons td",
-      ".url-row-main input[type=\"checkbox\"]",
-      ".url-tools-row",
-      ".url-tools-row input[type=\"text\"]",
-      ".tag-pill",
-      ".tag-pill form",
-      ".tag-pill button",
-      ".tag-pill button:hover",
-      ".crtsh-btn",
-      ".crtsh-btn:hover",
-      ".explode-btn:active",
-      ".explode-btn:disabled",
-      "button",
-      "button:hover",
-      "button:active",
-      "select",
-      "0%",
-      "50%",
-      "100%",
-      ".pulse",
-      ".pagination",
-      ".pagination strong",
-      ".pagination a:hover",
-      ".pagination strong",
-      ".pagination input[type=\"text\"]",
-      ".pagination button",
-      ".total-count",
-      ".footer",
-      ".row-checkbox",
-      "input[type=\"checkbox\"]",
-      ".url-row-buttons:hover",
-      ".status-2",
-      ".status-3",
-      ".status-4",
-      ".status-5",
-      "#layout-d td"
-    ],
-    "static/themes/theme-openai.css": [
-      "a",
-      ".search-bar",
-      ".search-bar input[type=\"text\"]",
-      ".search-bar button",
-      ".search-bar button:hover",
-      ".url-table th",
-      ".url-table td"
-    ]
-  }
+  "unscoped_selectors": {}
 }
