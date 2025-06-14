@@ -98,9 +98,9 @@
             <input type="file" name="import_file" accept=".json,.db" required class="form-file d-none" id="import-file-input" />
             <button type="button" class="menu-btn" id="import-file-btn">Import Records</button>
           </form>
-          <form method="POST" action="/fetch_cdx" class="menu-row">
-            <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
-            <button type="submit" class="menu-btn">Import from CDX</button>
+          <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
+            <input id="domain-input" type="hidden" name="domain" />
+            <button type="button" class="menu-btn" id="fetch-cdx-btn">Import from CDX</button>
           </form>
       </div>
     </div>
@@ -543,6 +543,19 @@
       importInput.addEventListener('change', () => {
         if (importInput.files.length) {
           importForm.submit();
+        }
+      });
+    }
+
+    const fetchBtn = document.getElementById('fetch-cdx-btn');
+    const fetchInput = document.getElementById('domain-input');
+    const fetchForm = document.getElementById('fetch-cdx-form');
+    if (fetchBtn && fetchInput && fetchForm) {
+      fetchBtn.addEventListener('click', () => {
+        const domain = prompt('Enter domain to fetch from CDX:');
+        if (domain) {
+          fetchInput.value = domain;
+          fetchForm.submit();
         }
       });
     }
