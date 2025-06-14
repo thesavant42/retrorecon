@@ -95,7 +95,7 @@ def test_load_json_populates_db(tmp_path, monkeypatch):
                 self.target(*self.args)
 
         monkeypatch.setattr(app.threading, 'Thread', DummyThread)
-        client.post('/import_json', data={'json_file': (io.BytesIO(data), 'cdx.json')})
+        client.post('/import_file', data={'import_file': (io.BytesIO(data), 'cdx.json')})
         with app.app.app_context():
             rows = app.query_db('SELECT url, timestamp, status_code, mime_type FROM urls WHERE url = ?', ['http://wb.example/'])
             assert rows and rows[0]['timestamp'] == '20240101010101'

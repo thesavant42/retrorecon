@@ -445,25 +445,52 @@ def _background_import(file_content: bytes) -> None:
     except Exception as e:
         set_import_progress('failed', str(e), 0, 0)
 
+@app.route('/import_file', methods=['POST'])
 @app.route('/import_json', methods=['POST'])
-def import_json() -> Response:
-    """Start a background import from the uploaded JSON file."""
-    file = request.files.get('json_file')
+def import_file() -> Response:
+    """Import a JSON list or load a SQLite database depending on file type."""
+    file = (
+        request.files.get('import_file')
+        or request.files.get('json_file')
+        or request.files.get('db_file')
+    )
     if not file:
         flash("No file uploaded for import.", "error")
         return redirect(url_for('index'))
-    if not _db_loaded():
-        flash("No database loaded.", "error")
+
+    filename = file.filename or ''
+    ext = filename.rsplit('.', 1)[-1].lower()
+
+    if ext == 'json':
+        if not _db_loaded():
+            flash("No database loaded.", "error")
+            return redirect(url_for('index'))
+        clear_import_progress()
+        file_content = file.read()
+        set_import_progress('starting', 'Starting import...', 0, 0)
+        thread = threading.Thread(target=_background_import, args=(file_content,))
+        thread.start()
+        flash("Import started! Progress will be shown below.", "success")
         return redirect(url_for('index'))
 
-    clear_import_progress()
-    file_content = file.read()
-    set_import_progress('starting', 'Starting import...', 0, 0)
+    if ext == 'db':
+        filename = _sanitize_db_name(filename)
+        if not filename:
+            flash('Invalid database file.', 'error')
+            return redirect(url_for('index'))
+        db_path = os.path.join(app.root_path, filename)
+        close_connection(None)
+        try:
+            file.save(db_path)
+            app.config['DATABASE'] = db_path
+            ensure_schema()
+            session['db_display_name'] = filename
+            flash("Database loaded.", "success")
+        except Exception as e:
+            flash(f"Error loading database: {e}", "error")
+        return redirect(url_for('index'))
 
-    thread = threading.Thread(target=_background_import, args=(file_content,))
-    thread.start()
-
-    flash("Import started! Progress will be shown below.", "success")
+    flash('Unsupported file type.', 'error')
     return redirect(url_for('index'))
 
 @app.route('/import_progress', methods=['GET'])
