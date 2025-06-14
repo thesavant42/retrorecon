@@ -87,21 +87,35 @@
           <div class="dropdown-content" id="main-dropdown-content">
             <div class="import-controls">
               <div class="fw-bold">Import Options</div>
-              <form class="import-row menu-row" method="POST" action="/fetch_cdx">
-                <label for="domain-input" class="form-label menu-label">⏳ Import from CDX API:</label>
-                <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
-                <button type="submit" class="btn">Fetch</button>
-              </form>
-              <form class="import-row menu-row" method="POST" action="/import_json" enctype="multipart/form-data" id="import-form">
-                <label for="json-file" class="form-label menu-label">📄 Import from JSON:</label>
-                <input id="json-file" type="file" name="json_file" required class="form-file" />
-                <button type="submit" class="btn">Import</button>
-              </form>
-              <form class="import-row menu-row" method="POST" action="/load_db" enctype="multipart/form-data">
-                <label for="db-file" class="form-label menu-label">📂 SQLite DB:</label>
-                <input id="db-file" type="file" name="db_file" required class="form-file" />
-                <button type="submit" class="btn">Import</button>
-              </form>
+              <table class="import-table w-100">
+                <tr>
+                  <td class="import-label"><label for="domain-input" class="form-label">⏳ Import from CDX API:</label></td>
+                  <td>
+                    <form method="POST" action="/fetch_cdx" class="import-form">
+                      <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
+                      <button type="submit" class="btn">Fetch</button>
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="import-label"><label for="json-file" class="form-label">📄 Import from JSON:</label></td>
+                  <td>
+                    <form method="POST" action="/import_json" enctype="multipart/form-data" id="import-form" class="import-form">
+                      <input id="json-file" type="file" name="json_file" required class="form-file" />
+                      <button type="submit" class="btn">Import</button>
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="import-label"><label for="db-file" class="form-label">📂 SQLite DB:</label></td>
+                  <td>
+                    <form method="POST" action="/load_db" enctype="multipart/form-data" class="import-form">
+                      <input id="db-file" type="file" name="db_file" required class="form-file" />
+                      <button type="submit" class="btn">Import</button>
+                    </form>
+                  </td>
+                </tr>
+              </table>
               <div class="fw-bold">Export Options</div>
               <div class="mt-05">
                 <form method="GET" action="/save_db" id="save-db-form" class="d-inline">

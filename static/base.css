@@ -356,6 +356,23 @@
   align-items: flex-start;
   gap: 0.5em;
 }
+.retrorecon-root .import-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.retrorecon-root .import-table td {
+  padding: 0.2em 0;
+}
+.retrorecon-root .import-label {
+  width: 50%;
+  white-space: nowrap;
+  padding-right: 0.4em;
+}
+.retrorecon-root .import-form {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
 .retrorecon-root .menu-row {
   display: flex;
   align-items: center;
