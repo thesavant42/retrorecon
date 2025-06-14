@@ -333,6 +333,8 @@
   font-size: 1em;
   cursor: pointer;
   transition: opacity 0.2s;
+  border: 1px solid var(--fg-color);
+  border-radius: 0;
 }
 .retrorecon-root .dropbtn:hover,
 .retrorecon-root .dropbtn:focus {
@@ -346,7 +348,7 @@
   box-shadow: 0 8px 20px #00000033;
   z-index: 1;
   padding: 8px 12px;
-  border-radius: 9px;
+  border-radius: 0;
   border: 1px solid var(--fg-color);
   margin-top: 6px;
   color: var(--fg-color);
@@ -389,6 +391,23 @@
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.4em;
+}
+
+.retrorecon-root .menu-row .menu-btn,
+.retrorecon-root .menu-row a.menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--fg-color);
+  padding: 0.2em 0.4em;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  display: block;
+}
+.retrorecon-root .menu-row .menu-btn:hover,
+.retrorecon-root .menu-row a.menu-btn:hover {
+  background: var(--fg-color);
+  color: var(--bg-color);
 }
 
 .retrorecon-root .import-row {
