@@ -107,8 +107,8 @@
                 <form method="GET" action="/save_db" id="save-db-form" class="d-inline">
                   <button type="submit" class="btn">💾 Save As</button>
                 </form>
-                <form method="POST" action="/new_db" class="d-inline ml-4px">
-                  <input type="text" name="db_name" placeholder="Name" class="form-input w-8em" />
+                <form method="POST" action="/new_db" id="new-db-form" class="d-inline ml-4px">
+                  <input type="hidden" name="db_name" id="new-db-name" />
                   <button type="submit" class="btn">🆕 New DB</button>
                 </form>
                 <form method="POST" action="/rename_db" class="d-inline ml-4px">
@@ -488,6 +488,24 @@
           if (nm) {
             const enc = encodeURIComponent(nm.trim());
             window.location = '/save_db?name=' + enc;
+          }
+        }
+      });
+    }
+
+    const newForm = document.getElementById('new-db-form');
+    if (newForm) {
+      newForm.addEventListener('submit', function(e) {
+        const input = document.getElementById('new-db-name');
+        if (!input.value.trim()) {
+          e.preventDefault();
+          const nm = prompt('Enter new database name:', 'waybax');
+          if (nm) {
+            const cleaned = nm.replace(/[^A-Za-z0-9_]/g, '').slice(0, 64);
+            if (cleaned) {
+              input.value = cleaned;
+              this.submit();
+            }
           }
         }
       });
