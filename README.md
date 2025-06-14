@@ -71,4 +71,4 @@ MIT
 ## Attribution
 - [Wayback Machine API](https://archive.org/help/wayback_api.php)
 - [Webpack Exploder](https://spaceraccoon.github.io/webpack-exploder/)
-- [Map Room visual inspiration](https://indianajones.fandom.com/wiki/Map_Room)
+- [Map Room conceptual inspiration](https://indianajones.fandom.com/wiki/Map_Room)
