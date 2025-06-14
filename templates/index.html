@@ -127,9 +127,13 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="prefs-menu">Preferences ▼</button>
       <div class="dropdown-content" id="prefs-menu">
-          <form method="POST" action="/set_theme" class="theme-row menu-row mb-4px">
+          <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
+            <input type="hidden" name="theme" id="set-theme-input" />
+            <input type="hidden" name="domain" id="set-theme-domain" />
+          </form>
+          <div class="theme-row menu-row mb-4px">
             <label for="theme-select" class="form-label menu-label">Theme:</label>
-            <select name="theme" id="theme-select" class="form-select">
+            <select id="theme-select" class="form-select">
               {% for t in themes %}
               {% set cols = theme_swatches.get(t) %}
               <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
@@ -137,8 +141,8 @@
               </option>
               {% endfor %}
             </select>
-            <button type="submit" class="menu-btn">Apply</button>
-          </form>
+            <button type="button" class="menu-btn" id="apply-theme-btn">Apply</button>
+          </div>
           <div class="menu-row mb-4px">
             <label for="background-select" class="form-label menu-label">Background:</label>
             <select id="background-select" class="form-select">
@@ -556,6 +560,22 @@
         if (domain) {
           fetchInput.value = domain;
           fetchForm.submit();
+        }
+      });
+    }
+
+    const themeBtn = document.getElementById('apply-theme-btn');
+    const themeSelect = document.getElementById('theme-select');
+    const themeForm = document.getElementById('set-theme-form');
+    const themeInput = document.getElementById('set-theme-input');
+    const themeDomain = document.getElementById('set-theme-domain');
+    if (themeBtn && themeSelect && themeForm && themeInput && themeDomain) {
+      themeBtn.addEventListener('click', () => {
+        const domain = prompt('Enter domain for theme:');
+        if (domain) {
+          themeInput.value = themeSelect.value;
+          themeDomain.value = domain;
+          themeForm.submit();
         }
       });
     }
