@@ -189,6 +189,14 @@ if not os.path.exists(app.config['DATABASE']):
 else:
     ensure_schema()
 
+
+@app.before_request
+def _update_display_name() -> None:
+    """Ensure ``session['db_display_name']`` matches the current DB file."""
+    actual_name = os.path.basename(app.config['DATABASE'])
+    if session.get('db_display_name') != actual_name:
+        session['db_display_name'] = actual_name
+
 def get_db() -> sqlite3.Connection:
     """Return a SQLite connection stored on the Flask ``g`` object."""
 
