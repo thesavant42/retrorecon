@@ -101,7 +101,7 @@ body.bg-hidden {
 
 
 .retrorecon-root .db-info {
-  font-size: 1em;
+  font-size: 0.7em;
   letter-spacing: 0.04em;
   font-weight: bold;
   color: var(--accent-color);
