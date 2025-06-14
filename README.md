@@ -78,4 +78,5 @@ Markdown files in this repository are automatically mirrored to the
 [project wiki](https://github.com/thesavant42/retrorecon/wiki) via the
 `update_wiki.py` script. On each push that modifies `.md` files, a GitHub
 Actions workflow clones the wiki repository, copies the updated files and
-pushes the changes.
+pushes the changes. The workflow expects a repository secret named
+`WIKI_PAT` with permissions to push to the wiki repository.

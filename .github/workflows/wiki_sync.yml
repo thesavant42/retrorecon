@@ -13,5 +13,5 @@ jobs:
           python-version: '3.x'
       - name: Run wiki sync script
         env:
-          WIKI_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/thesavant42/retrorecon.wiki.git
+          WIKI_URL: https://x-access-token:${{ secrets.WIKI_PAT }}@github.com/thesavant42/retrorecon.wiki.git
         run: python scripts/update_wiki.py
