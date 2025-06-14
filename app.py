@@ -24,7 +24,12 @@ from flask import (
 )
 
 app = Flask(__name__)
-app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
+# Allow overriding the startup database via environment variable
+env_db = os.environ.get('RETRORECON_DB')
+if env_db:
+    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app.root_path, env_db)
+else:
+    app.config['DATABASE'] = os.path.join(app.root_path, 'waybax.db')
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
 ITEMS_PER_PAGE = 20
 
