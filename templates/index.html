@@ -79,10 +79,9 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
   <nav class="navbar">
-    <ul class="navbar__menu">
-      <li class="navbar__item">
-        <button class="navbar__link" data-menu="file-menu">File ▼</button>
-        <div class="navbar__dropdown" id="file-menu">
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="file-menu">File ▼</button>
+      <div class="dropdown-content" id="file-menu">
           <form method="POST" action="/new_db" class="menu-row">
             <input type="hidden" name="db_name" id="new-db-name" />
             <button type="submit" class="btn">🆕 New DB</button>
@@ -103,31 +102,31 @@
             <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
             <button type="submit" class="btn">Import from CDX</button>
           </form>
-        </div>
-      </li>
-      <li class="navbar__item">
-        <button class="navbar__link" data-menu="export-menu">Export ▼</button>
-        <div class="navbar__dropdown" id="export-menu">
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="export-menu">Export ▼</button>
+      <div class="dropdown-content" id="export-menu">
           <div class="menu-row"><a href="#" class="btn">Export JSON</a></div>
           <div class="menu-row"><a href="#" class="btn">Export CSV</a></div>
           <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
             <button type="submit" class="btn">Export DB</button>
           </form>
-        </div>
-      </li>
-      <li class="navbar__item">
-        <button class="navbar__link" data-menu="edit-menu">Edit ▼</button>
-        <div class="navbar__dropdown" id="edit-menu">
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
+      <div class="dropdown-content" id="edit-menu">
           <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
           <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
           <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
           <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
           <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
-        </div>
-      </li>
-      <li class="navbar__item">
-        <button class="navbar__link" data-menu="prefs-menu">Preferences ▼</button>
-        <div class="navbar__dropdown" id="prefs-menu">
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="prefs-menu">Preferences ▼</button>
+      <div class="dropdown-content" id="prefs-menu">
           <form method="POST" action="/set_theme" class="theme-row menu-row mb-4px">
             <label for="theme-select" class="form-label menu-label">Theme:</label>
             <select name="theme" id="theme-select" class="form-select">
@@ -158,11 +157,11 @@
             <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
             <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
           </div>
-        </div>
-      </li>
-      <li class="navbar__item">
-        <button class="navbar__link" data-menu="tools-menu">Tools ▼</button>
-        <div class="navbar__dropdown" id="tools-menu">
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
+      <div class="dropdown-content" id="tools-menu">
           <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
             <label for="map-url-input" class="form-label menu-label">Webpack Exploder:</label>
             <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
@@ -171,9 +170,8 @@
           <div class="menu-row"><a href="#" class="btn">Site-to-zip</a></div>
           <div class="menu-row"><a href="#" class="btn">Base64 Tool</a></div>
           <div class="menu-row"><a href="#" class="btn">JWT Tool</a></div>
-        </div>
-      </li>
-    </ul>
+      </div>
+    </div>
     <div class="navbar__title">
       <h1><a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline">retrorecon <span class="version-text">v1.0.1</span></a></h1>
     </div>
@@ -329,7 +327,7 @@
 
   <script>
 
-    document.querySelectorAll('.navbar__link').forEach(btn => {
+    document.querySelectorAll('.dropbtn').forEach(btn => {
       btn.addEventListener('click', function(e){
         e.preventDefault();
         const item = this.parentElement;
@@ -337,7 +335,7 @@
       });
     });
     document.addEventListener('click', function(e){
-      document.querySelectorAll('.navbar__item').forEach(it => {
+      document.querySelectorAll('.dropdown').forEach(it => {
         if(!it.contains(e.target)) it.classList.remove('show');
       });
     });
