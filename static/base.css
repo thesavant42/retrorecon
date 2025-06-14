@@ -419,11 +419,29 @@
   cursor: pointer;
   display: block;
 }
+/* Extra selector for dropdown menu items */
+.retrorecon-root .dropdown-content .menu-btn,
+.retrorecon-root .dropdown-content a.menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--fg-color);
+  padding: 0.2em 0.4em;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  display: block;
+}
 .retrorecon-root .menu-row .menu-btn:hover,
 .retrorecon-root .menu-row a.menu-btn:hover {
   background: var(--fg-color);
   color: var(--bg-color);
 }
+.retrorecon-root .dropdown-content .menu-btn:hover,
+.retrorecon-root .dropdown-content a.menu-btn:hover {
+  background: var(--fg-color);
+  color: var(--bg-color);
+}
+
 
 .retrorecon-root .import-row {
   display: grid;
