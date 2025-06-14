@@ -131,6 +131,10 @@
             <input type="hidden" name="theme" id="set-theme-input" />
             <input type="hidden" name="domain" id="set-theme-domain" />
           </form>
+          <form id="set-bg-form" method="POST" action="/set_background" class="d-none">
+            <input type="hidden" name="background" id="set-bg-input" />
+            <input type="hidden" name="domain" id="set-bg-domain" />
+          </form>
           <div class="theme-row menu-row mb-4px">
             <label for="theme-select" class="form-label menu-label">Theme:</label>
             <select id="theme-select" class="form-select">
@@ -149,6 +153,7 @@
               <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
               {% endfor %}
             </select>
+            <button type="button" class="menu-btn" id="apply-bg-btn">Apply</button>
           </div>
           <div class="menu-row">
             <label class="form-label menu-label">
@@ -606,16 +611,21 @@
       }
     }
 
+    const bgBtn = document.getElementById('apply-bg-btn');
     const bgSelect = document.getElementById('background-select');
-    if(bgSelect){
-      bgSelect.addEventListener('change', function(){
-        const bg = this.value;
-        document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
-        fetch('/set_background', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: 'background=' + encodeURIComponent(bg)
-        });
+    const bgForm = document.getElementById('set-bg-form');
+    const bgInput = document.getElementById('set-bg-input');
+    const bgDomain = document.getElementById('set-bg-domain');
+    if (bgBtn && bgSelect && bgForm && bgInput && bgDomain) {
+      bgBtn.addEventListener('click', () => {
+        const domain = prompt('Enter domain for background:');
+        if (domain) {
+          const bg = bgSelect.value;
+          bgInput.value = bg;
+          bgDomain.value = domain;
+          bgForm.submit();
+          document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
+        }
       });
     }
 

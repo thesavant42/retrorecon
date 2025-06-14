@@ -82,8 +82,7 @@
 }
 .retrorecon-root #theme-select,
 .retrorecon-root #background-select {
-  width: auto;
-  max-width: 180px;
+  width: 180px;
 }
 .retrorecon-root .form-range {
   width: 100%;
