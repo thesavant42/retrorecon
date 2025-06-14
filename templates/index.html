@@ -290,6 +290,12 @@
                       {% else %}
                       <button type="button" class="btn explode-btn disabled-btn" title="Not a .js.map" disabled>💥 Explode!</button>
                       {% endif %}
+                      <form method="POST" action="/bulk_action" class="d-inline ml-05">
+                        <input type="hidden" name="action" value="add_tag" />
+                        <input type="hidden" name="selected_ids" value="{{ url.id }}" />
+                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input" />
+                        <button type="submit" title="Add tag" class="btn">+</button>
+                      </form>
                       {% for tag in (url.tags or '').split(',') if tag %}
                       <span class="tag-pill">{{ tag }}
                         <form method="POST" action="/bulk_action" class="d-inline">
@@ -300,12 +306,6 @@
                         </form>
                       </span>
                       {% endfor %}
-                      <form method="POST" action="/bulk_action" class="d-inline ml-05">
-                        <input type="hidden" name="action" value="add_tag" />
-                        <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input" />
-                        <button type="submit" title="Add tag" class="btn">+</button>
-                      </form>
                     </div>
                   </td>
                 </tr>
