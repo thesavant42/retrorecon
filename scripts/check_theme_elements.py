@@ -15,7 +15,7 @@ PROPS = ['color', 'background', 'background-color', 'font-size', 'opacity',
          'min-width', 'padding', 'border']
 
 ELEMENTS = {
-    'menu dropdown': '.retrorecon-root .dropdown',
+    'menu dropdown': '.retrorecon-root .dropdown-content',
     'menu button': '.retrorecon-root .dropbtn',
     'app banner': '.retrorecon-root h1',
     'db banner': '.retrorecon-root .db-info',

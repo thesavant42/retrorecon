@@ -78,120 +78,107 @@
   {% endmacro %}
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-  <!-- Table A : Header -->
-  <table id="layout-a" class="w-100">
-    <tr>
-      <td class="text-left">
-        <div class="dropdown menu-dropdown">
-          <button class="dropbtn" id="main-dropdown-btn">Menu ▼</button>
-          <div class="dropdown-content" id="main-dropdown-content">
-            <div class="import-controls">
-              <div class="fw-bold">Import Options</div>
-              <table class="import-table w-100">
-                <tr>
-                  <td class="import-label"><label for="domain-input" class="form-label">⏳ Import from CDX API:</label></td>
-                  <td>
-                    <form method="POST" action="/fetch_cdx" class="import-form">
-                      <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
-                      <button type="submit" class="btn">Fetch</button>
-                    </form>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="import-label"><label for="upload-file" class="form-label">📁 Import JSON or DB:</label></td>
-                  <td>
-                    <form method="POST" action="/import_file" enctype="multipart/form-data" id="import-form" class="import-form">
-                      <input id="upload-file" type="file" name="import_file" accept=".json,.db" required class="form-file" />
-                      <button type="submit" class="btn">Import</button>
-                    </form>
-                  </td>
-                </tr>
-              </table>
-              <div class="fw-bold">Export Options</div>
-              <div class="mt-05">
-                <form method="GET" action="/save_db" id="save-db-form" class="d-inline">
-                  <button type="submit" class="btn">💾 Save As</button>
-                </form>
-                <form method="POST" action="/new_db" id="new-db-form" class="d-inline ml-4px">
-                  <input type="hidden" name="db_name" id="new-db-name" />
-                  <button type="submit" class="btn">🆕 New DB</button>
-                </form>
-                <form method="POST" action="/rename_db" class="d-inline ml-4px">
-                  <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
-                  <button type="submit" class="btn">✏️ Rename DB</button>
-                </form>
-              </div>
-            </div>
-            <hr class="my-8px">
-            <div class="fw-bold">WebPack Tools</div>
-            <div>
-              <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
-                <label for="map-url-input" class="form-label menu-label">🔍 .js.map URL:</label>
-                <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
-                <button type="submit" class="btn explode-btn"> 💥 </button>
-              </form>
-            </div>
-            <hr class="my-8px">
-              <div class="fw-bold">Bulk Actions</div>
-              <div class="bulk-controls">
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag"> ➕🏷️ </button>
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag"> ➖🏷️ </button>
-                <button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete"> ✂🗑️ URLs </button>
-                <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
-                <div class="checkbox-row">
-                  <label class="select-all-label ml-1 form-label">
-                    <input type="checkbox" id="select-all-page" onclick="toggleSelectAllPage(this)" class="form-checkbox">
-                    Select all visible
-                  </label>
-                  <label class="select-all-label form-label">
-                    <input type="checkbox" id="select-all-matching" onclick="toggleSelectAllMatching(this)" class="form-checkbox">
-                    Select all matching
-                  </label>
-                </div>
-              </div>
-              <hr class="my-8px">
-              <div class="fw-bold">Themes</div>
-              <form method="POST" action="/set_theme" class="theme-row menu-row mb-4px">
-                <label for="theme-select" class="form-label menu-label">Theme:</label>
-                <select name="theme" id="theme-select" class="form-select">
-                  {% for t in themes %}
-                  {% set cols = theme_swatches.get(t) %}
-                  <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
-                    {{ t.replace('theme-','').replace('.css','') }}
-                  </option>
-                  {% endfor %}
-                </select>
-                <button type="submit" class="btn">Apply</button>
-              </form>
-              <div class="menu-row mb-4px">
-                <label for="background-select" class="form-label menu-label">Background:</label>
-                <select id="background-select" class="form-select">
-                  {% for bg in backgrounds %}
-                  <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="menu-row">
-                <label class="form-label menu-label">
-                  <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
-                  Show background image
-                </label>
-              </div>
-              <div class="menu-row">
-                <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
-                <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
-              </div>
+  <nav class="navbar">
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="file-menu">File ▼</button>
+      <div class="dropdown-content" id="file-menu">
+          <form method="POST" action="/new_db" class="menu-row">
+            <input type="hidden" name="db_name" id="new-db-name" />
+            <button type="submit" class="btn">🆕 New DB</button>
+          </form>
+          <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row">
+            <input type="file" name="db_file" accept=".db" required class="form-file" />
+            <button type="submit" class="btn">Open DB</button>
+          </form>
+          <form method="POST" action="/rename_db" class="menu-row">
+            <input type="text" name="new_name" placeholder="New name" class="form-input w-8em" />
+            <button type="submit" class="btn">Rename DB</button>
+          </form>
+          <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row">
+            <input type="file" name="import_file" accept=".json,.db" required class="form-file" />
+            <button type="submit" class="btn">Import Records</button>
+          </form>
+          <form method="POST" action="/fetch_cdx" class="menu-row">
+            <input id="domain-input" type="text" name="domain" placeholder="example.com" required class="form-input" />
+            <button type="submit" class="btn">Import from CDX</button>
+          </form>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="export-menu">Export ▼</button>
+      <div class="dropdown-content" id="export-menu">
+          <div class="menu-row"><a href="#" class="btn">Export JSON</a></div>
+          <div class="menu-row"><a href="#" class="btn">Export CSV</a></div>
+          <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
+            <button type="submit" class="btn">Export DB</button>
+          </form>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
+      <div class="dropdown-content" id="edit-menu">
+          <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
+          <div class="menu-row"><button class="btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
+          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
+          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
+          <div class="menu-row"><button class="btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="prefs-menu">Preferences ▼</button>
+      <div class="dropdown-content" id="prefs-menu">
+          <form method="POST" action="/set_theme" class="theme-row menu-row mb-4px">
+            <label for="theme-select" class="form-label menu-label">Theme:</label>
+            <select name="theme" id="theme-select" class="form-select">
+              {% for t in themes %}
+              {% set cols = theme_swatches.get(t) %}
+              <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
+                {{ t.replace('theme-','').replace('.css','') }}
+              </option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn">Apply</button>
+          </form>
+          <div class="menu-row mb-4px">
+            <label for="background-select" class="form-label menu-label">Background:</label>
+            <select id="background-select" class="form-select">
+              {% for bg in backgrounds %}
+              <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
+              {% endfor %}
+            </select>
           </div>
-        </div>
-      </td>
-      <td class="text-left">
-        <h1><a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline">retrorecon <span class="version-text">v1.0.1</span></a></h1>
-      </td>
-      <td class="text-right">
-        <span class="db-info glow w-100 d-inline-block text-center">loaded&gt; {{ db_name }}</span>
-      </td>
-    </tr>
-  </table>
+          <div class="menu-row">
+            <label class="form-label menu-label">
+              <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
+              Show background image
+            </label>
+          </div>
+          <div class="menu-row">
+            <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
+            <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
+          </div>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
+      <div class="dropdown-content" id="tools-menu">
+          <form method="POST" action="/tools/webpack-zip" class="import-row menu-row">
+            <label for="map-url-input" class="form-label menu-label">Webpack Exploder:</label>
+            <input type="text" name="map_url" id="map-url-input" placeholder="https://example.com/file.js.map" required class="form-input" />
+            <button type="submit" class="btn explode-btn">💥</button>
+          </form>
+          <div class="menu-row"><a href="#" class="btn">Site-to-zip</a></div>
+          <div class="menu-row"><a href="#" class="btn">Base64 Tool</a></div>
+          <div class="menu-row"><a href="#" class="btn">JWT Tool</a></div>
+      </div>
+    </div>
+    <div class="navbar__title">
+      <h1><a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline">retrorecon <span class="version-text">v1.0.1</span></a></h1>
+    </div>
+    <div class="navbar__info">
+      <span class="db-info glow">loaded&gt; {{ db_name }}</span>
+    </div>
+  </nav>
 
   <!-- Table B : Search bar and buttons -->
   <div class="search-bar">
@@ -340,15 +327,17 @@
 
   <script>
 
-    document.getElementById('main-dropdown-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      this.parentElement.classList.toggle('show');
+    document.querySelectorAll('.dropbtn').forEach(btn => {
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        const item = this.parentElement;
+        item.classList.toggle('show');
+      });
     });
-    document.addEventListener('click', function(e) {
-      var dropdown = document.querySelector('.dropdown');
-      if (dropdown && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('show');
-      }
+    document.addEventListener('click', function(e){
+      document.querySelectorAll('.dropdown').forEach(it => {
+        if(!it.contains(e.target)) it.classList.remove('show');
+      });
     });
 
     function toggleSelectAllPage(cb) {

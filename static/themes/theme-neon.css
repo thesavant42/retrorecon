@@ -83,25 +83,22 @@ body.bg-hidden {
 
 .retrorecon-root .dropdown {
   position: relative;
-  min-width: 225px;
 }
 
 .retrorecon-root .dropbtn {
-  background-color: var(--bg-color);
+  background: none;
+  border: none;
   color: var(--fg-color);
-  padding: 5px 10px;
-  font-size: 1.05em;
-  border: 1px solid var(--fg-color);
-  border-radius: 7px;
+  padding: 0.4em 0.6em;
+  font-size: 1em;
   cursor: pointer;
-  transition: opacity 0.2s;
-  margin-left: 50px;
+  transition: background-color 0.2s;
 }
-
 .retrorecon-root .dropbtn:hover,
 .retrorecon-root .dropbtn:focus {
-  opacity: 0.8;
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
+
 
 .retrorecon-root .db-info {
   font-size: 1.6em;
