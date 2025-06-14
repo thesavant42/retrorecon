@@ -235,6 +235,79 @@ def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
     db.commit()
     return cur.lastrowid
 
+
+def _tokenize_tag_expr(expr: str) -> List[str]:
+    """Return a list of tokens for a boolean tag expression."""
+
+    token_re = re.compile(r"\(|\)|AND|OR|NOT|\"[^\"]+\"|\S+", re.IGNORECASE)
+    tokens = token_re.findall(expr)
+    return [t.strip('"') for t in tokens]
+
+
+def _parse_tag_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[str], int]:
+    """Recursive descent parser returning SQL and params."""
+
+    def parse_or(p: int) -> Tuple[str, List[str], int]:
+        sql, params, p = parse_and(p)
+        while p < len(tokens):
+            t = tokens[p].upper()
+            if t == 'OR':
+                p += 1
+                rhs_sql, rhs_params, p = parse_and(p)
+                sql = f"({sql} OR {rhs_sql})"
+                params.extend(rhs_params)
+            else:
+                break
+        return sql, params, p
+
+    def parse_and(p: int) -> Tuple[str, List[str], int]:
+        sql, params, p = parse_not(p)
+        while p < len(tokens):
+            t = tokens[p].upper()
+            if t == 'AND':
+                p += 1
+            elif t in ('OR', ')'):
+                break
+            else:
+                # implicit AND
+                pass
+            rhs_sql, rhs_params, p = parse_not(p)
+            sql = f"({sql} AND {rhs_sql})"
+            params.extend(rhs_params)
+        return sql, params, p
+
+    def parse_not(p: int) -> Tuple[str, List[str], int]:
+        if p < len(tokens) and tokens[p].upper() == 'NOT':
+            p += 1
+            sql, params, p = parse_not(p)
+            return f"(NOT {sql})", params, p
+        return parse_primary(p)
+
+    def parse_primary(p: int) -> Tuple[str, List[str], int]:
+        if p >= len(tokens):
+            raise ValueError('Unexpected end of expression')
+        tok = tokens[p]
+        if tok == '(':  # parse subexpression
+            sql, params, p = parse_or(p + 1)
+            if p >= len(tokens) or tokens[p] != ')':
+                raise ValueError('Unmatched parenthesis')
+            return sql, params, p + 1
+        if tok == ')':
+            raise ValueError('Unexpected )')
+        return "tags LIKE ?", [f"%{tok}%"], p + 1
+
+    return parse_or(pos)
+
+
+def build_tag_filter_sql(expr: str) -> Tuple[str, List[str]]:
+    """Convert a boolean tag expression to a SQL fragment and parameters."""
+
+    tokens = _tokenize_tag_expr(expr)
+    sql, params, pos = _parse_tag_expression(tokens)
+    if pos != len(tokens):
+        raise ValueError('Invalid syntax')
+    return sql, params
+
 @app.route('/', methods=['GET'])
 def index() -> str:
     """Render the main search page."""
@@ -252,8 +325,13 @@ def index() -> str:
             where_clauses.append("url LIKE ?")
             params.append(f"%{q}%")
         if tag_filter:
-            where_clauses.append("tags LIKE ?")
-            params.append(f"%{tag_filter}%")
+            try:
+                tag_sql, tag_params = build_tag_filter_sql(tag_filter)
+                where_clauses.append(tag_sql)
+                params.extend(tag_params)
+            except Exception:
+                where_clauses.append("tags LIKE ?")
+                params.append(f"%{tag_filter}%")
         where_sql = ""
         if where_clauses:
             where_sql = "WHERE " + " AND ".join(where_clauses)
