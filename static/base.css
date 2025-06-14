@@ -330,8 +330,8 @@
 .retrorecon-root .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #0e0120fc;
-    min-width: 420px;
+    background-color: #000000fc;
+    min-width: 520px;
     box-shadow: 0px 8px 20px #00000033;
     z-index: 1;
     padding: 8px 12px;
