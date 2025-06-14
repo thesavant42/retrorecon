@@ -80,3 +80,6 @@ Markdown files in this repository are automatically mirrored to the
 Actions workflow clones the wiki repository, copies the updated files and
 pushes the changes. The workflow expects a repository secret named
 `WIKI_PAT` with permissions to push to the wiki repository.
+The commit author defaults to `retrorecon-bot <actions@github.com>` but can be
+overridden using the `GIT_USER_NAME` and `GIT_USER_EMAIL` environment
+variables.

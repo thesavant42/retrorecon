@@ -5,6 +5,8 @@ import tempfile
 from pathlib import Path
 
 WIKI_URL = os.environ.get('WIKI_URL', 'https://github.com/thesavant42/retrorecon.wiki.git')
+GIT_USER_NAME = os.environ.get('GIT_USER_NAME', 'retrorecon-bot')
+GIT_USER_EMAIL = os.environ.get('GIT_USER_EMAIL', 'actions@github.com')
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -12,6 +14,11 @@ def run(cmd, cwd=None):
     """Run a shell command and raise if it fails."""
     subprocess.check_call(cmd, cwd=cwd)
 
+
+def setup_git_config(cwd: Path) -> None:
+    """Configure git user.name and user.email."""
+    run(['git', 'config', 'user.name', GIT_USER_NAME], cwd=cwd)
+    run(['git', 'config', 'user.email', GIT_USER_EMAIL], cwd=cwd)
 
 def copy_markdown(src_root: Path, dest_root: Path) -> None:
     """Copy all Markdown files from src_root into dest_root preserving paths."""
@@ -28,6 +35,8 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         run(['git', 'clone', WIKI_URL, tmpdir])
         wiki_path = Path(tmpdir)
+
+        setup_git_config(wiki_path)
 
         # remove existing files except .git
         for item in wiki_path.iterdir():
