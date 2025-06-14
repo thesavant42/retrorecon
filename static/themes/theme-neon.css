@@ -105,6 +105,7 @@ body.bg-hidden {
   letter-spacing: 0.04em;
   font-weight: bold;
   color: var(--accent-color);
+  margin-left: 10px;
 }
 
 .retrorecon-root .search-bar input[type="text"] {

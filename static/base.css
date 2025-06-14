@@ -53,6 +53,7 @@
   letter-spacing: 0.04em;
   font-weight: bold;
   color: var(--accent-color);
+  margin-left: 10px;
 }
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
