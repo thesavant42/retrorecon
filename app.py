@@ -156,7 +156,7 @@ def _sanitize_db_name(name: str) -> Optional[str]:
     """Return a sanitized ``name.db`` or ``None`` if empty after cleaning."""
 
     base, _ = os.path.splitext(name)
-    safe = re.sub(r"[^A-Za-z0-9_]", "", base)[:64]
+    safe = re.sub(r"[^A-Za-z0-9_-]", "", base)[:64]
     if not safe:
         return None
     return safe + ".db"
@@ -165,7 +165,7 @@ def _sanitize_db_name(name: str) -> Optional[str]:
 def _sanitize_export_name(name: str) -> str:
     """Return a filename safe for download containing only allowed chars."""
 
-    safe = re.sub(r"[^A-Za-z0-9_]", "_", name.strip())
+    safe = re.sub(r"[^A-Za-z0-9_-]", "_", name.strip())
     safe = safe.strip("_") or "download"
     if not safe.lower().endswith(".db"):
         safe += ".db"
