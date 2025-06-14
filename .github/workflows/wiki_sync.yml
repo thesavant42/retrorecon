@@ -14,4 +14,6 @@ jobs:
       - name: Run wiki sync script
         env:
           WIKI_URL: https://x-access-token:${{ secrets.WIKI_PAT }}@github.com/thesavant42/retrorecon.wiki.git
+          GIT_USER_NAME: retrorecon-bot
+          GIT_USER_EMAIL: actions@github.com
         run: python scripts/update_wiki.py
