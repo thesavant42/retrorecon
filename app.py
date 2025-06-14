@@ -173,7 +173,7 @@ def _sanitize_export_name(name: str) -> str:
 
 
 def create_new_db(name: Optional[str] = None) -> str:
-    """Reset the database and load demo records, returning the filename."""
+    """Reset the database and return the newly created filename."""
     nm = _sanitize_db_name(name) if name else 'waybax.db'
     if nm is None:
         raise ValueError('Invalid database name.')
@@ -182,7 +182,8 @@ def create_new_db(name: Optional[str] = None) -> str:
         os.remove(db_path)
     app.config['DATABASE'] = db_path
     init_db()
-    load_demo_data()
+    # Databases used to include demo entries from ``data/demo_data.json``.
+    # For production use we initialize an empty database.
     return nm
 
 if app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']):
@@ -679,7 +680,7 @@ def webpack_zip() -> Response:
 
 @app.route('/new_db', methods=['POST'])
 def new_db() -> Response:
-    """Create a fresh database and load demo entries."""
+    """Create a fresh empty database."""
     name = request.form.get('db_name', '').strip()
     safe = _sanitize_db_name(name)
     if not safe:
@@ -689,7 +690,7 @@ def new_db() -> Response:
     try:
         db_name = create_new_db(safe)
         session['db_display_name'] = db_name
-        flash('New demo database created.', 'success')
+        flash('New database created.', 'success')
     except ValueError as e:
         flash(str(e), 'error')
     return redirect(url_for('index'))

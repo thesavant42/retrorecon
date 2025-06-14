@@ -16,7 +16,7 @@ This document outlines the steps required to implement the updated database work
   - Allow alphanumeric characters, dashes and underscores.
   - Reject names longer than 64 characters or containing path separators.
   - Append `.db` if missing.
-- Remove the existing database (if any) and initialize using the current schema and demo data.
+  - Remove the existing database (if any) and initialize using the current schema without demo entries.
 - Store the name in `session['db_display_name']` and update `app.config['DATABASE']` to point to the new file.
 
 ### 2. Add `rename_database`
