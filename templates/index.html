@@ -153,7 +153,7 @@
             <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
           </form>
           <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn">Base64 Tool</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn">JWT Tool</a></div>
       </div>
     </div>
@@ -671,15 +671,30 @@
     const webpackBtn = document.getElementById('webpack-btn');
     const webpackInput = document.getElementById('webpack-url-input');
     const webpackForm = document.getElementById('webpack-form');
-    if (webpackBtn && webpackInput && webpackForm) {
-      webpackBtn.addEventListener('click', () => {
-        const url = prompt('Enter .js.map URL to explode:');
-        if (url) {
-          webpackInput.value = url;
-          webpackForm.submit();
-        }
-      });
-    }
+      if (webpackBtn && webpackInput && webpackForm) {
+        webpackBtn.addEventListener('click', () => {
+          const url = prompt('Enter .js.map URL to explode:');
+          if (url) {
+            webpackInput.value = url;
+            webpackForm.submit();
+          }
+        });
+      }
+
+      const textToolsLink = document.getElementById('text-tools-link');
+      let textToolsLoaded = false;
+      if (textToolsLink) {
+        textToolsLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          if (!textToolsLoaded) {
+            const resp = await fetch('/text_tools');
+            const html = await resp.text();
+            document.body.insertAdjacentHTML('beforeend', html);
+            textToolsLoaded = true;
+          }
+          document.getElementById('text-tools-overlay').classList.remove('hidden');
+        });
+      }
 
     const themeSelect = document.getElementById('theme-select');
     const themeForm = document.getElementById('set-theme-form');

@@ -227,18 +227,66 @@
       }
     },
     {
-      "name": "POST /tools/webpack-zip",
+      "name": "GET /notes/<int:url_id>",
       "request": {
-        "method": "POST",
+        "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/tools/webpack-zip",
+          "raw": "{{base_url}}/notes/<int:url_id>",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "tools",
-            "webpack-zip"
+            "notes",
+            "<int:url_id>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /notes",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/notes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "notes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_note",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_note",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_note"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /export_notes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/export_notes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "export_notes"
           ]
         }
       }
@@ -323,6 +371,23 @@
           "path": [
             "tools",
             "url_encode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/webpack-zip",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/webpack-zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "webpack-zip"
           ]
         }
       }
