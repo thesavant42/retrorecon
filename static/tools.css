@@ -65,6 +65,7 @@
 .retrorecon-root #jwt-cookie-jar th.checkbox-col,
 .retrorecon-root #jwt-cookie-jar td.checkbox-col {
   text-align: center;
+  width: 2em;
 }
 .retrorecon-root #jwt-cookie-jar .break-all {
   word-break: break-all;
