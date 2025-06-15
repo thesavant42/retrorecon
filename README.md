@@ -46,6 +46,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
 - **Text Tools** full-screen editor for Base64 and URL encoding/decoding with Save As
 - **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
+  with a persistent JWT cookie jar
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
@@ -130,6 +131,11 @@ curl -X POST -d "token=eyJhbGciOi..." http://localhost:5000/tools/jwt_decode
 # Encode and sign a payload
 curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
   http://localhost:5000/tools/jwt_encode
+```
+
+```bash
+# View logged JWT decodes
+curl http://localhost:5000/jwt_cookies
 ```
 
 ## License

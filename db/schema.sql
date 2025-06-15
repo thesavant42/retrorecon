@@ -34,3 +34,12 @@ CREATE TABLE IF NOT EXISTS notes (
     updated_at TIMESTAMP,
     FOREIGN KEY(url_id) REFERENCES urls(id)
 );
+
+CREATE TABLE IF NOT EXISTS jwt_cookies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    token TEXT,
+    header TEXT,
+    payload TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

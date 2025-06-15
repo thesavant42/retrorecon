@@ -114,3 +114,6 @@ This ensures database workflow tests are executed along with the existing suite 
 
 6. **Fixed Key Warning**
    - Provide a token signed with a known default key; decoding should highlight the weak key.
+
+7. **Cookie Jar Entry**
+   - After a successful decode, `/jwt_cookies` should list the new token with issuer, algorithm and notes.

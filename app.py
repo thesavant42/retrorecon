@@ -188,6 +188,15 @@ def export_notes_data() -> List[Dict[str, Any]]:
         grouped.setdefault(r["url"], []).append(r["content"])
     return [{"url": u, "notes": n} for u, n in grouped.items()]
 
+
+def log_jwt_entry(token: str, header: Dict[str, Any], payload: Dict[str, Any], notes: str) -> None:
+    """Insert a decoded JWT into the ``jwt_cookies`` table."""
+
+    execute_db(
+        "INSERT INTO jwt_cookies (token, header, payload, notes) VALUES (?, ?, ?, ?)",
+        [token, json.dumps(header), json.dumps(payload), notes],
+    )
+
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
     schema_path = os.path.join(app.root_path, 'db', 'schema.sql')
@@ -1216,6 +1225,8 @@ def jwt_decode_route() -> Response:
     token = request.form.get('token', '')
     if len(token.encode('utf-8')) > TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
+    if not _db_loaded():
+        return jsonify({'error': 'no_db'}), 400
     try:
         header = jwt.get_unverified_header(token)
         payload = jwt.decode(token, options={'verify_signature': False})
@@ -1261,6 +1272,21 @@ def jwt_decode_route() -> Response:
             continue
     result["key_warning"] = key_warning
 
+    notes = []
+    if result.get("alg_warning"):
+        notes.append("Weak algorithm")
+    if result.get("key_warning"):
+        notes.append("Weak key")
+    if result.get("exp_readable"):
+        note = f"exp {result['exp_readable']}"
+        if result.get("expired"):
+            note += " expired"
+        notes.append(note)
+    try:
+        log_jwt_entry(token, header, payload, "; ".join(notes))
+    except Exception:
+        pass
+
     return jsonify(result)
 
 
@@ -1288,6 +1314,38 @@ def jwt_encode_route() -> Response:
     if isinstance(token, bytes):
         token = token.decode('ascii')
     return Response(token, mimetype='text/plain')
+
+
+@app.route('/jwt_cookies', methods=['GET'])
+def jwt_cookies_route() -> Response:
+    """Return logged JWT decode entries as JSON."""
+
+    if not _db_loaded():
+        return jsonify([])
+    rows = query_db(
+        "SELECT token, header, payload, notes, created_at FROM jwt_cookies ORDER BY id DESC LIMIT 50"
+    )
+    result = []
+    for r in rows:
+        try:
+            hdr = json.loads(r["header"])
+        except Exception:
+            hdr = {}
+        try:
+            pl = json.loads(r["payload"])
+        except Exception:
+            pl = {}
+        result.append(
+            {
+                "token": r["token"],
+                "issuer": pl.get("iss", ""),
+                "alg": hdr.get("alg", ""),
+                "claims": list(pl.keys()),
+                "notes": r["notes"],
+                "created_at": r["created_at"],
+            }
+        )
+    return jsonify(result)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:

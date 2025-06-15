@@ -26,6 +26,7 @@ def test_jwt_tools_route(tmp_path, monkeypatch):
 def test_jwt_decode_encode_roundtrip(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'rt'})
         demo = app.jwt.encode({'sub': '1'}, 'secret', algorithm='HS256')
         resp = client.post('/tools/jwt_decode', data={'token': demo})
         assert resp.status_code == 200
@@ -40,6 +41,7 @@ def test_jwt_decode_encode_roundtrip(tmp_path, monkeypatch):
 def test_jwt_decode_warnings_and_exp(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'warn'})
         none_token = app.jwt.encode({'sub': '1'}, '', algorithm='none')
         resp = client.post('/tools/jwt_decode', data={'token': none_token})
         assert resp.status_code == 200
@@ -54,5 +56,28 @@ def test_jwt_decode_warnings_and_exp(tmp_path, monkeypatch):
         assert 'exp_readable' in data
         assert data['expired'] is True
         assert data['key_warning'] is True
+
+
+def test_jwt_cookie_logging(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'jwtlog'})
+        token = app.jwt.encode({'iss': 'me'}, '', algorithm='none')
+        resp = client.post('/tools/jwt_decode', data={'token': token})
+        assert resp.status_code == 200
+        resp = client.get('/jwt_cookies')
+        data = resp.get_json()
+        assert data and data[0]['issuer'] == 'me'
+        assert data[0]['token'] == token
+
+
+def test_jwt_decode_requires_db(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        token = app.jwt.encode({'sub': 1}, '', algorithm='none')
+        resp = client.post('/tools/jwt_decode', data={'token': token})
+        assert resp.status_code == 400
+        data = resp.get_json()
+        assert data['error'] == 'no_db'
 
 
