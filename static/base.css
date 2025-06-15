@@ -352,6 +352,7 @@
 .retrorecon-root .dropbtn:hover,
 .retrorecon-root .dropbtn:focus {
   opacity: 0.8;
+  box-shadow: none;
 }
 .retrorecon-root .dropdown-content {
   display: none;
