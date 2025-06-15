@@ -73,7 +73,7 @@ def test_jwt_decode_warnings_and_exp(tmp_path, monkeypatch):
         assert data['alg_warning'] is True
 
         import datetime
-        exp = int((datetime.datetime.utcnow() - datetime.timedelta(seconds=1)).timestamp())
+        exp = int((datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=1)).timestamp())
         token = app.jwt.encode({'exp': exp}, 'secret', algorithm='HS256')
         resp = client.post('/tools/jwt_decode', data={'token': token})
         data = resp.get_json()
