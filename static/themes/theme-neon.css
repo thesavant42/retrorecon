@@ -145,7 +145,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 10px;
-  border: 1px solid #0d011e;
+  border: 1px solid #fff;
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
@@ -177,7 +177,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 10px;
-  border: 1px solid #0d011e;
+  border: 1px solid #fff;
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
@@ -211,7 +211,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 10px;
-  border: 1px solid #0d011e;
+  border: 1px solid #fff;
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
@@ -233,7 +233,7 @@ body.bg-hidden {
   font-size: 1.05em;
   padding: 5px 10px;
   border-radius: 5px;
-  border: 1px solid var(--fg-color);
+  border: 1px solid #fff;
   background: var(--bg-color);
   color: var(--fg-color);
   cursor: pointer;
@@ -273,7 +273,7 @@ body.bg-hidden {
 .retrorecon-root .google-btn,
 .retrorecon-root .crtsh-btn {
   background: var(--bg-color);
-  border: 1px solid var(--fg-color);
+  border: 1px solid #fff;
   border-radius: 7px;
   color: #2cbaf3;
   font-size: 1em;
