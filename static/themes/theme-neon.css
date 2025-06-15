@@ -147,7 +147,8 @@ body.bg-hidden {
 }
 
 .retrorecon-root .search-history .tag-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 2px 8px;
   background: var(--bg-color);
   opacity: 1;
@@ -158,6 +159,16 @@ body.bg-hidden {
   margin-bottom: 4px;
   color: var(--fg-color);
   cursor: pointer;
+}
+
+.retrorecon-root .search-history .tag-pill button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1em;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .retrorecon-root .search-bar button {

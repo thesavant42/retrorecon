@@ -721,7 +721,8 @@
 }
 
 .retrorecon-root .search-history .tag-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 2px 8px;
   background: var(--bg-color);
   opacity: 1;
@@ -733,6 +734,7 @@
   color: var(--fg-color);
   cursor: pointer;
 }
+
 
 /* Buttons in row actions */
 .retrorecon-root .copy-btn,
@@ -844,6 +846,16 @@
   width: 1.4em;
   height: 1.4em;
   fill: var(--accent-color);
+}
+
+.retrorecon-root .search-history .tag-pill button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1em;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .retrorecon-root .search-bar button:hover{
