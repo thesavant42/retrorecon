@@ -31,7 +31,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **CDX import** from the Wayback Machine API
 - **JSON import** of URL lists or records
 - Background import with progress indicator
-- Search and filter by text and tags
+- Search and filter by text and tags, including Boolean tag expressions like `#blue AND #tag1`
 - Inline and bulk tag management
 - Bulk actions with "select all visible" or "select all matching"
 - Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
@@ -64,6 +64,18 @@ Then open <http://127.0.0.1:5000> in your browser.
    name) using the menu. You can also rename the active database from the same
    dropdown.
 6. When you relaunch the app, it automatically reloads the last database you used.
+
+### Boolean Tag Searches
+
+Prefix tags with `#` and combine them using `AND`, `OR` and `NOT` in the search box. Quotes allow tags with spaces.
+
+Example queries:
+
+```bash
+curl -G --data-urlencode "q=#tag1 AND #red" http://localhost:5000/
+curl -G --data-urlencode "q=#blue OR #red" http://localhost:5000/
+curl -G --data-urlencode "q=#\"tag 2\" AND NOT #tag4" http://localhost:5000/
+```
 
 ## License
 MIT

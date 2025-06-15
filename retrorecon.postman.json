@@ -1,0 +1,38 @@
+{
+  "info": {
+    "name": "Retrorecon API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Boolean tag search",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/?q=%23tag1%20AND%20%23red",
+          "host": ["{{base_url}}"],
+          "path": [""],
+          "query": [
+            {"key": "q", "value": "#tag1 AND #red"}
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('contains matching URL', function () {",
+              "    pm.expect(pm.response.text()).to.include('http://b.example/');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

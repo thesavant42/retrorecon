@@ -5,6 +5,7 @@
 !data/demo_data.json
 !package.json
 !.stylelintrc.json
+!retrorecon.postman.json
 node_modules/
 package-lock.json
 __pycache__/
