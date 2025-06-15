@@ -262,6 +262,20 @@ def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
     return cur.lastrowid
 
 
+def _quote_hashtags(expr: str) -> str:
+    """Surround bare hashtag terms with quotes for proper tokenization."""
+
+    pattern = r'#([^#()]+?)(?=(?:\s+(?:AND|OR|NOT)\b|\s*\)|\s*#|$))'
+
+    def repl(match: re.Match) -> str:
+        inner = match.group(1).strip()
+        if inner.startswith('"') and inner.endswith('"'):
+            return inner
+        return f'"{inner}"'
+
+    return re.sub(pattern, repl, expr, flags=re.IGNORECASE)
+
+
 def _tokenize_tag_expr(expr: str) -> List[str]:
     """Return a list of tokens for a boolean tag expression."""
 
@@ -323,7 +337,7 @@ def _parse_tag_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[st
             return sql, params, p + 1
         if tok == ')':
             raise ValueError('Unexpected )')
-        return "tags LIKE ?", [f"%{tok}%"], p + 1
+        return "instr(',' || tags || ',', ',' || ? || ',') > 0", [tok], p + 1
 
     return parse_or(pos)
 
@@ -356,7 +370,8 @@ def index() -> str:
                 where_clauses.append("url LIKE ?")
                 params.append(f"%{val}%")
             elif '#' in q:
-                tag_expr = q.replace('#', '')
+                tag_expr = _quote_hashtags(q)
+                tag_expr = tag_expr.replace('#', '')
                 try:
                     tag_sql, tag_params = build_tag_filter_sql(tag_expr)
                     where_clauses.append(tag_sql)
@@ -673,7 +688,8 @@ def bulk_action() -> Response:
                 where_clauses.append("url LIKE ?")
                 params.append(f"%{val}%")
             elif '#' in q:
-                tag_expr = q.replace('#', '')
+                tag_expr = _quote_hashtags(q)
+                tag_expr = tag_expr.replace('#', '')
                 try:
                     tag_sql, tag_params = build_tag_filter_sql(tag_expr)
                     where_clauses.append(tag_sql)
