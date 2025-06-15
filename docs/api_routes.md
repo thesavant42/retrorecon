@@ -17,6 +17,16 @@ Render the main search page.
 curl http://localhost:5000/
 ```
 
+Optional query parameter `q` accepts plain text or expressions using the
+`url:`, `timestamp:`, `http:` and `mime:` operators combined with Boolean
+keywords (`AND`, `OR`, `NOT`).
+
+Example:
+
+```
+curl -G --data-urlencode "q=url:example.com AND http:200" http://localhost:5000/
+```
+
 ### `POST /fetch_cdx`
 Fetch Wayback Machine CDX records for a domain and insert any new URLs into the loaded database.
 
