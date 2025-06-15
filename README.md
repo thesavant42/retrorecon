@@ -103,8 +103,8 @@ curl -G --data-urlencode "q=NOT http:404" http://localhost:5000/
 ```bash
 # List saved tags
 curl http://localhost:5000/saved_tags
-# Add a tag query
-curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/saved_tags
+# Add a tag query (the leading # is optional)
+curl -X POST -d "tag=foo" http://localhost:5000/saved_tags
 # Remove a tag query
 curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
 ```
