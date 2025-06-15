@@ -689,7 +689,11 @@
           if (!textToolsLoaded) {
             const resp = await fetch('/text_tools');
             const html = await resp.text();
-            document.body.insertAdjacentHTML('beforeend', html);
+            const root = document.querySelector('.retrorecon-root') || document.body;
+            root.insertAdjacentHTML('beforeend', html);
+            const script = document.createElement('script');
+            script.src = '/static/text_tools.js';
+            document.body.appendChild(script);
             textToolsLoaded = true;
           }
           document.getElementById('text-tools-overlay').classList.remove('hidden');

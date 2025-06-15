@@ -1,5 +1,5 @@
 /* File: static/text_tools.js */
-document.addEventListener('DOMContentLoaded', function(){
+function initTextTools(){
   const overlay = document.getElementById('text-tools-overlay');
   if(!overlay) return;
   const input = document.getElementById('text-tool-input');
@@ -50,4 +50,10 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
-});
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initTextTools);
+} else {
+  initTextTools();
+}
