@@ -25,18 +25,10 @@
   <div class="retrorecon-root">
   {% macro render_pagination(page, total_pages, q, total_count) %}
   <div class="pagination mt-1">
-    <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
+    <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
-      <a href="?page=1&q={{ q }}" class="pagination-arrow" aria-label="First">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M16 4 L8 12 L16 20 Z M8 4 L0 12 L8 20 Z" />
-        </svg>
-      </a>
-      <a href="?page={{ page - 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Prev">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15 4 L7 12 L15 20 Z" />
-        </svg>
-      </a>
+      <a href="?page=1&q={{ q }}" class="pagination-arrow" aria-label="First">&laquo;&laquo;</a>
+      <a href="?page={{ page - 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Prev">&laquo;</a>
     {% endif %}
     {% set start = page - 2 if page - 2 > 2 else 1 %}
     {% set end = page + 2 if page + 2 < total_pages - 1 else total_pages %}
@@ -56,23 +48,14 @@
       <a href="?page={{ total_pages }}&q={{ q }}">{{ total_pages }}</a>
     {% endif %}
     {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Next">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 4 L17 12 L9 20 Z" />
-        </svg>
-      </a>
-      <a href="?page={{ total_pages }}&q={{ q }}" class="pagination-arrow" aria-label="Last">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M8 4 L16 12 L8 20 Z M16 4 L24 12 L16 20 Z" />
-        </svg>
-      </a>
+      <a href="?page={{ page + 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Next">&raquo;</a>
+      <a href="?page={{ total_pages }}&q={{ q }}" class="pagination-arrow" aria-label="Last">&raquo;&raquo;</a>
     {% endif %}
     <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
       <input type="text" name="page" size="4" placeholder="Page" class="form-input" />
-      <button type="submit" class="btn">Go</button>
     </form>
-    <span class="total-count">Total: {{ total_count }}</span>
+    <span class="total-count">Total results: {{ total_count }}</span>
   </div>
   {% endmacro %}
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
