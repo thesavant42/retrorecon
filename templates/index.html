@@ -447,18 +447,26 @@
 
     function addHistoryButton(text){
       const historyDiv = document.getElementById('search-history');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = text;
-      btn.addEventListener('click', () => quickSearch(text));
-      btn.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
+      const pill = document.createElement('span');
+      pill.className = 'tag-pill';
+      pill.style.cursor = 'pointer';
+      const label = document.createElement('span');
+      label.textContent = text;
+      pill.appendChild(label);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.innerHTML = '&times;';
+      close.title = 'Remove tag';
+      close.addEventListener('click', (e) => {
+        e.stopPropagation();
         if(confirm('Delete saved tag?')){
-          historyDiv.removeChild(btn);
+          historyDiv.removeChild(pill);
           fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:text})});
         }
       });
-      historyDiv.appendChild(btn);
+      pill.appendChild(close);
+      pill.addEventListener('click', () => quickSearch(text));
+      historyDiv.appendChild(pill);
     }
 
     async function loadHistory(){
