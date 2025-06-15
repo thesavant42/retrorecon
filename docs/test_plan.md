@@ -74,3 +74,19 @@ This ensures database workflow tests are executed along with the existing suite 
 5. **Export Notes**
    - Add notes for multiple URLs.
    - GET `/export_notes` and validate the JSON structure contains each URL and its notes.
+
+## Text Tools Tests
+
+1. **Menu Entry**
+   - Click `Tools → Text Tools` from the navbar.
+   - Verify the overlay opens only when triggered by this menu option.
+
+2. **URL Encode/Decode**
+   - Enter `This is a sketchy string!?"` in the textarea.
+   - Click **URL Encode**, then **URL Decode**.
+   - The final text should match the original string exactly.
+
+3. **Base64 Round Trip**
+   - Input a multiline string using CRLF, LF and CR newlines.
+   - Press **Base64 Encode** then **Base64 Decode**.
+   - Text should return to the original form without errors.

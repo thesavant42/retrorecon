@@ -44,6 +44,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Browser-side search history for quick queries
 - Pagination with jump-to-page and total counts
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
+- **Text Tools** full-screen editor for Base64 and URL encoding/decoding
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
