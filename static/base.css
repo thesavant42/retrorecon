@@ -777,13 +777,14 @@
 .retrorecon-root .search-history .tag-pill {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  padding: 4px 10px;
   background: var(--bg-color);
   opacity: 1;
-  border-radius: 10px;
+  border-radius: 999px;
   border: 1px solid #fff;
   margin-right: 4px;
-  font-size: 0.95em;
+  font-size: 0.65em;
+  font-weight: 600;
   margin-bottom: 4px;
   color: var(--fg-color);
   cursor: pointer;
@@ -912,8 +913,8 @@
   background: none;
   border: none;
   color: inherit;
-  font-size: 1em;
-  margin-left: 4px;
+  font-size: 0.8em;
+  margin-left: 0.35em;
   cursor: pointer;
   transition: opacity 0.2s;
 }
