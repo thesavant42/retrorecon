@@ -20,6 +20,7 @@ This document defines the specification for the new **Text Tools** interface tha
     - **URL Decode**
     - **URL Encode**
     - **Copy** (copies the textarea contents using the Clipboard API)
+    - **Save As** (downloads the textarea contents as a plain text file)
     - **Close** (hides the overlay)
 - All styles reuse the `.notes-overlay` rules from `static/base.css` with minimal additions under `.retrorecon-root`.
 - Each button triggers a fetch call to its matching API route. The returned text replaces the current textarea contents so chained operations are possible.
