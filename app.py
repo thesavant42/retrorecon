@@ -815,9 +815,12 @@ def index() -> str:
 @app.route('/fetch_cdx', methods=['POST'])
 def fetch_cdx() -> Response:
     """Fetch CDX data for a domain and insert new URLs."""
-    domain = request.form.get('domain', '').strip()
+    domain = request.form.get('domain', '').strip().lower()
     if not domain:
         flash("No domain provided for CDX fetch.", "error")
+        return redirect(url_for('index'))
+    if not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
+        flash("Invalid domain value.", "error")
         return redirect(url_for('index'))
     if not _db_loaded():
         flash("No database loaded.", "error")
@@ -855,9 +858,10 @@ def fetch_cdx() -> Response:
         )
         if existing:
             continue
+        entry_domain = urllib.parse.urlsplit(original_url).hostname or domain
         execute_db(
-            "INSERT INTO urls (url, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?)",
-            [original_url, timestamp, status_code, mime_type, ""]
+            "INSERT INTO urls (url, domain, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?, ?)",
+            [original_url, entry_domain, timestamp, status_code, mime_type, ""]
         )
         inserted += 1
 
