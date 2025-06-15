@@ -45,6 +45,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Pagination with jump-to-page and total counts
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
 - **Text Tools** full-screen editor for Base64 and URL encoding/decoding with Save As
+- **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
@@ -116,6 +117,17 @@ curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
 ```bash
 curl -X POST -d "theme=nostalgia.css" -d "size=16" \
   http://localhost:5000/set_font_size
+```
+
+### JWT Tools API
+
+```bash
+# Decode a JWT
+curl -X POST -d "token=eyJhbGciOi..." http://localhost:5000/tools/jwt_decode
+
+# Encode and sign a payload
+curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
+  http://localhost:5000/tools/jwt_encode
 ```
 
 ## License

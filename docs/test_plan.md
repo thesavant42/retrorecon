@@ -90,3 +90,26 @@ This ensures database workflow tests are executed along with the existing suite 
    - Input a multiline string using CRLF, LF and CR newlines.
    - Press **Base64 Encode** then **Base64 Decode**.
    - Text should return to the original form without errors.
+
+## JWT Tools Tests
+
+1. **Menu Entry**
+   - Select `Tools → JWT Tools` from the navbar.
+   - Ensure the overlay opens only from this menu item and not during page load.
+
+2. **Decode Demo Token**
+   - Post a known demo token to `/tools/jwt_decode`.
+   - Response should contain formatted JSON and readable `exp` timestamp.
+
+3. **Edit and Encode**
+   - Decode a token, modify the JSON payload and encode it again.
+   - Decoding the result should reflect the edited fields.
+
+4. **Sign with Secret**
+   - Encode `{"sub":1}` with secret `secret123` and verify the signature using the same secret.
+
+5. **Weak Algorithm Warning**
+   - Decoding a token signed with `none` should return a warning flag in the response.
+
+6. **Fixed Key Warning**
+   - Provide a token signed with a known default key; decoding should highlight the weak key.
