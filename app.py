@@ -197,6 +197,58 @@ def log_jwt_entry(token: str, header: Dict[str, Any], payload: Dict[str, Any], n
         [token, json.dumps(header), json.dumps(payload), notes],
     )
 
+
+def delete_jwt_cookies(ids: List[int]) -> None:
+    """Delete JWT cookie log entries by ID."""
+
+    if not ids:
+        return
+    for jid in ids:
+        execute_db("DELETE FROM jwt_cookies WHERE id = ?", [jid])
+
+
+def update_jwt_cookie(jid: int, notes: str) -> None:
+    """Update the notes for a JWT cookie entry."""
+
+    execute_db("UPDATE jwt_cookies SET notes = ? WHERE id = ?", [notes, jid])
+
+
+def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
+    """Return JWT cookie entries as dictionaries."""
+
+    where = ""
+    params: List[Any] = []
+    if ids:
+        placeholders = ",".join("?" for _ in ids)
+        where = f"WHERE id IN ({placeholders})"
+        params.extend(ids)
+    rows = query_db(
+        f"SELECT id, token, header, payload, notes, created_at FROM jwt_cookies {where} ORDER BY id DESC",
+        params,
+    )
+    result = []
+    for r in rows:
+        try:
+            hdr = json.loads(r["header"])
+        except Exception:
+            hdr = {}
+        try:
+            pl = json.loads(r["payload"])
+        except Exception:
+            pl = {}
+        result.append(
+            {
+                "id": r["id"],
+                "token": r["token"],
+                "issuer": pl.get("iss", ""),
+                "alg": hdr.get("alg", ""),
+                "claims": list(pl.keys()),
+                "notes": r["notes"],
+                "created_at": r["created_at"],
+            }
+        )
+    return result
+
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
     schema_path = os.path.join(app.root_path, 'db', 'schema.sql')
@@ -1334,30 +1386,46 @@ def jwt_cookies_route() -> Response:
 
     if not _db_loaded():
         return jsonify([])
-    rows = query_db(
-        "SELECT token, header, payload, notes, created_at FROM jwt_cookies ORDER BY id DESC LIMIT 50"
-    )
-    result = []
-    for r in rows:
-        try:
-            hdr = json.loads(r["header"])
-        except Exception:
-            hdr = {}
-        try:
-            pl = json.loads(r["payload"])
-        except Exception:
-            pl = {}
-        result.append(
-            {
-                "token": r["token"],
-                "issuer": pl.get("iss", ""),
-                "alg": hdr.get("alg", ""),
-                "claims": list(pl.keys()),
-                "notes": r["notes"],
-                "created_at": r["created_at"],
-            }
-        )
-    return jsonify(result)
+    rows = export_jwt_cookie_data()[:50]
+    return jsonify(rows)
+
+
+@app.route('/delete_jwt_cookies', methods=['POST'])
+def delete_jwt_cookies_route() -> Response:
+    """Delete JWT cookie entries by ID."""
+
+    if not _db_loaded():
+        return ('', 400)
+    ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
+    if not ids:
+        return ('', 400)
+    delete_jwt_cookies(ids)
+    return ('', 204)
+
+
+@app.route('/update_jwt_cookie', methods=['POST'])
+def update_jwt_cookie_route() -> Response:
+    """Update notes for a JWT cookie entry."""
+
+    if not _db_loaded():
+        return ('', 400)
+    jid = request.form.get('id', type=int)
+    notes = request.form.get('notes', '').strip()
+    if not jid:
+        return ('', 400)
+    update_jwt_cookie(jid, notes)
+    return ('', 204)
+
+
+@app.route('/export_jwt_cookies', methods=['GET'])
+def export_jwt_cookies_route() -> Response:
+    """Return JWT cookie entries as JSON."""
+
+    if not _db_loaded():
+        return jsonify([])
+    ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
+    rows = export_jwt_cookie_data(ids if ids else None)
+    return jsonify(rows)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:

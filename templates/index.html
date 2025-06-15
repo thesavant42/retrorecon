@@ -806,7 +806,8 @@
 
     // Sorting functionality
     document.querySelectorAll('.url-table th.sortable').forEach(th => {
-      th.addEventListener('click', () => {
+      th.addEventListener('click', (ev) => {
+        if(ev.target.closest('.col-resizer')) return;
         const sort = th.getAttribute('data-sort');
         const params = new URLSearchParams(window.location.search);
         const currentSort = params.get('sort');

@@ -87,6 +87,24 @@ def test_jwt_cookie_logging(tmp_path, monkeypatch):
         assert data[0]['token'] == token
 
 
+def test_jwt_cookie_edit_delete_export(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'jwt2'})
+        token = app.jwt.encode({'iss': 'you'}, '', algorithm='none')
+        client.post('/tools/jwt_decode', data={'token': token})
+        data = client.get('/jwt_cookies').get_json()
+        jid = data[0]['id']
+        resp = client.post('/update_jwt_cookie', data={'id': jid, 'notes': 'x'})
+        assert resp.status_code == 204
+        exported = client.get(f'/export_jwt_cookies?id={jid}').get_json()
+        assert exported and exported[0]['notes'] == 'x'
+        resp = client.post('/delete_jwt_cookies', data={'ids': jid})
+        assert resp.status_code == 204
+        data = client.get('/jwt_cookies').get_json()
+        assert data == []
+
+
 def test_jwt_decode_requires_db(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
