@@ -330,9 +330,7 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
             return buf.getvalue()
         except Exception:
             # 1x1 transparent PNG
-            return base64.b64decode(
-                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg=="
-            )
+            return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg==")
 
     async def _cap() -> bytes:
         browser = await launch(args=['--no-sandbox'])
@@ -349,7 +347,20 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
         await browser.close()
         return data
 
-    return asyncio.get_event_loop().run_until_complete(_cap())
+    try:
+        return asyncio.get_event_loop().run_until_complete(_cap())
+    except Exception:
+        try:
+            from PIL import Image, ImageDraw
+
+            img = Image.new("RGB", (800, 600), color="white")
+            draw = ImageDraw.Draw(img)
+            draw.text((10, 10), url, fill="black")
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+        except Exception:
+            return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg==")
 
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
