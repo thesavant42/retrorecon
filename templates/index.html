@@ -253,6 +253,7 @@
                         <input type="hidden" name="q" value="{{ q }}" />
                         <button type="submit" class="btn delete-btn" title="Delete">🗑️</button>
                       </form>
+                      <button type="button" class="btn ml-05 notes-btn" data-url-id="{{ url.id }}" onclick="openNotes(this)">📝 Notes</button>
                       {% if ".js.map" in url.url %}
                       <form method="POST" action="/tools/webpack-zip" class="d-inline ml-01">
                         <input type="hidden" name="map_url" value="{{ url.url }}" />
@@ -267,7 +268,6 @@
                         <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input" />
                         <button type="submit" title="Add tag" class="btn">+</button>
                       </form>
-                      <button type="button" class="btn ml-05 notes-btn" data-url-id="{{ url.id }}" onclick="openNotes(this)">📝 Notes</button>
                       {% for tag in (url.tags or '').split(',') if tag %}
                       <span class="tag-pill">{{ tag }}
                         <form method="POST" action="/bulk_action" class="d-inline">
