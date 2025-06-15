@@ -11,6 +11,9 @@ function initJWTTools(){
   const clearBtn = document.getElementById('jwt-clear-btn');
   const closeBtn = document.getElementById('jwt-close-btn');
   const jarDiv = document.getElementById('jwt-cookie-jar');
+  const deleteBtn = document.getElementById('jwt-delete-btn');
+  const exportBtn = document.getElementById('jwt-export-btn');
+  const editBtn = document.getElementById('jwt-edit-btn');
 
   let jarData = [];
   let sortField = 'created_at';
@@ -54,6 +57,7 @@ function initJWTTools(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><thead><tr>'+
+      '<th><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="issuer">Issuer</th>'+
       '<th class="sortable" data-field="alg">alg</th>'+
@@ -63,7 +67,8 @@ function initJWTTools(){
       '</tr></thead><tbody>';
     for(const row of sorted){
       const claims = Array.isArray(row.claims) ? row.claims.join(',') : '';
-      html += `<tr><td><div class="cell-content">${row.created_at}</div></td>`+
+      html += `<tr data-id="${row.id}"><td><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
+        `<td><div class="cell-content">${row.created_at}</div></td>`+
         `<td><div class="cell-content">${row.issuer||''}</div></td>`+
         `<td><div class="cell-content">${row.alg||''}</div></td>`+
         `<td><div class="cell-content">${claims}</div></td>`+
@@ -74,7 +79,8 @@ function initJWTTools(){
     jarDiv.innerHTML = html;
     const table = jarDiv.querySelector('table');
     jarDiv.querySelectorAll('th.sortable').forEach(th => {
-      th.addEventListener('click', () => {
+      th.addEventListener('click', (ev) => {
+        if(ev.target.closest('.col-resizer')) return;
         const field = th.dataset.field;
         if(sortField === field){
           sortDir = sortDir === 'asc' ? 'desc' : 'asc';
@@ -85,6 +91,12 @@ function initJWTTools(){
         renderJar();
       });
     });
+    const selAll = document.getElementById('jwt-select-all');
+    if(selAll){
+      selAll.addEventListener('change', () => {
+        table.querySelectorAll('.row-checkbox').forEach(c => c.checked = selAll.checked);
+      });
+    }
     makeResizable(table);
   }
 
@@ -165,6 +177,45 @@ function initJWTTools(){
   });
 
   closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
+
+  function getSelected(){
+    return Array.from(jarDiv.querySelectorAll('.row-checkbox:checked')).map(c => c.value);
+  }
+
+  if(deleteBtn){
+    deleteBtn.addEventListener('click', async () => {
+      const ids = getSelected();
+      if(!ids.length) return;
+      await call('/delete_jwt_cookies', ids.map(id=>['ids',id]));
+    });
+  }
+
+  if(exportBtn){
+    exportBtn.addEventListener('click', async () => {
+      const ids = getSelected();
+      const params = new URLSearchParams();
+      ids.forEach(id => params.append('id', id));
+      const resp = await fetch('/export_jwt_cookies?'+params.toString());
+      if(resp.ok){
+        const data = await resp.json();
+        const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;a.download='jwt_cookies.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+      }
+    });
+  }
+
+  if(editBtn){
+    editBtn.addEventListener('click', async () => {
+      const ids = getSelected();
+      if(ids.length!==1) return;
+      const row = jarData.find(r=>String(r.id)===ids[0]);
+      if(!row) return;
+      const notes = prompt('Edit notes:', row.notes||'');
+      if(notes===null) return;
+      await call('/update_jwt_cookie', {id: row.id, notes});
+    });
+  }
 
   loadJar();
 }
