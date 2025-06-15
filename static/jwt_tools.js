@@ -10,9 +10,81 @@ function initJWTTools(){
   const saveBtn = document.getElementById('jwt-save-btn');
   const clearBtn = document.getElementById('jwt-clear-btn');
   const closeBtn = document.getElementById('jwt-close-btn');
-  const warnDiv = document.getElementById('jwt-warning');
-  const expDiv = document.getElementById('jwt-exp');
   const jarDiv = document.getElementById('jwt-cookie-jar');
+
+  let jarData = [];
+  let sortField = 'created_at';
+  let sortDir = 'desc';
+
+  function makeResizable(table){
+    const ths = table.querySelectorAll('th');
+    ths.forEach(th => {
+      const res = document.createElement('div');
+      res.className = 'col-resizer';
+      th.appendChild(res);
+      let startX = 0;
+      let startWidth = 0;
+      res.addEventListener('mousedown', e => {
+        startX = e.pageX;
+        startWidth = th.offsetWidth;
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', stop);
+        e.preventDefault();
+      });
+      function onMove(e){
+        const w = startWidth + (e.pageX - startX);
+        th.style.width = w + 'px';
+      }
+      function stop(){
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', stop);
+      }
+    });
+  }
+
+  function renderJar(){
+    if(!jarDiv) return;
+    const sorted = jarData.slice().sort((a,b)=>{
+      const av = (a[sortField] || '').toString().toLowerCase();
+      const bv = (b[sortField] || '').toString().toLowerCase();
+      if(av < bv) return sortDir==='asc'? -1:1;
+      if(av > bv) return sortDir==='asc'? 1:-1;
+      return 0;
+    });
+    let html = '<table class="table url-table w-100"><thead><tr>'+
+      '<th class="sortable" data-field="created_at">Time</th>'+
+      '<th class="sortable" data-field="issuer">Issuer</th>'+
+      '<th class="sortable" data-field="alg">alg</th>'+
+      '<th class="sortable" data-field="claims">claims</th>'+
+      '<th class="sortable" data-field="notes">Notes</th>'+
+      '<th class="sortable" data-field="token">JWT</th>'+
+      '</tr></thead><tbody>';
+    for(const row of sorted){
+      const claims = Array.isArray(row.claims) ? row.claims.join(',') : '';
+      html += `<tr><td><div class="cell-content">${row.created_at}</div></td>`+
+        `<td><div class="cell-content">${row.issuer||''}</div></td>`+
+        `<td><div class="cell-content">${row.alg||''}</div></td>`+
+        `<td><div class="cell-content">${claims}</div></td>`+
+        `<td><div class="cell-content">${row.notes||''}</div></td>`+
+        `<td class="break-all"><div class="cell-content">${row.token}</div></td></tr>`;
+    }
+    html += '</tbody></table>';
+    jarDiv.innerHTML = html;
+    const table = jarDiv.querySelector('table');
+    jarDiv.querySelectorAll('th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const field = th.dataset.field;
+        if(sortField === field){
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        }else{
+          sortField = field;
+          sortDir = 'asc';
+        }
+        renderJar();
+      });
+    });
+    makeResizable(table);
+  }
 
   async function loadJar(){
     if(!jarDiv) return;
@@ -20,13 +92,8 @@ function initJWTTools(){
       const resp = await fetch('/jwt_cookies');
       const data = await resp.json();
       if(!Array.isArray(data)) return;
-      let html = '<table class="table w-100"><tr><th>Time</th><th>Issuer</th><th>alg</th><th>claims</th><th>Notes</th><th>JWT</th></tr>';
-      for(const row of data){
-        const claims = Array.isArray(row.claims) ? row.claims.join(',') : '';
-        html += `<tr><td>${row.created_at}</td><td>${row.issuer||''}</td><td>${row.alg||''}</td><td>${claims}</td><td>${row.notes||''}</td><td class="break-all">${row.token}</td></tr>`;
-      }
-      html += '</table>';
-      jarDiv.innerHTML = html;
+      jarData = data;
+      renderJar();
     }catch{}
   }
 
@@ -51,27 +118,6 @@ function initJWTTools(){
           const header = JSON.stringify(respData.header, null, 2);
           const payload = JSON.stringify(respData.payload, null, 2);
           input.value = header + "\n" + payload;
-          if(expDiv){
-            if(respData.exp_readable){
-              expDiv.textContent = 'exp: ' + respData.exp_readable;
-              expDiv.classList.remove('hidden');
-              expDiv.classList.toggle('valid', !respData.expired);
-              expDiv.classList.toggle('expired', respData.expired);
-            }else{
-              expDiv.classList.add('hidden');
-            }
-          }
-          if(warnDiv){
-            const msgs = [];
-            if(respData.alg_warning){ msgs.push('Weak algorithm'); }
-            if(respData.key_warning){ msgs.push('Weak key'); }
-            if(msgs.length){
-              warnDiv.textContent = msgs.join(' / ');
-              warnDiv.classList.remove('hidden');
-            }else{
-              warnDiv.classList.add('hidden');
-            }
-          }
         }else{
           const text = await resp.text();
           input.value = text;
@@ -114,8 +160,6 @@ function initJWTTools(){
   clearBtn.addEventListener('click', () => {
     input.value = '';
     secret.value = '';
-    if(warnDiv) warnDiv.classList.add('hidden');
-    if(expDiv) expDiv.classList.add('hidden');
   });
 
   closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
