@@ -6,6 +6,7 @@ import zipfile
 import threading
 import re
 import datetime
+import base64
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
@@ -317,15 +318,21 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
         import asyncio
         from pyppeteer import launch
     except Exception:
-        # Fallback blank image with URL text
-        from PIL import Image, ImageDraw
+        # Fallback placeholder if pyppeteer or Pillow are unavailable
+        try:
+            from PIL import Image, ImageDraw
 
-        img = Image.new('RGB', (800, 600), color='white')
-        draw = ImageDraw.Draw(img)
-        draw.text((10, 10), url, fill='black')
-        buf = io.BytesIO()
-        img.save(buf, format='PNG')
-        return buf.getvalue()
+            img = Image.new("RGB", (800, 600), color="white")
+            draw = ImageDraw.Draw(img)
+            draw.text((10, 10), url, fill="black")
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+        except Exception:
+            # 1x1 transparent PNG
+            return base64.b64decode(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg=="
+            )
 
     async def _cap() -> bytes:
         browser = await launch(args=['--no-sandbox'])
