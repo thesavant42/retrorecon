@@ -90,7 +90,7 @@ body.bg-hidden {
   border: none;
   color: var(--fg-color);
   padding: 0.4em 0.6em;
-  font-size: 1em;
+  font-size: 13.333px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -106,9 +106,11 @@ body.bg-hidden {
 .retrorecon-root .navbar .menu-label {
   font-family: inherit;
   color: var(--font-main);
+  font-size: 13.333px;
 }
 .retrorecon-root .navbar .menu-btn {
   font-family: inherit;
+  font-size: 13.333px;
 }
 
 
