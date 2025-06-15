@@ -230,6 +230,14 @@ curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
   http://localhost:5000/tools/jwt_encode
 ```
 
+### `GET /jwt_cookies`
+Return the last 50 decoded JWT entries. Each object includes `issuer`, `alg`,
+`claims`, `notes`, `token` and `created_at`.
+
+```
+curl http://localhost:5000/jwt_cookies
+```
+
 ### `POST /new_db`
 Create a new empty SQLite database.
 
