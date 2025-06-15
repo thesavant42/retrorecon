@@ -154,7 +154,7 @@
           </form>
           <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn">JWT Tool</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
       </div>
     </div>
   </div>
@@ -697,6 +697,25 @@
             textToolsLoaded = true;
           }
           document.getElementById('text-tools-overlay').classList.remove('hidden');
+        });
+      }
+
+      const jwtToolsLink = document.getElementById('jwt-tools-link');
+      let jwtToolsLoaded = false;
+      if (jwtToolsLink) {
+        jwtToolsLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          if (!jwtToolsLoaded) {
+            const resp = await fetch('/jwt_tools');
+            const html = await resp.text();
+            const root = document.querySelector('.retrorecon-root') || document.body;
+            root.insertAdjacentHTML('beforeend', html);
+            const script = document.createElement('script');
+            script.src = '/static/jwt_tools.js';
+            document.body.appendChild(script);
+            jwtToolsLoaded = true;
+          }
+          document.getElementById('jwt-tools-overlay').classList.remove('hidden');
         });
       }
 

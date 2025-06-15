@@ -376,6 +376,56 @@
       }
     },
     {
+      "name": "GET /jwt_tools",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/jwt_tools",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "jwt_tools"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/jwt_decode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/jwt_decode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "jwt_decode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/jwt_encode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/jwt_encode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "jwt_encode"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /tools/webpack-zip",
       "request": {
         "method": "POST",

@@ -205,6 +205,29 @@ Percent-encode a string so it is safe for use in URLs.
 curl -X POST -d "text=This is fine!" http://localhost:5000/tools/url_encode
 ```
 
+### `GET /jwt_tools`
+Serve the JWT Tools overlay used for decoding and encoding JWTs.
+
+```
+curl http://localhost:5000/jwt_tools
+```
+
+### `POST /tools/jwt_decode`
+Decode a JWT sent in the `token` field. Returns formatted JSON with readable timestamps.
+
+```
+curl -X POST -d "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  http://localhost:5000/tools/jwt_decode
+```
+
+### `POST /tools/jwt_encode`
+Encode a JSON payload into a JWT. Accepts `payload` and optional `secret`.
+
+```
+curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
+  http://localhost:5000/tools/jwt_encode
+```
+
 ### `POST /new_db`
 Create a new empty SQLite database.
 

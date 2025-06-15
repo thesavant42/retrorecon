@@ -8,6 +8,7 @@ import re
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
+import jwt
 import urllib.parse
 from flask import (
     Flask,
@@ -25,6 +26,7 @@ from flask import (
 from markupsafe import escape
 
 app = Flask(__name__)
+app.jwt = jwt
 # Allow overriding the startup database via environment variable
 env_db = os.environ.get('RETRORECON_DB')
 if env_db:
@@ -1197,6 +1199,53 @@ def url_encode_route() -> Response:
         return ('Request too large', 400)
     encoded = urllib.parse.quote_plus(text)
     return Response(encoded, mimetype='text/plain')
+
+
+@app.route('/jwt_tools', methods=['GET'])
+def jwt_tools_page() -> str:
+    """Return the JWT Tools overlay HTML fragment."""
+
+    return render_template('jwt_tools.html')
+
+
+@app.route('/tools/jwt_decode', methods=['POST'])
+def jwt_decode_route() -> Response:
+    """Decode a JWT without verifying the signature."""
+
+    token = request.form.get('token', '')
+    if len(token.encode('utf-8')) > TEXT_TOOLS_LIMIT:
+        return ('Request too large', 400)
+    try:
+        data = jwt.decode(token, options={'verify_signature': False})
+    except Exception as e:
+        return (f'Invalid JWT: {e}', 400)
+    return jsonify(data)
+
+
+@app.route('/tools/jwt_encode', methods=['POST'])
+def jwt_encode_route() -> Response:
+    """Encode JSON payload into a JWT."""
+
+    raw = request.form.get('payload', '')
+    if len(str(raw).encode('utf-8')) > TEXT_TOOLS_LIMIT:
+        return ('Request too large', 400)
+    secret = request.form.get('secret') or None
+    try:
+        try:
+            payload = json.loads(raw)
+        except Exception:
+            import ast
+            payload = ast.literal_eval(raw)
+    except Exception:
+        # If payload cannot be parsed, fall back to empty object
+        payload = {}
+    if secret:
+        token = jwt.encode(payload, secret, algorithm='HS256')
+    else:
+        token = jwt.encode(payload, '', algorithm='none')
+    if isinstance(token, bytes):
+        token = token.decode('ascii')
+    return Response(token, mimetype='text/plain')
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:
