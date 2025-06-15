@@ -601,6 +601,10 @@ def index() -> str:
     except ValueError:
         page = 1
 
+    tool = request.args.get('tool')
+    if request.path == '/tools/jwt':
+        tool = 'jwt'
+
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
     if direction not in ['asc', 'desc']:
@@ -700,7 +704,8 @@ def index() -> str:
         db_name=db_name,
         search_history=search_history,
         current_sort=sort,
-        current_dir=direction
+        current_dir=direction,
+        open_tool=tool
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
@@ -1268,6 +1273,13 @@ def jwt_tools_page() -> str:
     """Return the JWT Tools overlay HTML fragment."""
 
     return render_template('jwt_tools.html')
+
+
+@app.route('/tools/jwt', methods=['GET'])
+def jwt_tools_full_page() -> str:
+    """Render index page with JWT Tools open for bookmarkable view."""
+
+    return index()
 
 
 @app.route('/tools/jwt_decode', methods=['POST'])

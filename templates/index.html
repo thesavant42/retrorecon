@@ -681,6 +681,8 @@
         });
       }
 
+      const openTool = "{{ open_tool or '' }}";
+
       const textToolsLink = document.getElementById('text-tools-link');
       let textToolsLoaded = false;
       if (textToolsLink) {
@@ -702,21 +704,46 @@
 
       const jwtToolsLink = document.getElementById('jwt-tools-link');
       let jwtToolsLoaded = false;
+
+      async function showJwtTools(skipPush){
+        if (!jwtToolsLoaded) {
+          const resp = await fetch('/jwt_tools');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/jwt_tools.js';
+          document.body.appendChild(script);
+          jwtToolsLoaded = true;
+        }
+        document.getElementById('jwt-tools-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'jwt'}, '', '/tools/jwt');
+        }
+      }
+
+      function hideJwtTools(){
+        const ov = document.getElementById('jwt-tools-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
       if (jwtToolsLink) {
         jwtToolsLink.addEventListener('click', async (e) => {
           e.preventDefault();
-          if (!jwtToolsLoaded) {
-            const resp = await fetch('/jwt_tools');
-            const html = await resp.text();
-            const root = document.querySelector('.retrorecon-root') || document.body;
-            root.insertAdjacentHTML('beforeend', html);
-            const script = document.createElement('script');
-            script.src = '/static/jwt_tools.js';
-            document.body.appendChild(script);
-            jwtToolsLoaded = true;
-          }
-          document.getElementById('jwt-tools-overlay').classList.remove('hidden');
+          showJwtTools();
         });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/jwt'){
+          showJwtTools(true);
+        } else {
+          hideJwtTools();
+        }
+      });
+
+      if(location.pathname === '/tools/jwt' || openTool === 'jwt'){
+        showJwtTools(true);
       }
 
     const themeSelect = document.getElementById('theme-select');

@@ -24,6 +24,14 @@ def test_jwt_tools_route(tmp_path, monkeypatch):
         assert b'id="jwt-tool-input"' in resp.data
 
 
+def test_jwt_tools_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/jwt')
+        assert resp.status_code == 200
+        assert b'openTool = "jwt"' in resp.data
+
+
 def test_jwt_decode_encode_roundtrip(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
