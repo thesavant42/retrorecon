@@ -19,11 +19,16 @@ function initJWTTools(){
   let sortField = 'created_at';
   let sortDir = 'desc';
 
-  function makeResizable(table){
+  function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
     const ths = table.querySelectorAll('th');
-    ths.forEach(th => {
-      th.style.width = th.offsetWidth + 'px';
+    let widths = {};
+    try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
+    ths.forEach((th, idx) => {
+      const id = idx;
+      if(widths[id]) th.style.width = widths[id];
+      th.style.width = th.style.width || th.offsetWidth + 'px';
+      if(th.classList.contains('no-resize')) return;
       const res = document.createElement('div');
       res.className = 'col-resizer';
       th.appendChild(res);
@@ -39,10 +44,12 @@ function initJWTTools(){
       function onMove(e){
         const w = startWidth + (e.pageX - startX);
         th.style.width = w + 'px';
+        widths[id] = th.style.width;
       }
       function stop(){
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', stop);
+        localStorage.setItem(key, JSON.stringify(widths));
       }
     });
   }
@@ -57,7 +64,7 @@ function initJWTTools(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><thead><tr>'+
-      '<th><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>'+
+      '<th class="checkbox-col no-resize text-center"><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="issuer">Issuer</th>'+
       '<th class="sortable" data-field="alg">alg</th>'+
@@ -67,7 +74,7 @@ function initJWTTools(){
       '</tr></thead><tbody>';
     for(const row of sorted){
       const claims = Array.isArray(row.claims) ? row.claims.join(',') : '';
-      html += `<tr data-id="${row.id}"><td><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
+      html += `<tr data-id="${row.id}"><td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
         `<td><div class="cell-content">${row.created_at}</div></td>`+
         `<td><div class="cell-content">${row.issuer||''}</div></td>`+
         `<td><div class="cell-content">${row.alg||''}</div></td>`+
@@ -97,7 +104,7 @@ function initJWTTools(){
         table.querySelectorAll('.row-checkbox').forEach(c => c.checked = selAll.checked);
       });
     }
-    makeResizable(table);
+    makeResizable(table, 'jwt-col-widths');
   }
 
   async function loadJar(){
