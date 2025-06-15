@@ -20,6 +20,7 @@
     {% endfor %}
     /* stylelint-enable */
   </style>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body class="app">
   <div class="retrorecon-root">
@@ -58,8 +59,6 @@
     <span class="total-count">Total results: {{ total_count }}</span>
   </div>
   {% endmacro %}
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
   <nav class="navbar">
   <div class="navbar__menus">
     <div class="dropdown">
