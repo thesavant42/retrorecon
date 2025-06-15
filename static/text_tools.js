@@ -5,6 +5,7 @@ function initTextTools(){
   const input = document.getElementById('text-tool-input');
   const closeBtn = document.getElementById('text-tools-close-btn');
   const copyBtn = document.getElementById('text-copy-btn');
+  const saveBtn = document.getElementById('text-save-btn');
   const b64DecodeBtn = document.getElementById('b64-decode-btn');
   const b64EncodeBtn = document.getElementById('b64-encode-btn');
   const urlDecodeBtn = document.getElementById('url-decode-btn');
@@ -47,6 +48,18 @@ function initTextTools(){
       document.execCommand('copy');
       document.body.removeChild(t);
     }
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const blob = new Blob([input.value], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'text.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 
   closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
