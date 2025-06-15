@@ -280,9 +280,9 @@ def _quote_hashtags(expr: str) -> str:
 
     def repl(match: re.Match) -> str:
         inner = match.group(1).strip()
-        if inner.startswith('"') and inner.endswith('"'):
-            return inner
-        return f'"{inner}"'
+        if ' ' in inner and not (inner.startswith('"') and inner.endswith('"')):
+            inner = f'"{inner}"'
+        return f'tag:{inner}'
 
     return re.sub(pattern, repl, expr, flags=re.IGNORECASE)
 
@@ -362,6 +362,119 @@ def build_tag_filter_sql(expr: str) -> Tuple[str, List[str]]:
         raise ValueError('Invalid syntax')
     return sql, params
 
+
+def _tokenize_search_expr(expr: str) -> List[str]:
+    """Return a list of tokens for a general search expression."""
+
+    token_re = re.compile(
+        r"\(|\)|\bAND\b|\bOR\b|\bNOT\b|[a-zA-Z]+:\"[^\"]+\"|\"[^\"]+\"|[^\s()]+",
+        re.IGNORECASE,
+    )
+    raw = token_re.findall(expr)
+    tokens = []
+    for t in raw:
+        if ':' in t:
+            prefix, rest = t.split(':', 1)
+            if rest.startswith('"') and rest.endswith('"'):
+                rest = rest[1:-1]
+            tokens.append(f"{prefix}:{rest}")
+        else:
+            if t.startswith('"') and t.endswith('"'):
+                t = t[1:-1]
+            tokens.append(t)
+    return tokens
+
+
+def _parse_search_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[str], int]:
+    """Recursive descent parser for general search expressions."""
+
+    def parse_or(p: int) -> Tuple[str, List[str], int]:
+        sql, params, p = parse_and(p)
+        while p < len(tokens):
+            t = tokens[p].upper()
+            if t == 'OR':
+                p += 1
+                rhs_sql, rhs_params, p = parse_and(p)
+                sql = f"({sql} OR {rhs_sql})"
+                params.extend(rhs_params)
+            else:
+                break
+        return sql, params, p
+
+    def parse_and(p: int) -> Tuple[str, List[str], int]:
+        sql, params, p = parse_not(p)
+        while p < len(tokens):
+            t = tokens[p].upper()
+            if t == 'AND':
+                p += 1
+            elif t in ('OR', ')'):
+                break
+            else:
+                # implicit AND
+                pass
+            rhs_sql, rhs_params, p = parse_not(p)
+            sql = f"({sql} AND {rhs_sql})"
+            params.extend(rhs_params)
+        return sql, params, p
+
+    def parse_not(p: int) -> Tuple[str, List[str], int]:
+        if p < len(tokens) and tokens[p].upper() == 'NOT':
+            p += 1
+            sql, params, p = parse_not(p)
+            return f"(NOT {sql})", params, p
+        return parse_primary(p)
+
+    def term_sql(tok: str) -> Tuple[str, List[str]]:
+        lower = tok.lower()
+        if lower.startswith('url:'):
+            val = tok[4:]
+            return "url LIKE ?", [f"%{val}%"]
+        if lower.startswith('timestamp:'):
+            val = tok[len('timestamp:'):]
+            return "CAST(timestamp AS TEXT) LIKE ?", [f"%{val}%"]
+        if lower.startswith('http:'):
+            val = tok[5:]
+            return "CAST(status_code AS TEXT) LIKE ?", [f"%{val}%"]
+        if lower.startswith('mime:'):
+            val = tok[5:]
+            return "mime_type LIKE ?", [f"%{val}%"]
+        if lower.startswith('tag:'):
+            return "has_tag(tags, ?)", [tok[4:]]
+        return (
+            "("
+            "url LIKE ? OR tags LIKE ? OR CAST(timestamp AS TEXT) LIKE ? OR "
+            "CAST(status_code AS TEXT) LIKE ? OR mime_type LIKE ?"
+            ")",
+            [f"%{tok}%"] * 5,
+        )
+
+    def parse_primary(p: int) -> Tuple[str, List[str], int]:
+        if p >= len(tokens):
+            raise ValueError('Unexpected end of expression')
+        tok = tokens[p]
+        if tok == '(':  # subexpression
+            sql, params, p = parse_or(p + 1)
+            if p >= len(tokens) or tokens[p] != ')':
+                raise ValueError('Unmatched parenthesis')
+            return sql, params, p + 1
+        if tok == ')':
+            raise ValueError('Unexpected )')
+        sql, params = term_sql(tok)
+        return sql, params, p + 1
+
+    return parse_or(pos)
+
+
+def build_search_sql(expr: str) -> Tuple[str, List[str]]:
+    """Convert a search expression into SQL and parameters."""
+
+    expr = _quote_hashtags(expr)
+    tokens = _tokenize_search_expr(expr)
+    sql, params, pos = _parse_search_expression(tokens)
+    if pos != len(tokens):
+        raise ValueError('Invalid syntax')
+    return sql, params
+
 @app.route('/', methods=['GET'])
 def index() -> str:
     """Render the main search page."""
@@ -375,28 +488,20 @@ def index() -> str:
         where_clauses = []
         params = []
         if q:
-            url_match = re.match(r'^url:"?(.*?)"?$', q, re.IGNORECASE)
-            if url_match:
-                val = url_match.group(1)
-                where_clauses.append("url LIKE ?")
-                params.append(f"%{val}%")
-            elif '#' in q:
-                tag_expr = _quote_hashtags(q)
-                tag_expr = tag_expr.replace('#', '')
-                try:
-                    tag_sql, tag_params = build_tag_filter_sql(tag_expr)
-                    where_clauses.append(tag_sql)
-                    params.extend(tag_params)
-                except Exception:
-                    where_clauses.append("tags LIKE ?")
-                    params.append(f"%{tag_expr}%")
-            else:
-                where_clauses.append("(" 
+            try:
+                search_sql, search_params = build_search_sql(q)
+                where_clauses.append(search_sql)
+                params.extend(search_params)
+            except Exception:
+                where_clauses.append(
+                    "("
                     "url LIKE ? OR tags LIKE ? OR "
                     "CAST(timestamp AS TEXT) LIKE ? OR "
-                    "CAST(status_code AS TEXT) LIKE ?"
-                ")")
-                params.extend([f"%{q}%"] * 4)
+                    "CAST(status_code AS TEXT) LIKE ? OR "
+                    "mime_type LIKE ?"
+                    ")"
+                )
+                params.extend([f"%{q}%"] * 5)
         where_sql = ""
         if where_clauses:
             where_sql = "WHERE " + " AND ".join(where_clauses)

@@ -81,6 +81,23 @@ curl -G --data-urlencode "q=#blue OR #red" http://localhost:5000/
 curl -G --data-urlencode "q=#\"tag 2\" AND NOT #tag4" http://localhost:5000/
 ```
 
+### Advanced Search Operators
+
+Use field prefixes to filter on specific attributes and combine them with
+boolean logic:
+
+- `url:` – match against the URL
+- `timestamp:` – match the archived timestamp
+- `http:` – match the HTTP status code
+- `mime:` – match the MIME type
+
+Example queries:
+
+```bash
+curl -G --data-urlencode "q=url:example.com AND http:200" http://localhost:5000/
+curl -G --data-urlencode "q=NOT http:404" http://localhost:5000/
+```
+
 ### Managing Saved Tags
 
 ```bash
