@@ -47,6 +47,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **Text Tools** full-screen editor for Base64 and URL encoding/decoding with Save As
 - **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
   with a persistent JWT cookie jar
+- **ScreenShotter** capture website screenshots in a headless browser
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor

@@ -155,6 +155,7 @@
           <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
       </div>
     </div>
   </div>
@@ -744,6 +745,50 @@
 
       if(location.pathname === '/tools/jwt' || openTool === 'jwt'){
         showJwtTools(true);
+      }
+
+      const screenshotLink = document.getElementById('screenshot-link');
+      let screenshotLoaded = false;
+
+      async function showScreenshot(skipPush){
+        if(!screenshotLoaded){
+          const resp = await fetch('/screenshotter');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/screenshotter.js';
+          document.body.appendChild(script);
+          screenshotLoaded = true;
+        }
+        document.getElementById('screenshot-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'screenshot'}, '', '/tools/screenshotter');
+        }
+      }
+
+      function hideScreenshot(){
+        const ov = document.getElementById('screenshot-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
+      if(screenshotLink){
+        screenshotLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showScreenshot();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/screenshotter'){
+          showScreenshot(true);
+        } else {
+          hideScreenshot();
+        }
+      });
+
+      if(location.pathname === '/tools/screenshotter' || openTool === 'screenshot'){
+        showScreenshot(true);
       }
 
     const themeSelect = document.getElementById('theme-select');

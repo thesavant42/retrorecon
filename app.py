@@ -249,6 +249,101 @@ def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, An
         )
     return result
 
+# Screenshot utilities
+SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
+
+
+def save_screenshot_record(url: str, path: str, method: str = 'GET') -> int:
+    """Insert a screenshot entry and return the row id."""
+
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    return execute_db(
+        "INSERT INTO screenshots (url, method, screenshot_path) VALUES (?, ?, ?)",
+        [url, method, path],
+    )
+
+
+def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
+    """Return screenshot metadata."""
+
+    where = ""
+    params: List[Any] = []
+    if ids:
+        placeholders = ",".join("?" for _ in ids)
+        where = f"WHERE id IN ({placeholders})"
+        params.extend(ids)
+    rows = query_db(
+        f"SELECT id, url, method, screenshot_path, created_at FROM screenshots {where} ORDER BY id DESC",
+        params,
+    )
+    result = []
+    for r in rows:
+        result.append(
+            {
+                "id": r["id"],
+                "url": r["url"],
+                "method": r["method"],
+                "screenshot_path": r["screenshot_path"],
+                "created_at": r["created_at"],
+            }
+        )
+    return result
+
+
+def delete_screenshots(ids: List[int]) -> None:
+    """Delete screenshot entries and image files."""
+
+    if not ids:
+        return
+    for sid in ids:
+        row = query_db(
+            "SELECT screenshot_path FROM screenshots WHERE id = ?",
+            [sid],
+            one=True,
+        )
+        if row:
+            file_path = os.path.join(SCREENSHOT_DIR, row["screenshot_path"])
+            try:
+                os.remove(file_path)
+            except OSError:
+                pass
+        execute_db("DELETE FROM screenshots WHERE id = ?", [sid])
+
+
+def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
+    """Return screenshot bytes of ``url`` using pyppeteer or a fallback image."""
+
+    try:
+        import asyncio
+        from pyppeteer import launch
+    except Exception:
+        # Fallback blank image with URL text
+        from PIL import Image, ImageDraw
+
+        img = Image.new('RGB', (800, 600), color='white')
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 10), url, fill='black')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        return buf.getvalue()
+
+    async def _cap() -> bytes:
+        browser = await launch(args=['--no-sandbox'])
+        page = await browser.newPage()
+        if user_agent:
+            await page.setUserAgent(user_agent)
+        headers = {}
+        if spoof_referrer:
+            headers['Referer'] = url
+        if headers:
+            await page.setExtraHTTPHeaders(headers)
+        await page.goto(url, {'waitUntil': 'networkidle2'})
+        data = await page.screenshot(fullPage=True)
+        await browser.close()
+        return data
+
+    return asyncio.get_event_loop().run_until_complete(_cap())
+
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
     schema_path = os.path.join(app.root_path, 'db', 'schema.sql')
@@ -604,6 +699,8 @@ def index() -> str:
     tool = request.args.get('tool')
     if request.path == '/tools/jwt':
         tool = 'jwt'
+    elif request.path == '/tools/screenshotter':
+        tool = 'screenshot'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
@@ -1438,6 +1535,68 @@ def export_jwt_cookies_route() -> Response:
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
     rows = export_jwt_cookie_data(ids if ids else None)
     return jsonify(rows)
+
+
+@app.route('/screenshotter', methods=['GET'])
+def screenshotter_page() -> str:
+    """Return the ScreenShotter overlay HTML fragment."""
+
+    return render_template('screenshotter.html')
+
+
+@app.route('/tools/screenshotter', methods=['GET'])
+def screenshotter_full_page() -> str:
+    """Render index page with ScreenShotter open for bookmarkable view."""
+
+    return index()
+
+
+@app.route('/tools/screenshot', methods=['POST'])
+def screenshot_route() -> Response:
+    """Capture a screenshot of a webpage and log it."""
+
+    if not _db_loaded():
+        return jsonify({'error': 'no_db'}), 400
+    url = request.form.get('url', '').strip()
+    if not url:
+        return ('Missing URL', 400)
+    agent = request.form.get('agent', '')
+    spoof = request.form.get('spoof', '0') == '1'
+    try:
+        img_bytes = take_screenshot(url, agent, spoof)
+    except Exception as e:
+        return (f'Error taking screenshot: {e}', 500)
+    fname = f'shot_{int(datetime.datetime.utcnow().timestamp()*1000)}.png'
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    with open(os.path.join(SCREENSHOT_DIR, fname), 'wb') as f:
+        f.write(img_bytes)
+    sid = save_screenshot_record(url, fname, 'GET')
+    return jsonify({'id': sid})
+
+
+@app.route('/screenshots', methods=['GET'])
+def screenshots_route() -> Response:
+    """Return screenshot metadata as JSON."""
+
+    if not _db_loaded():
+        return jsonify([])
+    rows = list_screenshot_data()
+    for r in rows:
+        r['file'] = url_for('static', filename='screenshots/' + r['screenshot_path'])
+    return jsonify(rows)
+
+
+@app.route('/delete_screenshots', methods=['POST'])
+def delete_screenshots_route() -> Response:
+    """Delete screenshot entries by ID."""
+
+    if not _db_loaded():
+        return ('', 400)
+    ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
+    if not ids:
+        return ('', 400)
+    delete_screenshots(ids)
+    return ('', 204)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:

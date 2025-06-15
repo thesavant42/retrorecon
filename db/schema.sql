@@ -43,3 +43,11 @@ CREATE TABLE IF NOT EXISTS jwt_cookies (
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS screenshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT,
+    method TEXT,
+    screenshot_path TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
