@@ -44,6 +44,8 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Browser-side search history for quick queries
 - Pagination with jump-to-page and total counts
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
+- Save favorite tag searches for quick reuse
+- Adjustable panel opacity and font size
 
 ## Installation
 ```bash
@@ -64,6 +66,8 @@ Then open <http://127.0.0.1:5000> in your browser.
    name) using the menu. You can also rename the active database from the same
    dropdown.
 6. When you relaunch the app, it automatically reloads the last database you used.
+7. Save frequent tag searches with the **Save Tag** button or via the `/saved_tags` API.
+8. Adjust panel opacity and text size from the **Edit** menu or using the `/set_panel_opacity` and `/set_font_size` endpoints.
 
 ### Boolean Tag Searches
 
@@ -75,6 +79,24 @@ Example queries:
 curl -G --data-urlencode "q=#tag1 AND #red" http://localhost:5000/
 curl -G --data-urlencode "q=#blue OR #red" http://localhost:5000/
 curl -G --data-urlencode "q=#\"tag 2\" AND NOT #tag4" http://localhost:5000/
+```
+
+### Managing Saved Tags
+
+```bash
+# List saved tags
+curl http://localhost:5000/saved_tags
+# Add a tag query
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/saved_tags
+# Remove a tag query
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
+```
+
+### Adjusting Font Size
+
+```bash
+curl -X POST -d "theme=nostalgia.css" -d "size=16" \
+  http://localhost:5000/set_font_size
 ```
 
 ## License

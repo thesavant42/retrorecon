@@ -111,6 +111,45 @@ Parameter:
 curl -X POST -d "opacity=0.5" http://localhost:5000/set_panel_opacity
 ```
 
+### `POST /set_font_size`
+Adjust the base font size in the active theme.
+
+Parameters:
+- `size` – integer between `10` and `18`.
+- `theme` – CSS theme filename (optional if already set).
+
+```
+curl -X POST -d "theme=nostalgia.css" -d "size=16" \
+  http://localhost:5000/set_font_size
+```
+
+### `GET /saved_tags`
+Return the list of saved tag searches.
+
+```
+curl http://localhost:5000/saved_tags
+```
+
+### `POST /saved_tags`
+Add a new tag query to the saved list.
+
+Parameter:
+- `tag` – search expression to store.
+
+```
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/saved_tags
+```
+
+### `POST /delete_saved_tag`
+Remove a saved tag search.
+
+Parameter:
+- `tag` – query string to delete.
+
+```
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
+```
+
 ### `POST /tools/webpack-zip`
 Download sources referenced in a Webpack `.js.map` file as a ZIP archive.
 
