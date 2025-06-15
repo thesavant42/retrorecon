@@ -220,10 +220,10 @@
                   <th class="w-2em">
                     <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" class="form-checkbox" />
                   </th>
-                  <th>URL</th>
-                  <th class="text-center">Timestamp</th>
-                  <th class="text-center">HTTP</th>
-                  <th class="text-center">MIME</th>
+                  <th class="sortable" data-sort="url">URL{% if current_sort=='url' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="timestamp">Timestamp{% if current_sort=='timestamp' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="status_code">HTTP{% if current_sort=='status_code' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="mime_type">MIME{% if current_sort=='mime_type' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,10 +232,10 @@
                   <td>
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
-                  <td class="url-result">{{ url.url }}</td>
-                  <td class="text-center">{{ url.timestamp or '-' }}</td>
-                  <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}">{{ url.status_code if url.status_code else '-' }}</td>
-                  <td class="text-center">{{ url.mime_type or '-' }}</td>
+                  <td class="url-result"><div class="cell-content">{{ url.url }}</div></td>
+                  <td class="text-center"><div class="cell-content">{{ url.timestamp or '-' }}</div></td>
+                  <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}"><div class="cell-content">{{ url.status_code if url.status_code else '-' }}</div></td>
+                  <td class="text-center"><div class="cell-content">{{ url.mime_type or '-' }}</div></td>
                 </tr>
                 <tr class="url-row-buttons">
                   <td></td>
@@ -678,6 +678,54 @@
         });
       });
     }
+
+    // Sorting functionality
+    document.querySelectorAll('.url-table th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const sort = th.getAttribute('data-sort');
+        const params = new URLSearchParams(window.location.search);
+        const currentSort = params.get('sort');
+        let dir = params.get('dir') || 'asc';
+        if(currentSort === sort){
+          dir = dir === 'asc' ? 'desc' : 'asc';
+        } else {
+          dir = 'asc';
+        }
+        params.set('sort', sort);
+        params.set('dir', dir);
+        window.location = '/?' + params.toString();
+      });
+    });
+
+    // Column resizing
+    function makeResizable(table){
+      const ths = table.querySelectorAll('th');
+      ths.forEach(th => {
+        const res = document.createElement('div');
+        res.className = 'col-resizer';
+        th.appendChild(res);
+        let startX = 0;
+        let startWidth = 0;
+        res.addEventListener('mousedown', e => {
+          startX = e.pageX;
+          startWidth = th.offsetWidth;
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', stop);
+          e.preventDefault();
+        });
+        function onMove(e){
+          const w = startWidth + (e.pageX - startX);
+          th.style.width = w + 'px';
+        }
+        function stop(){
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', stop);
+        }
+      });
+    }
+
+    const urlTable = document.querySelector('.url-table');
+    if(urlTable) makeResizable(urlTable);
   </script>
   </div>
 </body>
