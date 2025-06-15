@@ -17,8 +17,10 @@ function initJWTTools(){
   let sortDir = 'desc';
 
   function makeResizable(table){
+    table.style.tableLayout = 'fixed';
     const ths = table.querySelectorAll('th');
     ths.forEach(th => {
+      th.style.width = th.offsetWidth + 'px';
       const res = document.createElement('div');
       res.className = 'col-resizer';
       th.appendChild(res);
