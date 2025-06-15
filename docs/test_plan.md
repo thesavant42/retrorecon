@@ -99,7 +99,8 @@ This ensures database workflow tests are executed along with the existing suite 
 
 2. **Decode Demo Token**
    - Post a known demo token to `/tools/jwt_decode`.
-   - Response should contain formatted JSON and readable `exp` timestamp.
+   - Response should contain formatted JSON and a readable `exp` timestamp.
+   - The JSON also includes `alg_warning` and `key_warning` flags.
 
 3. **Edit and Encode**
    - Decode a token, modify the JSON payload and encode it again.

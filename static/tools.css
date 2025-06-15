@@ -53,3 +53,18 @@
 .retrorecon-root #text-tools-overlay .btn {
   margin-right: 0.25em;
 }
+
+/* JWT Tools overlay */
+.retrorecon-root #jwt-tools-overlay .btn {
+  margin-right: 0.25em;
+}
+.retrorecon-root #jwt-warning {
+  color: #c00;
+  margin-top: 0.5em;
+}
+.retrorecon-root #jwt-exp.valid {
+  color: #0a0;
+}
+.retrorecon-root #jwt-exp.expired {
+  color: #000;
+}

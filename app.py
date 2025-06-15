@@ -5,6 +5,7 @@ import sqlite3
 import zipfile
 import threading
 import re
+import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
@@ -1216,10 +1217,51 @@ def jwt_decode_route() -> Response:
     if len(token.encode('utf-8')) > TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
     try:
-        data = jwt.decode(token, options={'verify_signature': False})
+        header = jwt.get_unverified_header(token)
+        payload = jwt.decode(token, options={'verify_signature': False})
     except Exception as e:
         return (f'Invalid JWT: {e}', 400)
-    return jsonify(data)
+
+    result: Dict[str, Any] = {"header": header, "payload": payload}
+
+    # Timestamp conversion
+    now = datetime.datetime.utcnow().timestamp()
+    if isinstance(payload, dict):
+        for field in ["iat", "nbf", "exp"]:
+            val = payload.get(field)
+            if isinstance(val, (int, float)):
+                dt = datetime.datetime.utcfromtimestamp(val)
+                result[f"{field}_readable"] = dt.strftime("%Y-%m-%d %H:%M:%S")
+    exp_val = payload.get("exp")
+    if isinstance(exp_val, (int, float)):
+        result["expired"] = now > exp_val
+        result["exp_readable"] = datetime.datetime.utcfromtimestamp(exp_val).strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        result["expired"] = False
+
+    alg = header.get("alg", "").lower()
+    weak_algs = {"none", "hs256", "hs384", "hs512"}
+    result["alg_warning"] = alg in weak_algs
+
+    key_warning = False
+    known_keys = ["secret", "secret123", "changeme", "password"]
+    for k in known_keys:
+        try:
+            jwt.decode(
+                token,
+                k,
+                algorithms=[header.get("alg", "")],
+                options={"verify_signature": True, "verify_exp": False},
+            )
+            key_warning = True
+            break
+        except jwt.InvalidSignatureError:
+            continue
+        except Exception:
+            continue
+    result["key_warning"] = key_warning
+
+    return jsonify(result)
 
 
 @app.route('/tools/jwt_encode', methods=['POST'])
