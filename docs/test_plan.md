@@ -51,3 +51,26 @@ jobs:
 ```
 
 This ensures database workflow tests are executed along with the existing suite and CSS linting on every commit.
+
+## Notes Feature Tests
+
+1. **Add and Retrieve Note**
+   - Start with a database containing one URL.
+   - POST `/notes` with `url_id=1` and `content=Test`.
+   - GET `/notes/1` should return JSON with one note containing `Test`.
+
+2. **Update Note**
+   - POST `/notes` with `note_id=<id>` and `content=Updated`.
+   - Confirm subsequent `GET /notes/1` shows the updated text.
+
+3. **Delete Note**
+   - POST `/delete_note` with `note_id=<id>`.
+   - Ensure the note list for that URL is empty.
+
+4. **Delete All Notes**
+   - Create two notes, then POST `/delete_note` with `url_id=1` and `all=1`.
+   - GET `/notes/1` should return an empty list.
+
+5. **Export Notes**
+   - Add notes for multiple URLs.
+   - GET `/export_notes` and validate the JSON structure contains each URL and its notes.

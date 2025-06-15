@@ -207,6 +207,39 @@ Parameter:
 curl -X POST -d "new_name=renamed" http://localhost:5000/rename_db
 ```
 
+### `GET /notes/<url_id>`
+Return all notes for a URL in JSON form.
+
+```
+curl http://localhost:5000/notes/1
+```
+
+### `POST /notes`
+Create a new note or update an existing one.
+
+Parameters:
+- `url_id` – ID of the related URL.
+- `content` – note text.
+- `note_id` – existing note ID when editing (optional).
+
+```
+curl -X POST -d "url_id=1" -d "content=hello" http://localhost:5000/notes
+```
+
+### `POST /delete_note`
+Delete an individual note or, when `all=1`, remove all notes for a URL.
+
+```
+curl -X POST -d "note_id=3" http://localhost:5000/delete_note
+```
+
+### `GET /export_notes`
+Download all notes as structured JSON.
+
+```
+curl http://localhost:5000/export_notes
+```
+
 ## Generating a Postman Collection
 Run the helper script to generate a Postman collection from the application's route map:
 
