@@ -146,6 +146,20 @@ body.bg-hidden {
   transition: opacity 0.2s;
 }
 
+.retrorecon-root .search-history .tag-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-color);
+  opacity: 1;
+  border-radius: 10px;
+  border: 1px solid #0d011e;
+  margin-right: 4px;
+  font-size: 0.95em;
+  margin-bottom: 4px;
+  color: var(--fg-color);
+  cursor: pointer;
+}
+
 .retrorecon-root .search-bar button {
   font-size: 1.05em;
   padding: 5px 10px;
