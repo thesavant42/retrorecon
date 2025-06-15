@@ -33,6 +33,7 @@ else:
     app.config['DATABASE'] = None
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
 ITEMS_PER_PAGE = 20
+TEXT_TOOLS_LIMIT = 64 * 1024  # 64 KB limit for text transformations
 
 THEMES_DIR = os.path.join(app.root_path, 'static', 'themes')
 if os.path.isdir(THEMES_DIR):
@@ -1129,6 +1130,73 @@ def export_notes() -> Response:
         return jsonify([])
     data = export_notes_data()
     return jsonify(data)
+
+
+@app.route('/text_tools', methods=['GET'])
+def text_tools_page() -> str:
+    """Return the Text Tools overlay HTML fragment."""
+
+    return render_template('text_tools.html')
+
+
+def _get_text_param() -> Optional[str]:
+    text = request.form.get('text', '')
+    if len(text.encode('utf-8')) > TEXT_TOOLS_LIMIT:
+        return None
+    return text
+
+
+@app.route('/tools/base64_decode', methods=['POST'])
+def base64_decode_route() -> Response:
+    """Decode Base64 text."""
+
+    text = _get_text_param()
+    if text is None:
+        return ('Request too large', 400)
+    import base64
+    try:
+        decoded = base64.b64decode(text, validate=True)
+        decoded.decode('utf-8')  # ensure text only
+    except Exception:
+        return ('Invalid Base64 data', 400)
+    return Response(decoded, mimetype='text/plain')
+
+
+@app.route('/tools/base64_encode', methods=['POST'])
+def base64_encode_route() -> Response:
+    """Encode text as Base64."""
+
+    text = _get_text_param()
+    if text is None:
+        return ('Request too large', 400)
+    import base64
+    encoded = base64.b64encode(text.encode('utf-8')).decode('ascii')
+    return Response(encoded, mimetype='text/plain')
+
+
+@app.route('/tools/url_decode', methods=['POST'])
+def url_decode_route() -> Response:
+    """URL-decode percent-encoded text."""
+
+    text = _get_text_param()
+    if text is None:
+        return ('Request too large', 400)
+    try:
+        decoded = urllib.parse.unquote_plus(text)
+    except Exception:
+        return ('Invalid URL encoding', 400)
+    return Response(decoded, mimetype='text/plain')
+
+
+@app.route('/tools/url_encode', methods=['POST'])
+def url_encode_route() -> Response:
+    """Percent-encode text for URLs."""
+
+    text = _get_text_param()
+    if text is None:
+        return ('Request too large', 400)
+    encoded = urllib.parse.quote_plus(text)
+    return Response(encoded, mimetype='text/plain')
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:

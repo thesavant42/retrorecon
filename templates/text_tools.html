@@ -1,0 +1,13 @@
+<!-- File: templates/text_tools.html -->
+<div id="text-tools-overlay" class="notes-overlay hidden">
+  <textarea id="text-tool-input" class="form-input notes-textarea" rows="6" placeholder="Enter text..."></textarea>
+  <div class="mt-05">
+    <button type="button" class="btn" id="b64-decode-btn">Base64 Decode</button>
+    <button type="button" class="btn" id="b64-encode-btn">Base64 Encode</button>
+    <button type="button" class="btn" id="url-decode-btn">URL Decode</button>
+    <button type="button" class="btn" id="url-encode-btn">URL Encode</button>
+    <button type="button" class="btn" id="text-copy-btn">Copy</button>
+    <button type="button" class="btn" id="text-tools-close-btn">Close</button>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='text_tools.js') }}"></script>

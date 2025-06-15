@@ -48,3 +48,8 @@
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* Text Tools overlay adjustments */
+.retrorecon-root #text-tools-overlay .btn {
+  margin-right: 0.25em;
+}
