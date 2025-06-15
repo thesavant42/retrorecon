@@ -416,7 +416,7 @@
 .retrorecon-root .menu-row .menu-btn,
 .retrorecon-root .menu-row a.menu-btn {
   background: transparent;
-  border: 1px solid #fff;
+  border: none;
   color: var(--fg-color);
   padding: 0.2em 0.4em;
   text-align: left;
@@ -428,7 +428,7 @@
 .retrorecon-root .dropdown-content .menu-btn,
 .retrorecon-root .dropdown-content a.menu-btn {
   background: transparent;
-  border: 1px solid #fff;
+  border: none;
   color: var(--fg-color);
   padding: 0.2em 0.4em;
   text-align: left;
