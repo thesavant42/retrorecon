@@ -338,7 +338,6 @@ def build_tag_filter_sql(expr: str) -> Tuple[str, List[str]]:
 def index() -> str:
     """Render the main search page."""
     q = request.args.get('q', '').strip()
-    tag_filter = request.args.get('tag', '').strip()
     try:
         page = int(request.args.get('page', 1))
     except ValueError:
@@ -348,16 +347,27 @@ def index() -> str:
         where_clauses = []
         params = []
         if q:
-            where_clauses.append("url LIKE ?")
-            params.append(f"%{q}%")
-        if tag_filter:
-            try:
-                tag_sql, tag_params = build_tag_filter_sql(tag_filter)
-                where_clauses.append(tag_sql)
-                params.extend(tag_params)
-            except Exception:
-                where_clauses.append("tags LIKE ?")
-                params.append(f"%{tag_filter}%")
+            url_match = re.match(r'^url:"?(.*?)"?$', q, re.IGNORECASE)
+            if url_match:
+                val = url_match.group(1)
+                where_clauses.append("url LIKE ?")
+                params.append(f"%{val}%")
+            elif '#' in q:
+                tag_expr = q.replace('#', '')
+                try:
+                    tag_sql, tag_params = build_tag_filter_sql(tag_expr)
+                    where_clauses.append(tag_sql)
+                    params.extend(tag_params)
+                except Exception:
+                    where_clauses.append("tags LIKE ?")
+                    params.append(f"%{tag_expr}%")
+            else:
+                where_clauses.append("(" 
+                    "url LIKE ? OR tags LIKE ? OR "
+                    "CAST(timestamp AS TEXT) LIKE ? OR "
+                    "CAST(status_code AS TEXT) LIKE ?"
+                ")")
+                params.extend([f"%{q}%"] * 4)
         where_sql = ""
         if where_clauses:
             where_sql = "WHERE " + " AND ".join(where_clauses)
@@ -415,7 +425,6 @@ def index() -> str:
         page=page,
         total_pages=total_pages,
         q=q,
-        tag=tag_filter,
         themes=AVAILABLE_THEMES,
         theme_swatches=THEME_SWATCHES,
         current_theme=current_theme,
@@ -651,16 +660,31 @@ def bulk_action() -> Response:
 
     if select_all_matching:
         q = request.form.get('q', '').strip()
-        tag_filter = request.form.get('tag', '').strip()
 
         where_clauses = []
         params = []
         if q:
-            where_clauses.append("url LIKE ?")
-            params.append(f"%{q}%")
-        if tag_filter:
-            where_clauses.append("tags LIKE ?")
-            params.append(f"%{tag_filter}%")
+            url_match = re.match(r'^url:"?(.*?)"?$', q, re.IGNORECASE)
+            if url_match:
+                val = url_match.group(1)
+                where_clauses.append("url LIKE ?")
+                params.append(f"%{val}%")
+            elif '#' in q:
+                tag_expr = q.replace('#', '')
+                try:
+                    tag_sql, tag_params = build_tag_filter_sql(tag_expr)
+                    where_clauses.append(tag_sql)
+                    params.extend(tag_params)
+                except Exception:
+                    where_clauses.append("tags LIKE ?")
+                    params.append(f"%{tag_expr}%")
+            else:
+                where_clauses.append("(" 
+                    "url LIKE ? OR tags LIKE ? OR "
+                    "CAST(timestamp AS TEXT) LIKE ? OR "
+                    "CAST(status_code AS TEXT) LIKE ?"
+                ")")
+                params.extend([f"%{q}%"] * 4)
         where_sql = ""
         if where_clauses:
             where_sql = "WHERE " + " AND ".join(where_clauses)

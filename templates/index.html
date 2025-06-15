@@ -23,16 +23,16 @@
 </head>
 <body class="app">
   <div class="retrorecon-root">
-  {% macro render_pagination(page, total_pages, q, tag, total_count) %}
+  {% macro render_pagination(page, total_pages, q, total_count) %}
   <div class="pagination mt-1">
     <span class="page-info">Displaying page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="First">
+      <a href="?page=1&q={{ q }}" class="pagination-arrow" aria-label="First">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M16 4 L8 12 L16 20 Z M8 4 L0 12 L8 20 Z" />
         </svg>
       </a>
-      <a href="?page={{ page - 1 }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Prev">
+      <a href="?page={{ page - 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Prev">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M15 4 L7 12 L15 20 Z" />
         </svg>
@@ -41,27 +41,27 @@
     {% set start = page - 2 if page - 2 > 2 else 1 %}
     {% set end = page + 2 if page + 2 < total_pages - 1 else total_pages %}
     {% if start > 1 %}
-      <a href="?page=1&q={{ q }}&tag={{ tag }}">1</a>
+      <a href="?page=1&q={{ q }}">1</a>
       {% if start > 2 %}<span>...</span>{% endif %}
     {% endif %}
     {% for p in range(start, end + 1) %}
       {% if p == page %}
         <strong>{{ p }}</strong>
       {% else %}
-        <a href="?page={{ p }}&q={{ q }}&tag={{ tag }}">{{ p }}</a>
+        <a href="?page={{ p }}&q={{ q }}">{{ p }}</a>
       {% endif %}
     {% endfor %}
     {% if end < total_pages %}
       {% if end < total_pages - 1 %}<span>...</span>{% endif %}
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}">{{ total_pages }}</a>
+      <a href="?page={{ total_pages }}&q={{ q }}">{{ total_pages }}</a>
     {% endif %}
     {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Next">
+      <a href="?page={{ page + 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Next">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M9 4 L17 12 L9 20 Z" />
         </svg>
       </a>
-      <a href="?page={{ total_pages }}&q={{ q }}&tag={{ tag }}" class="pagination-arrow" aria-label="Last">
+      <a href="?page={{ total_pages }}&q={{ q }}" class="pagination-arrow" aria-label="Last">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M8 4 L16 12 L8 20 Z M16 4 L24 12 L16 20 Z" />
         </svg>
@@ -69,7 +69,6 @@
     {% endif %}
     <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
-      <input type="hidden" name="tag" value="{{ tag }}" />
       <input type="text" name="page" size="2" placeholder="Page" class="form-input" />
       <button type="submit" class="btn">Go</button>
     </form>
@@ -195,18 +194,13 @@
             <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-95 form-input" />
           </td>
         </tr>
-        <tr>
-          <td class="text-center">
-            <input type="text" name="tag" placeholder="Tags..." value="{{ tag }}" id="tagbox" class="w-95 form-input mt-05" />
-          </td>
-        </tr>
       </table>
       <div class="search-actions">
         <div id="search-history" class="search-history"></div>
         <div class="search-buttons">
           <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
           <button type="submit" class="btn">Search</button>
-          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('tagbox').value=''; document.getElementById('search-form').submit();">Clear</button>
+          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
     </form>
@@ -216,7 +210,7 @@
   <table id="layout-c" class="w-100 mt-1">
     <tr>
       <td class="text-left">
-        {{ render_pagination(page, total_pages, q, tag, total_count) }}
+        {{ render_pagination(page, total_pages, q, total_count) }}
       </td>
     </tr>
   </table>
@@ -240,7 +234,6 @@
           {% if urls %}
           <form method="POST" action="/bulk_action" id="bulk-form">
             <input type="hidden" name="q" value="{{ q }}" />
-            <input type="hidden" name="tag" value="{{ tag }}" />
             <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
 
             <!-- Data table -->
@@ -282,7 +275,6 @@
                         <input type="hidden" name="action" value="delete" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
                         <input type="hidden" name="q" value="{{ q }}" />
-                        <input type="hidden" name="tag" value="{{ tag }}" />
                         <button type="submit" class="btn delete-btn" title="Delete">🗑️</button>
                       </form>
                       {% if ".js.map" in url.url %}
@@ -324,7 +316,7 @@
     </tr>
     <tr>
       <td class="text-center mt-1">
-        {{ render_pagination(page, total_pages, q, tag, total_count) }}
+        {{ render_pagination(page, total_pages, q, total_count) }}
       </td>
     </tr>
     <tr>
@@ -397,7 +389,6 @@
       if(p) {
         const params = new URLSearchParams();
         if(f.q && f.q.value) params.set('q', f.q.value);
-        if(f.tag && f.tag.value) params.set('tag', f.tag.value);
         params.set('page', p);
         window.location = '/?' + params.toString();
       }
@@ -450,10 +441,7 @@
     pollImport();
 
     function quickSearch(term){
-      const tagInput = document.getElementById('tagbox');
-      if(tagInput){
-        tagInput.value = term;
-      }
+      document.getElementById('searchbox').value = term;
       document.getElementById('search-form').submit();
     }
 
@@ -486,7 +474,7 @@
     }
 
     function saveTag(){
-      const val = document.getElementById('tagbox').value.trim();
+      const val = document.getElementById('searchbox').value.trim();
       if(!val) return;
       addHistoryButton(val);
       fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
