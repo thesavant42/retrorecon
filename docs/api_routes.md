@@ -170,6 +170,41 @@ Parameter:
 curl -X POST -d "map_url=https://host/app.js.map" http://localhost:5000/tools/webpack-zip -o sources.zip
 ```
 
+### `GET /text_tools`
+Serve the Text Tools overlay used for encoding and decoding text.
+
+```
+curl http://localhost:5000/text_tools
+```
+
+### `POST /tools/base64_decode`
+Decode Base64 text sent in the `text` field. Returns plain text.
+
+```
+curl -X POST -d "text=SGVsbG8h" http://localhost:5000/tools/base64_decode
+```
+
+### `POST /tools/base64_encode`
+Encode posted text as Base64.
+
+```
+curl -X POST -d "text=Hello" http://localhost:5000/tools/base64_encode
+```
+
+### `POST /tools/url_decode`
+Convert percent-encoded strings back to their ASCII form.
+
+```
+curl -X POST -d "text=This%20is%20fine%21" http://localhost:5000/tools/url_decode
+```
+
+### `POST /tools/url_encode`
+Percent-encode a string so it is safe for use in URLs.
+
+```
+curl -X POST -d "text=This is fine!" http://localhost:5000/tools/url_encode
+```
+
 ### `POST /new_db`
 Create a new empty SQLite database.
 

@@ -244,6 +244,90 @@
       }
     },
     {
+      "name": "GET /text_tools",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/text_tools",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "text_tools"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/base64_decode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/base64_decode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "base64_decode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/base64_encode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/base64_encode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "base64_encode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/url_decode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/url_decode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "url_decode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/url_encode",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/url_encode",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "url_encode"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /new_db",
       "request": {
         "method": "POST",
