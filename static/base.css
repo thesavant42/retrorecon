@@ -1012,3 +1012,6 @@ body.bg-hidden {
 .retrorecon-root .note-item {
   margin-bottom: 0.5em;
 }
+.retrorecon-root .note-item span {
+  white-space: pre-wrap;
+}

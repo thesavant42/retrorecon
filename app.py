@@ -22,7 +22,6 @@ from flask import (
     jsonify,
     Response,
 )
-from markupsafe import escape
 
 app = Flask(__name__)
 # Allow overriding the startup database via environment variable
@@ -148,7 +147,7 @@ def add_note(url_id: int, content: str) -> int:
 
     return execute_db(
         "INSERT INTO notes (url_id, content) VALUES (?, ?)",
-        [url_id, escape(content)],
+        [url_id, content],
     )
 
 
@@ -157,7 +156,7 @@ def update_note(note_id: int, content: str) -> None:
 
     execute_db(
         "UPDATE notes SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [escape(content), note_id],
+        [content, note_id],
     )
 
 

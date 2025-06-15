@@ -76,3 +76,13 @@ def test_export_notes(tmp_path, monkeypatch):
         data = client.get("/export_notes").get_json()
         assert any(item["url"] == "http://a.com" and "foo" in item["notes"] for item in data)
         assert any(item["url"] == "http://b.com" and "bar" in item["notes"] for item in data)
+
+
+def test_multiline_note(tmp_path, monkeypatch):
+    url_id = init_sample(monkeypatch, tmp_path)
+    multiline = "Line1\nLine2\nLine3"
+    with app.app.test_client() as client:
+        resp = client.post("/notes", data={"url_id": url_id, "content": multiline})
+        assert resp.status_code == 204
+        data = client.get(f"/notes/{url_id}").get_json()
+        assert data[0]["content"] == multiline
