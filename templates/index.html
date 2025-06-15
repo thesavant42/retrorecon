@@ -101,6 +101,11 @@
             <input id="domain-input" type="hidden" name="domain" />
             <button type="button" class="menu-btn" id="fetch-cdx-btn">Import from CDX</button>
           </form>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
       </div>
     </div>
     <div class="dropdown">
@@ -111,16 +116,6 @@
           <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
             <button type="submit" class="menu-btn">Export DB</button>
           </form>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
-      <div class="dropdown-content" id="edit-menu">
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
       </div>
     </div>
     <div class="dropdown">
