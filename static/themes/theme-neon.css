@@ -99,6 +99,18 @@ body.bg-hidden {
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
 
+/* Ensure nav menu controls use the theme font */
+.retrorecon-root .navbar button,
+.retrorecon-root .navbar select,
+.retrorecon-root .navbar input,
+.retrorecon-root .navbar .menu-label {
+  font-family: inherit;
+  color: var(--font-main);
+}
+.retrorecon-root .navbar .menu-btn {
+  font-family: inherit;
+}
+
 
 .retrorecon-root .db-info {
   font-size: 0.7em;
