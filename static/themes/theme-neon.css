@@ -42,9 +42,15 @@ body.bg-hidden {
   background: #14122200;
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
+  font-size: 13.333px;
 }
+
+.retrorecon-root .url-row-main td {
+  font-size: 13.333px;
+}
+
 .retrorecon-root .url-row-main.url-result td {
-  font-size: 1.2em;
+  font-size: 13.333px;
   font-weight: bold;
   color: var(--accent-color);
 }
