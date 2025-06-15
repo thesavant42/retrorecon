@@ -195,13 +195,18 @@
             <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-95 form-input" />
           </td>
         </tr>
+        <tr>
+          <td class="text-center">
+            <input type="text" name="tag" placeholder="Tags..." value="{{ tag }}" id="tagbox" class="w-95 form-input mt-05" />
+          </td>
+        </tr>
       </table>
       <div class="search-actions">
         <div id="search-history" class="search-history"></div>
         <div class="search-buttons">
           <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
           <button type="submit" class="btn">Search</button>
-          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
+          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('tagbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
     </form>
@@ -445,7 +450,10 @@
     pollImport();
 
     function quickSearch(term){
-      document.getElementById('searchbox').value = term;
+      const tagInput = document.getElementById('tagbox');
+      if(tagInput){
+        tagInput.value = term;
+      }
       document.getElementById('search-form').submit();
     }
 
@@ -455,27 +463,33 @@
       btn.type = 'button';
       btn.textContent = text;
       btn.addEventListener('click', () => quickSearch(text));
+      btn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if(confirm('Delete saved tag?')){
+          historyDiv.removeChild(btn);
+          fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:text})});
+        }
+      });
       historyDiv.appendChild(btn);
     }
 
-    function loadHistory(){
-      const defaults = ['.js.map','.php','.env','.zip','.rar','.svg','.docx'];
+    async function loadHistory(){
       let saved = [];
-      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
-      const all = Array.from(new Set(defaults.concat(saved)));
-      all.forEach(addHistoryButton);
+      try {
+        const resp = await fetch('/saved_tags');
+        if(resp.ok){
+          const data = await resp.json();
+          saved = Array.isArray(data.tags) ? data.tags : [];
+        }
+      } catch(e){}
+      saved.forEach(addHistoryButton);
     }
 
     function saveTag(){
-      const val = document.getElementById('searchbox').value.trim();
+      const val = document.getElementById('tagbox').value.trim();
       if(!val) return;
       addHistoryButton(val);
-      let saved = [];
-      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
-      if(!saved.includes(val)){
-        saved.push(val);
-        localStorage.setItem('searchHistory', JSON.stringify(saved));
-      }
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);

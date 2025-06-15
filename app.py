@@ -71,6 +71,8 @@ else:
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
 IMPORT_LOCK = threading.Lock()
 DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
+SAVED_TAGS_FILE = os.path.join(app.root_path, 'saved_tags.json')
+SAVED_TAGS_LOCK = threading.Lock()
 
 
 def _db_loaded() -> bool:
@@ -105,6 +107,30 @@ def clear_import_progress() -> None:
     with IMPORT_LOCK:
         if os.path.exists(IMPORT_PROGRESS_FILE):
             os.remove(IMPORT_PROGRESS_FILE)
+
+
+def load_saved_tags() -> List[str]:
+    """Return the list of saved search tags."""
+
+    with SAVED_TAGS_LOCK:
+        if not os.path.exists(SAVED_TAGS_FILE):
+            return []
+        try:
+            with open(SAVED_TAGS_FILE, 'r') as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return [str(t) for t in data]
+        except Exception:
+            pass
+        return []
+
+
+def save_saved_tags(tags: List[str]) -> None:
+    """Persist ``tags`` to ``SAVED_TAGS_FILE``."""
+
+    with SAVED_TAGS_LOCK:
+        with open(SAVED_TAGS_FILE, 'w') as f:
+            json.dump(tags, f)
 
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
@@ -723,6 +749,37 @@ def set_panel_opacity() -> Response:
         return ('Invalid value', 400)
     opacity = max(0.1, min(opacity, 1.0))
     session['panel_opacity'] = opacity
+    return ('', 204)
+
+
+@app.route('/saved_tags', methods=['GET', 'POST'])
+def saved_tags() -> Response:
+    """Return or update the list of saved search tags."""
+
+    if request.method == 'GET':
+        return jsonify({'tags': load_saved_tags()})
+
+    tag = request.form.get('tag', '').strip()
+    if not tag:
+        return ('', 400)
+    tags = load_saved_tags()
+    if tag not in tags:
+        tags.append(tag)
+        save_saved_tags(tags)
+    return ('', 204)
+
+
+@app.route('/delete_saved_tag', methods=['POST'])
+def delete_saved_tag() -> Response:
+    """Remove a tag from the saved list."""
+
+    tag = request.form.get('tag', '').strip()
+    if not tag:
+        return ('', 400)
+    tags = load_saved_tags()
+    if tag in tags:
+        tags.remove(tag)
+        save_saved_tags(tags)
     return ('', 204)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
