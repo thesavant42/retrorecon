@@ -435,7 +435,14 @@
     pollImport();
 
     function quickSearch(term){
-      document.getElementById('searchbox').value = term;
+      const box = document.getElementById('searchbox');
+      let current = box.value.trim();
+      if(current){
+        current += ' AND ' + term;
+      } else {
+        current = term;
+      }
+      box.value = current;
       document.getElementById('search-form').submit();
     }
 
