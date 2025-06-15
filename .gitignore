@@ -11,3 +11,4 @@ package-lock.json
 __pycache__/
 !reports/report.json
 last_db.txt
+static/screenshots/
