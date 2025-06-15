@@ -132,7 +132,6 @@
           </form>
           <form id="set-bg-form" method="POST" action="/set_background" class="d-none">
             <input type="hidden" name="background" id="set-bg-input" />
-            <input type="hidden" name="domain" id="set-bg-domain" />
           </form>
           <div class="theme-row menu-row mb-4px">
             <label for="theme-select" class="form-label menu-label">Theme:</label>
@@ -639,17 +638,12 @@
     const bgSelect = document.getElementById('background-select');
     const bgForm = document.getElementById('set-bg-form');
     const bgInput = document.getElementById('set-bg-input');
-    const bgDomain = document.getElementById('set-bg-domain');
-    if (bgSelect && bgForm && bgInput && bgDomain) {
+    if (bgSelect && bgForm && bgInput) {
       bgSelect.addEventListener('change', () => {
-        const domain = prompt('Enter domain for background:');
-        if (domain) {
-          const bg = bgSelect.value;
-          bgInput.value = bg;
-          bgDomain.value = domain;
-          bgForm.submit();
-          document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
-        }
+        const bg = bgSelect.value;
+        bgInput.value = bg;
+        bgForm.submit();
+        document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
       });
     }
 
