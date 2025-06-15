@@ -46,6 +46,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
+- Add notes to each URL result via a full-screen editor
 
 ## Installation
 ```bash
