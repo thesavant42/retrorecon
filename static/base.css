@@ -670,6 +670,17 @@
   width: 5px;
   height: 100%;
   cursor: col-resize;
+  background: transparent;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.retrorecon-root .checkbox-col {
+  text-align: center;
+}
+
+.retrorecon-root .col-resizer:hover {
+  background: var(--accent-color);
+  box-shadow: 0 0 4px var(--accent-color);
 }
 
 /* Allow center alignment on specific header cells */
