@@ -279,16 +279,6 @@
   gap: 0.3em;
 }
 
-.retrorecon-root .search-history button {
-   background: var(--bg-color);
-   border: 1px solid var(--fg-color);
-   color: var(--fg-color);
-   border-radius: 12px;
-   font-size: 0.95em;
-   padding: 2px 12px;
-   cursor: pointer;
-   transition: opacity 0.2s;
-}
 
 .retrorecon-root .db-buttons{
   display: flex;
@@ -729,6 +719,10 @@
   transition: opacity 0.2s;
 }
 
+.retrorecon-root .search-history .tag-pill {
+  cursor: pointer;
+}
+
 /* Buttons in row actions */
 .retrorecon-root .copy-btn,
 .retrorecon-root .delete-btn,
@@ -845,9 +839,6 @@
   opacity: 0.8;
 }
 /* Style for the total results count */
-.retrorecon-root .search-history button:hover{
-  opacity: 0.8;
-}
 .retrorecon-root .db-buttons button:hover{
   opacity: 0.85;
 }
@@ -858,6 +849,9 @@
   opacity: 0.85;
 }
 .retrorecon-root .tag-pill button:hover {
+  opacity: 0.8;
+}
+.retrorecon-root .search-history .tag-pill button:hover {
   opacity: 0.8;
 }
 .retrorecon-root .total-count {
