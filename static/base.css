@@ -734,6 +734,12 @@
   color: var(--fg-color);
   cursor: pointer;
 }
+.retrorecon-root .tag-pill:hover,
+.retrorecon-root .search-history .tag-pill:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 6px var(--fg-color);
+}
+
 
 
 /* Buttons in row actions */
@@ -872,9 +878,11 @@
   opacity: 0.85;
 }
 .retrorecon-root .tag-pill button:hover {
+  box-shadow: none;
   opacity: 0.8;
 }
 .retrorecon-root .search-history .tag-pill button:hover {
+  box-shadow: none;
   opacity: 0.8;
 }
 .retrorecon-root .total-count {
