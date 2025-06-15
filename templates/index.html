@@ -83,39 +83,38 @@
       <div class="dropdown-content" id="file-menu">
           <form method="POST" action="/new_db" class="menu-row" id="new-db-form">
             <input type="hidden" name="db_name" id="new-db-name" />
-            <button type="submit" class="menu-btn">New DB</button>
+            <button type="submit" class="menu-btn">New Database</button>
           </form>
           <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row" id="load-db-form">
             <input type="file" name="db_file" accept=".db,.json" required class="form-file d-none" id="load-db-file" />
-            <button type="button" class="menu-btn" id="load-db-btn">Open DB</button>
+            <button type="button" class="menu-btn" id="load-db-btn">Open Database</button>
           </form>
           <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
             <input type="hidden" name="new_name" id="rename-db-name" />
-            <button type="submit" class="menu-btn">Rename DB</button>
+            <button type="submit" class="menu-btn">Rename Database</button>
           </form>
           <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row" id="import-form">
             <input type="file" name="import_file" accept=".json,.db" required class="form-file d-none" id="import-file-input" />
-            <button type="button" class="menu-btn" id="import-file-btn">Import Records</button>
+            <button type="button" class="menu-btn" id="import-file-btn">Import Database</button>
           </form>
           <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
             <input id="domain-input" type="hidden" name="domain" />
-            <button type="button" class="menu-btn" id="fetch-cdx-btn">Import from CDX</button>
+            <button type="button" class="menu-btn" id="fetch-cdx-btn">Import from Wayback API</button>
           </form>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select Visible</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select Matching</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="remove_tag">Remove Tag</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del URL</button></div>
+          <div class="menu-row"><a href="#" class="menu-btn">Export JSON</a></div>
+          <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
+            <button type="submit" class="menu-btn">Export SQLite (.db)</button>
+          </form>
+          <div class="menu-row"><a href="#" class="menu-btn">Export CSV</a></div>
       </div>
     </div>
     <div class="dropdown">
-      <button class="dropbtn" data-menu="export-menu">Export ▼</button>
-      <div class="dropdown-content" id="export-menu">
-          <div class="menu-row"><a href="#" class="menu-btn">Export JSON</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn">Export CSV</a></div>
-          <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
-            <button type="submit" class="menu-btn">Export DB</button>
-          </form>
+      <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
+      <div class="dropdown-content" id="edit-menu">
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select All (All visible results)</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (All matching results)</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Delete Selected</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset tags Selected</button></div>
       </div>
     </div>
     <div class="dropdown">
@@ -152,6 +151,10 @@
               <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
               Show background image
             </label>
+          </div>
+          <div class="menu-row mb-4px">
+            <label for="font-size-input" class="form-label menu-label">Font size:</label>
+            <input type="number" id="font-size-input" min="10" max="18" step="1" value="14" class="form-input w-6em">
           </div>
           <div class="menu-row">
             <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
@@ -657,6 +660,19 @@
         updateOpacity(this.value);
       });
       updateOpacity(opacityRange.value);
+    }
+
+    const fontInput = document.getElementById('font-size-input');
+    if(fontInput){
+      fontInput.addEventListener('change', function(){
+        const themeSel = document.getElementById('theme-select');
+        const theme = themeSel ? themeSel.value : '';
+        fetch('/set_font_size', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: new URLSearchParams({size: this.value, theme: theme})
+        });
+      });
     }
   </script>
   </div>

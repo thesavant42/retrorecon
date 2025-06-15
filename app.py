@@ -760,6 +760,13 @@ def bulk_action() -> Response:
             count += 1
         flash(f"Removed tag '{tag}' from {count} entries.", "success")
 
+    elif action == 'clear_tags':
+        count = 0
+        for sid in selected_ids:
+            execute_db("UPDATE urls SET tags = '' WHERE id = ?", [sid])
+            count += 1
+        flash(f"Cleared tags from {count} entries.", "success")
+
     elif action == 'delete':
         count = 0
         for sid in selected_ids:
