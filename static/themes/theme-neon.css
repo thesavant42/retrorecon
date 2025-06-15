@@ -123,6 +123,7 @@ body.bg-hidden {
   display: inline-block;
   padding: 2px 8px;
   background: var(--bg-color);
+  opacity: 1;
   border-radius: 10px;
   border: 1px solid #0d011e;
   margin-right: 4px;
