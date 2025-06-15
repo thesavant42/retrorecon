@@ -1288,17 +1288,17 @@ def jwt_decode_route() -> Response:
     result: Dict[str, Any] = {"header": header, "payload": payload}
 
     # Timestamp conversion
-    now = datetime.datetime.utcnow().timestamp()
+    now = datetime.datetime.now(datetime.UTC).timestamp()
     if isinstance(payload, dict):
         for field in ["iat", "nbf", "exp"]:
             val = payload.get(field)
             if isinstance(val, (int, float)):
-                dt = datetime.datetime.utcfromtimestamp(val)
+                dt = datetime.datetime.fromtimestamp(val, datetime.UTC)
                 result[f"{field}_readable"] = dt.strftime("%Y-%m-%d %H:%M:%S")
     exp_val = payload.get("exp")
     if isinstance(exp_val, (int, float)):
         result["expired"] = now > exp_val
-        result["exp_readable"] = datetime.datetime.utcfromtimestamp(exp_val).strftime("%Y-%m-%d %H:%M:%S")
+        result["exp_readable"] = datetime.datetime.fromtimestamp(exp_val, datetime.UTC).strftime("%Y-%m-%d %H:%M:%S")
     else:
         result["expired"] = False
 
