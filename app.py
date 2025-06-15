@@ -975,6 +975,8 @@ def saved_tags() -> Response:
     tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
+    if not tag.startswith('#'):
+        tag = '#' + tag
     tags = load_saved_tags()
     if tag not in tags:
         tags.append(tag)
@@ -989,6 +991,8 @@ def delete_saved_tag() -> Response:
     tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
+    if not tag.startswith('#'):
+        tag = '#' + tag
     tags = load_saved_tags()
     if tag in tags:
         tags.remove(tag)

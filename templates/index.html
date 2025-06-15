@@ -449,7 +449,7 @@
       pill.className = 'tag-pill';
       pill.style.cursor = 'pointer';
       const label = document.createElement('span');
-      label.textContent = text;
+      label.textContent = text.replace(/#/g, '');
       pill.appendChild(label);
       const close = document.createElement('button');
       close.type = 'button';
@@ -481,8 +481,11 @@
     }
 
     function saveTag(){
-      const val = document.getElementById('searchbox').value.trim();
+      let val = document.getElementById('searchbox').value.trim();
       if(!val) return;
+      if(!val.startsWith('#')){
+        val = '#' + val;
+      }
       addHistoryButton(val);
       fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
     }

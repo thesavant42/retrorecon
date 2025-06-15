@@ -23,11 +23,11 @@ def test_saved_tag_crud(tmp_path, monkeypatch):
         assert (tmp_path / "tags.json").exists()
 
         resp = client.get('/saved_tags')
-        assert resp.get_json() == {"tags": ["foo"]}
+        assert resp.get_json() == {"tags": ["#foo"]}
 
         client.post('/saved_tags', data={'tag': 'foo'})  # duplicate
         resp = client.get('/saved_tags')
-        assert resp.get_json() == {"tags": ["foo"]}
+        assert resp.get_json() == {"tags": ["#foo"]}
 
         resp = client.post('/delete_saved_tag', data={'tag': 'foo'})
         assert resp.status_code == 204
