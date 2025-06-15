@@ -5,34 +5,307 @@
   },
   "item": [
     {
-      "name": "Boolean tag search",
+      "name": "GET /",
       "request": {
         "method": "GET",
+        "header": [],
         "url": {
-          "raw": "{{base_url}}/?q=%23tag1%20AND%20%23red",
-          "host": ["{{base_url}}"],
-          "path": [""],
-          "query": [
-            {"key": "q", "value": "#tag1 AND #red"}
+          "raw": "{{base_url}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": []
+        }
+      }
+    },
+    {
+      "name": "POST /fetch_cdx",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/fetch_cdx",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fetch_cdx"
           ]
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('status is 200', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "pm.test('contains matching URL', function () {",
-              "    pm.expect(pm.response.text()).to.include('http://b.example/');",
-              "});"
-            ]
-          }
+      }
+    },
+    {
+      "name": "POST /import_json",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/import_json",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "import_json"
+          ]
         }
-      ]
+      }
+    },
+    {
+      "name": "POST /import_file",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/import_file",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "import_file"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /import_progress",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/import_progress",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "import_progress"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /add_tag",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/add_tag",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "add_tag"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /bulk_action",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/bulk_action",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "bulk_action"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_theme",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_theme",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_theme"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_background",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_background",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_background"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_panel_opacity",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_panel_opacity",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_panel_opacity"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_font_size",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_font_size",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_font_size"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /saved_tags",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/saved_tags",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "saved_tags"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /saved_tags",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/saved_tags",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "saved_tags"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_saved_tag",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_saved_tag",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_saved_tag"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/webpack-zip",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/webpack-zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "webpack-zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /new_db",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/new_db",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "new_db"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /load_db",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/load_db",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "load_db"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /save_db",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/save_db",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "save_db"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /rename_db",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/rename_db",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "rename_db"
+          ]
+        }
+      }
     }
   ]
 }
