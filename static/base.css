@@ -316,13 +316,17 @@
 
 /* Navbar layout */
 .retrorecon-root .navbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  gap: 0.6em;
   margin: 0 10px;
 }
+.retrorecon-root .navbar__menus {
+  display: flex;
+  gap: 0.6em;
+}
 .retrorecon-root .navbar__title {
-  flex: 1;
+  text-align: center;
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;
