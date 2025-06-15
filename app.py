@@ -1298,14 +1298,26 @@ def jwt_encode_route() -> Response:
     if len(str(raw).encode('utf-8')) > TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
     secret = request.form.get('secret') or None
-    try:
+
+    def _parse(text: str):
         try:
-            payload = json.loads(raw)
+            return json.loads(text)
         except Exception:
-            import ast
-            payload = ast.literal_eval(raw)
-    except Exception:
-        # If payload cannot be parsed, fall back to empty object
+            try:
+                import ast
+                return ast.literal_eval(text)
+            except Exception:
+                return None
+
+    payload = _parse(raw)
+    if payload is None:
+        for sep in ['}\n{', '}\r\n{']:
+            if sep in raw:
+                candidate = '{' + raw.split(sep, 1)[1]
+                payload = _parse(candidate)
+                if payload is not None:
+                    break
+    if payload is None:
         payload = {}
     if secret:
         token = jwt.encode(payload, secret, algorithm='HS256')
