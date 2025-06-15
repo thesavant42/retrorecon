@@ -455,13 +455,26 @@
       btn.type = 'button';
       btn.textContent = text;
       btn.addEventListener('click', () => quickSearch(text));
+      btn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if(confirm('Delete saved tag?')){
+          historyDiv.removeChild(btn);
+          fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:text})});
+        }
+      });
       historyDiv.appendChild(btn);
     }
 
-    function loadHistory(){
+    async function loadHistory(){
       const defaults = ['.js.map','.php','.env','.zip','.rar','.svg','.docx'];
       let saved = [];
-      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
+      try {
+        const resp = await fetch('/saved_tags');
+        if(resp.ok){
+          const data = await resp.json();
+          saved = Array.isArray(data.tags) ? data.tags : [];
+        }
+      } catch(e){}
       const all = Array.from(new Set(defaults.concat(saved)));
       all.forEach(addHistoryButton);
     }
@@ -470,12 +483,7 @@
       const val = document.getElementById('searchbox').value.trim();
       if(!val) return;
       addHistoryButton(val);
-      let saved = [];
-      try { saved = JSON.parse(localStorage.getItem('searchHistory') || '[]'); } catch(e){}
-      if(!saved.includes(val)){
-        saved.push(val);
-        localStorage.setItem('searchHistory', JSON.stringify(saved));
-      }
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
