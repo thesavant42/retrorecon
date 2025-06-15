@@ -336,23 +336,30 @@
         const text = document.createElement('span');
         text.textContent = n.content;
         div.appendChild(text);
-        const edit = document.createElement('button');
-        edit.className = 'btn ml-05';
+        const actions = document.createElement('div');
+        actions.className = 'notes-actions';
+        const edit = document.createElement('a');
+        edit.href = '#';
+        edit.className = 'notes-link';
         edit.textContent = 'Edit';
-        edit.addEventListener('click', () => {
+        edit.addEventListener('click', e => {
+          e.preventDefault();
           noteInput.value = n.content;
           editingId = n.id;
         });
-        const del = document.createElement('button');
-        del.className = 'btn ml-05';
+        const del = document.createElement('a');
+        del.href = '#';
+        del.className = 'notes-link ml-05';
         del.textContent = 'Delete';
-        del.addEventListener('click', () => {
+        del.addEventListener('click', e => {
+          e.preventDefault();
           if(confirm('Delete note?')){
             fetch('/delete_note', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({note_id:n.id})}).then(loadNotes);
           }
         });
-        div.appendChild(edit);
-        div.appendChild(del);
+        actions.appendChild(edit);
+        actions.appendChild(del);
+        div.appendChild(actions);
         notesList.appendChild(div);
       });
     }

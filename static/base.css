@@ -1000,7 +1000,7 @@ body.bg-hidden {
 }
 .retrorecon-root .notes-textarea {
   width: 100%;
-  height: 8em;
+  height: 24em;
   background: var(--bg-color);
   color: var(--fg-color);
 }
@@ -1014,4 +1014,13 @@ body.bg-hidden {
 }
 .retrorecon-root .note-item span {
   white-space: pre-wrap;
+}
+
+.retrorecon-root .notes-actions {
+  margin-top: 0.25em;
+}
+
+.retrorecon-root .notes-actions .notes-link {
+  margin-right: 0.5em;
+  cursor: pointer;
 }
