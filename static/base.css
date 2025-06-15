@@ -995,6 +995,9 @@ body.bg-hidden {
   display: flex;
   flex-direction: column;
 }
+.retrorecon-root .notes-overlay.hidden {
+  display: none;
+}
 .retrorecon-root .notes-textarea {
   width: 100%;
   height: 8em;
