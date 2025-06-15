@@ -21,7 +21,7 @@ def setup_search_db(monkeypatch, tmp_path):
 
 def test_tag_and(monkeypatch, tmp_path):
     client = setup_search_db(monkeypatch, tmp_path)
-    resp = client.get("/?tag=tag1+AND+red")
+    resp = client.get("/?q=%23tag1+AND+%23red")
     assert resp.status_code == 200
     assert b"http://b.example/" in resp.data
     assert b"http://a.example/" not in resp.data
@@ -29,7 +29,7 @@ def test_tag_and(monkeypatch, tmp_path):
 
 def test_tag_not(monkeypatch, tmp_path):
     client = setup_search_db(monkeypatch, tmp_path)
-    resp = client.get("/?tag=NOT+hostB")
+    resp = client.get("/?q=NOT+%23hostB")
     assert resp.status_code == 200
     assert b"http://a.example/" in resp.data
     assert b"http://b.example/" not in resp.data
