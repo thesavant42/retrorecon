@@ -505,6 +505,88 @@
           ]
         }
       }
+    },
+    {
+      "name": "GET /site2zip",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/site2zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "site2zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/site2zip",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/site2zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "site2zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /sitezips",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/sitezips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "sitezips"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /download_sitezip/<int:id>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/download_sitezip/<int:id>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "download_sitezip",
+            "<int:id>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_sitezips",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_sitezips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_sitezips"
+          ]
+        }
+      }
     }
   ]
 }

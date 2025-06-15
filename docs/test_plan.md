@@ -117,3 +117,23 @@ This ensures database workflow tests are executed along with the existing suite 
 
 7. **Cookie Jar Entry**
    - After a successful decode, `/jwt_cookies` should list the new token with issuer, algorithm and notes.
+
+## Site2Zip Tests
+
+1. **Menu Entry**
+   - Select `Tools → Site2Zip` from the navbar.
+   - Verify the overlay only loads when triggered.
+
+2. **Capture a Page**
+   - POST `/tools/site2zip` with `url=https://example.com`.
+   - Expect a JSON response with an ID and a screenshot file.
+   - `GET /sitezips` should list the entry with a ZIP download link.
+
+3. **User Agent Option**
+   - Capture the same URL with `agent=android` and confirm the header log reflects the Android user agent.
+
+4. **Referrer Spoofing**
+   - Capture with `spoof_referrer=1` and verify the logged request headers contain a Referrer matching the target URL.
+
+5. **Delete Capture**
+   - POST `/delete_sitezips` with the capture ID and confirm it is removed from `/sitezips`.
