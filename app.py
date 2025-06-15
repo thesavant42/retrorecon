@@ -235,6 +235,7 @@ def get_db() -> sqlite3.Connection:
     if db is None:
         db = g._database = sqlite3.connect(app.config['DATABASE'])
         db.row_factory = sqlite3.Row
+        db.create_function('has_tag', 2, _has_tag)
     return db
 
 @app.teardown_appcontext
@@ -260,6 +261,16 @@ def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
     cur = db.execute(query, args)
     db.commit()
     return cur.lastrowid
+
+
+def _has_tag(tags: str, tag: str) -> int:
+    """SQLite helper to check if ``tag`` exists in comma-separated ``tags``."""
+
+    tag = tag.strip().lower()
+    for t in tags.split(','):
+        if t.strip().lower() == tag:
+            return 1
+    return 0
 
 
 def _quote_hashtags(expr: str) -> str:
@@ -337,7 +348,7 @@ def _parse_tag_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[st
             return sql, params, p + 1
         if tok == ')':
             raise ValueError('Unexpected )')
-        return "instr(',' || tags || ',', ',' || ? || ',') > 0", [tok], p + 1
+        return "has_tag(tags, ?)", [tok], p + 1
 
     return parse_or(pos)
 
