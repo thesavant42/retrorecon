@@ -124,6 +124,8 @@ curl -X POST -d "theme=nostalgia.css" -d "size=16" \
 ```bash
 # Decode a JWT
 curl -X POST -d "token=eyJhbGciOi..." http://localhost:5000/tools/jwt_decode
+# Returns JSON with header and payload plus `exp_readable`, `expired`,
+# `alg_warning` and `key_warning` flags.
 
 # Encode and sign a payload
 curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \

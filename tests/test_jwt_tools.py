@@ -29,11 +29,30 @@ def test_jwt_decode_encode_roundtrip(tmp_path, monkeypatch):
         demo = app.jwt.encode({'sub': '1'}, 'secret', algorithm='HS256')
         resp = client.post('/tools/jwt_decode', data={'token': demo})
         assert resp.status_code == 200
-        payload = resp.get_json()
-        assert payload['sub'] == '1'
-        resp = client.post('/tools/jwt_encode', data={'payload': payload, 'secret': 'secret'})
+        data = resp.get_json()
+        assert data['payload']['sub'] == '1'
+        resp = client.post('/tools/jwt_encode', data={'payload': data['payload'], 'secret': 'secret'})
         assert resp.status_code == 200
         new_jwt = resp.get_data(as_text=True)
         assert new_jwt
+
+
+def test_jwt_decode_warnings_and_exp(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        none_token = app.jwt.encode({'sub': '1'}, '', algorithm='none')
+        resp = client.post('/tools/jwt_decode', data={'token': none_token})
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['alg_warning'] is True
+
+        import datetime
+        exp = int((datetime.datetime.utcnow() - datetime.timedelta(seconds=1)).timestamp())
+        token = app.jwt.encode({'exp': exp}, 'secret', algorithm='HS256')
+        resp = client.post('/tools/jwt_decode', data={'token': token})
+        data = resp.get_json()
+        assert 'exp_readable' in data
+        assert data['expired'] is True
+        assert data['key_warning'] is True
 
 

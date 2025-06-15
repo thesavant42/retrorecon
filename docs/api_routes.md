@@ -213,7 +213,9 @@ curl http://localhost:5000/jwt_tools
 ```
 
 ### `POST /tools/jwt_decode`
-Decode a JWT sent in the `token` field. Returns formatted JSON with readable timestamps.
+Decode a JWT sent in the `token` field. Returns JSON containing the header,
+payload and additional fields:
+`exp_readable`, `expired`, `alg_warning` and `key_warning`.
 
 ```
 curl -X POST -d "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \

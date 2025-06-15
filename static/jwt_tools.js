@@ -9,18 +9,49 @@ function initJWTTools(){
   const copyBtn = document.getElementById('jwt-copy-btn');
   const saveBtn = document.getElementById('jwt-save-btn');
   const closeBtn = document.getElementById('jwt-close-btn');
+  const warnDiv = document.getElementById('jwt-warning');
+  const expDiv = document.getElementById('jwt-exp');
 
-  async function call(url, data){
+  async function call(url, data, expectJson){
     try{
       const resp = await fetch(url, {
         method:'POST',
         headers:{'Content-Type':'application/x-www-form-urlencoded'},
         body:new URLSearchParams(data)
       });
-      const text = await resp.text();
       if(resp.ok){
-        input.value = text;
+        if(expectJson){
+          const data = await resp.json();
+          const header = JSON.stringify(data.header, null, 2);
+          const payload = JSON.stringify(data.payload, null, 2);
+          input.value = header + "\n" + payload;
+          if(expDiv){
+            if(data.exp_readable){
+              expDiv.textContent = 'exp: ' + data.exp_readable;
+              expDiv.classList.remove('hidden');
+              expDiv.classList.toggle('valid', !data.expired);
+              expDiv.classList.toggle('expired', data.expired);
+            }else{
+              expDiv.classList.add('hidden');
+            }
+          }
+          if(warnDiv){
+            const msgs = [];
+            if(data.alg_warning){ msgs.push('Weak algorithm'); }
+            if(data.key_warning){ msgs.push('Weak key'); }
+            if(msgs.length){
+              warnDiv.textContent = msgs.join(' / ');
+              warnDiv.classList.remove('hidden');
+            }else{
+              warnDiv.classList.add('hidden');
+            }
+          }
+        }else{
+          const text = await resp.text();
+          input.value = text;
+        }
       }else{
+        const text = await resp.text();
         alert(text);
       }
     }catch(err){
@@ -29,7 +60,7 @@ function initJWTTools(){
   }
 
   decodeBtn.addEventListener('click', () => {
-    call('/tools/jwt_decode', {token: input.value});
+    call('/tools/jwt_decode', {token: input.value}, true);
   });
 
   encodeBtn.addEventListener('click', () => {
