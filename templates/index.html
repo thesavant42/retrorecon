@@ -61,6 +61,7 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
   <nav class="navbar">
+  <div class="navbar__menus">
     <div class="dropdown">
       <button class="dropbtn" data-menu="file-menu">File ▼</button>
       <div class="dropdown-content" id="file-menu">
@@ -157,12 +158,14 @@
           <div class="menu-row"><a href="#" class="menu-btn">JWT Tool</a></div>
       </div>
     </div>
+  </div>
     <div class="navbar__title">
       <h1>
         <a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline">retrorecon <span class="version-text">v1.0.1</span></a>
         <span class="db-info glow">loaded&gt; {{ db_name }}</span>
       </h1>
     </div>
+  <div class="navbar__spacer"></div>
   </nav>
 
   <!-- Table B : Search bar and buttons -->
