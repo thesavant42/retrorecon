@@ -265,7 +265,10 @@ def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
 def _tokenize_tag_expr(expr: str) -> List[str]:
     """Return a list of tokens for a boolean tag expression."""
 
-    token_re = re.compile(r"\(|\)|AND|OR|NOT|\"[^\"]+\"|\S+", re.IGNORECASE)
+    token_re = re.compile(
+        r"\(|\)|\bAND\b|\bOR\b|\bNOT\b|\"[^\"]+\"|[^\s()]+",
+        re.IGNORECASE,
+    )
     tokens = token_re.findall(expr)
     return [t.strip('"') for t in tokens]
 
