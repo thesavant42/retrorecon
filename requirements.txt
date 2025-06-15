@@ -4,3 +4,4 @@ beautifulsoup4
 cssutils
 pytest
 PyJWT
+Pillow
