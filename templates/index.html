@@ -392,6 +392,7 @@
       });
     });
 
+    let importPollTimer = null;
     function pollImport() {
       fetch('/import_progress')
         .then(r => r.json())
@@ -406,16 +407,29 @@
             }
             if (['done', 'failed'].includes(data.status)) {
               fetch('/import_progress?clear=1').then(() => {
+                clearTimeout(importPollTimer);
+                importPollTimer = null;
                 setTimeout(() => { window.location.reload(); }, 1000);
               });
               return;
             }
+            importPollTimer = setTimeout(pollImport, 2000);
           }
-          setTimeout(pollImport, 2000);
         })
-        .catch(() => setTimeout(pollImport, 5000));
+        .catch(() => { importPollTimer = setTimeout(pollImport, 5000); });
     }
-    pollImport();
+
+    function startImportPolling(){
+      if(!importPollTimer){
+        pollImport();
+      }
+    }
+
+    // Check once on load if an import is already running
+    fetch('/import_progress')
+      .then(r => r.json())
+      .then(data => { if (data.status && data.status !== 'idle') startImportPolling(); })
+      .catch(() => {});
 
     function quickSearch(term){
       const box = document.getElementById('searchbox');
@@ -545,6 +559,7 @@
       importBtn.addEventListener('click', () => importInput.click());
       importInput.addEventListener('change', () => {
         if (importInput.files.length) {
+          startImportPolling();
           importForm.submit();
         }
       });
