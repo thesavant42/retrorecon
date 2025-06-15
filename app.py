@@ -22,6 +22,7 @@ from flask import (
     jsonify,
     Response,
 )
+from markupsafe import escape
 
 app = Flask(__name__)
 # Allow overriding the startup database via environment variable
@@ -131,6 +132,57 @@ def save_saved_tags(tags: List[str]) -> None:
     with SAVED_TAGS_LOCK:
         with open(SAVED_TAGS_FILE, 'w') as f:
             json.dump(tags, f)
+
+
+def get_notes(url_id: int) -> List[sqlite3.Row]:
+    """Return all notes for a specific URL."""
+
+    return query_db(
+        "SELECT id, url_id, content, created_at, updated_at FROM notes WHERE url_id = ? ORDER BY id",
+        [url_id],
+    )
+
+
+def add_note(url_id: int, content: str) -> int:
+    """Insert a note and return the row id."""
+
+    return execute_db(
+        "INSERT INTO notes (url_id, content) VALUES (?, ?)",
+        [url_id, escape(content)],
+    )
+
+
+def update_note(note_id: int, content: str) -> None:
+    """Update an existing note."""
+
+    execute_db(
+        "UPDATE notes SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [escape(content), note_id],
+    )
+
+
+def delete_note_entry(note_id: int) -> None:
+    """Delete a note by ID."""
+
+    execute_db("DELETE FROM notes WHERE id = ?", [note_id])
+
+
+def delete_all_notes(url_id: int) -> None:
+    """Remove all notes for a URL."""
+
+    execute_db("DELETE FROM notes WHERE url_id = ?", [url_id])
+
+
+def export_notes_data() -> List[Dict[str, Any]]:
+    """Return all notes grouped by URL."""
+
+    rows = query_db(
+        "SELECT urls.url, notes.content FROM notes JOIN urls ON notes.url_id = urls.id ORDER BY urls.url, notes.id"
+    )
+    grouped: Dict[str, List[str]] = {}
+    for r in rows:
+        grouped.setdefault(r["url"], []).append(r["content"])
+    return [{"url": u, "notes": n} for u, n in grouped.items()]
 
 def init_db() -> None:
     """Initialize the database using the schema.sql file."""
@@ -1014,6 +1066,69 @@ def delete_saved_tag() -> Response:
         tags.remove(tag)
         save_saved_tags(tags)
     return ('', 204)
+
+
+@app.route('/notes/<int:url_id>', methods=['GET'])
+def notes_get(url_id: int) -> Response:
+    """Return all notes for the given URL as JSON."""
+
+    if not _db_loaded():
+        return jsonify([])
+    rows = get_notes(url_id)
+    return jsonify([
+        {
+            'id': r['id'],
+            'url_id': r['url_id'],
+            'content': r['content'],
+            'created_at': r['created_at'],
+            'updated_at': r['updated_at'],
+        }
+        for r in rows
+    ])
+
+
+@app.route('/notes', methods=['POST'])
+def notes_post() -> Response:
+    """Create or update a note."""
+
+    if not _db_loaded():
+        return ('', 400)
+    url_id = request.form.get('url_id', type=int)
+    content = request.form.get('content', '').strip()
+    if not url_id or not content:
+        return ('', 400)
+    note_id = request.form.get('note_id', type=int)
+    if note_id:
+        update_note(note_id, content)
+    else:
+        add_note(url_id, content)
+    return ('', 204)
+
+
+@app.route('/delete_note', methods=['POST'])
+def delete_note_route() -> Response:
+    """Delete a specific note or all notes for a URL."""
+
+    note_id = request.form.get('note_id', type=int)
+    url_id = request.form.get('url_id', type=int)
+    delete_all = request.form.get('all', '0') == '1'
+    if note_id:
+        delete_note_entry(note_id)
+    elif url_id and delete_all:
+        delete_all_notes(url_id)
+    else:
+        return ('', 400)
+    return ('', 204)
+
+
+@app.route('/export_notes', methods=['GET'])
+def export_notes() -> Response:
+    """Return all notes as JSON grouped by URL."""
+
+    if not _db_loaded():
+        return jsonify([])
+    data = export_notes_data()
+    return jsonify(data)
 
 @app.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip() -> Response:
