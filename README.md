@@ -56,6 +56,8 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 ## Installation
 ```bash
 pip install -r requirements.txt
+# Recommended: install pyppeteer to enable real screenshot capture
+# pip install pyppeteer
 python scripts/init_db.py  # initialize wabax.db
 python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
