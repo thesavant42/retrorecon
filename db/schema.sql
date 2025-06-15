@@ -25,3 +25,12 @@ CREATE TABLE IF NOT EXISTS import_status (
     progress INTEGER,
     total INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY(url_id) REFERENCES urls(id)
+);
