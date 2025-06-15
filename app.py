@@ -1588,7 +1588,7 @@ def screenshot_route() -> Response:
         img_bytes = take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
-    fname = f'shot_{int(datetime.datetime.utcnow().timestamp()*1000)}.png'
+    fname = f'shot_{int(datetime.datetime.now(datetime.UTC).timestamp()*1000)}.png'
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
     with open(os.path.join(SCREENSHOT_DIR, fname), 'wb') as f:
         f.write(img_bytes)
