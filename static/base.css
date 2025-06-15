@@ -646,6 +646,20 @@
   padding: 0.5em 1em;
   border-bottom: 2px solid var(--fg-color);
   text-align: left;
+  position: relative;
+}
+
+.retrorecon-root .url-table th.sortable {
+  cursor: pointer;
+}
+
+.retrorecon-root .col-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
 }
 
 /* Allow center alignment on specific header cells */
@@ -660,6 +674,16 @@
 .retrorecon-root .url-row-main td {
   font-size: 1.08em;
   padding: 0.43em 0.7em;
+}
+
+.retrorecon-root .cell-content {
+  display: block;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.retrorecon-root .cell-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* Apply pagination text styling to URL results */

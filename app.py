@@ -484,6 +484,11 @@ def index() -> str:
     except ValueError:
         page = 1
 
+    sort = request.args.get('sort', 'id')
+    direction = request.args.get('dir', 'desc').lower()
+    if direction not in ['asc', 'desc']:
+        direction = 'desc'
+
     if _db_loaded():
         where_clauses = []
         params = []
@@ -506,6 +511,15 @@ def index() -> str:
         if where_clauses:
             where_sql = "WHERE " + " AND ".join(where_clauses)
 
+        sort_map = {
+            'url': 'url',
+            'timestamp': 'timestamp',
+            'status_code': 'status_code',
+            'mime_type': 'mime_type',
+            'id': 'id'
+        }
+        sort_col = sort_map.get(sort, 'id')
+
         count_sql = f"SELECT COUNT(*) AS cnt FROM urls {where_sql}"
         count_row = query_db(count_sql, params, one=True)
         total_count = count_row['cnt'] if count_row else 0
@@ -521,7 +535,7 @@ def index() -> str:
             SELECT id, url, timestamp, status_code, mime_type, tags
             FROM urls
             {where_sql}
-            ORDER BY id DESC
+            ORDER BY {sort_col} {direction.upper()}
             LIMIT ? OFFSET ?
         """
         rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
@@ -567,7 +581,9 @@ def index() -> str:
         panel_opacity=panel_opacity,
         total_count=total_count,
         db_name=db_name,
-        search_history=search_history
+        search_history=search_history,
+        current_sort=sort,
+        current_dir=direction
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
