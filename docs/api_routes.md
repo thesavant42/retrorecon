@@ -317,3 +317,43 @@ python scripts/generate_postman_collection.py > retrorecon.postman.json
 
 Import the resulting `retrorecon.postman.json` file into Postman and set the `base_url` variable to your server address.
 
+### `GET /site2zip`
+Serve the Site2Zip overlay for capturing a full page snapshot.
+
+```
+curl http://localhost:5000/site2zip
+```
+
+### `POST /tools/site2zip`
+Launch a capture job and return JSON with the record ID.
+
+Parameters:
+- `url` – page to fetch.
+- `agent` – optional user agent (`android`, `bot` or blank for desktop).
+- `spoof_referrer` – set to `1` to spoof the referrer header.
+
+```
+curl -X POST -d "url=https://example.com" http://localhost:5000/tools/site2zip
+```
+
+### `GET /sitezips`
+List previous Site2Zip captures as JSON.
+
+```
+curl http://localhost:5000/sitezips
+```
+
+### `GET /download_sitezip/<id>`
+Download the ZIP archive for a capture.
+
+```
+curl -O http://localhost:5000/download_sitezip/1
+```
+
+### `POST /delete_sitezips`
+Delete one or more captures by ID.
+
+```
+curl -X POST -d "ids=1,2" http://localhost:5000/delete_sitezips
+```
+
