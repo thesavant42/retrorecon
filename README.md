@@ -134,3 +134,26 @@ pushes the changes. The workflow expects a repository secret named
 The commit author defaults to `retrorecon-bot <actions@github.com>` but can be
 overridden using the `GIT_USER_NAME` and `GIT_USER_EMAIL` environment
 variables.
+
+## APPSEC
+
+**THIS CODE IS NOT MEANT TO BE RUN AS A SERVICE OR ON PUBLIC NETWORKS.**
+
+The project is intended for local, offline research only. A recent security
+review highlighted several areas that need hardening before any kind of
+production deployment. Below is the outstanding task list to improve the
+application's security posture.
+
+```markdown
+- [ ] Load `app.secret_key` from an environment variable and document the requirement.
+- [ ] Implement CSRF protection across all POST forms (consider Flask-WTF).
+- [ ] Refactor `templates/index.html` to avoid placing `{{ url.url }}` inside JavaScript strings. 
+  - Use `data-url` attributes and event listeners defined in JS.
+  - Sanitize URLs before opening (e.g., verify `http/https`).
+- [ ] Validate `map_url` in `/tools/webpack-zip`:
+  - Accept only `http`/`https`.
+  - Optionally restrict to specific domains or apply a URL whitelist.
+- [ ] Validate `domain` input in `/fetch_cdx` using a regex for valid hostnames.
+- [ ] Add unit tests ensuring malicious values do not lead to XSS or SSRF.
+- [ ] Update deployment configuration to set `SESSION_COOKIE_SECURE` when using HTTPS.
+```
