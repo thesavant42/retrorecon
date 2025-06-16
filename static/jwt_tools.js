@@ -22,12 +22,18 @@ function initJWTTools(){
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
     const ths = table.querySelectorAll('th');
+    const cols = table.querySelectorAll('col');
     let widths = {};
     try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
     ths.forEach((th, idx) => {
       const id = idx;
-      if(widths[id]) th.style.width = widths[id];
-      th.style.width = th.style.width || th.offsetWidth + 'px';
+      if(widths[id]){
+        th.style.width = widths[id];
+        if(cols[id]) cols[id].style.width = widths[id];
+      }
+      const initial = th.style.width || th.offsetWidth + 'px';
+      th.style.width = initial;
+      if(cols[id]) cols[id].style.width = initial;
       if(th.classList.contains('no-resize')) return;
       const res = document.createElement('div');
       res.className = 'col-resizer';
@@ -42,9 +48,10 @@ function initJWTTools(){
         e.preventDefault();
       });
       function onMove(e){
-        const w = startWidth + (e.pageX - startX);
+        const w = Math.max(30, startWidth + (e.pageX - startX));
         th.style.width = w + 'px';
-        widths[id] = th.style.width;
+        if(cols[id]) cols[id].style.width = w + 'px';
+        widths[id] = w + 'px';
       }
       function stop(){
         document.removeEventListener('mousemove', onMove);
@@ -63,7 +70,9 @@ function initJWTTools(){
       if(av > bv) return sortDir==='asc'? 1:-1;
       return 0;
     });
-    let html = '<table class="table url-table w-100"><thead><tr>'+
+    let html = '<table class="table url-table w-100"><colgroup>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/>'+
+      '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="issuer">Issuer</th>'+
