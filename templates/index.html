@@ -249,12 +249,16 @@
                   <td></td>
                   <td colspan="4">
                     <div class="url-tools-row nowrap">
-                      <button class="btn explode-btn" type="button" title="Wayback" onclick="window.open('https://web.archive.org/web/*/{{ url.url }}','_blank')">⏳</button>
-                      <button class="btn explode-btn" type="button" title="Shodan" onclick="window.open('https://www.shodan.io/search?query={{ url.url|urlencode }}','_blank')">🤖</button>
-                      <button class="btn explode-btn" type="button" title="VirusTotal" onclick="window.open('https://www.virustotal.com/gui/search/{{ url.url|urlencode }}','_blank')">🦠</button>
-                      <button class="btn explode-btn" type="button" title="GitHub" onclick="window.open('https://github.com/search?q={{ url.url|urlencode }}','_blank')">🐙</button>
-                      <button class="btn explode-btn" type="button" title="Google" onclick="window.open('https://www.google.com/search?q=site:{{ url.url|urlencode }}','_blank')">🔍</button>
-                      <button class="btn explode-btn" type="button" title="crt.sh" onclick="window.open('https://crt.sh/?q={{ url.url|urlencode }}','_blank')">🔏</button>
+                      <select class="form-select tool-select" onchange="handleToolSelect(this, '{{ url.url }}')">
+                        <option value="">Tools…</option>
+                        <option value="archive">Web Archive</option>
+                        <option value="shodan">Shodan.io</option>
+                        <option value="vt">VirusTotal</option>
+                        <option value="github">GitHub</option>
+                        <option value="google">Google Search</option>
+                        <option value="crtsh">Crt.sh</option>
+                        <option value="explode" {% if '.js.map' not in url.url %}disabled{% endif %}>Webpack Exploder</option>
+                      </select>
                       <button class="btn explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
                       <form method="POST" action="/bulk_action" class="d-inline mr-03">
                         <input type="hidden" name="action" value="delete" />
@@ -263,14 +267,6 @@
                         <button type="submit" class="btn delete-btn" title="Delete">🗑️</button>
                       </form>
                       <button type="button" class="btn ml-05 notes-btn" data-url-id="{{ url.id }}" onclick="openNotes(this)">📝 Notes</button>
-                      {% if ".js.map" in url.url %}
-                      <form method="POST" action="/tools/webpack-zip" class="d-inline ml-01">
-                        <input type="hidden" name="map_url" value="{{ url.url }}" />
-                        <button type="submit" class="btn explode-btn" title="Explode .js.map">💥 Explode!</button>
-                      </form>
-                      {% else %}
-                      <button type="button" class="btn explode-btn disabled-btn" title="Not a .js.map" disabled>💥 Explode!</button>
-                      {% endif %}
                       <form method="POST" action="/bulk_action" class="d-inline ml-05">
                         <input type="hidden" name="action" value="add_tag" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
@@ -462,6 +458,48 @@
         window.location = '/?' + params.toString();
       }
       return false;
+    }
+
+    function handleToolSelect(sel, url){
+      const val = sel.value;
+      sel.selectedIndex = 0;
+      if(!val) return;
+      let link = '';
+      switch(val){
+        case 'archive':
+          link = 'https://web.archive.org/web/*/' + encodeURIComponent(url);
+          break;
+        case 'shodan':
+          link = 'https://www.shodan.io/search?query=' + encodeURIComponent(url);
+          break;
+        case 'vt':
+          link = 'https://www.virustotal.com/gui/search/' + encodeURIComponent(url);
+          break;
+        case 'github':
+          link = 'https://github.com/search?q=' + encodeURIComponent(url);
+          break;
+        case 'google':
+          link = 'https://www.google.com/search?q=site:' + encodeURIComponent(url);
+          break;
+        case 'crtsh':
+          link = 'https://crt.sh/?q=' + encodeURIComponent(url);
+          break;
+        case 'explode':
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/tools/webpack-zip';
+          form.target = '_blank';
+          const inp = document.createElement('input');
+          inp.type = 'hidden';
+          inp.name = 'map_url';
+          inp.value = url;
+          form.appendChild(inp);
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+          return;
+      }
+      if(link) window.open(link, '_blank');
     }
 
     document.querySelectorAll('.copy-btn').forEach(b => {
