@@ -18,7 +18,8 @@ def test_env_db_loaded(monkeypatch, tmp_path):
     (tmp_path / 'data').mkdir()
     schema_src = Path(__file__).resolve().parents[1] / 'db' / 'schema.sql'
     (tmp_path / 'db' / 'schema.sql').write_text(schema_src.read_text())
-    app.create_new_db('envtest')
+    with app.app.app_context():
+        app.create_new_db('envtest')
 
     with app.app.test_client() as client:
         client.get('/')

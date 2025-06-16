@@ -21,7 +21,8 @@ def test_fetch_cdx_inserts_status(tmp_path, monkeypatch):
     monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
     (tmp_path / "db").mkdir()
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
-    app.init_db()
+    with app.app.app_context():
+        app.init_db()
 
     sample = [
         ["original", "timestamp", "statuscode", "mimetype"],
@@ -51,7 +52,8 @@ def test_fetch_cdx_handles_dash_status(tmp_path, monkeypatch):
     monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
     (tmp_path / "db").mkdir()
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
-    app.init_db()
+    with app.app.app_context():
+        app.init_db()
 
     sample = [
         ["original", "timestamp", "statuscode", "mimetype"],
@@ -76,7 +78,8 @@ def test_fetch_cdx_rejects_invalid_domain(tmp_path, monkeypatch):
     monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
     (tmp_path / "db").mkdir()
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
-    app.init_db()
+    with app.app.app_context():
+        app.init_db()
 
     called = False
 
@@ -104,7 +107,8 @@ def test_fetch_cdx_uses_limit_param(tmp_path, monkeypatch):
     monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
     (tmp_path / "db").mkdir()
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
-    app.init_db()
+    with app.app.app_context():
+        app.init_db()
 
     captured = None
 
