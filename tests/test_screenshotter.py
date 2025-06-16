@@ -52,43 +52,70 @@ def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
     called = {}
 
     class DummyPage:
-        async def setUserAgent(self, ua):
-            called['ua'] = ua
-        async def setExtraHTTPHeaders(self, headers):
-            called['hdr'] = headers
-        async def goto(self, url, opts):
-            called['goto'] = (url, opts)
-        async def screenshot(self, fullPage=True):
+        def goto(self, url, wait_until=None):
+            called['goto'] = (url, wait_until)
+        def screenshot(self, full_page=True):
             return b'PNGDATA'
 
-    class DummyBrowser:
-        async def newPage(self):
+    class DummyContext:
+        def set_extra_http_headers(self, headers):
+            called['hdr'] = headers
+        def new_page(self):
             return DummyPage()
-        async def close(self):
+
+    class DummyBrowser:
+        def new_context(self, user_agent=None):
+            called['ua'] = user_agent
+            return DummyContext()
+        def close(self):
             called['closed'] = True
 
-    async def dummy_launch(**opts):
+    def dummy_launch(**opts):
         called['opts'] = opts
         return DummyBrowser()
 
-    dummy_mod = types.SimpleNamespace(launch=dummy_launch)
-    monkeypatch.setitem(sys.modules, 'pyppeteer', dummy_mod)
-    monkeypatch.setenv('PYPPETEER_BROWSER_PATH', '/chrome/bin')
+    class DummyChromium:
+        def launch(self, **opts):
+            return dummy_launch(**opts)
+
+    class PW:
+        def __enter__(self):
+            return self
+        def __exit__(self, exc_type, exc, tb):
+            pass
+        chromium = DummyChromium()
+
+    dummy_mod = types.SimpleNamespace(sync_playwright=lambda: PW())
+    monkeypatch.setitem(sys.modules, 'playwright.sync_api', dummy_mod)
+    monkeypatch.setitem(sys.modules, 'playwright', types.SimpleNamespace(sync_api=dummy_mod))
+    monkeypatch.setenv('PLAYWRIGHT_CHROMIUM_PATH', '/chrome/bin')
 
     data = app.take_screenshot('http://example.com', user_agent='ua', spoof_referrer=True)
     assert data == b'PNGDATA'
-    assert called['opts'].get('executablePath') == '/chrome/bin'
+    assert called['opts'].get('executable_path') == '/chrome/bin'
 
 
 def test_take_screenshot_logs_failure(monkeypatch, tmp_path, caplog):
     setup_tmp(monkeypatch, tmp_path)
 
-    async def fail_launch(**opts):
+    def fail_launch(**opts):
         raise RuntimeError('boom')
 
-    dummy_mod = types.SimpleNamespace(launch=fail_launch)
-    monkeypatch.setitem(sys.modules, 'pyppeteer', dummy_mod)
-    monkeypatch.setenv('PYPPETEER_BROWSER_PATH', '/bad/path')
+    class DummyChromium:
+        def launch(self, **opts):
+            return fail_launch(**opts)
+
+    class PW:
+        def __enter__(self):
+            return self
+        def __exit__(self, exc_type, exc, tb):
+            pass
+        chromium = DummyChromium()
+
+    dummy_mod = types.SimpleNamespace(sync_playwright=lambda: PW())
+    monkeypatch.setitem(sys.modules, 'playwright.sync_api', dummy_mod)
+    monkeypatch.setitem(sys.modules, 'playwright', types.SimpleNamespace(sync_api=dummy_mod))
+    monkeypatch.setenv('PLAYWRIGHT_CHROMIUM_PATH', '/bad/path')
 
     caplog.set_level(logging.DEBUG)
     data = app.take_screenshot('http://example.com')

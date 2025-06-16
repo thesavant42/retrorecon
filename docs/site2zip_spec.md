@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS sitezips (
 
 ## Implementation Steps for Codex
 1. Extend `db/schema.sql` and helper functions for the new `sitezips` table.
-2. Implement capture logic using Pyppeteer to fetch all resources, execute scripts and record network traffic. Save headers to text files and write files to a temporary directory before zipping.
+2. Implement capture logic using Playwright to fetch all resources, execute scripts and record network traffic. Save headers to text files and write files to a temporary directory before zipping.
 3. When a source map references inline or Base64 encoded bundles, invoke the existing Webpack Exploder to unpack them into the ZIP.
 4. Store the ZIP and screenshot under `static/sitezips/` and create DB entries via `save_sitezip_record()`.
 5. Build the overlay template and accompanying JavaScript to call the new routes and update the results table.

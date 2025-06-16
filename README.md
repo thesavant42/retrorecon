@@ -50,8 +50,8 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
 - **Text Tools** full-screen editor for Base64 and URL encoding/decoding with Save As
 - **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
-  with a persistent JWT cookie jar
-- **ScreenShotter** capture website screenshots in a headless browser (requires `pyppeteer`; falls back to a Pillow placeholder)
+-  with a persistent JWT cookie jar
+- **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)
 - **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
@@ -60,8 +60,8 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 ## Installation
 ```bash
 pip install -r requirements.txt
-# Recommended: install pyppeteer to enable real screenshot capture
-# pip install pyppeteer
+# Recommended: install Playwright browsers
+# playwright install
 python scripts/init_db.py  # initialize wabax.db
 python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
@@ -74,10 +74,9 @@ set up a `venv` and start the server:
 launch_app.bat
 ```
 Then open <http://127.0.0.1:5000> in your browser.
-### Pyppeteer on Windows
-If screenshot capture shows a placeholder image, Pyppeteer likely could not download its bundled Chromium browser.
-Run `py -m pyppeteer install` or download revision 1181205 from https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip and extract it to `%LOCALAPPDATA%\pyppeteer\local-chromium\1181205`.
-You can also set `PYPPETEER_BROWSER_PATH` to the path of an existing Chrome executable.
+### Playwright on Windows
+If screenshot capture shows a placeholder image, Playwright may not have the Chromium browser installed.
+Run `playwright install` or set `PLAYWRIGHT_CHROMIUM_PATH` to an existing Chrome executable.
 
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
