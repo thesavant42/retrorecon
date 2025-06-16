@@ -23,7 +23,10 @@ def get_progress(file_path: str) -> Dict[str, Any]:
         if not os.path.exists(file_path):
             return {'status': 'idle', 'message': '', 'current': 0, 'total': 0}
         with open(file_path, 'r') as f:
-            return json.load(f)
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {'status': 'idle', 'message': '', 'current': 0, 'total': 0}
 
 def clear_progress(file_path: str) -> None:
     """Remove ``file_path`` if it exists."""
