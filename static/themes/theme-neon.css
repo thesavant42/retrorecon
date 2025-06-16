@@ -1,16 +1,16 @@
 /* Neon midnight dark theme */
 :root {
-  --bg-main: #0d011e00;
+  --bg-main: #00000000;
   --bg-panel: rgb(0 0 0 / 0%);
-  --font-main: #e1e9ff;
+  --font-main: #ffffff;
   --font-accent: #8be9fd;
   --border-color: rgba(139, 233, 253, 0.4);
   --input-bg: rgb(34 39 50 / 0%);
   --input-border: #8be9fd;
 
   /* compatibility with base styles */
-  --bg-color: #1412224f;
-  --bg-rgb: 20 18 34;
+  --bg-color: rgba(0, 0, 0, 0.31);
+  --bg-rgb: 0 0 0;
   --panel-opacity: 0.92;
   --fg-color: var(--font-main);
   --accent-color: var(--font-accent);
@@ -24,7 +24,7 @@
 
 body.bg-hidden {
   background-image: none !important;
-  background-color: #000 !important;
+  background-color: var(--color-base) !important;
 }
 
 .retrorecon-root .panel,
@@ -39,7 +39,7 @@ body.bg-hidden {
 
 .retrorecon-root .url-table th,
 .retrorecon-root .url-table td {
-  background: #14122200;
+  background: transparent;
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
   font-size: 13.333px;
@@ -67,7 +67,7 @@ body.bg-hidden {
 
 .retrorecon-root input:focus,
 .retrorecon-root button:focus {
-  border-color: #fff;
+  border-color: var(--color-contrast);
 }
 
 .retrorecon-root a,
@@ -82,7 +82,7 @@ body.bg-hidden {
 .retrorecon-root h3,
 .retrorecon-root .glow {
   color: var(--font-accent);
-  text-shadow: 0 0 12px var(--font-accent), 0 0 24px #222;
+  text-shadow: 0 0 12px var(--font-accent), 0 0 24px var(--color-base);
 }
 
 /*--- Overrides migrated from base.css to give the theme priority ---*/
@@ -145,7 +145,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 10px;
-  border: 1px solid #fff;
+  border: 1px solid var(--color-contrast);
   margin-right: 4px;
   font-size: 0.95em;
   margin-bottom: 4px;
@@ -177,7 +177,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 999px;
-  border: 1px solid #fff;
+  border: 1px solid var(--color-contrast);
   margin-right: 4px;
   font-size: 0.65em;
   font-weight: 600;
@@ -212,7 +212,7 @@ body.bg-hidden {
   background: var(--bg-color);
   opacity: 1;
   border-radius: 999px;
-  border: 1px solid #fff;
+  border: 1px solid var(--color-contrast);
   margin-right: 4px;
   font-size: 0.65em;
   font-weight: 600;
@@ -235,7 +235,7 @@ body.bg-hidden {
   font-size: 1.05em;
   padding: 5px 10px;
   border-radius: 5px;
-  border: 1px solid #fff;
+  border: 1px solid var(--color-contrast);
   background: var(--bg-color);
   color: var(--fg-color);
   cursor: pointer;
@@ -260,7 +260,7 @@ body.bg-hidden {
 .retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: #1412225c;
+  background: rgba(0, 0, 0, 0.36);
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px var(--fg-color);
 }
@@ -275,9 +275,9 @@ body.bg-hidden {
 .retrorecon-root .google-btn,
 .retrorecon-root .crtsh-btn {
   background: var(--bg-color);
-  border: 1px solid #fff;
+  border: 1px solid var(--color-contrast);
   border-radius: 7px;
-  color: #2cbaf3;
+  color: var(--color-accent);
   font-size: 1em;
   line-height: 1.15em;
   padding: 2px 11px;
@@ -336,7 +336,7 @@ body.bg-hidden {
 
 /* Standardize dropdown menu styling */
 .retrorecon-root .dropdown-content {
-  background-color: #000;
+  background-color: var(--color-base);
   color: var(--font-main);
   border: 1px solid var(--font-accent);
 }
@@ -347,5 +347,5 @@ body.bg-hidden {
 .retrorecon-root .dropdown-content .menu-btn:hover,
 .retrorecon-root .dropdown-content a.menu-btn:hover {
   background: var(--font-accent);
-  color: #000;
+  color: var(--color-base);
 }
