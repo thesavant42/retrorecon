@@ -6,6 +6,21 @@ function initSubdomonster(){
   const fetchBtn = document.getElementById('subdomonster-fetch-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const closeBtn = document.getElementById('subdomonster-close-btn');
+  const sourceRadios = document.getElementsByName('subdomonster-source');
+  const apiInput = document.getElementById('subdomonster-api-key');
+
+  for(const rb of sourceRadios){
+    rb.addEventListener('change', () => {
+      apiInput.classList.toggle('hidden', rb.value !== 'virustotal' || !rb.checked);
+    });
+  }
+  // initialize visibility
+  (function(){
+    let active = Array.from(sourceRadios).find(r=>r.checked);
+    if(active){
+      apiInput.classList.toggle('hidden', active.value !== 'virustotal');
+    }
+  })();
 
   function render(rows){
     let html = '<table class="table url-table w-100"><thead><tr>'+
@@ -21,7 +36,10 @@ function initSubdomonster(){
   fetchBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
     if(!domain) return;
-    const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain})});
+    let source = 'crtsh';
+    for(const rb of sourceRadios){ if(rb.checked){ source = rb.value; break; } }
+    const api_key = apiInput.value.trim();
+    const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain, source, api_key})});
     if(resp.ok){
       const data = await resp.json();
       render(data);

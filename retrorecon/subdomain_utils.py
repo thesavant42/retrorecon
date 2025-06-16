@@ -25,6 +25,20 @@ def fetch_from_crtsh(domain: str) -> List[str]:
     return sorted(subs)
 
 
+def fetch_from_virustotal(domain: str, api_key: str) -> List[str]:
+    """Return subdomains for *domain* fetched from the VirusTotal API."""
+    url = f"https://www.virustotal.com/api/v3/domains/{domain}/subdomains?limit=40"
+    headers = {"x-apikey": api_key}
+    subs = []
+    while url:
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        subs.extend([d.get("id", "").lower() for d in data.get("data", [])])
+        url = data.get("links", {}).get("next")
+    return sorted(set(s for s in subs if s))
+
+
 def insert_records(root_domain: str, subs: List[str], source: str = "crtsh") -> int:
     """Insert ``subs`` for ``root_domain`` and return count inserted."""
     count = 0
