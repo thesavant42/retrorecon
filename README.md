@@ -89,6 +89,27 @@ can use its default location. Alternatively set `PLAYWRIGHT_CHROMIUM_PATH` to an
 existing Chrome executable. You can also assign a path to `app.executablePath`
 before calling screenshot functions to override the Chromium binary.
 
+### Docker Quick Start
+
+Build the container image:
+
+```bash
+docker build -t retrorecon .
+```
+
+Run it with shared folders so imports and exports persist on the host:
+
+```bash
+docker run -p 5000:5000 \
+  -v "$PWD/db:/app/db" \
+  -v "$PWD/data:/app/data" \
+  -v "$PWD/static/screenshots:/app/static/screenshots" \
+  retrorecon
+```
+
+The mounted volumes store databases, uploaded files and screenshots outside
+the container.
+
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
 2. **Import from JSON**: upload a JSON file containing URLs or full CDX records.
