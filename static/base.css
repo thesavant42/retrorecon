@@ -320,7 +320,7 @@
 /* Navbar layout */
 .retrorecon-root .navbar {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   margin: 0 10px;
 }
@@ -330,6 +330,10 @@
 }
 .retrorecon-root .navbar__title {
   text-align: center;
+}
+.retrorecon-root .navbar__status {
+  justify-self: end;
+  font-size: 0.9em;
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;
@@ -973,6 +977,30 @@
   margin-left: 1em;
   color: var(--fg-color);
   font-weight: bold;
+}
+
+/* Import status bar */
+.retrorecon-root #import-status-block {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.retrorecon-root #import-progress-bar-container {
+  width: 120px;
+  height: 8px;
+  background: var(--bg-color);
+  border: 1px solid #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.retrorecon-root #import-progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent-color);
+}
+.retrorecon-root #import-progress-numbers {
+  margin-left: 0.4em;
+  font-size: 0.9em;
 }
 
 /* Footer text style */
