@@ -172,19 +172,17 @@
         <a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline">retrorecon <span class="version-text">v1.2.0</span></a>
         <span class="db-info glow cursor-pointer" id="db-display">loaded&gt; {{ db_name }}</span>
       </h1>
-    </div>
-  <div class="navbar__status">
-      <div id="import-status-block" class="d-none">
+      <div id="import-status-block">
         <strong>Status:</strong>
-        <span id="import-status-text"></span>
-        <div id="import-progress-bar-container">
+        <span id="import-status-text">idle</span>
+        <div id="import-progress-bar-container" class="d-none">
           <div id="import-progress-bar"></div>
         </div>
-        <div id="import-progress-numbers" class="mt-05">
+        <div id="import-progress-numbers" class="mt-05 d-none">
           <span id="import-progress-numbers-span"></span>
         </div>
       </div>
-  </div>
+    </div>
   </nav>
 
   <!-- Table B : Search bar and buttons -->
@@ -530,19 +528,40 @@
       });
     });
 
+    function updateImportStatus(data){
+      const block = document.getElementById('import-status-block');
+      const text = document.getElementById('import-status-text');
+      const barContainer = document.getElementById('import-progress-bar-container');
+      const bar = document.getElementById('import-progress-bar');
+      const nums = document.getElementById('import-progress-numbers');
+      const span = document.getElementById('import-progress-numbers-span');
+      const status = (data && data.status) ? data.status : 'idle';
+      text.textContent = data.detail || status;
+      block.style.display = 'flex';
+      if(status === 'idle'){
+        barContainer.classList.add('d-none');
+        nums.classList.add('d-none');
+        bar.style.width = '0';
+      } else {
+        barContainer.classList.remove('d-none');
+        if(data.total){
+          nums.classList.remove('d-none');
+          const pct = Math.floor(data.progress / data.total * 100);
+          bar.style.width = pct + '%';
+          span.textContent = data.progress + '/' + data.total;
+        } else {
+          nums.classList.add('d-none');
+        }
+      }
+    }
+
     let importPollTimer = null;
     function pollImport() {
       fetch('/import_progress')
         .then(r => r.json())
         .then(data => {
+          updateImportStatus(data);
           if (data.status && data.status !== 'idle') {
-            document.getElementById('import-status-block').style.display = 'block';
-            document.getElementById('import-status-text').textContent = data.detail || data.status;
-            if (data.total) {
-              const pct = Math.floor(data.progress / data.total * 100);
-              document.getElementById('import-progress-bar').style.width = pct + '%';
-              document.getElementById('import-progress-numbers-span').textContent = data.progress + '/' + data.total;
-            }
             if (['done', 'failed'].includes(data.status)) {
               fetch('/import_progress?clear=1').then(() => {
                 clearTimeout(importPollTimer);
@@ -563,11 +582,14 @@
       }
     }
 
-    // Check once on load if an import is already running
+    // Check once on load and show current status
     fetch('/import_progress')
       .then(r => r.json())
-      .then(data => { if (data.status && data.status !== 'idle') startImportPolling(); })
-      .catch(() => {});
+      .then(data => {
+        updateImportStatus(data);
+        if (data.status && data.status !== 'idle') startImportPolling();
+      })
+      .catch(() => { updateImportStatus({status:'idle'}); });
 
     function quickSearch(term){
       const box = document.getElementById('searchbox');
