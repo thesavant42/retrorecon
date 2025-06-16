@@ -131,6 +131,21 @@ def test_import_invalid_db_file(tmp_path, monkeypatch):
             assert sess.get('db_display_name') != 'bad.db'
 
 
+def test_import_dsprings_db(tmp_path, monkeypatch):
+    """Verify importing a populated DB preserves all rows."""
+    setup_tmp(monkeypatch, tmp_path)
+    db_bytes = Path(__file__).with_name('dsprings.db').read_bytes()
+
+    with app.app.test_client() as client:
+        resp = client.post('/import_file', data={'import_file': (io.BytesIO(db_bytes), 'dsprings.db')})
+        assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == 'dsprings.db'
+        with app.app.app_context():
+            row = app.query_db('SELECT COUNT(*) AS c FROM urls', one=True)
+            assert row['c'] == 9387
+
+
 def test_save_db_custom_name(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
