@@ -1,16 +1,16 @@
 {
   "coverage": {
     "button": {
-      "total": 51,
-      "styled": 51
+      "total": 47,
+      "styled": 47
     },
     "input": {
-      "total": 16,
-      "styled": 11
+      "total": 14,
+      "styled": 9
     },
     "select": {
-      "total": 7,
-      "styled": 7
+      "total": 5,
+      "styled": 5
     },
     "checkbox": {
       "total": 4,

@@ -1,12 +1,12 @@
 import os
 import re
+import app
 from flask import Blueprint, request, redirect, url_for, flash, session
 
 bp = Blueprint('settings', __name__)
 
 @bp.route('/set_theme', methods=['POST'])
 def set_theme():
-    import app
     theme = request.form.get('theme', '')
     if theme in app.AVAILABLE_THEMES:
         session['theme'] = theme
@@ -18,7 +18,6 @@ def set_theme():
 
 @bp.route('/set_background', methods=['POST'])
 def set_background():
-    import app
     bg = request.form.get('background', '')
     if bg in app.AVAILABLE_BACKGROUNDS:
         session['background'] = bg
@@ -39,7 +38,6 @@ def set_panel_opacity():
 
 @bp.route('/set_font_size', methods=['POST'])
 def set_font_size():
-    import app
     try:
         size = int(request.form.get('size', '14'))
     except ValueError:
@@ -81,7 +79,6 @@ def set_font_size():
 
 @bp.route('/set_items_per_page', methods=['POST'])
 def set_items_per_page():
-    import app
     try:
         count = int(request.form.get('count', ''))
     except ValueError:
@@ -89,4 +86,4 @@ def set_items_per_page():
     if count not in app.ITEMS_PER_PAGE_OPTIONS:
         return ('Invalid value', 400)
     session['items_per_page'] = count
-    return redirect(url_for('urls.index'))
+    return redirect(url_for('index'))

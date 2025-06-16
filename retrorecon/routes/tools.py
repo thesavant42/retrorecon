@@ -6,17 +6,8 @@ import base64
 import urllib.parse
 import requests
 import zipfile
+import app
 from flask import Blueprint, request, Response, jsonify, render_template, redirect, url_for, flash, send_file
-from retrorecon.services import (
-    log_jwt_entry,
-    delete_jwt_cookies,
-    update_jwt_cookie,
-    export_jwt_cookie_data,
-    save_screenshot_record,
-    list_screenshot_data,
-    delete_screenshots,
-    take_screenshot,
-)
 
 bp = Blueprint('tools', __name__)
 
@@ -26,7 +17,6 @@ def text_tools_page():
 
 
 def _get_text_param():
-    import app
     text = request.form.get('text', '')
     if len(text.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return None
@@ -83,13 +73,11 @@ def jwt_tools_page():
 
 @bp.route('/tools/jwt', methods=['GET'])
 def jwt_tools_full_page():
-    import app
     return app.index()
 
 
 @bp.route('/tools/jwt_decode', methods=['POST'])
 def jwt_decode_route():
-    import app
     token = request.form.get('token', '')
     if len(token.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
@@ -150,7 +138,7 @@ def jwt_decode_route():
             note += " expired"
         notes.append(note)
     try:
-        log_jwt_entry(token, header, payload, "; ".join(notes))
+        app.log_jwt_entry(token, header, payload, "; ".join(notes))
     except Exception:
         pass
 
@@ -159,7 +147,6 @@ def jwt_decode_route():
 
 @bp.route('/tools/jwt_encode', methods=['POST'])
 def jwt_encode_route():
-    import app
     raw = request.form.get('payload', '')
     if len(str(raw).encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
@@ -196,45 +183,41 @@ def jwt_encode_route():
 
 @bp.route('/jwt_cookies', methods=['GET'])
 def jwt_cookies_route():
-    import app
     if not app._db_loaded():
         return jsonify([])
-    rows = export_jwt_cookie_data()[:50]
+    rows = app.export_jwt_cookie_data()[:50]
     return jsonify(rows)
 
 
 @bp.route('/delete_jwt_cookies', methods=['POST'])
 def delete_jwt_cookies_route():
-    import app
     if not app._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    delete_jwt_cookies(ids)
+    app.delete_jwt_cookies(ids)
     return ('', 204)
 
 
 @bp.route('/update_jwt_cookie', methods=['POST'])
 def update_jwt_cookie_route():
-    import app
     if not app._db_loaded():
         return ('', 400)
     jid = request.form.get('id', type=int)
     notes = request.form.get('notes', '').strip()
     if not jid:
         return ('', 400)
-    update_jwt_cookie(jid, notes)
+    app.update_jwt_cookie(jid, notes)
     return ('', 204)
 
 
 @bp.route('/export_jwt_cookies', methods=['GET'])
 def export_jwt_cookies_route():
-    import app
     if not app._db_loaded():
         return jsonify([])
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
-    rows = export_jwt_cookie_data(ids if ids else None)
+    rows = app.export_jwt_cookie_data(ids if ids else None)
     return jsonify(rows)
 
 
@@ -245,13 +228,11 @@ def screenshotter_page():
 
 @bp.route('/tools/screenshotter', methods=['GET'])
 def screenshotter_full_page():
-    import app
     return app.index()
 
 
 @bp.route('/tools/screenshot', methods=['POST'])
 def screenshot_route():
-    import app
     if not app._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
@@ -260,7 +241,7 @@ def screenshot_route():
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        img_bytes = take_screenshot(url, agent, spoof, app.executablePath)
+        img_bytes = app.take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
     ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
@@ -280,16 +261,15 @@ def screenshot_route():
         app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(img_bytes)
-    sid = save_screenshot_record(app.SCREENSHOT_DIR, url, fname, thumb, 'GET')
+    sid = app.save_screenshot_record(url, fname, thumb, 'GET')
     return jsonify({'id': sid})
 
 
 @bp.route('/screenshots', methods=['GET'])
 def screenshots_route():
-    import app
     if not app._db_loaded():
         return jsonify([])
-    rows = list_screenshot_data()
+    rows = app.list_screenshot_data()
     for r in rows:
         r['file'] = url_for('static', filename='screenshots/' + r['screenshot_path'])
         r['preview'] = url_for('static', filename='screenshots/' + r['thumbnail_path'])
@@ -298,13 +278,12 @@ def screenshots_route():
 
 @bp.route('/delete_screenshots', methods=['POST'])
 def delete_screenshots_route():
-    import app
     if not app._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    delete_screenshots(app.SCREENSHOT_DIR, ids)
+    app.delete_screenshots(ids)
     return ('', 204)
 
 
