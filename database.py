@@ -48,6 +48,8 @@ def ensure_schema() -> None:
             conn.commit()
         finally:
             conn.close()
+        # Ensure the urls table has all expected columns
+        ensure_url_columns()
 
 
 def ensure_url_columns() -> None:
