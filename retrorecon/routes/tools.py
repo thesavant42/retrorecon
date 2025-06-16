@@ -296,6 +296,14 @@ def site2zip_page():
 def site2zip_full_page():
     return app.index()
 
+@bp.route('/layerslayer', methods=['GET'])
+def layerslayer_page():
+    return render_template('layerslayer.html')
+
+@bp.route('/tools/layerslayer', methods=['GET'])
+def layerslayer_full_page():
+    return app.index()
+
 
 @bp.route('/tools/site2zip', methods=['POST'])
 def site2zip_route():
