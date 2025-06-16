@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Client</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='api_client.css') }}" />
+</head>
+<body class="app">
+  <div class="retrorecon-root">
+    <h2>REST API Client</h2>
+    <div class="api-client">
+      <div class="api-client__form">
+        <div class="mb-4px">
+          <input type="text" id="openapi-url" class="form-input w-95" placeholder="OpenAPI URL" />
+          <button type="button" id="load-openapi" class="btn ml-4px">Load</button>
+        </div>
+        <select id="endpoint-select" class="form-select w-95 mb-4px"></select>
+        <form id="api-request-form">
+          <div class="mb-4px">
+            <select id="method" class="form-select w-6em mr-03">
+              <option>GET</option>
+              <option>POST</option>
+              <option>PUT</option>
+              <option>DELETE</option>
+              <option>PATCH</option>
+              <option>HEAD</option>
+            </select>
+            <input type="text" id="request-url" class="form-input w-95" placeholder="Request URL" />
+          </div>
+          <textarea id="headers" class="form-input api-client__textarea" placeholder="Header: value"></textarea>
+          <textarea id="body" class="form-input api-client__textarea" placeholder="Body"></textarea>
+          <button type="submit" class="btn mt-05">Send</button>
+          <button type="button" id="export-request" class="btn mt-05 ml-05">Export Request</button>
+        </form>
+      </div>
+      <div class="api-client__response">
+        <pre id="response-display" class="api-client__response-body"></pre>
+        <button type="button" id="export-response" class="btn mt-05">Export Response</button>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='api_client.js') }}"></script>
+</body>
+</html>

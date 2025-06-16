@@ -154,13 +154,21 @@ def delete_screenshots(ids: List[int]) -> None:
 
 
 
-from retrorecon.routes import notes_bp, tools_bp, db_bp, settings_bp, urls_bp
+from retrorecon.routes import (
+    notes_bp,
+    tools_bp,
+    db_bp,
+    settings_bp,
+    urls_bp,
+    api_client_bp,
+)
 from retrorecon.routes.urls import index
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
 app.register_blueprint(db_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(urls_bp)
+app.register_blueprint(api_client_bp)
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):
