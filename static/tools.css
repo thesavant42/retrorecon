@@ -1,8 +1,8 @@
 /* File: static/tools.css */
 .retrorecon-root .webpack-exploder-panel {
   padding: 1em;
-  background: #fafafa;
-  border: 1px solid #ccc;
+  background: var(--bg-color);
+  border: 1px solid var(--color-contrast);
   margin: 1em 0;
   border-radius: 6px;
 }
@@ -10,7 +10,7 @@
 .retrorecon-root .webpack-exploder-panel h2 {
   margin-top: 0;
   font-size: 1.2em;
-  color: #333;
+  color: var(--color-contrast);
 }
 
 .retrorecon-root .webpack-exploder-panel form {
@@ -25,26 +25,26 @@
   width: 250px;
   padding: 0.5em;
   font-size: 1em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-contrast);
   border-radius: 4px;
 }
 
 .retrorecon-root .webpack-exploder-panel button {
   padding: 0.5em 1em;
   font-size: 1em;
-  background-color: #f3f3f3;
-  border: 1px solid #fff;
+  background-color: var(--bg-color);
+  border: 1px solid var(--color-contrast);
   border-radius: 4px;
   cursor: pointer;
 }
 .retrorecon-root .webpack-exploder-panel button:hover {
-  background-color: #e0e0e0;
+  background-color: var(--bg-color);
 }
 
 .retrorecon-root #exploder-results {
   margin-top: 1em;
   white-space: pre-wrap;
-  font-family: monospace;
+  font-family: var(--font-main);
   max-height: 400px;
   overflow-y: auto;
 }
@@ -78,13 +78,13 @@
   white-space: nowrap;
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(120,120,120,0.5) transparent;
+  scrollbar-color: rgba(255,255,255,0.5) transparent;
 }
 .retrorecon-root #jwt-cookie-jar .cell-content::-webkit-scrollbar {
   height: 6px;
 }
 .retrorecon-root #jwt-cookie-jar .cell-content::-webkit-scrollbar-thumb {
-  background-color: rgba(120,120,120,0.5);
+  background-color: rgba(255,255,255,0.5);
   border-radius: 3px;
 }
 .retrorecon-root #jwt-cookie-jar .cell-content::-webkit-scrollbar-track {

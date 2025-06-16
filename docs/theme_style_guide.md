@@ -8,10 +8,15 @@ Retrorecon's CSS is built around a small set of variables. The base file `static
 
 ```css
 :root {
-  --bg-color: #0d011e00;
-  --bg-rgb: 13 1 30;
-  --fg-color: #ffffff;
-  --accent-color: #1ea1ff;
+  --color-base: #000000;
+  --color-contrast: #ffffff;
+  --color-accent: #8be9fd;
+  --font-main: 'Share Tech Mono', 'Consolas', monospace;
+
+  --bg-color: var(--color-base);
+  --bg-rgb: 0 0 0;
+  --fg-color: var(--color-contrast);
+  --accent-color: var(--color-accent);
   --panel-opacity: 0.25;
 }
 ```
@@ -32,17 +37,17 @@ The `neon` theme (`static/themes/theme-neon.css`) overrides these variables and 
 
 ```css
 :root {
-  --bg-main: #0d011e00;
+  --bg-main: #00000000;
   --bg-panel: rgb(0 0 0 / 0%);
-  --font-main: #e1e9ff;
+  --font-main: #ffffff;
   --font-accent: #8be9fd;
   --border-color: rgba(139, 233, 253, 0.4);
   --input-bg: rgb(34 39 50 / 0%);
   --input-border: #8be9fd;
 
   /* compatibility with base styles */
-  --bg-color: #1412224f;
-  --bg-rgb: 20 18 34;
+  --bg-color: rgba(0, 0, 0, 0.31);
+  --bg-rgb: 0 0 0;
   --panel-opacity: 0.92;
   --fg-color: var(--font-main);
   --accent-color: var(--font-accent);
