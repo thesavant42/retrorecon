@@ -119,6 +119,18 @@ def test_import_db_file(tmp_path, monkeypatch):
             assert rows and rows[0]['url'] == 'http://db.example/'
 
 
+def test_import_invalid_db_file(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    invalid_bytes = b'not a real sqlite db'
+
+    with app.app.test_client() as client:
+        resp = client.post('/import_file', data={'import_file': (io.BytesIO(invalid_bytes), 'bad.db')})
+        assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            # Should not set db_display_name to bad.db
+            assert sess.get('db_display_name') != 'bad.db'
+
+
 def test_save_db_custom_name(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
