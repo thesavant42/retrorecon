@@ -37,8 +37,14 @@ def test_subdomain_insert(tmp_path, monkeypatch):
     with app.app.app_context():
         app.create_new_db('subs')
     sample = [
-        {"name_value": "a.example.com\n*.wild.example.com"},
-        {"name_value": "b.example.com"}
+        {
+            "common_name": "*.skip.example.com",
+            "name_value": "a.example.com\\nb.example.com",
+        },
+        {
+            "common_name": "c.example.com",
+            "name_value": "c.example.com\\nd.example.com",
+        },
     ]
     monkeypatch.setattr(app.requests, 'get', lambda *a, **k: FakeResp(sample))
     with app.app.test_client() as client:
@@ -46,7 +52,12 @@ def test_subdomain_insert(tmp_path, monkeypatch):
         assert resp.status_code == 200
         data = resp.get_json()
         subs = [r['subdomain'] for r in data]
-        assert 'a.example.com' in subs and 'b.example.com' in subs
+        assert set(subs) == {
+            'a.example.com',
+            'b.example.com',
+            'c.example.com',
+            'd.example.com',
+        }
         assert all('*' not in s for s in subs)
 
 
