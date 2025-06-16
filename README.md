@@ -63,6 +63,12 @@ python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
 # RETRORECON_DB=dsprings.db python app.py
 ```
+On Windows you can run `launch_app.bat` to automatically update the repository,
+install the requirements and start the server:
+
+```cmd
+launch_app.bat
+```
 Then open <http://127.0.0.1:5000> in your browser.
 
 ## Usage
