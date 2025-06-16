@@ -223,6 +223,13 @@
 
             <!-- Data table -->
             <table class="url-table">
+              <colgroup>
+                <col class="w-2em" />
+                <col />
+                <col />
+                <col />
+                <col />
+              </colgroup>
               <thead>
                 <tr>
                   <th class="w-2em no-resize text-center">
@@ -965,12 +972,18 @@
     function makeResizable(table, key){
       table.style.tableLayout = 'fixed';
       const ths = table.querySelectorAll('th');
+      const cols = table.querySelectorAll('col');
       let widths = {};
       try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
       ths.forEach((th, idx) => {
         const id = idx;
-        if(widths[id]) th.style.width = widths[id];
-        th.style.width = th.style.width || th.offsetWidth + 'px';
+        if(widths[id]){
+          th.style.width = widths[id];
+          if(cols[id]) cols[id].style.width = widths[id];
+        }
+        const initial = th.style.width || th.offsetWidth + 'px';
+        th.style.width = initial;
+        if(cols[id]) cols[id].style.width = initial;
         if(th.classList.contains('no-resize')) return;
         const res = document.createElement('div');
         res.className = 'col-resizer';
@@ -985,9 +998,10 @@
           e.preventDefault();
         });
         function onMove(e){
-          const w = startWidth + (e.pageX - startX);
+          const w = Math.max(30, startWidth + (e.pageX - startX));
           th.style.width = w + 'px';
-          widths[id] = th.style.width;
+          if(cols[id]) cols[id].style.width = w + 'px';
+          widths[id] = w + 'px';
         }
         function stop(){
           document.removeEventListener('mousemove', onMove);
