@@ -320,7 +320,7 @@
 /* Navbar layout */
 .retrorecon-root .navbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   margin: 0 10px;
 }
@@ -330,10 +330,10 @@
 }
 .retrorecon-root .navbar__title {
   text-align: center;
-}
-.retrorecon-root .navbar__status {
-  justify-self: end;
-  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;
