@@ -1,12 +1,12 @@
 {
   "coverage": {
     "button": {
-      "total": 47,
-      "styled": 47
+      "total": 49,
+      "styled": 49
     },
     "input": {
-      "total": 14,
-      "styled": 9
+      "total": 15,
+      "styled": 10
     },
     "select": {
       "total": 5,

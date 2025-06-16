@@ -52,3 +52,12 @@ CREATE TABLE IF NOT EXISTS screenshots (
     thumbnail_path TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS domains (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    root_domain TEXT NOT NULL,
+    subdomain TEXT NOT NULL,
+    source TEXT NOT NULL,
+    fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(subdomain, source)
+);
