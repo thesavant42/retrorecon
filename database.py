@@ -38,6 +38,16 @@ def ensure_schema() -> None:
     """Apply ``schema.sql`` to an existing database if tables are missing."""
     if os.path.exists(current_app.config['DATABASE']):
         init_db()
+        # Add columns introduced in newer versions
+        conn = sqlite3.connect(current_app.config['DATABASE'])
+        try:
+            cur = conn.execute("PRAGMA table_info(screenshots)")
+            cols = [row[1] for row in cur.fetchall()]
+            if 'thumbnail_path' not in cols:
+                conn.execute("ALTER TABLE screenshots ADD COLUMN thumbnail_path TEXT")
+            conn.commit()
+        finally:
+            conn.close()
 
 
 def _sanitize_db_name(name: str) -> Optional[str]:

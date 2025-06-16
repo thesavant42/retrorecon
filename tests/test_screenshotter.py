@@ -40,6 +40,7 @@ def test_screenshot_workflow(tmp_path, monkeypatch):
         resp = client.get('/screenshots')
         rows = resp.get_json()
         assert rows and rows[0]['url'] == 'http://example.com'
+        assert 'preview' in rows[0]
         sid = rows[0]['id']
         resp = client.post('/delete_screenshots', data={'ids': sid})
         assert resp.status_code == 204

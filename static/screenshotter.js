@@ -17,7 +17,7 @@ function initScreenshotter(){
       '<th>Time</th><th>URL</th><th>Method</th><th>Thumbnail</th>'+
       '</tr></thead><tbody>';
     for(const row of tableData){
-      const img = `<img src="${row.file}" class="screenshot-thumb"/>`;
+      const img = `<img src="${row.preview}" class="screenshot-thumb"/>`;
       html += `<tr data-id="${row.id}"><td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
         `<td>${row.created_at}</td>`+
         `<td><div class="cell-content">${row.url}</div></td>`+

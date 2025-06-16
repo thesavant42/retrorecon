@@ -275,13 +275,13 @@ SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
 executablePath: Optional[str] = None
 
 
-def save_screenshot_record(url: str, path: str, method: str = 'GET') -> int:
+def save_screenshot_record(url: str, path: str, thumb: str, method: str = 'GET') -> int:
     """Insert a screenshot entry and return the row id."""
 
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
     return execute_db(
-        "INSERT INTO screenshots (url, method, screenshot_path) VALUES (?, ?, ?)",
-        [url, method, path],
+        "INSERT INTO screenshots (url, method, screenshot_path, thumbnail_path) VALUES (?, ?, ?, ?)",
+        [url, method, path, thumb],
     )
 
 
@@ -295,7 +295,7 @@ def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]
         where = f"WHERE id IN ({placeholders})"
         params.extend(ids)
     rows = query_db(
-        f"SELECT id, url, method, screenshot_path, created_at FROM screenshots {where} ORDER BY id DESC",
+        f"SELECT id, url, method, screenshot_path, thumbnail_path, created_at FROM screenshots {where} ORDER BY id DESC",
         params,
     )
     result = []
@@ -306,6 +306,7 @@ def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]
                 "url": r["url"],
                 "method": r["method"],
                 "screenshot_path": r["screenshot_path"],
+                "thumbnail_path": r["thumbnail_path"],
                 "created_at": r["created_at"],
             }
         )
@@ -319,16 +320,18 @@ def delete_screenshots(ids: List[int]) -> None:
         return
     for sid in ids:
         row = query_db(
-            "SELECT screenshot_path FROM screenshots WHERE id = ?",
+            "SELECT screenshot_path, thumbnail_path FROM screenshots WHERE id = ?",
             [sid],
             one=True,
         )
         if row:
             file_path = os.path.join(SCREENSHOT_DIR, row["screenshot_path"])
-            try:
-                os.remove(file_path)
-            except OSError:
-                pass
+            thumb_path = os.path.join(SCREENSHOT_DIR, row["thumbnail_path"])
+            for fp in (file_path, thumb_path):
+                try:
+                    os.remove(fp)
+                except OSError:
+                    pass
         execute_db("DELETE FROM screenshots WHERE id = ?", [sid])
 
 
@@ -1526,11 +1529,24 @@ def screenshot_route() -> Response:
         img_bytes = take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
-    fname = f'shot_{int(datetime.datetime.now(datetime.UTC).timestamp()*1000)}.png'
+    ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
+    fname = f'shot_{ts}.png'
+    thumb = f'shot_{ts}_th.png'
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
-    with open(os.path.join(SCREENSHOT_DIR, fname), 'wb') as f:
+    full_path = os.path.join(SCREENSHOT_DIR, fname)
+    with open(full_path, 'wb') as f:
         f.write(img_bytes)
-    sid = save_screenshot_record(url, fname, 'GET')
+    thumb_path = os.path.join(SCREENSHOT_DIR, thumb)
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(img_bytes))
+        img.thumbnail((160, 160))
+        img.save(thumb_path, format='PNG')
+    except Exception as e:  # pragma: no cover - pillow might not be installed
+        logger.debug('thumbnail generation failed: %s', e)
+        with open(thumb_path, 'wb') as f:
+            f.write(img_bytes)
+    sid = save_screenshot_record(url, fname, thumb, 'GET')
     return jsonify({'id': sid})
 
 
@@ -1543,6 +1559,7 @@ def screenshots_route() -> Response:
     rows = list_screenshot_data()
     for r in rows:
         r['file'] = url_for('static', filename='screenshots/' + r['screenshot_path'])
+        r['preview'] = url_for('static', filename='screenshots/' + r['thumbnail_path'])
     return jsonify(rows)
 
 
