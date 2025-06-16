@@ -74,6 +74,10 @@ set up a `venv` and start the server:
 launch_app.bat
 ```
 Then open <http://127.0.0.1:5000> in your browser.
+### Pyppeteer on Windows
+If screenshot capture shows a placeholder image, Pyppeteer likely could not download its bundled Chromium browser.
+Run `py -m pyppeteer install` or download revision 1181205 from https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip and extract it to `%LOCALAPPDATA%\pyppeteer\local-chromium\1181205`.
+You can also set `PYPPETEER_BROWSER_PATH` to the path of an existing Chrome executable.
 
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.

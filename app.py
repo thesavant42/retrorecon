@@ -334,7 +334,11 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
             return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg==")
 
     async def _cap() -> bytes:
-        browser = await launch(args=['--no-sandbox'])
+        launch_opts = {'args': ['--no-sandbox']}
+        exec_path = os.environ.get('PYPPETEER_BROWSER_PATH')
+        if exec_path:
+            launch_opts['executablePath'] = exec_path
+        browser = await launch(**launch_opts)
         page = await browser.newPage()
         if user_agent:
             await page.setUserAgent(user_agent)
