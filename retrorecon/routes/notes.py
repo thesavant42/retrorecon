@@ -1,4 +1,3 @@
-import app
 from flask import Blueprint, request, jsonify
 from retrorecon.services import (
     load_saved_tags,
@@ -15,6 +14,7 @@ bp = Blueprint('notes', __name__)
 
 @bp.route('/saved_tags', methods=['GET', 'POST'])
 def saved_tags_route():
+    import app
     if request.method == 'GET':
         return jsonify({'tags': load_saved_tags(app.SAVED_TAGS_FILE)})
     tag = request.form.get('tag', '').strip()
@@ -30,6 +30,7 @@ def saved_tags_route():
 
 @bp.route('/delete_saved_tag', methods=['POST'])
 def delete_saved_tag():
+    import app
     tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
@@ -43,6 +44,7 @@ def delete_saved_tag():
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])
 def notes_get(url_id: int):
+    import app
     if not app._db_loaded():
         return jsonify([])
     rows = get_notes(url_id)
@@ -59,6 +61,7 @@ def notes_get(url_id: int):
 
 @bp.route('/notes', methods=['POST'])
 def notes_post():
+    import app
     if not app._db_loaded():
         return ('', 400)
     url_id = request.form.get('url_id', type=int)
@@ -74,6 +77,7 @@ def notes_post():
 
 @bp.route('/delete_note', methods=['POST'])
 def delete_note_route():
+    import app
     note_id = request.form.get('note_id', type=int)
     url_id = request.form.get('url_id', type=int)
     delete_all = request.form.get('all', '0') == '1'
@@ -87,6 +91,7 @@ def delete_note_route():
 
 @bp.route('/export_notes', methods=['GET'])
 def export_notes():
+    import app
     if not app._db_loaded():
         return jsonify([])
     data = export_notes_data()
