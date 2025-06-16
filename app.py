@@ -8,6 +8,7 @@ import re
 import datetime
 import base64
 import logging
+import sys
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
@@ -41,6 +42,7 @@ from database import (
 from retrorecon import progress as progress_mod, saved_tags as saved_tags_mod, notes_utils, jwt_utils, search_utils, screenshot_utils
 
 app = Flask(__name__)
+sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
 logger = logging.getLogger(__name__)
 app.jwt = jwt
