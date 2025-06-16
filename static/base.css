@@ -88,6 +88,15 @@
 .retrorecon-root #results-per-page-select {
   width: 50px;
 }
+.retrorecon-root #results-per-page-select,
+.retrorecon-root .form-select.tool-select,
+.retrorecon-root #background-select,
+.retrorecon-root #theme-select {
+  background: transparent;
+  border: none;
+  color: var(--fg-color);
+  padding: 0.2em 0.4em;
+}
 .retrorecon-root .form-range {
   width: 100%;
 }
