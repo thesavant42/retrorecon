@@ -847,9 +847,15 @@
     }
 
     const opacityRange = document.getElementById('opacity-range');
+    let currentOpacity = null;
     function updateOpacity(val){
       const op = val / 100;
       document.documentElement.style.setProperty('--panel-opacity', op);
+    }
+    function persistOpacity(val){
+      const op = val / 100;
+      if(op === currentOpacity) return;
+      currentOpacity = op;
       fetch('/set_panel_opacity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -860,7 +866,11 @@
       opacityRange.addEventListener('input', function(){
         updateOpacity(this.value);
       });
+      opacityRange.addEventListener('change', function(){
+        persistOpacity(this.value);
+      });
       updateOpacity(opacityRange.value);
+      currentOpacity = parseFloat(opacityRange.value)/100;
     }
 
     const fontInput = document.getElementById('font-size-input');
