@@ -333,3 +333,19 @@ body.bg-hidden {
   color: var(--fg-color);
   padding: 2px 6px;
 }
+
+/* Standardize dropdown menu styling */
+.retrorecon-root .dropdown-content {
+  background-color: #000;
+  color: var(--font-main);
+  border: 1px solid var(--font-accent);
+}
+.retrorecon-root .dropdown-content .menu-btn,
+.retrorecon-root .dropdown-content a.menu-btn {
+  color: var(--font-main);
+}
+.retrorecon-root .dropdown-content .menu-btn:hover,
+.retrorecon-root .dropdown-content a.menu-btn:hover {
+  background: var(--font-accent);
+  color: #000;
+}
