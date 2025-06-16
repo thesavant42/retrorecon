@@ -15,12 +15,13 @@ def fetch_from_crtsh(domain: str) -> List[str]:
     data = resp.json()
     subs = set()
     for entry in data:
-        names = entry.get("name_value", "")
-        for name in str(names).split("\n"):
-            name = name.strip().lower()
-            if not name or "*" in name:
-                continue
-            subs.add(name)
+        values = [entry.get("common_name", ""), entry.get("name_value", "")]
+        for field in values:
+            for name in str(field).replace("\\n", "\n").splitlines():
+                name = name.strip().lower()
+                if not name or "*" in name:
+                    continue
+                subs.add(name)
     return sorted(subs)
 
 
