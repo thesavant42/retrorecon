@@ -268,6 +268,12 @@ def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, An
 # Screenshot utilities
 SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
 
+# Optional path to a Chromium executable for Playwright. Set this variable
+# to override the default browser location when calling :func:`take_screenshot`.
+# The environment variable ``PLAYWRIGHT_CHROMIUM_PATH`` still takes
+# precedence when defined.
+executablePath: Optional[str] = None
+
 
 def save_screenshot_record(url: str, path: str, method: str = 'GET') -> int:
     """Insert a screenshot entry and return the row id."""
@@ -339,10 +345,13 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
 
     def _cap() -> bytes:
         launch_opts = {"args": ["--no-sandbox"]}
-        exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
+        exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH") or executablePath
         if exec_path:
             launch_opts["executable_path"] = exec_path
-            logger.debug("using PLAYWRIGHT_CHROMIUM_PATH=%s", exec_path)
+            if "PLAYWRIGHT_CHROMIUM_PATH" in os.environ:
+                logger.debug("using PLAYWRIGHT_CHROMIUM_PATH=%s", exec_path)
+            else:
+                logger.debug("using app.executablePath=%s", exec_path)
         try:
             with sync_playwright() as pw:
                 browser = pw.chromium.launch(**launch_opts)

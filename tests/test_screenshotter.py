@@ -95,6 +95,57 @@ def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
     assert called['opts'].get('executable_path') == '/chrome/bin'
 
 
+def test_take_screenshot_variable_path(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+
+    called = {}
+
+    class DummyPage:
+        def goto(self, url, wait_until=None):
+            called['goto'] = (url, wait_until)
+        def screenshot(self, full_page=True):
+            return b'PNGDATA'
+
+    class DummyContext:
+        def set_extra_http_headers(self, headers):
+            called['hdr'] = headers
+        def new_page(self):
+            return DummyPage()
+
+    class DummyBrowser:
+        def new_context(self, user_agent=None):
+            called['ua'] = user_agent
+            return DummyContext()
+        def close(self):
+            called['closed'] = True
+
+    def dummy_launch(**opts):
+        called['opts'] = opts
+        return DummyBrowser()
+
+    class DummyChromium:
+        def launch(self, **opts):
+            return dummy_launch(**opts)
+
+    class PW:
+        def __enter__(self):
+            return self
+        def __exit__(self, exc_type, exc, tb):
+            pass
+        chromium = DummyChromium()
+
+    dummy_mod = types.SimpleNamespace(sync_playwright=lambda: PW())
+    monkeypatch.setitem(sys.modules, 'playwright.sync_api', dummy_mod)
+    monkeypatch.setitem(sys.modules, 'playwright', types.SimpleNamespace(sync_api=dummy_mod))
+    monkeypatch.delenv('PLAYWRIGHT_CHROMIUM_PATH', raising=False)
+    app.executablePath = '/alt/chrome'
+
+    data = app.take_screenshot('http://example.com')
+    assert data == b'PNGDATA'
+    assert called['opts'].get('executable_path') == '/alt/chrome'
+    app.executablePath = None
+
+
 def test_take_screenshot_logs_failure(monkeypatch, tmp_path, caplog):
     setup_tmp(monkeypatch, tmp_path)
 
