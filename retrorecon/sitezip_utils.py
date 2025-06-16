@@ -2,6 +2,11 @@ import os
 import io
 import zipfile
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3 import disable_warnings
+
+# Suppress warnings when capturing sites with invalid certificates
+disable_warnings(InsecureRequestWarning)
 from typing import Any, Dict, List, Optional, Tuple
 
 from database import execute_db, query_db
@@ -72,7 +77,7 @@ def capture_site(
         headers['User-Agent'] = user_agent
     if spoof_referrer:
         headers['Referer'] = url
-    resp = requests.get(url, headers=headers, timeout=15)
+    resp = requests.get(url, headers=headers, timeout=15, verify=False)
     resp.raise_for_status()
     html = resp.text
     screenshot = screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executable_path)

@@ -65,8 +65,9 @@ def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
             return DummyPage()
 
     class DummyBrowser:
-        def new_context(self, user_agent=None):
+        def new_context(self, user_agent=None, **kw):
             called['ua'] = user_agent
+            called['kw'] = kw
             return DummyContext()
         def close(self):
             called['closed'] = True
@@ -114,8 +115,9 @@ def test_take_screenshot_variable_path(monkeypatch, tmp_path):
             return DummyPage()
 
     class DummyBrowser:
-        def new_context(self, user_agent=None):
+        def new_context(self, user_agent=None, **kw):
             called['ua'] = user_agent
+            called['kw'] = kw
             return DummyContext()
         def close(self):
             called['closed'] = True

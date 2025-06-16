@@ -84,7 +84,7 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
         try:
             with sync_playwright() as pw:
                 browser = pw.chromium.launch(**launch_opts)
-                ctx_opts = {}
+                ctx_opts = {"ignore_https_errors": True}
                 if user_agent:
                     ctx_opts["user_agent"] = user_agent
                 context = browser.new_context(**ctx_opts)
