@@ -88,23 +88,6 @@
 .retrorecon-root #results-per-page-select {
   width: 50px;
 }
-.retrorecon-root #results-per-page-select,
-.retrorecon-root .form-select.tool-select,
-.retrorecon-root #background-select,
-.retrorecon-root #theme-select {
-  background: transparent;
-  border: none;
-  color: #fff;
-  padding: 0.2em 0.4em;
-  cursor: pointer;
-}
-.retrorecon-root #results-per-page-select:hover,
-.retrorecon-root .form-select.tool-select:hover,
-.retrorecon-root #background-select:hover,
-.retrorecon-root #theme-select:hover {
-  background: var(--fg-color);
-  color: var(--bg-color);
-}
 .retrorecon-root .form-range {
   width: 100%;
 }

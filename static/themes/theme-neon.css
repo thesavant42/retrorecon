@@ -341,19 +341,11 @@ body.bg-hidden {
   border: 1px solid var(--font-accent);
 }
 .retrorecon-root .dropdown-content .menu-btn,
-.retrorecon-root .dropdown-content a.menu-btn,
-.retrorecon-root #results-per-page-select,
-.retrorecon-root .form-select.tool-select,
-.retrorecon-root #background-select,
-.retrorecon-root #theme-select {
+.retrorecon-root .dropdown-content a.menu-btn {
   color: var(--font-main);
 }
 .retrorecon-root .dropdown-content .menu-btn:hover,
-.retrorecon-root .dropdown-content a.menu-btn:hover,
-.retrorecon-root #results-per-page-select:hover,
-.retrorecon-root .form-select.tool-select:hover,
-.retrorecon-root #background-select:hover,
-.retrorecon-root #theme-select:hover {
+.retrorecon-root .dropdown-content a.menu-btn:hover {
   background: var(--font-accent);
   color: #000;
 }
