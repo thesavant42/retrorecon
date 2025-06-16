@@ -68,7 +68,7 @@ python app.py
 # RETRORECON_DB=dsprings.db python app.py
 ```
 On Windows you can run `launch_app.bat` to automatically update the repository,
-install the requirements and start the server:
+set up a `venv` and start the server:
 
 ```cmd
 launch_app.bat
