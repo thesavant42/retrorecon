@@ -29,7 +29,7 @@
     <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
       <input type="hidden" name="count" id="items-count-input" />
     </form>
-    <select id="results-per-page-select" class="form-select" form="set-items-form">
+    <select id="results-per-page-select" class="form-select menu-btn" form="set-items-form">
       {% for n in [5,10,15,20,25] %}
       <option value="{{ n }}" {% if items_per_page == n %}selected{% endif %}>{{ '%02d' % n }}</option>
       {% endfor %}
@@ -120,7 +120,7 @@
           </form>
           <div class="theme-row menu-row mb-4px">
             <label for="theme-select" class="form-label menu-label">Theme:</label>
-            <select id="theme-select" class="form-select">
+            <select id="theme-select" class="form-select menu-btn">
               {% for t in themes %}
               {% set cols = theme_swatches.get(t) %}
               <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
@@ -131,7 +131,7 @@
           </div>
           <div class="menu-row mb-4px">
             <label for="background-select" class="form-label menu-label">Background:</label>
-            <select id="background-select" class="form-select">
+            <select id="background-select" class="form-select menu-btn">
               {% for bg in backgrounds %}
               <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
               {% endfor %}
@@ -256,7 +256,7 @@
                   <td></td>
                   <td colspan="4">
                     <div class="url-tools-row nowrap">
-                      <select class="form-select tool-select" onchange="handleToolSelect(this, '{{ url.url }}')">
+                      <select class="form-select tool-select menu-btn" onchange="handleToolSelect(this, '{{ url.url }}')">
                         <option value="">Tools…</option>
                         <option value="archive">Web Archive</option>
                         <option value="shodan">Shodan.io</option>
