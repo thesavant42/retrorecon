@@ -146,6 +146,40 @@ def test_import_dsprings_db(tmp_path, monkeypatch):
             assert row['c'] == 9387
 
 
+def test_load_db_file(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        db_name = app.create_new_db('sample')
+        app.execute_db(
+            "INSERT INTO urls (url, tags) VALUES (?, ?)", ['http://db.example/', '']
+        )
+    db_bytes = (tmp_path / db_name).read_bytes()
+
+    with app.app.test_client() as client:
+        resp = client.post('/load_db', data={'db_file': (io.BytesIO(db_bytes), 'sample.db')})
+        assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == 'sample.db'
+        with app.app.app_context():
+            rows = app.query_db('SELECT url FROM urls')
+            assert rows and rows[0]['url'] == 'http://db.example/'
+
+
+def test_load_dsprings_db(tmp_path, monkeypatch):
+    """Ensure uploading dsprings.db via /load_db loads all rows."""
+    setup_tmp(monkeypatch, tmp_path)
+    db_bytes = Path(__file__).with_name('dsprings.db').read_bytes()
+
+    with app.app.test_client() as client:
+        resp = client.post('/load_db', data={'db_file': (io.BytesIO(db_bytes), 'dsprings.db')})
+        assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == 'dsprings.db'
+        with app.app.app_context():
+            row = app.query_db('SELECT COUNT(*) AS c FROM urls', one=True)
+            assert row['c'] == 9387
+
+
 def test_save_db_custom_name(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
