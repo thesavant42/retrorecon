@@ -1,4 +1,8 @@
 from pathlib import Path
+import os
+import sys
+import types
+import logging
 import app
 
 
@@ -40,3 +44,54 @@ def test_screenshot_workflow(tmp_path, monkeypatch):
         resp = client.post('/delete_screenshots', data={'ids': sid})
         assert resp.status_code == 204
         assert client.get('/screenshots').get_json() == []
+
+
+def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+
+    called = {}
+
+    class DummyPage:
+        async def setUserAgent(self, ua):
+            called['ua'] = ua
+        async def setExtraHTTPHeaders(self, headers):
+            called['hdr'] = headers
+        async def goto(self, url, opts):
+            called['goto'] = (url, opts)
+        async def screenshot(self, fullPage=True):
+            return b'PNGDATA'
+
+    class DummyBrowser:
+        async def newPage(self):
+            return DummyPage()
+        async def close(self):
+            called['closed'] = True
+
+    async def dummy_launch(**opts):
+        called['opts'] = opts
+        return DummyBrowser()
+
+    dummy_mod = types.SimpleNamespace(launch=dummy_launch)
+    monkeypatch.setitem(sys.modules, 'pyppeteer', dummy_mod)
+    monkeypatch.setenv('PYPPETEER_BROWSER_PATH', '/chrome/bin')
+
+    data = app.take_screenshot('http://example.com', user_agent='ua', spoof_referrer=True)
+    assert data == b'PNGDATA'
+    assert called['opts'].get('executablePath') == '/chrome/bin'
+
+
+def test_take_screenshot_logs_failure(monkeypatch, tmp_path, caplog):
+    setup_tmp(monkeypatch, tmp_path)
+
+    async def fail_launch(**opts):
+        raise RuntimeError('boom')
+
+    dummy_mod = types.SimpleNamespace(launch=fail_launch)
+    monkeypatch.setitem(sys.modules, 'pyppeteer', dummy_mod)
+    monkeypatch.setenv('PYPPETEER_BROWSER_PATH', '/bad/path')
+
+    caplog.set_level(logging.DEBUG)
+    data = app.take_screenshot('http://example.com')
+    assert data.startswith(b'\x89PNG')
+    assert any('launch failed' in rec.message or 'screenshot capture failed' in rec.message for rec in caplog.records)
+
