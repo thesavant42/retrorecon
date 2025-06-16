@@ -198,6 +198,8 @@ def index() -> str:
         tool = 'jwt'
     elif request.path == '/tools/screenshotter':
         tool = 'screenshot'
+    elif request.path == '/tools/subdomonster':
+        tool = 'subdomonster'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
@@ -615,11 +617,12 @@ def bulk_action() -> Response:
 
 
 
-from retrorecon.routes import notes_bp, tools_bp, db_bp, settings_bp
+from retrorecon.routes import notes_bp, tools_bp, db_bp, settings_bp, domains_bp
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
 app.register_blueprint(db_bp)
 app.register_blueprint(settings_bp)
+app.register_blueprint(domains_bp)
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):
