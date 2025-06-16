@@ -109,10 +109,38 @@ def index() -> str:
             total_pages = 1
             total_count = 0
         except sqlite3.Error as e:
-            flash(f'Database error: {e}', 'error')
-            rows = []
-            total_pages = 1
-            total_count = 0
+            if 'no such column' in str(e).lower():
+                app.ensure_url_columns()
+                try:
+                    count_row = query_db(count_sql, params, one=True)
+                    total_count = count_row['cnt'] if count_row else 0
+
+                    total_pages = max(1, (total_count + items_per_page - 1) // items_per_page)
+
+                    if page < 1:
+                        page = 1
+                    elif page > total_pages:
+                        page = total_pages
+
+                    offset = (page - 1) * items_per_page
+                    select_sql = f"""
+                        SELECT id, url, timestamp, status_code, mime_type, tags
+                        FROM urls
+                        {where_sql}
+                        ORDER BY {sort_col} {direction.upper()}
+                        LIMIT ? OFFSET ?
+                    """
+                    rows = query_db(select_sql, params + [items_per_page, offset])
+                except sqlite3.Error as e2:
+                    flash(f'Database error: {e2}', 'error')
+                    rows = []
+                    total_pages = 1
+                    total_count = 0
+            else:
+                flash(f'Database error: {e}', 'error')
+                rows = []
+                total_pages = 1
+                total_count = 0
     else:
         rows = []
         total_pages = 1
