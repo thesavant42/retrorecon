@@ -38,6 +38,7 @@ from database import (
     _sanitize_db_name,
     _sanitize_export_name,
 )
+from retrorecon import progress as progress_mod, saved_tags as saved_tags_mod, notes_utils, jwt_utils, search_utils, screenshot_utils
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -90,11 +91,8 @@ else:
     AVAILABLE_BACKGROUNDS = []
 
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
-IMPORT_LOCK = threading.Lock()
 DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
 SAVED_TAGS_FILE = os.path.join(app.root_path, 'saved_tags.json')
-SAVED_TAGS_LOCK = threading.Lock()
-
 
 def _db_loaded() -> bool:
     """Return True if a database file is currently configured and exists."""
@@ -102,526 +100,84 @@ def _db_loaded() -> bool:
     return bool(app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']))
 
 def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
-    """Write progress information to ``IMPORT_PROGRESS_FILE``."""
-    with IMPORT_LOCK:
-        progress = {
-            'status': status,
-            'message': message,
-            'current': current,
-            'total': total
-        }
-        with open(IMPORT_PROGRESS_FILE, 'w') as f:
-            json.dump(progress, f)
+    progress_mod.set_progress(IMPORT_PROGRESS_FILE, status, message, current, total)
+
 
 def get_import_progress() -> Dict[str, Any]:
-    """Return the current import progress state."""
+    return progress_mod.get_progress(IMPORT_PROGRESS_FILE)
 
-    with IMPORT_LOCK:
-        if not os.path.exists(IMPORT_PROGRESS_FILE):
-            return {'status': 'idle', 'message': '', 'current': 0, 'total': 0}
-        with open(IMPORT_PROGRESS_FILE, 'r') as f:
-            return json.load(f)
 
 def clear_import_progress() -> None:
-    """Remove ``IMPORT_PROGRESS_FILE`` if it exists."""
-
-    with IMPORT_LOCK:
-        if os.path.exists(IMPORT_PROGRESS_FILE):
-            os.remove(IMPORT_PROGRESS_FILE)
+    progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
 
 
 def load_saved_tags() -> List[str]:
-    """Return the list of saved search tags."""
-
-    with SAVED_TAGS_LOCK:
-        if not os.path.exists(SAVED_TAGS_FILE):
-            return []
-        try:
-            with open(SAVED_TAGS_FILE, 'r') as f:
-                data = json.load(f)
-            if isinstance(data, list):
-                return [str(t) for t in data]
-        except Exception:
-            pass
-        return []
+    return saved_tags_mod.load_tags(SAVED_TAGS_FILE)
 
 
 def save_saved_tags(tags: List[str]) -> None:
-    """Persist ``tags`` to ``SAVED_TAGS_FILE``."""
-
-    with SAVED_TAGS_LOCK:
-        with open(SAVED_TAGS_FILE, 'w') as f:
-            json.dump(tags, f)
+    saved_tags_mod.save_tags(SAVED_TAGS_FILE, tags)
 
 
 def get_notes(url_id: int) -> List[sqlite3.Row]:
-    """Return all notes for a specific URL."""
-
-    return query_db(
-        "SELECT id, url_id, content, created_at, updated_at FROM notes WHERE url_id = ? ORDER BY id",
-        [url_id],
-    )
+    return notes_utils.get_notes(url_id)
 
 
 def add_note(url_id: int, content: str) -> int:
-    """Insert a note and return the row id."""
-
-    return execute_db(
-        "INSERT INTO notes (url_id, content) VALUES (?, ?)",
-        [url_id, escape(content)],
-    )
+    return notes_utils.add_note(url_id, content)
 
 
 def update_note(note_id: int, content: str) -> None:
-    """Update an existing note."""
-
-    execute_db(
-        "UPDATE notes SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [escape(content), note_id],
-    )
+    notes_utils.update_note(note_id, content)
 
 
 def delete_note_entry(note_id: int) -> None:
-    """Delete a note by ID."""
-
-    execute_db("DELETE FROM notes WHERE id = ?", [note_id])
+    notes_utils.delete_note_entry(note_id)
 
 
 def delete_all_notes(url_id: int) -> None:
-    """Remove all notes for a URL."""
-
-    execute_db("DELETE FROM notes WHERE url_id = ?", [url_id])
+    notes_utils.delete_all_notes(url_id)
 
 
 def export_notes_data() -> List[Dict[str, Any]]:
-    """Return all notes grouped by URL."""
-
-    rows = query_db(
-        "SELECT urls.url, notes.content FROM notes JOIN urls ON notes.url_id = urls.id ORDER BY urls.url, notes.id"
-    )
-    grouped: Dict[str, List[str]] = {}
-    for r in rows:
-        grouped.setdefault(r["url"], []).append(r["content"])
-    return [{"url": u, "notes": n} for u, n in grouped.items()]
+    return notes_utils.export_notes_data()
 
 
 def log_jwt_entry(token: str, header: Dict[str, Any], payload: Dict[str, Any], notes: str) -> None:
-    """Insert a decoded JWT into the ``jwt_cookies`` table."""
-
-    execute_db(
-        "INSERT INTO jwt_cookies (token, header, payload, notes) VALUES (?, ?, ?, ?)",
-        [token, json.dumps(header), json.dumps(payload), notes],
-    )
+    jwt_utils.log_entry(token, header, payload, notes)
 
 
 def delete_jwt_cookies(ids: List[int]) -> None:
-    """Delete JWT cookie log entries by ID."""
-
-    if not ids:
-        return
-    for jid in ids:
-        execute_db("DELETE FROM jwt_cookies WHERE id = ?", [jid])
+    jwt_utils.delete_cookies(ids)
 
 
 def update_jwt_cookie(jid: int, notes: str) -> None:
-    """Update the notes for a JWT cookie entry."""
-
-    execute_db("UPDATE jwt_cookies SET notes = ? WHERE id = ?", [notes, jid])
+    jwt_utils.update_cookie(jid, notes)
 
 
 def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    """Return JWT cookie entries as dictionaries."""
+    return jwt_utils.export_cookie_data(ids)
 
-    where = ""
-    params: List[Any] = []
-    if ids:
-        placeholders = ",".join("?" for _ in ids)
-        where = f"WHERE id IN ({placeholders})"
-        params.extend(ids)
-    rows = query_db(
-        f"SELECT id, token, header, payload, notes, created_at FROM jwt_cookies {where} ORDER BY id DESC",
-        params,
-    )
-    result = []
-    for r in rows:
-        try:
-            hdr = json.loads(r["header"])
-        except Exception:
-            hdr = {}
-        try:
-            pl = json.loads(r["payload"])
-        except Exception:
-            pl = {}
-        result.append(
-            {
-                "id": r["id"],
-                "token": r["token"],
-                "issuer": pl.get("iss", ""),
-                "alg": hdr.get("alg", ""),
-                "claims": list(pl.keys()),
-                "notes": r["notes"],
-                "created_at": r["created_at"],
-            }
-        )
-    return result
 
-# Screenshot utilities
 SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
-
-# Optional path to a Chromium executable for Playwright. Set this variable
-# to override the default browser location when calling :func:`take_screenshot`.
-# The environment variable ``PLAYWRIGHT_CHROMIUM_PATH`` still takes
-# precedence when defined.
 executablePath: Optional[str] = None
 
 
 def save_screenshot_record(url: str, path: str, thumb: str, method: str = 'GET') -> int:
-    """Insert a screenshot entry and return the row id."""
-
-    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
-    return execute_db(
-        "INSERT INTO screenshots (url, method, screenshot_path, thumbnail_path) VALUES (?, ?, ?, ?)",
-        [url, method, path, thumb],
-    )
+    return screenshot_utils.save_record(SCREENSHOT_DIR, url, path, thumb, method)
 
 
 def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    """Return screenshot metadata."""
-
-    where = ""
-    params: List[Any] = []
-    if ids:
-        placeholders = ",".join("?" for _ in ids)
-        where = f"WHERE id IN ({placeholders})"
-        params.extend(ids)
-    rows = query_db(
-        f"SELECT id, url, method, screenshot_path, thumbnail_path, created_at FROM screenshots {where} ORDER BY id DESC",
-        params,
-    )
-    result = []
-    for r in rows:
-        result.append(
-            {
-                "id": r["id"],
-                "url": r["url"],
-                "method": r["method"],
-                "screenshot_path": r["screenshot_path"],
-                "thumbnail_path": r["thumbnail_path"],
-                "created_at": r["created_at"],
-            }
-        )
-    return result
+    return screenshot_utils.list_data(ids)
 
 
 def delete_screenshots(ids: List[int]) -> None:
-    """Delete screenshot entries and image files."""
-
-    if not ids:
-        return
-    for sid in ids:
-        row = query_db(
-            "SELECT screenshot_path, thumbnail_path FROM screenshots WHERE id = ?",
-            [sid],
-            one=True,
-        )
-        if row:
-            file_path = os.path.join(SCREENSHOT_DIR, row["screenshot_path"])
-            thumb_path = os.path.join(SCREENSHOT_DIR, row["thumbnail_path"])
-            for fp in (file_path, thumb_path):
-                try:
-                    os.remove(fp)
-                except OSError:
-                    pass
-        execute_db("DELETE FROM screenshots WHERE id = ?", [sid])
+    screenshot_utils.delete_records(SCREENSHOT_DIR, ids)
 
 
 def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
-    """Return screenshot bytes of ``url`` using Playwright or a fallback image."""
+    return screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executablePath)
 
-    logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
-
-    try:
-        from playwright.sync_api import sync_playwright
-    except Exception as e:
-        logger.debug("playwright not available: %s", e)
-        return _placeholder_image(url)
-
-    def _cap() -> bytes:
-        launch_opts = {"args": ["--no-sandbox"]}
-        exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH") or executablePath
-        if exec_path:
-            launch_opts["executable_path"] = exec_path
-            if "PLAYWRIGHT_CHROMIUM_PATH" in os.environ:
-                logger.debug("using PLAYWRIGHT_CHROMIUM_PATH=%s", exec_path)
-            else:
-                logger.debug("using app.executablePath=%s", exec_path)
-        try:
-            with sync_playwright() as pw:
-                browser = pw.chromium.launch(**launch_opts)
-                ctx_opts = {}
-                if user_agent:
-                    ctx_opts["user_agent"] = user_agent
-                context = browser.new_context(**ctx_opts)
-                if spoof_referrer:
-                    context.set_extra_http_headers({"Referer": url})
-                page = context.new_page()
-                page.goto(url, wait_until="networkidle")
-                data = page.screenshot(full_page=True)
-                browser.close()
-                return data
-        except Exception as e:  # pragma: no cover - fallback handled below
-            logger.debug("screenshot capture failed: %s", e)
-            raise
-
-    try:
-        return _cap()
-    except Exception:
-        return _placeholder_image(url)
-
-
-def _placeholder_image(text: str) -> bytes:
-    """Return a placeholder PNG containing ``text``."""
-
-    try:
-        from PIL import Image, ImageDraw
-
-        img = Image.new("RGB", (800, 600), color="white")
-        draw = ImageDraw.Draw(img)
-        draw.text((10, 10), text, fill="black")
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        return buf.getvalue()
-    except Exception:
-        return base64.b64decode(
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg=="
-        )
-
-def load_demo_data() -> None:
-    """Populate the database with entries from ``DEMO_DATA_FILE`` if present."""
-    if not os.path.exists(DEMO_DATA_FILE):
-        return
-    try:
-        with open(DEMO_DATA_FILE, 'r') as f:
-            data = json.load(f)
-    except Exception:
-        return
-    db = sqlite3.connect(app.config['DATABASE'])
-    for rec in data:
-        if isinstance(rec, dict):
-            url = rec.get('url', '').strip()
-            tags = rec.get('tags', '').strip()
-        else:
-            url = str(rec).strip()
-            tags = ''
-        if url:
-            db.execute(
-                "INSERT OR IGNORE INTO urls (url, tags) VALUES (?, ?)",
-                (url, tags),
-            )
-    db.commit()
-    db.close()
-
-def _quote_hashtags(expr: str) -> str:
-    """Surround bare hashtag terms with quotes for proper tokenization."""
-
-    pattern = r'#([^#()]+?)(?=(?:\s+(?:AND|OR|NOT)\b|\s*\)|\s*#|$))'
-
-    def repl(match: re.Match) -> str:
-        inner = match.group(1).strip()
-        if ' ' in inner and not (inner.startswith('"') and inner.endswith('"')):
-            inner = f'"{inner}"'
-        return f'tag:{inner}'
-
-    return re.sub(pattern, repl, expr, flags=re.IGNORECASE)
-
-
-def _tokenize_tag_expr(expr: str) -> List[str]:
-    """Return a list of tokens for a boolean tag expression."""
-
-    token_re = re.compile(
-        r"\(|\)|\bAND\b|\bOR\b|\bNOT\b|\"[^\"]+\"|[^\s()]+",
-        re.IGNORECASE,
-    )
-    tokens = token_re.findall(expr)
-    return [t.strip('"') for t in tokens]
-
-
-def _parse_tag_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[str], int]:
-    """Recursive descent parser returning SQL and params."""
-
-    def parse_or(p: int) -> Tuple[str, List[str], int]:
-        sql, params, p = parse_and(p)
-        while p < len(tokens):
-            t = tokens[p].upper()
-            if t == 'OR':
-                p += 1
-                rhs_sql, rhs_params, p = parse_and(p)
-                sql = f"({sql} OR {rhs_sql})"
-                params.extend(rhs_params)
-            else:
-                break
-        return sql, params, p
-
-    def parse_and(p: int) -> Tuple[str, List[str], int]:
-        sql, params, p = parse_not(p)
-        while p < len(tokens):
-            t = tokens[p].upper()
-            if t == 'AND':
-                p += 1
-            elif t in ('OR', ')'):
-                break
-            else:
-                # implicit AND
-                pass
-            rhs_sql, rhs_params, p = parse_not(p)
-            sql = f"({sql} AND {rhs_sql})"
-            params.extend(rhs_params)
-        return sql, params, p
-
-    def parse_not(p: int) -> Tuple[str, List[str], int]:
-        if p < len(tokens) and tokens[p].upper() == 'NOT':
-            p += 1
-            sql, params, p = parse_not(p)
-            return f"(NOT {sql})", params, p
-        return parse_primary(p)
-
-    def parse_primary(p: int) -> Tuple[str, List[str], int]:
-        if p >= len(tokens):
-            raise ValueError('Unexpected end of expression')
-        tok = tokens[p]
-        if tok == '(':  # parse subexpression
-            sql, params, p = parse_or(p + 1)
-            if p >= len(tokens) or tokens[p] != ')':
-                raise ValueError('Unmatched parenthesis')
-            return sql, params, p + 1
-        if tok == ')':
-            raise ValueError('Unexpected )')
-        return "has_tag(tags, ?)", [tok], p + 1
-
-    return parse_or(pos)
-
-
-def build_tag_filter_sql(expr: str) -> Tuple[str, List[str]]:
-    """Convert a boolean tag expression to a SQL fragment and parameters."""
-
-    tokens = _tokenize_tag_expr(expr)
-    sql, params, pos = _parse_tag_expression(tokens)
-    if pos != len(tokens):
-        raise ValueError('Invalid syntax')
-    return sql, params
-
-
-def _tokenize_search_expr(expr: str) -> List[str]:
-    """Return a list of tokens for a general search expression."""
-
-    token_re = re.compile(
-        r"\(|\)|\bAND\b|\bOR\b|\bNOT\b|[a-zA-Z]+:\"[^\"]+\"|\"[^\"]+\"|[^\s()]+",
-        re.IGNORECASE,
-    )
-    raw = token_re.findall(expr)
-    tokens = []
-    for t in raw:
-        if ':' in t:
-            prefix, rest = t.split(':', 1)
-            if rest.startswith('"') and rest.endswith('"'):
-                rest = rest[1:-1]
-            tokens.append(f"{prefix}:{rest}")
-        else:
-            if t.startswith('"') and t.endswith('"'):
-                t = t[1:-1]
-            tokens.append(t)
-    return tokens
-
-
-def _parse_search_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[str], int]:
-    """Recursive descent parser for general search expressions."""
-
-    def parse_or(p: int) -> Tuple[str, List[str], int]:
-        sql, params, p = parse_and(p)
-        while p < len(tokens):
-            t = tokens[p].upper()
-            if t == 'OR':
-                p += 1
-                rhs_sql, rhs_params, p = parse_and(p)
-                sql = f"({sql} OR {rhs_sql})"
-                params.extend(rhs_params)
-            else:
-                break
-        return sql, params, p
-
-    def parse_and(p: int) -> Tuple[str, List[str], int]:
-        sql, params, p = parse_not(p)
-        while p < len(tokens):
-            t = tokens[p].upper()
-            if t == 'AND':
-                p += 1
-            elif t in ('OR', ')'):
-                break
-            else:
-                # implicit AND
-                pass
-            rhs_sql, rhs_params, p = parse_not(p)
-            sql = f"({sql} AND {rhs_sql})"
-            params.extend(rhs_params)
-        return sql, params, p
-
-    def parse_not(p: int) -> Tuple[str, List[str], int]:
-        if p < len(tokens) and tokens[p].upper() == 'NOT':
-            p += 1
-            sql, params, p = parse_not(p)
-            return f"(NOT {sql})", params, p
-        return parse_primary(p)
-
-    def term_sql(tok: str) -> Tuple[str, List[str]]:
-        lower = tok.lower()
-        if lower.startswith('url:'):
-            val = tok[4:]
-            return "url LIKE ?", [f"%{val}%"]
-        if lower.startswith('timestamp:'):
-            val = tok[len('timestamp:'):]
-            return "CAST(timestamp AS TEXT) LIKE ?", [f"%{val}%"]
-        if lower.startswith('http:'):
-            val = tok[5:]
-            return "CAST(status_code AS TEXT) LIKE ?", [f"%{val}%"]
-        if lower.startswith('mime:'):
-            val = tok[5:]
-            return "mime_type LIKE ?", [f"%{val}%"]
-        if lower.startswith('tag:'):
-            return "has_tag(tags, ?)", [tok[4:]]
-        return (
-            "("
-            "url LIKE ? OR tags LIKE ? OR CAST(timestamp AS TEXT) LIKE ? OR "
-            "CAST(status_code AS TEXT) LIKE ? OR mime_type LIKE ?"
-            ")",
-            [f"%{tok}%"] * 5,
-        )
-
-    def parse_primary(p: int) -> Tuple[str, List[str], int]:
-        if p >= len(tokens):
-            raise ValueError('Unexpected end of expression')
-        tok = tokens[p]
-        if tok == '(':  # subexpression
-            sql, params, p = parse_or(p + 1)
-            if p >= len(tokens) or tokens[p] != ')':
-                raise ValueError('Unmatched parenthesis')
-            return sql, params, p + 1
-        if tok == ')':
-            raise ValueError('Unexpected )')
-        sql, params = term_sql(tok)
-        return sql, params, p + 1
-
-    return parse_or(pos)
-
-
-def build_search_sql(expr: str) -> Tuple[str, List[str]]:
-    """Convert a search expression into SQL and parameters."""
-
-    expr = _quote_hashtags(expr)
-    tokens = _tokenize_search_expr(expr)
-    sql, params, pos = _parse_search_expression(tokens)
-    if pos != len(tokens):
-        raise ValueError('Invalid syntax')
-    return sql, params
 
 @app.route('/', methods=['GET'])
 def index() -> str:
@@ -655,7 +211,7 @@ def index() -> str:
         params = []
         if q:
             try:
-                search_sql, search_params = build_search_sql(q)
+                search_sql, search_params = search_utils.build_search_sql(q)
                 where_clauses.append(search_sql)
                 params.extend(search_params)
             except Exception:
@@ -989,10 +545,10 @@ def bulk_action() -> Response:
                 where_clauses.append("url LIKE ?")
                 params.append(f"%{val}%")
             elif '#' in q:
-                tag_expr = _quote_hashtags(q)
+                tag_expr = search_utils.quote_hashtags(q)
                 tag_expr = tag_expr.replace('#', '')
                 try:
-                    tag_sql, tag_params = build_tag_filter_sql(tag_expr)
+                    tag_sql, tag_params = search_utils.build_tag_filter_sql(tag_expr)
                     where_clauses.append(tag_sql)
                     params.extend(tag_params)
                 except Exception:
@@ -1164,7 +720,7 @@ def set_items_per_page() -> Response:
 
 
 @app.route('/saved_tags', methods=['GET', 'POST'])
-def saved_tags() -> Response:
+def saved_tags_route() -> Response:
     """Return or update the list of saved search tags."""
 
     if request.method == 'GET':
