@@ -5,4 +5,4 @@ cssutils
 pytest
 PyJWT
 Pillow
-pyppeteer
+playwright

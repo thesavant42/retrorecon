@@ -327,68 +327,62 @@ def delete_screenshots(ids: List[int]) -> None:
 
 
 def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
-    """Return screenshot bytes of ``url`` using pyppeteer or a fallback image."""
+    """Return screenshot bytes of ``url`` using Playwright or a fallback image."""
 
     logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
 
     try:
-        import asyncio
-        from pyppeteer import launch
+        from playwright.sync_api import sync_playwright
     except Exception as e:
-        logger.debug("pyppeteer not available: %s", e)
-        # Fallback placeholder if pyppeteer or Pillow are unavailable
-        try:
-            from PIL import Image, ImageDraw
+        logger.debug("playwright not available: %s", e)
+        return _placeholder_image(url)
 
-            img = Image.new("RGB", (800, 600), color="white")
-            draw = ImageDraw.Draw(img)
-            draw.text((10, 10), url, fill="black")
-            buf = io.BytesIO()
-            img.save(buf, format="PNG")
-            return buf.getvalue()
-        except Exception:
-            # 1x1 transparent PNG
-            return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg==")
-
-    async def _cap() -> bytes:
-        launch_opts = {'args': ['--no-sandbox']}
-        exec_path = os.environ.get('PYPPETEER_BROWSER_PATH')
+    def _cap() -> bytes:
+        launch_opts = {"args": ["--no-sandbox"]}
+        exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
         if exec_path:
-            launch_opts['executablePath'] = exec_path
-            logger.debug("using PYPPETEER_BROWSER_PATH=%s", exec_path)
+            launch_opts["executable_path"] = exec_path
+            logger.debug("using PLAYWRIGHT_CHROMIUM_PATH=%s", exec_path)
         try:
-            browser = await launch(**launch_opts)
-        except Exception as e:
-            logger.debug("launch failed with opts=%s error=%s", launch_opts, e)
+            with sync_playwright() as pw:
+                browser = pw.chromium.launch(**launch_opts)
+                ctx_opts = {}
+                if user_agent:
+                    ctx_opts["user_agent"] = user_agent
+                context = browser.new_context(**ctx_opts)
+                if spoof_referrer:
+                    context.set_extra_http_headers({"Referer": url})
+                page = context.new_page()
+                page.goto(url, wait_until="networkidle")
+                data = page.screenshot(full_page=True)
+                browser.close()
+                return data
+        except Exception as e:  # pragma: no cover - fallback handled below
+            logger.debug("screenshot capture failed: %s", e)
             raise
-        page = await browser.newPage()
-        if user_agent:
-            await page.setUserAgent(user_agent)
-        headers = {}
-        if spoof_referrer:
-            headers['Referer'] = url
-        if headers:
-            await page.setExtraHTTPHeaders(headers)
-        await page.goto(url, {'waitUntil': 'networkidle2'})
-        data = await page.screenshot(fullPage=True)
-        await browser.close()
-        return data
 
     try:
-        return asyncio.get_event_loop().run_until_complete(_cap())
-    except Exception as e:
-        logger.debug("screenshot capture failed: %s", e)
-        try:
-            from PIL import Image, ImageDraw
+        return _cap()
+    except Exception:
+        return _placeholder_image(url)
 
-            img = Image.new("RGB", (800, 600), color="white")
-            draw = ImageDraw.Draw(img)
-            draw.text((10, 10), url, fill="black")
-            buf = io.BytesIO()
-            img.save(buf, format="PNG")
-            return buf.getvalue()
-        except Exception:
-            return base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg==")
+
+def _placeholder_image(text: str) -> bytes:
+    """Return a placeholder PNG containing ``text``."""
+
+    try:
+        from PIL import Image, ImageDraw
+
+        img = Image.new("RGB", (800, 600), color="white")
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 10), text, fill="black")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return buf.getvalue()
+    except Exception:
+        return base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AAPAIB+AWd1QAAAABJRU5ErkJggg=="
+        )
 
 def load_demo_data() -> None:
     """Populate the database with entries from ``DEMO_DATA_FILE`` if present."""
