@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from flask import Blueprint, request, redirect, url_for, flash, send_file, session
 
 bp = Blueprint('db', __name__)
@@ -36,6 +37,21 @@ def load_db_route():
     app.close_connection(None)
     try:
         file.save(db_path)
+        try:
+            conn = sqlite3.connect(db_path)
+            cur = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='urls'"
+            )
+            if not cur.fetchone():
+                conn.close()
+                os.remove(db_path)
+                flash('Invalid database file.', 'error')
+                return redirect(url_for('urls.index'))
+            conn.close()
+        except sqlite3.Error:
+            os.remove(db_path)
+            flash('Invalid database file.', 'error')
+            return redirect(url_for('urls.index'))
         app.app.config['DATABASE'] = db_path
         app.ensure_schema()
         session['db_display_name'] = filename
