@@ -61,7 +61,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 ```bash
 pip install -r requirements.txt
 # Recommended: install Playwright browsers
-# playwright install
+# python -m playwright install
 python scripts/init_db.py  # initialize wabax.db
 python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
@@ -76,7 +76,11 @@ launch_app.bat
 Then open <http://127.0.0.1:5000> in your browser.
 ### Playwright on Windows
 If screenshot capture shows a placeholder image, Playwright may not have the Chromium browser installed.
-Run `playwright install` or set `PLAYWRIGHT_CHROMIUM_PATH` to an existing Chrome executable.
+Run `python -m playwright install` to download the browsers. If you previously
+set the `PLAYWRIGHT_BROWSERS_PATH` environment variable, remove it so Playwright
+can use its default location. Alternatively set `PLAYWRIGHT_CHROMIUM_PATH` to an
+existing Chrome executable. You can also assign a path to `app.executablePath`
+before calling screenshot functions to override the Chromium binary.
 
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
