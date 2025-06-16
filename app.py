@@ -99,6 +99,23 @@ SAVED_TAGS_FILE = os.path.join(app.root_path, 'saved_tags.json')
 # Clear any stale import progress from previous runs
 progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
 
+# Temporary database handling
+TEMP_DB_NAME = 'temp.db'
+TEMP_DISPLAY_NAME = 'UNSAVED'
+
+
+def _create_temp_db() -> None:
+    """Create a fresh temporary database for this session."""
+    app.config['DATABASE'] = os.path.join(app.root_path, TEMP_DB_NAME)
+    if os.path.exists(app.config['DATABASE']):
+        os.remove(app.config['DATABASE'])
+    init_db()
+
+
+if not env_db:
+    with app.app_context():
+        _create_temp_db()
+
 def _db_loaded() -> bool:
     """Return True if a database file is currently configured and exists."""
 
@@ -271,6 +288,8 @@ def index() -> str:
 
     if _db_loaded():
         actual_name = os.path.basename(app.config['DATABASE'])
+        if actual_name == TEMP_DB_NAME:
+            actual_name = TEMP_DISPLAY_NAME
     else:
         actual_name = '(none)'
     if session.get('db_display_name') != actual_name:
