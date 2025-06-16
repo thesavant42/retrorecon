@@ -9,6 +9,13 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 ## Project Home
 <https://github.com/thesavant42/retrorecon>
 
+## GitHub Releases & Topics
+
+Versioned releases are tracked using annotated Git tags prefixed with `v` (for example `v1.1.0`).
+Run the `Release` workflow or manually create a new tag to publish a release.
+
+On GitHub, apply the topics `flask`, `wayback-machine`, `sqlite` and `python` to help others discover this project.
+
 ## Background
 
 Time spent on reconaissance pays off in silence on the wire when it counts. In terms of packet economy, nothing beats free. And the Internet Archive's Wayback Machine is free (as in beer) as can be, so let's utilize it.
