@@ -6,7 +6,6 @@ import threading
 import urllib.parse
 import requests
 
-import app
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash,
     session, jsonify, Response
@@ -26,6 +25,7 @@ bp = Blueprint('urls', __name__)
 
 @bp.route('/', methods=['GET'])
 def index() -> str:
+    import app
     """Render the main search page."""
     q = request.args.get('q', '').strip()
     try:
@@ -153,6 +153,7 @@ def index() -> str:
 
 
 def _background_import(file_content: bytes) -> None:
+    import app
     """Background thread handler for JSON/line-delimited imports."""
     try:
         content = file_content.decode('utf-8').strip()
@@ -225,6 +226,7 @@ def _background_import(file_content: bytes) -> None:
 
 @bp.route('/fetch_cdx', methods=['POST'])
 def fetch_cdx() -> Response:
+    import app
     """Fetch CDX data for a domain and insert new URLs."""
     domain = request.form.get('domain', '').strip().lower()
     if not domain:
@@ -284,6 +286,7 @@ def fetch_cdx() -> Response:
 @bp.route('/import_file', methods=['POST'])
 @bp.route('/import_json', methods=['POST'])
 def import_file() -> Response:
+    import app
     """Import a JSON list or load a SQLite database depending on file type."""
     file = (
         request.files.get('import_file')
@@ -332,6 +335,7 @@ def import_file() -> Response:
 
 @bp.route('/import_progress', methods=['GET'])
 def import_progress() -> Response:
+    import app
     """Return JSON describing the current import progress."""
     prog = get_import_progress(app.IMPORT_PROGRESS_FILE)
     if request.args.get('clear') == '1' and prog.get('status') in ('done', 'failed'):
@@ -346,6 +350,7 @@ def import_progress() -> Response:
 
 @bp.route('/add_tag', methods=['POST'])
 def add_tag() -> Response:
+    import app
     """Append a tag to the selected URL entry."""
     if not app._db_loaded():
         flash('No database loaded.', 'error')
@@ -374,6 +379,7 @@ def add_tag() -> Response:
 
 @bp.route('/bulk_action', methods=['POST'])
 def bulk_action() -> Response:
+    import app
     """Apply a bulk action (tag or delete) to selected URLs."""
     if not app._db_loaded():
         flash('No database loaded.', 'error')

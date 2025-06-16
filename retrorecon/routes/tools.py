@@ -6,7 +6,6 @@ import base64
 import urllib.parse
 import requests
 import zipfile
-import app
 from flask import Blueprint, request, Response, jsonify, render_template, redirect, url_for, flash, send_file
 from retrorecon.services import (
     log_jwt_entry,
@@ -27,6 +26,7 @@ def text_tools_page():
 
 
 def _get_text_param():
+    import app
     text = request.form.get('text', '')
     if len(text.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return None
@@ -83,11 +83,13 @@ def jwt_tools_page():
 
 @bp.route('/tools/jwt', methods=['GET'])
 def jwt_tools_full_page():
+    import app
     return app.index()
 
 
 @bp.route('/tools/jwt_decode', methods=['POST'])
 def jwt_decode_route():
+    import app
     token = request.form.get('token', '')
     if len(token.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
@@ -157,6 +159,7 @@ def jwt_decode_route():
 
 @bp.route('/tools/jwt_encode', methods=['POST'])
 def jwt_encode_route():
+    import app
     raw = request.form.get('payload', '')
     if len(str(raw).encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
@@ -193,6 +196,7 @@ def jwt_encode_route():
 
 @bp.route('/jwt_cookies', methods=['GET'])
 def jwt_cookies_route():
+    import app
     if not app._db_loaded():
         return jsonify([])
     rows = export_jwt_cookie_data()[:50]
@@ -201,6 +205,7 @@ def jwt_cookies_route():
 
 @bp.route('/delete_jwt_cookies', methods=['POST'])
 def delete_jwt_cookies_route():
+    import app
     if not app._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
@@ -212,6 +217,7 @@ def delete_jwt_cookies_route():
 
 @bp.route('/update_jwt_cookie', methods=['POST'])
 def update_jwt_cookie_route():
+    import app
     if not app._db_loaded():
         return ('', 400)
     jid = request.form.get('id', type=int)
@@ -224,6 +230,7 @@ def update_jwt_cookie_route():
 
 @bp.route('/export_jwt_cookies', methods=['GET'])
 def export_jwt_cookies_route():
+    import app
     if not app._db_loaded():
         return jsonify([])
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
@@ -238,11 +245,13 @@ def screenshotter_page():
 
 @bp.route('/tools/screenshotter', methods=['GET'])
 def screenshotter_full_page():
+    import app
     return app.index()
 
 
 @bp.route('/tools/screenshot', methods=['POST'])
 def screenshot_route():
+    import app
     if not app._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
@@ -277,6 +286,7 @@ def screenshot_route():
 
 @bp.route('/screenshots', methods=['GET'])
 def screenshots_route():
+    import app
     if not app._db_loaded():
         return jsonify([])
     rows = list_screenshot_data()
@@ -288,6 +298,7 @@ def screenshots_route():
 
 @bp.route('/delete_screenshots', methods=['POST'])
 def delete_screenshots_route():
+    import app
     if not app._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
