@@ -39,13 +39,12 @@ curl -X POST -d "domain=example.com" http://localhost:5000/fetch_cdx
 ```
 
 ### `POST /import_file` (`/import_json`)
-Import URLs from a JSON file or load a database file. The route is accessible via both `/import_file` and `/import_json`.
+Import URLs from a JSON file. The route is accessible via both `/import_file` and `/import_json`.
 
-Parameters depend on the uploaded file:
-- `import_file` or `json_file` – JSON array/lines of records.
-- `db_file` – SQLite `.db` file to load.
+Parameters:
+- `import_file` or `json_file` – JSON array or newline-delimited records.
 
-Example (JSON import):
+Example:
 ```
 curl -X POST -F "import_file=@records.json" http://localhost:5000/import_file
 ```
