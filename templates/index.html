@@ -24,8 +24,16 @@
 </head>
 <body class="app">
   <div class="retrorecon-root">
-  {% macro render_pagination(page, total_pages, q, total_count) %}
+  {% macro render_pagination(page, total_pages, q, total_count, items_per_page) %}
   <div class="pagination mt-1">
+    <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
+      <input type="hidden" name="count" id="items-count-input" />
+    </form>
+    <select id="results-per-page-select" class="form-select" form="set-items-form">
+      {% for n in [5,10,15,20,25] %}
+      <option value="{{ n }}" {% if items_per_page == n %}selected{% endif %}>{{ '%02d' % n }}</option>
+      {% endfor %}
+    </select>
     <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
       <a href="?page=1&q={{ q }}" class="pagination-arrow" aria-label="First">&laquo;&laquo;</a>
@@ -187,7 +195,7 @@
   <table id="layout-c" class="w-100 mt-1">
     <tr>
       <td class="text-left">
-        {{ render_pagination(page, total_pages, q, total_count) }}
+        {{ render_pagination(page, total_pages, q, total_count, items_per_page) }}
       </td>
     </tr>
   </table>
@@ -294,7 +302,7 @@
     </tr>
     <tr>
       <td class="text-center mt-1">
-        {{ render_pagination(page, total_pages, q, total_count) }}
+        {{ render_pagination(page, total_pages, q, total_count, items_per_page) }}
       </td>
     </tr>
     <tr>
@@ -883,6 +891,15 @@
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: new URLSearchParams({size: this.value, theme: theme})
         });
+      });
+    }
+
+    const perPageSelect = document.getElementById('results-per-page-select');
+    const perPageInput = document.getElementById('items-count-input');
+    if(perPageSelect && perPageInput){
+      perPageSelect.addEventListener('change', function(){
+        perPageInput.value = this.value;
+        document.getElementById('set-items-form').submit();
       });
     }
 

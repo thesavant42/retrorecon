@@ -36,7 +36,8 @@ if env_db:
 else:
     app.config['DATABASE'] = None
 app.secret_key = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY'
-ITEMS_PER_PAGE = 20
+ITEMS_PER_PAGE = 10  # default results per page
+ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 25]
 TEXT_TOOLS_LIMIT = 64 * 1024  # 64 KB limit for text transformations
 
 THEMES_DIR = os.path.join(app.root_path, 'static', 'themes')
@@ -725,6 +726,13 @@ def index() -> str:
     if direction not in ['asc', 'desc']:
         direction = 'desc'
 
+    try:
+        items_per_page = int(session.get('items_per_page', ITEMS_PER_PAGE))
+    except ValueError:
+        items_per_page = ITEMS_PER_PAGE
+    if items_per_page not in ITEMS_PER_PAGE_OPTIONS:
+        items_per_page = ITEMS_PER_PAGE
+
     if _db_loaded():
         where_clauses = []
         params = []
@@ -759,14 +767,15 @@ def index() -> str:
         count_sql = f"SELECT COUNT(*) AS cnt FROM urls {where_sql}"
         count_row = query_db(count_sql, params, one=True)
         total_count = count_row['cnt'] if count_row else 0
-        total_pages = max(1, (total_count + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE)
+
+        total_pages = max(1, (total_count + items_per_page - 1) // items_per_page)
 
         if page < 1:
             page = 1
         elif page > total_pages:
             page = total_pages
 
-        offset = (page - 1) * ITEMS_PER_PAGE
+        offset = (page - 1) * items_per_page
         select_sql = f"""
             SELECT id, url, timestamp, status_code, mime_type, tags
             FROM urls
@@ -774,7 +783,7 @@ def index() -> str:
             ORDER BY {sort_col} {direction.upper()}
             LIMIT ? OFFSET ?
         """
-        rows = query_db(select_sql, params + [ITEMS_PER_PAGE, offset])
+        rows = query_db(select_sql, params + [items_per_page, offset])
     else:
         rows = []
         total_pages = 1
@@ -816,6 +825,7 @@ def index() -> str:
         current_background=current_background,
         panel_opacity=panel_opacity,
         total_count=total_count,
+        items_per_page=items_per_page,
         db_name=db_name,
         search_history=search_history,
         current_sort=sort,
@@ -1221,6 +1231,19 @@ def set_font_size() -> Response:
     with open(path, 'w') as fh:
         fh.write('\n'.join(new_lines) + '\n')
     return ('', 204)
+
+
+@app.route('/set_items_per_page', methods=['POST'])
+def set_items_per_page() -> Response:
+    """Persist the preferred results-per-page value in the session."""
+    try:
+        count = int(request.form.get('count', ''))
+    except ValueError:
+        return ('Invalid value', 400)
+    if count not in ITEMS_PER_PAGE_OPTIONS:
+        return ('Invalid value', 400)
+    session['items_per_page'] = count
+    return redirect(url_for('index'))
 
 
 @app.route('/saved_tags', methods=['GET', 'POST'])
