@@ -160,7 +160,7 @@
             <input type="hidden" name="map_url" id="webpack-url-input" />
             <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
           </form>
-          <div class="menu-row"><a href="#" class="menu-btn">Site-to-zip</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="site2zip-link">Site2Zip</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
@@ -856,6 +856,38 @@
         });
       }
 
+      const site2zipLink = document.getElementById('site2zip-link');
+      let site2zipLoaded = false;
+
+      async function showSite2zip(skipPush){
+        if(!site2zipLoaded){
+          const resp = await fetch('/site2zip');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/site2zip.js';
+          document.body.appendChild(script);
+          site2zipLoaded = true;
+        }
+        document.getElementById('sitezip-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'site2zip'}, '', '/tools/site2zip');
+        }
+      }
+
+      function hideSite2zip(){
+        const ov = document.getElementById('sitezip-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
+      if(site2zipLink){
+        site2zipLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showSite2zip();
+        });
+      }
+
       const subLink = document.getElementById('subdomonster-link');
       let subLoaded = false;
 
@@ -898,6 +930,18 @@
 
       if(location.pathname === '/tools/subdomonster' || openTool === 'subdomonster'){
         showSubdomonster(true);
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/site2zip'){
+          showSite2zip(true);
+        } else {
+          hideSite2zip();
+        }
+      });
+
+      if(location.pathname === '/tools/site2zip' || openTool === 'site2zip'){
+        showSite2zip(true);
       }
 
       window.addEventListener('popstate', () => {

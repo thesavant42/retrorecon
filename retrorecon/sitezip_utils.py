@@ -1,0 +1,84 @@
+import os
+import io
+import zipfile
+import requests
+from typing import Any, Dict, List, Optional, Tuple
+
+from database import execute_db, query_db
+from . import screenshot_utils
+
+
+def save_record(dir_path: str, url: str, zip_path: str, screenshot_path: str, method: str = 'GET') -> int:
+    os.makedirs(dir_path, exist_ok=True)
+    return execute_db(
+        "INSERT INTO sitezips (url, method, zip_path, screenshot_path) VALUES (?, ?, ?, ?)",
+        [url, method, zip_path, screenshot_path],
+    )
+
+
+def list_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
+    where = ""
+    params: List[Any] = []
+    if ids:
+        placeholders = ",".join("?" for _ in ids)
+        where = f"WHERE id IN ({placeholders})"
+        params.extend(ids)
+    rows = query_db(
+        f"SELECT id, url, method, zip_path, screenshot_path, created_at FROM sitezips {where} ORDER BY id DESC",
+        params,
+    )
+    result = []
+    for r in rows:
+        result.append(
+            {
+                "id": r["id"],
+                "url": r["url"],
+                "method": r["method"],
+                "zip_path": r["zip_path"],
+                "screenshot_path": r["screenshot_path"],
+                "created_at": r["created_at"],
+            }
+        )
+    return result
+
+
+def delete_records(dir_path: str, ids: List[int]) -> None:
+    if not ids:
+        return
+    for sid in ids:
+        row = query_db(
+            "SELECT zip_path, screenshot_path FROM sitezips WHERE id = ?",
+            [sid],
+            one=True,
+        )
+        if row:
+            for fname in (row["zip_path"], row["screenshot_path"]):
+                path = os.path.join(dir_path, fname)
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+        execute_db("DELETE FROM sitezips WHERE id = ?", [sid])
+
+
+def capture_site(
+    url: str,
+    user_agent: str = '',
+    spoof_referrer: bool = False,
+    executable_path: Optional[str] = None,
+) -> Tuple[bytes, bytes]:
+    headers = {}
+    if user_agent:
+        headers['User-Agent'] = user_agent
+    if spoof_referrer:
+        headers['Referer'] = url
+    resp = requests.get(url, headers=headers, timeout=15)
+    resp.raise_for_status()
+    html = resp.text
+    screenshot = screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executable_path)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as z:
+        z.writestr('index.html', html)
+        z.writestr('screenshot.png', screenshot)
+    buf.seek(0)
+    return buf.getvalue(), screenshot

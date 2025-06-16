@@ -287,6 +287,74 @@ def delete_screenshots_route():
     return ('', 204)
 
 
+@bp.route('/site2zip', methods=['GET'])
+def site2zip_page():
+    return render_template('site2zip.html')
+
+
+@bp.route('/tools/site2zip', methods=['GET'])
+def site2zip_full_page():
+    return app.index()
+
+
+@bp.route('/tools/site2zip', methods=['POST'])
+def site2zip_route():
+    if not app._db_loaded():
+        return jsonify({'error': 'no_db'}), 400
+    url = request.form.get('url', '').strip()
+    if not url:
+        return ('Missing URL', 400)
+    agent = request.form.get('agent', '').strip()
+    spoof = request.form.get('spoof_referrer', '0') == '1'
+    try:
+        zip_bytes, shot_bytes = app.capture_site(url, agent, spoof)
+    except Exception as e:
+        return (f'Error capturing site: {e}', 500)
+    ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
+    zip_name = f'site_{ts}.zip'
+    shot_name = f'site_{ts}.png'
+    os.makedirs(app.SITEZIP_DIR, exist_ok=True)
+    with open(os.path.join(app.SITEZIP_DIR, zip_name), 'wb') as f:
+        f.write(zip_bytes)
+    with open(os.path.join(app.SITEZIP_DIR, shot_name), 'wb') as f:
+        f.write(shot_bytes)
+    sid = app.save_sitezip_record(url, zip_name, shot_name, 'GET')
+    return jsonify({'id': sid})
+
+
+@bp.route('/sitezips', methods=['GET'])
+def sitezips_route():
+    if not app._db_loaded():
+        return jsonify([])
+    rows = app.list_sitezip_data()
+    for r in rows:
+        r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
+        r['preview'] = url_for('static', filename='sitezips/' + r['screenshot_path'])
+    return jsonify(rows)
+
+
+@bp.route('/download_sitezip/<int:sid>', methods=['GET'])
+def download_sitezip_route(sid: int):
+    if not app._db_loaded():
+        return ('', 400)
+    rows = app.list_sitezip_data([sid])
+    if not rows:
+        return ('Not found', 404)
+    zip_path = os.path.join(app.SITEZIP_DIR, rows[0]['zip_path'])
+    return send_file(zip_path, mimetype='application/zip', as_attachment=True, download_name=rows[0]['zip_path'])
+
+
+@bp.route('/delete_sitezips', methods=['POST'])
+def delete_sitezips_route():
+    if not app._db_loaded():
+        return ('', 400)
+    ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
+    if not ids:
+        return ('', 400)
+    app.delete_sitezips(ids)
+    return ('', 204)
+
+
 @bp.route('/tools/webpack-zip', methods=['POST'])
 def webpack_zip():
     map_url = request.form.get('map_url', '').strip()
