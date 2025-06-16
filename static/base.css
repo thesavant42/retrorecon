@@ -455,6 +455,18 @@
   color: var(--bg-color);
 }
 
+/* Consistent styling for select dropdowns used as menu buttons */
+.retrorecon-root select.menu-btn {
+  background: #000;
+  color: var(--fg-color);
+  border: 1px solid var(--accent-color);
+  padding: 0.2em 0.4em;
+}
+.retrorecon-root select.menu-btn option {
+  background: #000;
+  color: var(--fg-color);
+}
+
 
 .retrorecon-root .import-row {
   display: grid;
