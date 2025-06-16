@@ -20,3 +20,12 @@ def test_import_progress(tmp_path, monkeypatch):
 
     app.clear_import_progress()
     assert not progress_file.exists()
+
+
+def test_get_progress_bad_json(tmp_path, monkeypatch):
+    progress_file = tmp_path / "progress.json"
+    progress_file.write_text("nonsense")
+    monkeypatch.setattr(app, "IMPORT_PROGRESS_FILE", str(progress_file))
+
+    data = app.get_import_progress()
+    assert data == {"status": "idle", "message": "", "current": 0, "total": 0}
