@@ -39,7 +39,15 @@ from database import (
     _sanitize_db_name,
     _sanitize_export_name,
 )
-from retrorecon import progress as progress_mod, saved_tags as saved_tags_mod, notes_utils, jwt_utils, search_utils, screenshot_utils
+from retrorecon import (
+    progress as progress_mod,
+    saved_tags as saved_tags_mod,
+    notes_utils,
+    jwt_utils,
+    search_utils,
+    screenshot_utils,
+    sitezip_utils,
+)
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
@@ -182,6 +190,7 @@ def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, An
 
 
 SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
+SITEZIP_DIR = os.path.join(app.root_path, 'static', 'sitezips')
 executablePath: Optional[str] = None
 
 
@@ -199,6 +208,22 @@ def delete_screenshots(ids: List[int]) -> None:
 
 def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
     return screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executablePath)
+
+
+def save_sitezip_record(url: str, zip_name: str, screenshot_name: str, method: str = 'GET') -> int:
+    return sitezip_utils.save_record(SITEZIP_DIR, url, zip_name, screenshot_name, method)
+
+
+def list_sitezip_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
+    return sitezip_utils.list_data(ids)
+
+
+def delete_sitezips(ids: List[int]) -> None:
+    sitezip_utils.delete_records(SITEZIP_DIR, ids)
+
+
+def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -> Tuple[bytes, bytes]:
+    return sitezip_utils.capture_site(url, user_agent, spoof_referrer, executablePath)
 
 
 @app.route('/', methods=['GET'])

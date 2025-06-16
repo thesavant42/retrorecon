@@ -115,70 +115,6 @@
       }
     },
     {
-      "name": "POST /set_theme",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/set_theme",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "set_theme"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST /set_background",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/set_background",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "set_background"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST /set_panel_opacity",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/set_panel_opacity",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "set_panel_opacity"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST /set_font_size",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/set_font_size",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "set_font_size"
-          ]
-        }
-      }
-    },
-    {
       "name": "GET /saved_tags",
       "request": {
         "method": "GET",
@@ -392,6 +328,23 @@
       }
     },
     {
+      "name": "GET /tools/jwt",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/jwt",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "jwt"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /tools/jwt_decode",
       "request": {
         "method": "POST",
@@ -421,6 +374,251 @@
           "path": [
             "tools",
             "jwt_encode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /jwt_cookies",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/jwt_cookies",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "jwt_cookies"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_jwt_cookies",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_jwt_cookies",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_jwt_cookies"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /update_jwt_cookie",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/update_jwt_cookie",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "update_jwt_cookie"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /export_jwt_cookies",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/export_jwt_cookies",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "export_jwt_cookies"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /screenshotter",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/screenshotter",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "screenshotter"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/screenshotter",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/screenshotter",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "screenshotter"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/screenshot",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/screenshot",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "screenshot"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /screenshots",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/screenshots",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "screenshots"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_screenshots",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_screenshots",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_screenshots"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /site2zip",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/site2zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "site2zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/site2zip",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/site2zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "site2zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /tools/site2zip",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/site2zip",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "site2zip"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /sitezips",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/sitezips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "sitezips"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /download_sitezip/<int:sid>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/download_sitezip/<int:sid>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "download_sitezip",
+            "<int:sid>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_sitezips",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_sitezips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_sitezips"
           ]
         }
       }
@@ -507,83 +705,130 @@
       }
     },
     {
-      "name": "GET /site2zip",
+      "name": "POST /set_theme",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/site2zip",
+          "raw": "{{base_url}}/set_theme",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "site2zip"
+            "set_theme"
           ]
         }
       }
     },
     {
-      "name": "POST /tools/site2zip",
+      "name": "POST /set_background",
       "request": {
         "method": "POST",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/tools/site2zip",
+          "raw": "{{base_url}}/set_background",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_background"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_panel_opacity",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_panel_opacity",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_panel_opacity"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_font_size",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_font_size",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_font_size"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /set_items_per_page",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/set_items_per_page",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "set_items_per_page"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /subdomonster",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/subdomonster",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "subdomonster"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/subdomonster",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/subdomonster",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "tools",
-            "site2zip"
+            "subdomonster"
           ]
         }
       }
     },
     {
-      "name": "GET /sitezips",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/sitezips",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "sitezips"
-          ]
-        }
-      }
-    },
-    {
-      "name": "GET /download_sitezip/<int:id>",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/download_sitezip/<int:id>",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "download_sitezip",
-            "<int:id>"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST /delete_sitezips",
+      "name": "POST /subdomains",
       "request": {
         "method": "POST",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/delete_sitezips",
+          "raw": "{{base_url}}/subdomains",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "delete_sitezips"
+            "subdomains"
           ]
         }
       }

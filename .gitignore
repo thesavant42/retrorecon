@@ -12,3 +12,4 @@ __pycache__/
 !reports/report.json
 last_db.txt
 static/screenshots/
+static/sitezips/
