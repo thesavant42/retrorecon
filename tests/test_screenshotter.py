@@ -53,8 +53,8 @@ def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
     called = {}
 
     class DummyPage:
-        def goto(self, url, wait_until=None):
-            called['goto'] = (url, wait_until)
+        def goto(self, url, wait_until=None, **kw):
+            called['goto'] = (url, wait_until, kw.get('timeout'))
         def screenshot(self, full_page=True):
             return b'PNGDATA'
 
@@ -103,8 +103,8 @@ def test_take_screenshot_variable_path(monkeypatch, tmp_path):
     called = {}
 
     class DummyPage:
-        def goto(self, url, wait_until=None):
-            called['goto'] = (url, wait_until)
+        def goto(self, url, wait_until=None, **kw):
+            called['goto'] = (url, wait_until, kw.get('timeout'))
         def screenshot(self, full_page=True):
             return b'PNGDATA'
 

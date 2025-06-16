@@ -91,7 +91,10 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
                 if spoof_referrer:
                     context.set_extra_http_headers({"Referer": url})
                 page = context.new_page()
-                page.goto(url, wait_until="networkidle")
+                # Avoid long hangs by waiting only for the load event with a
+                # reasonable timeout. Some sites never reach a true
+                # "networkidle" state which caused timeouts.
+                page.goto(url, wait_until="load", timeout=15000)
                 data = page.screenshot(full_page=True)
                 browser.close()
                 return data
