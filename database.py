@@ -50,6 +50,29 @@ def ensure_schema() -> None:
             conn.close()
 
 
+def ensure_url_columns() -> None:
+    """Add missing columns to the ``urls`` table if needed."""
+
+    if os.path.exists(current_app.config['DATABASE']):
+        conn = sqlite3.connect(current_app.config['DATABASE'])
+        try:
+            cur = conn.execute("PRAGMA table_info(urls)")
+            cols = [row[1] for row in cur.fetchall()]
+            required = {
+                'domain': 'TEXT',
+                'timestamp': 'TEXT',
+                'status_code': 'INTEGER',
+                'mime_type': 'TEXT',
+                'tags': "TEXT DEFAULT ''",
+            }
+            for col, col_type in required.items():
+                if col not in cols:
+                    conn.execute(f"ALTER TABLE urls ADD COLUMN {col} {col_type}")
+            conn.commit()
+        finally:
+            conn.close()
+
+
 def _sanitize_db_name(name: str) -> Optional[str]:
     """Return a sanitized ``name.db`` or ``None`` if empty after cleaning."""
     base, _ = os.path.splitext(name)

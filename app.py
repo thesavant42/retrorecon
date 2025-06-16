@@ -34,6 +34,7 @@ from database import (
     execute_db,
     init_db,
     ensure_schema,
+    ensure_url_columns,
     create_new_db,
     _sanitize_db_name,
     _sanitize_export_name,
