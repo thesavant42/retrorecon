@@ -43,10 +43,10 @@ def insert_records(root_domain: str, subs: List[str], source: str = "crtsh") -> 
 def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
     """Return all subdomains for ``root_domain``."""
     rows = query_db(
-        "SELECT subdomain, source, fetched_at FROM domains WHERE root_domain = ? ORDER BY subdomain",
+        "SELECT subdomain, root_domain as domain, source FROM domains WHERE root_domain = ? ORDER BY subdomain",
         [root_domain],
     )
     return [
-        {"subdomain": r["subdomain"], "source": r["source"], "fetched_at": r["fetched_at"]}
+        {"subdomain": r["subdomain"], "domain": r["domain"], "source": r["source"]}
         for r in rows
     ]

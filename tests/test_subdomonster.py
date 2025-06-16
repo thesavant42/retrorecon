@@ -58,6 +58,7 @@ def test_subdomain_insert(tmp_path, monkeypatch):
             'c.example.com',
             'd.example.com',
         }
+        assert all(r['domain'] == 'example.com' for r in data)
         assert all('*' not in s for s in subs)
 
 

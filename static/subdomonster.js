@@ -9,10 +9,10 @@ function initSubdomonster(){
 
   function render(rows){
     let html = '<table class="table url-table w-100"><thead><tr>'+
-      '<th>Subdomain</th><th>Source</th><th>Fetched</th>'+
+      '<th>Subdomain</th><th>Domain</th><th>Source</th>'+
       '</tr></thead><tbody>';
     for(const r of rows){
-      html += `<tr><td>${r.subdomain}</td><td>${r.source}</td><td>${r.fetched_at}</td></tr>`;
+      html += `<tr><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
