@@ -85,6 +85,9 @@
 .retrorecon-root #background-select {
   width: 180px;
 }
+.retrorecon-root #results-per-page-select {
+  width: 3.5em;
+}
 .retrorecon-root .form-range {
   width: 100%;
 }
