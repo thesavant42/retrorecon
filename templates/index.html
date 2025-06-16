@@ -102,7 +102,7 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
       <div class="dropdown-content" id="edit-menu">
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({checked:true})">Select All (All visible results)</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({})">Select All (All visible results)</button></div>
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (All matching results)</button></div>
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Delete Selected</button></div>
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset tags Selected</button></div>
@@ -419,14 +419,21 @@
     });
 
     function toggleSelectAllPage(cb) {
-      document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
-      document.getElementById('select-all-matching').checked = false;
+      const boxes = document.querySelectorAll('.row-checkbox');
+      let state = cb.checked;
+      if(state === undefined){
+        state = !Array.from(boxes).every(c => c.checked);
+      }
+      boxes.forEach(c => c.checked = state);
+      const matchCb = document.getElementById('select-all-matching');
+      if(matchCb) matchCb.checked = false;
       document.getElementById('select-all-matching-input').value = "false";
     }
 
     function toggleSelectAllMatching(cb) {
       document.getElementById('select-all-matching-input').value = cb.checked ? "true" : "false";
-      document.getElementById('select-all-page').checked = false;
+      const pageCb = document.getElementById('select-all-page');
+      if(pageCb) pageCb.checked = false;
       if (cb.checked) {
         document.querySelectorAll('.row-checkbox').forEach(c => c.checked = true);
       }
@@ -889,6 +896,38 @@
         });
       }
 
+      const layerslayerLink = document.getElementById('layerslayer-link');
+      let layerslayerLoaded = false;
+
+      async function showLayerslayer(skipPush){
+        if(!layerslayerLoaded){
+          const resp = await fetch('/layerslayer');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/layerslayer.js';
+          document.body.appendChild(script);
+          layerslayerLoaded = true;
+        }
+        document.getElementById('layerslayer-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'layerslayer'}, '', '/tools/layerslayer');
+        }
+      }
+
+      function hideLayerslayer(){
+        const ov = document.getElementById('layerslayer-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
+      if(layerslayerLink){
+        layerslayerLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showLayerslayer();
+        });
+      }
+
       const subLink = document.getElementById('subdomonster-link');
       let subLoaded = false;
 
@@ -943,6 +982,18 @@
 
       if(location.pathname === '/tools/site2zip' || openTool === 'site2zip'){
         showSite2zip(true);
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/layerslayer'){
+          showLayerslayer(true);
+        } else {
+          hideLayerslayer();
+        }
+      });
+
+      if(location.pathname === '/tools/layerslayer' || openTool === 'layerslayer'){
+        showLayerslayer(true);
       }
 
       window.addEventListener('popstate', () => {
