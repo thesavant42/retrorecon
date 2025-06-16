@@ -368,7 +368,7 @@
   border-radius: 0;
   border: 1px solid #fff;
   margin-top: 6px;
-  color: var(--fg-color);
+  color: #fff;
 }
 /* Square styling for all navbar controls */
 .retrorecon-root .navbar input,
@@ -425,7 +425,7 @@
 .retrorecon-root .menu-row a.menu-btn {
   background: transparent;
   border: none;
-  color: var(--fg-color);
+  color: #fff;
   padding: 0.2em 0.4em;
   text-align: left;
   width: 100%;
@@ -437,7 +437,7 @@
 .retrorecon-root .dropdown-content a.menu-btn {
   background: transparent;
   border: none;
-  color: var(--fg-color);
+  color: #fff;
   padding: 0.2em 0.4em;
   text-align: left;
   width: 100%;
