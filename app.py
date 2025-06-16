@@ -7,6 +7,7 @@ import threading
 import re
 import datetime
 import base64
+import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
@@ -40,6 +41,7 @@ from database import (
 
 app = Flask(__name__)
 app.config.from_object(Config)
+logger = logging.getLogger(__name__)
 app.jwt = jwt
 env_db = app.config.get('DB_ENV')
 if env_db:
@@ -327,10 +329,13 @@ def delete_screenshots(ids: List[int]) -> None:
 def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
     """Return screenshot bytes of ``url`` using pyppeteer or a fallback image."""
 
+    logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
+
     try:
         import asyncio
         from pyppeteer import launch
-    except Exception:
+    except Exception as e:
+        logger.debug("pyppeteer not available: %s", e)
         # Fallback placeholder if pyppeteer or Pillow are unavailable
         try:
             from PIL import Image, ImageDraw
@@ -350,7 +355,12 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
         exec_path = os.environ.get('PYPPETEER_BROWSER_PATH')
         if exec_path:
             launch_opts['executablePath'] = exec_path
-        browser = await launch(**launch_opts)
+            logger.debug("using PYPPETEER_BROWSER_PATH=%s", exec_path)
+        try:
+            browser = await launch(**launch_opts)
+        except Exception as e:
+            logger.debug("launch failed with opts=%s error=%s", launch_opts, e)
+            raise
         page = await browser.newPage()
         if user_agent:
             await page.setUserAgent(user_agent)
@@ -366,7 +376,8 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
 
     try:
         return asyncio.get_event_loop().run_until_complete(_cap())
-    except Exception:
+    except Exception as e:
+        logger.debug("screenshot capture failed: %s", e)
         try:
             from PIL import Image, ImageDraw
 
