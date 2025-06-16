@@ -49,5 +49,6 @@ CREATE TABLE IF NOT EXISTS screenshots (
     url TEXT,
     method TEXT,
     screenshot_path TEXT,
+    thumbnail_path TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
