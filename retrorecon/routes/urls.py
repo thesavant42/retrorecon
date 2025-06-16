@@ -111,6 +111,7 @@ def index() -> str:
         except sqlite3.Error as e:
             if 'no such column' in str(e).lower():
                 app.ensure_url_columns()
+                close_connection(None)
                 try:
                     count_row = query_db(count_sql, params, one=True)
                     total_count = count_row['cnt'] if count_row else 0
