@@ -894,12 +894,13 @@
       });
     }
 
-    const perPageSelect = document.getElementById('results-per-page-select');
     const perPageInput = document.getElementById('items-count-input');
-    if(perPageSelect && perPageInput){
-      perPageSelect.addEventListener('change', function(){
-        perPageInput.value = this.value;
-        document.getElementById('set-items-form').submit();
+    if(perPageInput){
+      document.querySelectorAll('#results-per-page-select').forEach(sel => {
+        sel.addEventListener('change', function(){
+          perPageInput.value = this.value;
+          document.getElementById('set-items-form').submit();
+        });
       });
     }
 
