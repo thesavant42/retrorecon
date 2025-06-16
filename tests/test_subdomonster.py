@@ -74,3 +74,28 @@ def test_subdomain_invalid_domain(tmp_path, monkeypatch):
         resp = client.post('/subdomains', data={'domain': 'http://bad'})
         assert resp.status_code == 400
     assert not called
+
+
+def test_subdomain_virustotal(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('vt')
+    samples = [
+        {"data": [{"id": "a.example.com"}], "links": {"next": "n"}},
+        {"data": [{"id": "b.example.com"}], "links": {}}
+    ]
+    idx = 0
+    def fake_get(url, *a, **k):
+        nonlocal idx
+        resp = FakeResp(samples[idx])
+        idx += 1
+        return resp
+    monkeypatch.setattr(app.requests, 'get', fake_get)
+    with app.app.test_client() as client:
+        resp = client.post('/subdomains', data={'domain': 'example.com', 'source': 'virustotal', 'api_key': 'k'})
+        assert resp.status_code == 200
+        data = resp.get_json()
+        subs = [r['subdomain'] for r in data]
+        assert set(subs) == {'a.example.com', 'b.example.com'}
+        assert all(r['source'] == 'virustotal' for r in data)
+

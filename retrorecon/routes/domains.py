@@ -25,9 +25,16 @@ def subdomains_route():
         return ('Missing domain', 400)
     if not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
         return ('Invalid domain', 400)
+    source = request.form.get('source', 'crtsh')
+    api_key = request.form.get('api_key', '').strip()
     try:
-        subs = subdomain_utils.fetch_from_crtsh(domain)
+        if source == 'virustotal':
+            if not api_key:
+                return ('Missing API key', 400)
+            subs = subdomain_utils.fetch_from_virustotal(domain, api_key)
+        else:
+            subs = subdomain_utils.fetch_from_crtsh(domain)
     except Exception as e:  # pragma: no cover - network errors
         return (f'Error fetching: {e}', 500)
-    subdomain_utils.insert_records(domain, subs, 'crtsh')
+    subdomain_utils.insert_records(domain, subs, source)
     return jsonify(subdomain_utils.list_subdomains(domain))
