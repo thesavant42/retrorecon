@@ -12,6 +12,9 @@ def new_db():
         flash('Invalid database name.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
+    temp_path = os.path.join(app.app.root_path, app.TEMP_DB_NAME)
+    if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
     try:
         db_name = app.create_new_db(safe)
         session['db_display_name'] = db_name
@@ -33,6 +36,9 @@ def load_db_route():
         return redirect(url_for('index'))
     db_path = os.path.join(app.app.root_path, filename)
     app.close_connection(None)
+    temp_path = os.path.join(app.app.root_path, app.TEMP_DB_NAME)
+    if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
     try:
         file.save(db_path)
         app.app.config['DATABASE'] = db_path
