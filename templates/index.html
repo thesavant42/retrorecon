@@ -77,16 +77,16 @@
             <button type="submit" class="menu-btn">New Database</button>
           </form>
           <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row" id="load-db-form">
-            <input type="file" name="db_file" accept=".db,.json" required class="form-file d-none" id="load-db-file" />
-            <button type="button" class="menu-btn" id="load-db-btn">Open Database</button>
+            <input type="file" name="db_file" accept=".db" required class="form-file d-none" id="load-db-file" />
+            <button type="button" class="menu-btn" id="load-db-btn">Open SQLite Database</button>
           </form>
           <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
             <input type="hidden" name="new_name" id="rename-db-name" />
             <button type="submit" class="menu-btn">Rename Database</button>
           </form>
           <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row" id="import-form">
-            <input type="file" name="import_file" accept=".json,.db" required class="form-file d-none" id="import-file-input" />
-            <button type="button" class="menu-btn" id="import-file-btn">Import Database</button>
+            <input type="file" name="import_file" accept=".json" required class="form-file d-none" id="import-file-input" />
+            <button type="button" class="menu-btn" id="import-file-btn">Import JSON Records</button>
           </form>
           <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
             <input id="domain-input" type="hidden" name="domain" />

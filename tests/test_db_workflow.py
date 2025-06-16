@@ -101,7 +101,7 @@ def test_load_json_populates_db(tmp_path, monkeypatch):
             assert rows and rows[0]['timestamp'] == '20240101010101'
 
 
-def test_import_db_file(tmp_path, monkeypatch):
+def test_load_db_file(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     # create a sample database that will be uploaded
     with app.app.app_context():
@@ -110,7 +110,7 @@ def test_import_db_file(tmp_path, monkeypatch):
     sample_bytes = (tmp_path / sample_name).read_bytes()
 
     with app.app.test_client() as client:
-        resp = client.post('/import_file', data={'import_file': (io.BytesIO(sample_bytes), 'upload.db')})
+        resp = client.post('/load_db', data={'db_file': (io.BytesIO(sample_bytes), 'upload.db')})
         assert resp.status_code == 302
         with client.session_transaction() as sess:
             assert sess['db_display_name'] == 'upload.db'

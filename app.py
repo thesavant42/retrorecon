@@ -441,11 +441,10 @@ def _background_import(file_content: bytes) -> None:
 @app.route('/import_file', methods=['POST'])
 @app.route('/import_json', methods=['POST'])
 def import_file() -> Response:
-    """Import a JSON list or load a SQLite database depending on file type."""
+    """Import a JSON list of records into the current database."""
     file = (
         request.files.get('import_file')
         or request.files.get('json_file')
-        or request.files.get('db_file')
     )
     if not file:
         flash("No file uploaded for import.", "error")
@@ -454,36 +453,20 @@ def import_file() -> Response:
     filename = file.filename or ''
     ext = filename.rsplit('.', 1)[-1].lower()
 
-    if ext == 'json':
-        if not _db_loaded():
-            flash("No database loaded.", "error")
-            return redirect(url_for('index'))
-        clear_import_progress()
-        file_content = file.read()
-        set_import_progress('starting', 'Starting import...', 0, 0)
-        thread = threading.Thread(target=_background_import, args=(file_content,))
-        thread.start()
-        flash("Import started! Progress will be shown below.", "success")
+    if ext != 'json':
+        flash('Please upload a JSON file.', 'error')
         return redirect(url_for('index'))
 
-    if ext == 'db':
-        filename = _sanitize_db_name(filename)
-        if not filename:
-            flash('Invalid database file.', 'error')
-            return redirect(url_for('index'))
-        db_path = os.path.join(app.root_path, filename)
-        close_connection(None)
-        try:
-            file.save(db_path)
-            app.config['DATABASE'] = db_path
-            ensure_schema()
-            session['db_display_name'] = filename
-            flash("Database loaded.", "success")
-        except Exception as e:
-            flash(f"Error loading database: {e}", "error")
+    if not _db_loaded():
+        flash('No database loaded.', 'error')
         return redirect(url_for('index'))
 
-    flash('Unsupported file type.', 'error')
+    clear_import_progress()
+    file_content = file.read()
+    set_import_progress('starting', 'Starting import...', 0, 0)
+    thread = threading.Thread(target=_background_import, args=(file_content,))
+    thread.start()
+    flash('Import started! Progress will be shown below.', 'success')
     return redirect(url_for('index'))
 
 @app.route('/import_progress', methods=['GET'])
