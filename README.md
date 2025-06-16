@@ -2,6 +2,10 @@
 
 A Flask web application for exploring Wayback Machine data. It fetches CDX records, stores them in SQLite, and provides a UI to search, tag and manage the results.
 
+
+![Screenshot](docs/Screenshot-001.png)
+
+
 ## Project Home
 <https://github.com/thesavant42/retrorecon>
 
