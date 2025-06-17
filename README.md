@@ -46,8 +46,8 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Inline and bulk tag management
 - Bulk actions with "select all visible" or "select all matching"
 - Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
-- Download, load or create databases from the menu, including naming your new
-  database
+- Download, create or switch between databases from the menu, including naming
+  new ones
 - Rename the current database without leaving the application
 - Remembers and reloads the most recently used database on launch
 - Theme switching via Menu dropdown with optional background image toggle

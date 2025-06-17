@@ -161,3 +161,18 @@ def test_new_after_rename_preserves_old_file(tmp_path, monkeypatch):
         assert (tmp_path / 'db' / 'renamed.db').exists()
         assert (tmp_path / 'db' / 'waybax.db').exists()
 
+
+def test_load_saved_db(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        name = app.create_new_db('alpha')
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, ?)", ['http://a.example/', ''])
+    with app.app.test_client() as client:
+        resp = client.post('/load_saved_db', data={'db_file': name})
+        assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == name
+        with app.app.app_context():
+            rows = app.query_db('SELECT url FROM urls')
+            assert rows and rows[0]['url'] == 'http://a.example/'
+
