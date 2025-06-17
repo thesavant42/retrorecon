@@ -74,3 +74,20 @@ def test_dag_fs_route(tmp_path, monkeypatch):
         resp = client.get('/dag/fs/sha256:x/a.txt?image=user/repo:tag')
         assert resp.status_code == 200
         assert resp.data == b'hello'
+
+
+def test_dag_layer_route(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.dag as dag
+
+    async def fake_list(image_ref, digest, client=None):
+        assert image_ref == 'user/repo:tag'
+        assert digest == 'sha256:x'
+        return ['a.txt', 'b.txt']
+
+    monkeypatch.setattr(dag, 'list_layer_files', fake_list)
+
+    with app.app.test_client() as client:
+        resp = client.get('/dag/layer/sha256:x?image=user/repo:tag')
+        assert resp.status_code == 200
+        assert resp.get_json()['files'] == ['a.txt', 'b.txt']
