@@ -136,13 +136,14 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
                 '</tr></thead><tbody>'
             )
             for layer in plat["layers"]:
-                files = "".join(f"<li>{f}</li>" for f in layer["files"])
+                files = "".join(
+                    f'<li><a class="mt" href="/layers/{img}/{f}">{f}</a></li>'
+                    for f in layer["files"]
+                )
                 files_html = (
                     f"<details><summary>{len(layer['files'])} files</summary><ul>{files}</ul></details>"
                 )
-                dlink = (
-                    f"/download_layer?image={img}&digest={layer['digest']}"
-                )
+                dlink = f"/download_layer?image={img}&digest={layer['digest']}"
                 html += (
                     f'<tr><td class="w-25em"><div class="cell-content">{layer["digest"]}</div></td>'
                     f'<td>{layer["size"]}</td><td>{files_html}</td>'

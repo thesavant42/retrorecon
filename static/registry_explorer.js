@@ -93,7 +93,12 @@ function initRegistryExplorer(){
                '<th class="text-center no-resize">Delete</th>'+
                '</tr></thead><tbody>';
       for(const layer of plat.layers){
-        const files = layer.files.map(f=>`<li>${f}</li>`).join('');
+        const files = layer.files.map(f=>{
+          const p = f.split('/').map(encodeURIComponent).join('/');
+          const imgEnc = img.split('/').map(encodeURIComponent).join('/');
+          const href = `/layers/${imgEnc}/${p}`;
+          return `<li><a class="mt" href="${href}" target="_blank">${f}</a></li>`;
+        }).join('');
         const filesHtml = `<details><summary>${layer.files.length} files</summary><ul>${files}</ul></details>`;
         const dlink = `/download_layer?image=${encodeURIComponent(img)}&digest=${encodeURIComponent(layer.digest)}`;
         html += `<tr><td><div class="cell-content">${layer.digest}</div></td>`+
