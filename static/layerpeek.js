@@ -10,7 +10,37 @@ function initLayerpeek(){
   const fetchBtn = document.getElementById('layerslayer-fetch-btn');
   const tableDiv = document.getElementById('layerslayer-table');
   const infoDiv = document.getElementById('layerslayer-info');
+  const consoleDiv = document.getElementById('layerslayer-console');
   const closeBtn = document.getElementById('layerslayer-close-btn');
+
+  function logStatus(msg){
+    if(!consoleDiv) return;
+    consoleDiv.textContent += msg + '\n';
+    consoleDiv.scrollTop = consoleDiv.scrollHeight;
+  }
+
+  let statusTimer = null;
+  let statusDelay = 1000;
+  function pollStatus(){
+    if(overlay.classList.contains('hidden')){ statusTimer = null; return; }
+    fetch('/status')
+      .then(r => r.status === 204 ? null : r.json())
+      .then(data => {
+        if(data && data.code && data.code.startsWith('layerpeek')){
+          logStatus(data.message || data.code);
+          statusDelay = 1000;
+        }else{
+          statusDelay = Math.min(statusDelay * 2, 3000);
+        }
+        statusTimer = setTimeout(pollStatus, statusDelay);
+      })
+      .catch(() => { statusTimer = setTimeout(pollStatus, 5000); });
+  }
+
+  function startPolling(){
+    consoleDiv.textContent = '';
+    if(!statusTimer) pollStatus();
+  }
 
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
@@ -89,6 +119,7 @@ function initLayerpeek(){
     const img = imageInput.value.trim();
     if(!img) return;
     console.log('[Layerpeek] fetch layers for', img);
+    startPolling();
     fetchBtn.disabled = true;
     const oldText = fetchBtn.textContent;
     fetchBtn.textContent = 'Fetching...';
@@ -121,6 +152,10 @@ function initLayerpeek(){
   closeBtn.addEventListener('click', () => {
     console.log('[Layerpeek] closing overlay');
     overlay.classList.add('hidden');
+    if(statusTimer){
+      clearTimeout(statusTimer);
+      statusTimer = null;
+    }
     if(location.pathname === '/tools/layerpeek'){
       history.pushState({}, '', '/');
     }

@@ -15,6 +15,7 @@ from layerslayer.utils import (
     registry_base_url,
     human_readable_size,
 )
+from retrorecon import status as status_mod
 
 
 class DockerRegistryClient:
@@ -229,7 +230,9 @@ async def _layers_details(
 
 
 async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
+    status_mod.push_status('layerpeek_start', image_ref)
     async with DockerRegistryClient() as client:
+        status_mod.push_status('layerpeek_fetch_manifest', image_ref)
         manifest_index = await get_manifest(image_ref, client=client)
         result: List[Dict[str, Any]] = []
         if manifest_index.get("manifests"):
@@ -237,9 +240,13 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
             for m in platforms:
                 plat = m.get("platform", {})
                 digest = m["digest"]
+                status_mod.push_status(
+                    'layerpeek_fetch_manifest', f"{plat.get('os')}/{plat.get('architecture')}"
+                )
                 manifest = await get_manifest(
                     image_ref, specific_digest=digest, client=client
                 )
+                status_mod.push_status('layerpeek_fetch_layers', digest)
                 layers = await _layers_details(image_ref, manifest, client)
                 result.append(
                     {
@@ -249,6 +256,7 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                     }
                 )
         else:
+            status_mod.push_status('layerpeek_fetch_layers', image_ref)
             layers = await _layers_details(image_ref, manifest_index, client)
             result.append(
                 {
@@ -257,5 +265,6 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                     "layers": layers,
                 }
             )
+        status_mod.push_status('layerpeek_done', image_ref)
         return result
 
