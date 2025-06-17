@@ -168,6 +168,13 @@ async def gather_image_info(image_ref: str) -> List[Dict[str, Any]]:
 
 
 
+
+async def gather_image_info_multi(image_ref: str, methods: List[str]) -> Dict[str, List[Dict[str, Any]]]:
+    """Gather layer details for multiple backends concurrently."""
+    tasks = [gather_image_info_with_backend(image_ref, m) for m in methods]
+    results = await asyncio.gather(*tasks)
+    return {m: r for m, r in zip(methods, results)}
+
 async def gather_image_info_with_backend(
     image_ref: str, method: str = "layerslayer"
 ) -> List[Dict[str, Any]]:

@@ -12,14 +12,23 @@ bp = Blueprint('registry', __name__)
 def registry_explorer_route():
     image = request.args.get('image')
     method = request.args.get('method', 'extension')
+    multi = request.args.get('methods')
     if not image:
         return jsonify({'error': 'missing_image'}), 400
 
-    async def _gather_and_digest() -> tuple[list, str | None]:
-        return await asyncio.gather(
-            rex.gather_image_info_with_backend(image, method),
-            rex.get_manifest_digest(image),
-        )
+    if multi:
+        methods = [m.strip() for m in multi.split(',') if m.strip()]
+        async def _gather_and_digest() -> tuple[dict, str | None]:
+            return await asyncio.gather(
+                rex.gather_image_info_multi(image, methods),
+                rex.get_manifest_digest(image),
+            )
+    else:
+        async def _gather_and_digest() -> tuple[list, str | None]:
+            return await asyncio.gather(
+                rex.gather_image_info_with_backend(image, method),
+                rex.get_manifest_digest(image),
+            )
 
     try:
         data, digest = asyncio.run(_gather_and_digest())
@@ -36,8 +45,11 @@ def registry_explorer_route():
         'repo': repo,
         'tag': tag,
         'manifest': digest,
-        'method': method,
         'platforms': data,
     }
+    if multi:
+        result['methods'] = methods
+    else:
+        result['method'] = method
     return jsonify(result)
   
