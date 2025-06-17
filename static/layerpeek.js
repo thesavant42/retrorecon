@@ -12,6 +12,48 @@ function initLayerpeek(){
   const infoDiv = document.getElementById('layerslayer-info');
   const closeBtn = document.getElementById('layerslayer-close-btn');
 
+  function makeResizable(table, key){
+    table.style.tableLayout = 'fixed';
+    const ths = table.querySelectorAll('th');
+    const cols = table.querySelectorAll('col');
+    let widths = {};
+    try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
+    ths.forEach((th, idx) => {
+      const id = idx;
+      if(widths[id]){
+        th.style.width = widths[id];
+        if(cols[id]) cols[id].style.width = widths[id];
+      }
+      const initial = th.style.width || th.offsetWidth + 'px';
+      th.style.width = initial;
+      if(cols[id]) cols[id].style.width = initial;
+      if(th.classList.contains('no-resize')) return;
+      const res = document.createElement('div');
+      res.className = 'col-resizer';
+      th.appendChild(res);
+      let startX = 0;
+      let startWidth = 0;
+      res.addEventListener('mousedown', e => {
+        startX = e.pageX;
+        startWidth = th.offsetWidth;
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', stop);
+        e.preventDefault();
+      });
+      function onMove(e){
+        const w = Math.max(30, startWidth + (e.pageX - startX));
+        th.style.width = w + 'px';
+        if(cols[id]) cols[id].style.width = w + 'px';
+        widths[id] = w + 'px';
+      }
+      function stop(){
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', stop);
+        localStorage.setItem(key, JSON.stringify(widths));
+      }
+    });
+  }
+
   function render(data){
     console.log('[Layerpeek] rendering data', data);
     const plats = Array.isArray(data) ? data : data.platforms;
@@ -30,7 +72,7 @@ function initLayerpeek(){
     for(const plat of plats){
       console.log('[Layerpeek] platform', plat.os, plat.architecture);
       html += `<h4>${plat.os}/${plat.architecture}</h4>`;
-      html += '<table class="table url-table w-100"><thead><tr><th>Digest</th><th>Size</th><th>Files</th><th>Download</th></tr></thead><tbody>';
+      html += '<table class="table url-table w-100"><colgroup><col/><col class="w-6em"/><col/><col class="w-6em"/></colgroup><thead><tr><th>Digest</th><th>Size</th><th>Files</th><th>Download</th></tr></thead><tbody>';
       for(const layer of plat.layers){
         console.log('[Layerpeek] layer', layer.digest);
         const files = layer.files.map(f=>`<li>${f}</li>`).join('');
@@ -40,6 +82,7 @@ function initLayerpeek(){
       html += '</tbody></table>';
     }
     tableDiv.innerHTML = html;
+    tableDiv.querySelectorAll('table').forEach(t => makeResizable(t, 'layerpeek-col-widths'));
   }
 
   fetchBtn.addEventListener('click', async () => {

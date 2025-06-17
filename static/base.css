@@ -703,10 +703,10 @@
   position: absolute;
   right: 0;
   top: 0;
-  width: 5px;
+  width: 6px;
   height: 100%;
   cursor: col-resize;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.3);
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
