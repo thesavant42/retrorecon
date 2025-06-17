@@ -96,4 +96,3 @@ def test_registry_explorer_multi_methods(tmp_path, monkeypatch):
         assert "results" in data
         assert data["results"]["extension"][0]["layers"][0]["digest"] == "sha256:a"
         assert data["results"]["layerslayer"][0]["layers"][0]["digest"] == "sha256:b"
-

@@ -53,6 +53,9 @@ from retrorecon import (
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
+log_level_name = app.config.get('LOG_LEVEL', 'WARNING').upper()
+numeric_level = getattr(logging, log_level_name, logging.WARNING)
+logging.basicConfig(level=numeric_level, format='%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
 app.jwt = jwt
 env_db = app.config.get('DB_ENV')

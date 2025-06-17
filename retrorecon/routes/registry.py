@@ -51,4 +51,3 @@ def registry_explorer_route():
         result['methods'] = methods
         result['results'] = data
     return jsonify(result)
-
