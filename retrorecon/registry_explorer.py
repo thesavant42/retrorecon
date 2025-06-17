@@ -5,6 +5,8 @@ import asyncio
 import io
 import re
 import tarfile
+from datetime import datetime
+import stat
 from typing import Any, Dict, List, Optional
 
 import aiohttp
@@ -126,11 +128,25 @@ async def list_layer_files(
     token: str,
     session: Optional[aiohttp.ClientSession] = None,
 ) -> List[str]:
+    """Return formatted file listing for the layer blob."""
     data = await fetch_blob(repo, digest, token, session)
     tar_bytes = io.BytesIO(data)
+
+    def _format(ti: tarfile.TarInfo) -> str:
+        mode = ti.mode
+        if ti.isfile():
+            mode |= stat.S_IFREG
+        elif ti.isdir():
+            mode |= stat.S_IFDIR
+        elif ti.issym():
+            mode |= stat.S_IFLNK
+        perms = stat.filemode(mode)
+        ts = datetime.utcfromtimestamp(ti.mtime).strftime("%Y-%m-%d %H:%M")
+        return f"{perms} {ti.uid}/{ti.gid} {ti.size} {ts} {ti.name}"
+
     try:
         with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
-            return [m.name for m in tar.getmembers()]
+            return [_format(m) for m in tar.getmembers()]
     except tarfile.ReadError:
         return []
 

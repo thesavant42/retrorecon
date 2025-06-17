@@ -144,6 +144,6 @@ def test_list_layer_files_fallback(monkeypatch):
         return await dl.list_layer_files('user/repo:tag', 'sha256:x', client=client)
 
     files = asyncio.run(run())
-    assert files == ['hello.txt']
+    assert files and files[0].endswith('hello.txt')
 
 
