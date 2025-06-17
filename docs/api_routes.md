@@ -257,6 +257,23 @@ Parameter:
 curl -X POST -F "db_file=@existing.db" http://localhost:5000/load_db
 ```
 
+### `GET /list_dbs`
+Return a JSON list of saved database filenames located in the server's db folder.
+
+```
+curl http://localhost:5000/list_dbs
+```
+
+### `POST /load_saved_db`
+Load one of the saved database files on the server.
+
+Parameter:
+- `db_name` – the filename returned from `list_dbs`.
+
+```
+curl -X POST -d "db_name=project.db" http://localhost:5000/load_saved_db
+```
+
 ### `GET /save_db`
 Download the currently loaded database. Use the optional `name` query parameter to specify the download filename.
 

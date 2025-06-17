@@ -80,6 +80,10 @@
             <input type="file" name="db_file" accept=".db" required class="form-file d-none" id="load-db-file" />
             <button type="button" class="menu-btn" id="load-db-btn">Open SQLite Database</button>
           </form>
+          <form method="POST" action="/load_saved_db" class="menu-row" id="load-saved-db-form">
+            <input type="hidden" name="db_name" id="load-saved-db-name" />
+            <button type="button" class="menu-btn" id="load-saved-db-btn">Open Saved Database</button>
+          </form>
           <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
             <input type="hidden" name="new_name" id="rename-db-name" />
             <button type="submit" class="menu-btn">Rename Database</button>
@@ -768,6 +772,30 @@
       loadInput.addEventListener('change', () => {
         if (loadInput.files.length) {
           loadForm.submit();
+        }
+      });
+    }
+
+    const loadSavedBtn = document.getElementById('load-saved-db-btn');
+    const loadSavedInput = document.getElementById('load-saved-db-name');
+    const loadSavedForm = document.getElementById('load-saved-db-form');
+    if (loadSavedBtn && loadSavedInput && loadSavedForm) {
+      loadSavedBtn.addEventListener('click', async () => {
+        try {
+          const resp = await fetch('/list_dbs');
+          const data = await resp.json();
+          const names = Array.isArray(data.dbs) ? data.dbs : [];
+          if (!names.length) {
+            alert('No saved databases found.');
+            return;
+          }
+          const choice = prompt('Select database to load:\n' + names.join('\n'));
+          if (choice && names.includes(choice)) {
+            loadSavedInput.value = choice;
+            loadSavedForm.submit();
+          }
+        } catch (e) {
+          alert('Error retrieving database list.');
         }
       });
     }

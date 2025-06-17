@@ -1,6 +1,6 @@
 import os
 import app
-from flask import Blueprint, request, redirect, url_for, flash, send_file, session
+from flask import Blueprint, request, redirect, url_for, flash, send_file, session, jsonify
 
 bp = Blueprint('db', __name__)
 
@@ -88,4 +88,41 @@ def rename_db():
     app.ensure_schema()
     session['db_display_name'] = safe
     flash('Database renamed.', 'success')
+    return redirect(url_for('index'))
+
+
+@bp.route('/list_dbs')
+def list_dbs():
+    """Return a JSON list of saved database filenames."""
+    folder = app.get_db_folder()
+    names = []
+    for fname in os.listdir(folder):
+        if fname.endswith('.db') and fname != app.TEMP_DB_NAME:
+            names.append(fname)
+    names.sort()
+    return jsonify({'dbs': names})
+
+
+@bp.route('/load_saved_db', methods=['POST'])
+def load_saved_db():
+    name = request.form.get('db_name', '').strip()
+    safe = app._sanitize_db_name(name)
+    if not safe:
+        flash('Invalid database name.', 'error')
+        return redirect(url_for('index'))
+    db_path = os.path.join(app.get_db_folder(), safe)
+    if not os.path.exists(db_path):
+        flash('Database not found.', 'error')
+        return redirect(url_for('index'))
+    app.close_connection(None)
+    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
+    if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
+    try:
+        app.app.config['DATABASE'] = db_path
+        app.ensure_schema()
+        session['db_display_name'] = safe
+        flash('Database loaded.', 'success')
+    except Exception as e:
+        flash(f'Error loading database: {e}', 'error')
     return redirect(url_for('index'))
