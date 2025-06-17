@@ -1,5 +1,5 @@
-/* File: static/layerslayer.js */
-function initLayerslayer(){
+/* File: static/layerpeek.js */
+function initLayerpeek(){
   const overlay = document.getElementById('layerslayer-overlay');
   if(!overlay) return;
   const imageInput = document.getElementById('layerslayer-image');
@@ -35,14 +35,14 @@ function initLayerslayer(){
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
-    if(location.pathname === '/tools/layerslayer'){
+    if(location.pathname === '/tools/layerpeek'){
       history.pushState({}, '', '/');
     }
   });
 }
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', initLayerslayer);
+  document.addEventListener('DOMContentLoaded', initLayerpeek);
 }else{
-  initLayerslayer();
+  initLayerpeek();
 }
