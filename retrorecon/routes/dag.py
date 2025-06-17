@@ -29,7 +29,8 @@ def dag_explorer_page():
 
 @bp.route("/tools/dag_explorer", methods=["GET"])
 def dag_explorer_full_page():
-    return render_template("dag_explorer_page.html")
+    """Serve the main dashboard so the overlay can open on load."""
+    return app.index()
 
 
 @bp.route("/dag/repo/<path:repo>", methods=["GET"])
