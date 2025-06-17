@@ -2,8 +2,13 @@ import asyncio
 import io
 import tarfile
 from typing import Any, Dict, List, Optional
+import os
 
 import aiohttp
+
+DEFAULT_TIMEOUT = aiohttp.ClientTimeout(
+    total=int(os.environ.get("REGISTRY_TIMEOUT", "120"))
+)
 
 from .layerslayer_utils import parse_image_ref, registry_base_url
 
@@ -54,7 +59,7 @@ class DockerRegistryClient:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
             self.session = aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(total=20),
+                timeout=DEFAULT_TIMEOUT,
                 trust_env=True
             )
         async with self.session.get(url, headers=headers) as resp:
@@ -73,7 +78,7 @@ class DockerRegistryClient:
         headers["Accept"] = "*/*"
         if self.session is None:
             self.session = aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(total=20),
+                timeout=DEFAULT_TIMEOUT,
                 trust_env=True
             )
         async with self.session.get(url, headers=headers) as resp:
