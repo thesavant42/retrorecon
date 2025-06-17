@@ -59,6 +59,10 @@ logging.basicConfig(level=numeric_level, format='%(levelname)s:%(name)s:%(messag
 logger = logging.getLogger(__name__)
 app.jwt = jwt
 env_db = app.config.get('DB_ENV')
+
+def _get_db_dir() -> str:
+    """Return directory for saved databases."""
+    return os.environ.get('RETRORECON_DB_DIR', app.root_path)
 if env_db:
     app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app.root_path, env_db)
 else:
@@ -118,7 +122,7 @@ TEMP_DISPLAY_NAME = 'UNSAVED'
 
 def _create_temp_db() -> None:
     """Create a fresh temporary database for this session."""
-    app.config['DATABASE'] = os.path.join(app.root_path, TEMP_DB_NAME)
+    app.config['DATABASE'] = os.path.join(_get_db_dir(), TEMP_DB_NAME)
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()

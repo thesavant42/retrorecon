@@ -161,3 +161,18 @@ def test_new_after_rename_preserves_old_file(tmp_path, monkeypatch):
         assert (tmp_path / 'renamed.db').exists()
         assert (tmp_path / 'waybax.db').exists()
 
+
+def test_list_and_load_saved_db(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('stored')
+        app.create_new_db('current')
+    with app.app.test_client() as client:
+        resp = client.get('/stored_dbs')
+        assert resp.status_code == 200
+        files = resp.get_json()
+        assert 'stored.db' in files
+        client.post('/load_saved_db', data={'db_name': 'stored'})
+        with client.session_transaction() as sess:
+            assert sess['db_display_name'] == 'stored.db'
+

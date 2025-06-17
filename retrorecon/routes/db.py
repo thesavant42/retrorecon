@@ -34,9 +34,9 @@ def load_db_route():
     if not filename:
         flash('Invalid database file.', 'error')
         return redirect(url_for('index'))
-    db_path = os.path.join(app.app.root_path, filename)
+    db_path = os.path.join(app._get_db_dir(), filename)
     app.close_connection(None)
-    temp_path = os.path.join(app.app.root_path, app.TEMP_DB_NAME)
+    temp_path = os.path.join(app._get_db_dir(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:
@@ -78,7 +78,7 @@ def rename_db():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    new_path = os.path.join(app.app.root_path, safe)
+    new_path = os.path.join(app._get_db_dir(), safe)
     try:
         os.rename(app.app.config['DATABASE'], new_path)
     except OSError as e:
@@ -88,4 +88,40 @@ def rename_db():
     app.ensure_schema()
     session['db_display_name'] = safe
     flash('Database renamed.', 'success')
+    return redirect(url_for('index'))
+
+
+@bp.route('/stored_dbs', methods=['GET'])
+def stored_dbs():
+    """Return a JSON list of saved database filenames."""
+    db_dir = app._get_db_dir()
+    try:
+        names = [f for f in os.listdir(db_dir) if f.lower().endswith('.db')]
+    except OSError:
+        names = []
+    return app.jsonify(sorted(names))
+
+
+@bp.route('/load_saved_db', methods=['POST'])
+def load_saved_db():
+    filename = request.form.get('db_name', '').strip()
+    safe = app._sanitize_db_name(filename)
+    if not safe:
+        flash('Invalid database name.', 'error')
+        return redirect(url_for('index'))
+    db_path = os.path.join(app._get_db_dir(), safe)
+    if not os.path.exists(db_path):
+        flash('Database not found.', 'error')
+        return redirect(url_for('index'))
+    app.close_connection(None)
+    temp_path = os.path.join(app._get_db_dir(), app.TEMP_DB_NAME)
+    if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
+    try:
+        app.app.config['DATABASE'] = db_path
+        app.ensure_schema()
+        session['db_display_name'] = safe
+        flash('Database loaded.', 'success')
+    except Exception as e:
+        flash(f'Error loading database: {e}', 'error')
     return redirect(url_for('index'))

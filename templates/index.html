@@ -80,6 +80,10 @@
             <input type="file" name="db_file" accept=".db" required class="form-file d-none" id="load-db-file" />
             <button type="button" class="menu-btn" id="load-db-btn">Open SQLite Database</button>
           </form>
+          <form method="POST" action="/load_saved_db" class="menu-row" id="load-saved-form">
+            <select name="db_name" class="form-select" id="saved-db-select"></select>
+            <button type="submit" class="menu-btn">Load Saved</button>
+          </form>
           <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
             <input type="hidden" name="new_name" id="rename-db-name" />
             <button type="submit" class="menu-btn">Rename Database</button>
@@ -759,6 +763,7 @@
     const loadBtn = document.getElementById('load-db-btn');
     const loadInput = document.getElementById('load-db-file');
     const loadForm = document.getElementById('load-db-form');
+    const savedSelect = document.getElementById('saved-db-select');
     if (loadBtn && loadInput && loadForm) {
       loadBtn.addEventListener('click', () => loadInput.click());
       const dbDisplay = document.getElementById('db-display');
@@ -769,6 +774,16 @@
         if (loadInput.files.length) {
           loadForm.submit();
         }
+      });
+    }
+    if (savedSelect) {
+      fetch('/stored_dbs').then(r => r.json()).then(list => {
+        list.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          savedSelect.appendChild(opt);
+        });
       });
     }
 

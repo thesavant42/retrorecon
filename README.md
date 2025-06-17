@@ -121,8 +121,8 @@ the container.
 3. Use the search box and tag filters to narrow results.
 4. Add or remove tags individually or use the bulk actions.
 5. Save the current database, load another or start a new one (and give it a
-   name) using the menu. You can also rename the active database from the same
-   dropdown.
+   name) using the menu. You can also rename the active database or select from
+   previously saved files listed under **Load Saved**.
 6. When you relaunch the app, it automatically reloads the last database you used.
 7. Save frequent tag searches with the **Save Tag** button or via the `/saved_tags` API.
 8. Adjust panel opacity and text size from the **Edit** menu or using the `/set_panel_opacity` and `/set_font_size` endpoints.
