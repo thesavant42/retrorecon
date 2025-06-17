@@ -15,15 +15,14 @@ def registry_explorer_route():
     if not image:
         return jsonify({'error': 'missing_image'}), 400
 
-    async def _gather() -> list:
-        return await rex.gather_image_info_with_backend(image, method)
-
-    async def _digest() -> str | None:
-        return await rex.get_manifest_digest(image)
+    async def _gather_and_digest() -> tuple[list, str | None]:
+        return await asyncio.gather(
+            rex.gather_image_info_with_backend(image, method),
+            rex.get_manifest_digest(image),
+        )
 
     try:
-        data = asyncio.run(_gather())
-        digest = asyncio.run(_digest())
+        data, digest = asyncio.run(_gather_and_digest())
     except asyncio.TimeoutError:
         return jsonify({'error': 'timeout'}), 504
     except ClientError as exc:
