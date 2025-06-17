@@ -267,12 +267,12 @@
                         <option value="crtsh">Crt.sh</option>
                         <option value="explode" {% if '.js.map' not in url.url %}disabled{% endif %}>Webpack Exploder</option>
                       </select>
-                      <button class="btn explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋</button>
+                      <button class="btn explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋 Copy</button>
                       <form method="POST" action="/bulk_action" class="d-inline mr-03">
                         <input type="hidden" name="action" value="delete" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
                         <input type="hidden" name="q" value="{{ q }}" />
-                        <button type="submit" class="btn delete-btn" title="Delete">🗑️</button>
+                        <button type="submit" class="btn delete-btn" title="Delete">🗑️ Delete</button>
                       </form>
                       <button type="button" class="btn ml-05 notes-btn" data-url-id="{{ url.id }}" onclick="openNotes(this)">📝 Notes</button>
                       <form method="POST" action="/bulk_action" class="d-inline ml-05">
