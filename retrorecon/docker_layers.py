@@ -150,7 +150,12 @@ async def list_layer_files(
                 break
             start += range_size
             continue
-    return []
+    try:
+        tar_bytes = io.BytesIO(data)
+        with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
+            return [m.name for m in tar.getmembers()]
+    except tarfile.ReadError:
+        return []
 
 
 async def _layers_details(
