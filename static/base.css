@@ -1121,3 +1121,12 @@ body.bg-hidden {
   margin-right: 0.5em;
   cursor: pointer;
 }
+
+/* Ensure preformatted output boxes match the theme */
+.retrorecon-root pre {
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 0.5em;
+  overflow-x: auto;
+  border-radius: 4px;
+}
