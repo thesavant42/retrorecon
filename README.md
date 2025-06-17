@@ -202,6 +202,17 @@ Set `LAYERPEEK_RANGE` to control how many bytes are fetched at a time when
 listing layer contents. The default is 2&nbsp;MB which keeps bandwidth usage
 low while still decoding most archives.
 
+### Using the `layerslayer` Library
+
+The Docker layer inspection logic is available as an importable library.
+
+```python
+from layerslayer.client import gather_layers_info
+
+data = asyncio.run(gather_layers_info("ubuntu:latest"))
+print(data[0]["layers"][0]["digest"])
+```
+
 ## License
 MIT
 
