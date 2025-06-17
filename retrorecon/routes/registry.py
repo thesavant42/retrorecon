@@ -11,12 +11,18 @@ bp = Blueprint('registry', __name__)
 @bp.route('/registry_explorer', methods=['GET'])
 def registry_explorer_route():
     image = request.args.get('image')
-    method = request.args.get('method', 'extension')
+    methods_param = request.args.get('methods')
+    if methods_param:
+        methods = [m.strip() for m in methods_param.split(',') if m.strip()]
+    else:
+        methods = [request.args.get('method', 'extension')]
     if not image:
         return jsonify({'error': 'missing_image'}), 400
 
-    async def _gather() -> list:
-        return await rex.gather_image_info_with_backend(image, method)
+    async def _gather():
+        if len(methods) == 1:
+            return await rex.gather_image_info_with_backend(image, methods[0])
+        return await rex.gather_image_info_multi(image, methods)
 
     async def _digest() -> str | None:
         return await rex.get_manifest_digest(image)
@@ -37,8 +43,11 @@ def registry_explorer_route():
         'repo': repo,
         'tag': tag,
         'manifest': digest,
-        'method': method,
-        'platforms': data,
     }
+    if len(methods) == 1:
+        result['method'] = methods[0]
+        result['platforms'] = data
+    else:
+        result['methods'] = methods
+        result['results'] = data
     return jsonify(result)
-

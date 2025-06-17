@@ -61,6 +61,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)
 - **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
 - **LayerPeek** inspect Docker image layers from Docker Hub
+- **Registry Explorer** query image manifests from multiple backends
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
@@ -213,6 +214,19 @@ from layerslayer.client import gather_layers_info
 
 data = asyncio.run(gather_layers_info("ubuntu:latest"))
 print(data[0]["layers"][0]["digest"])
+```
+
+### Registry Explorer API
+
+Query Docker Hub manifests using different backends. Provide a single
+`method` or a comma-separated list via `methods` to compare results.
+
+```bash
+curl -G --data-urlencode "image=ubuntu:latest" \
+  'http://localhost:5000/registry_explorer?method=extension'
+
+curl -G --data-urlencode "image=ubuntu:latest" \
+  'http://localhost:5000/registry_explorer?methods=extension,layerslayer'
 ```
 
 ## License

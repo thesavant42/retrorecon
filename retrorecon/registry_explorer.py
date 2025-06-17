@@ -167,12 +167,31 @@ async def gather_image_info(image_ref: str) -> List[Dict[str, Any]]:
         return result
 
 
-async def gather_image_info_with_backend(image_ref: str, method: str = "layerslayer") -> List[Dict[str, Any]]:
-    """Wrapper returning layer info via different backends for testing."""
+
+async def gather_image_info_with_backend(
+    image_ref: str, method: str = "layerslayer"
+) -> List[Dict[str, Any]]:
+    """Return layer info using the selected backend."""
     if method == "layerslayer":
         from .docker_layers import gather_layers_info as gl
         return await gl(image_ref)
-    elif method in {"layertools", "extension"}:
+    if method in {"layertools", "extension"}:
         return await gather_image_info(image_ref)
-    else:
-        raise ValueError(f"unknown method: {method}")
+    raise ValueError(f"unknown method: {method}")
+
+
+async def gather_image_info_multi(
+    image_ref: str, methods: List[str]
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Run :func:`gather_image_info_with_backend` for all ``methods`` in parallel."""
+    tasks = {
+        m: asyncio.create_task(gather_image_info_with_backend(image_ref, m))
+        for m in methods
+    }
+    results: Dict[str, List[Dict[str, Any]]] = {}
+    for method, task in tasks.items():
+        try:
+            results[method] = await task
+        except Exception as exc:  # pragma: no cover - unexpected
+            results[method] = [{"error": str(exc)}]
+    return results
