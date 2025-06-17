@@ -10,6 +10,8 @@
   --fg-color: var(--color-contrast);
   --accent-color: var(--color-accent);
   --panel-opacity: 0.25;
+  --select-bg-color: var(--color-base);
+  --select-border-color: var(--color-contrast);
 }
 
 .retrorecon-root h1,
@@ -84,9 +86,9 @@
 .retrorecon-root .form-input,
 .retrorecon-root .form-file,
 .retrorecon-root .form-select {
-  border: 1px solid var(--color-contrast);
+  border: 1px solid var(--select-border-color);
   border-radius: 5px;
-  background: var(--bg-color);
+  background: var(--select-bg-color);
   color: var(--fg-color);
   padding: 2px 6px;
 }
@@ -374,15 +376,15 @@
 .retrorecon-root .dropdown-content {
   display: none;
   position: absolute;
-  background-color: rgba(var(--bg-rgb) / 0.99);
+  background-color: var(--select-bg-color);
   min-width: 260px;
   box-shadow: 0 8px 20px rgba(var(--bg-rgb) / 0.2);
   z-index: 1;
   padding: 8px 12px;
   border-radius: 0;
-  border: 1px solid var(--color-contrast);
+  border: 1px solid var(--select-border-color);
   margin-top: 6px;
-  color: var(--color-contrast);
+  color: var(--select-border-color);
 }
 /* Square styling for all navbar controls */
 .retrorecon-root .navbar input,
@@ -471,13 +473,13 @@
 
 /* Consistent styling for select dropdowns used as menu buttons */
 .retrorecon-root select.menu-btn {
-  background: var(--bg-color);
+  background: var(--select-bg-color);
   color: var(--fg-color);
-  border: 1px solid var(--accent-color);
+  border: 1px solid var(--select-border-color);
   padding: 0.2em 0.4em;
 }
 .retrorecon-root select.menu-btn option {
-  background: var(--bg-color);
+  background: var(--select-bg-color);
   color: var(--fg-color);
 }
 
