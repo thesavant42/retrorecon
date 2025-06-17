@@ -604,6 +604,29 @@
       }
     }
 
+    let statusTimer = null;
+    let statusClear = null;
+    function showStatus(msg){
+      const text = document.getElementById('import-status-text');
+      text.textContent = msg;
+      if(statusClear) clearTimeout(statusClear);
+      statusClear = setTimeout(() => { text.textContent = 'idle'; }, 3000);
+    }
+
+    function pollStatus(){
+      fetch('/status')
+        .then(r => r.json())
+        .then(data => {
+          if(data.code){
+            showStatus(data.message || data.code);
+          }
+          statusTimer = setTimeout(pollStatus, 1000);
+        })
+        .catch(() => { statusTimer = setTimeout(pollStatus, 5000); });
+    }
+
+    pollStatus();
+
     // Check once on load and show current status
     fetch('/import_progress')
       .then(r => r.json())
