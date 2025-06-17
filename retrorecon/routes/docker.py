@@ -50,6 +50,13 @@ def download_layer_route():
         async with DockerRegistryClient() as client:
             return await client.fetch_bytes(url, user, repo)
 
-    data = asyncio.run(_fetch())
+    try:
+        data = asyncio.run(_fetch())
+    except asyncio.TimeoutError:
+        return ('', 504)
+    except ClientError as exc:
+        return (str(exc), 502)
+    except Exception:
+        return ('', 500)
     filename = digest.replace(':', '_') + '.tar.gz'
     return send_file(io.BytesIO(data), as_attachment=True, download_name=filename, mimetype='application/gzip')

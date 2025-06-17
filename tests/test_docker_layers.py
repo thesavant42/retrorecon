@@ -52,3 +52,32 @@ def test_docker_layers_timeout(tmp_path, monkeypatch):
         resp = client.get('/docker_layers?image=test/test:latest')
         assert resp.status_code == 504
         assert resp.get_json()['error'] == 'timeout'
+
+
+def test_download_layer_success(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.docker as docker_mod
+
+    async def fake_fetch_bytes(self, url, user, repo):
+        return b'ARCHIVE'
+
+    monkeypatch.setattr(docker_mod.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
+    with app.app.test_client() as client:
+        resp = client.get('/download_layer?image=test/test:tag&digest=sha256:abc')
+        assert resp.status_code == 200
+        assert resp.data == b'ARCHIVE'
+
+
+def test_download_layer_timeout(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.docker as docker_mod
+
+    async def fail_bytes(self, url, user, repo):
+        raise asyncio.TimeoutError()
+
+    monkeypatch.setattr(docker_mod.DockerRegistryClient, 'fetch_bytes', fail_bytes)
+    with app.app.test_client() as client:
+        resp = client.get('/download_layer?image=test/test:tag&digest=sha256:abc')
+        assert resp.status_code == 504
+
+
