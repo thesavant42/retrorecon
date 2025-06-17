@@ -8,8 +8,8 @@
     "glob": "^10.3.10"
   },
   "scripts": {
-    "lint:css": "stylelint \"static/**/*.css\"",
-    "lint:inline": "node scripts/check_inline_styles.js",
-    "lint": "npm run lint:css && npm run lint:inline"
+    "lint": "npm --prefix frontend run lint",
+    "lint:css": "npm --prefix frontend run lint:css",
+    "lint:inline": "npm --prefix frontend run lint:inline"
   }
 }
