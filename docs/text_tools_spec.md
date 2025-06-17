@@ -59,4 +59,4 @@ Each route validates input, performs the transformation and returns a 200 respon
 - [ ] Create the five Flask routes with validation and tests.
 - [ ] Update navigation link text and behaviour.
 - [ ] Extend documentation (`README.md`, `docs/api_routes.md`, `docs/test_plan.md`).
-- [ ] Regenerate `retrorecon.postman.json` and commit it.
+- [ ] Regenerate `tests/postman/retrorecon.postman.json` and commit it.

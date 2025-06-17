@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "stylelint-config-recommended",
+    "stylelint-config-html"
+  ],
+  "ignoreFiles": [
+    "static/wabax.css",
+    "static/themes/**/*.css",
+    "templates/indexBack.html"
+  ],
+  "rules": {
+    "selector-disallowed-list": ["^[a-z]"],
+    "selector-class-pattern": "^[a-z0-9_-]+$"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.html"],
+      "customSyntax": "postcss-html"
+    }
+  ]
+}

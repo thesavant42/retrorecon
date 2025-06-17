@@ -45,9 +45,11 @@ jobs:
       - name: Run unit tests
         run: pytest -q
       - name: Install Node deps
-        run: npm install
+        run: |
+          npm --prefix frontend install
       - name: Lint CSS
-        run: npm run lint
+        run: |
+          npm --prefix frontend run lint
 ```
 
 This ensures database workflow tests are executed along with the existing suite and CSS linting on every commit.
