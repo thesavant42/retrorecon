@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, send_file
 import io
 import asyncio
+from aiohttp import ClientError
 
 from ..docker_layers import gather_layers_info, get_client
 from ..layerslayer_utils import parse_image_ref, registry_base_url
@@ -13,10 +14,23 @@ def docker_layers_route():
     image = request.args.get('image')
     if not image:
         return jsonify({'error': 'missing_image'}), 400
-    data = asyncio.run(gather_layers_info(image))
+    try:
+        data = asyncio.run(gather_layers_info(image))
+    except asyncio.TimeoutError:
+        return jsonify({'error': 'timeout'}), 504
+    except ClientError as exc:
+        return jsonify({'error': 'client_error', 'details': str(exc)}), 502
+    except Exception as exc:  # pragma: no cover - unexpected
+        return jsonify({'error': 'server_error', 'details': str(exc)}), 500
     for plat in data:
         for layer in plat['layers']:
-            layer['download'] = request.url_root.rstrip('/') + '/download_layer?image=' + image + '&digest=' + layer['digest']
+            layer['download'] = (
+                request.url_root.rstrip('/')
+                + '/download_layer?image='
+                + image
+                + '&digest='
+                + layer['digest']
+            )
     return jsonify(data)
 
 

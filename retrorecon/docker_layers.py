@@ -47,7 +47,9 @@ class DockerRegistryClient:
     async def fetch_json(self, url: str, user: str, repo: str) -> Dict[str, Any]:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
-            self.session = aiohttp.ClientSession()
+            self.session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=20)
+            )
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
                 token = await self._fetch_token(user, repo)
@@ -62,7 +64,9 @@ class DockerRegistryClient:
     async def fetch_bytes(self, url: str, user: str, repo: str) -> bytes:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
-            self.session = aiohttp.ClientSession()
+            self.session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=20)
+            )
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
                 token = await self._fetch_token(user, repo)
