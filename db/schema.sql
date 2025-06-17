@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS sitezips (
     method TEXT DEFAULT 'GET',
     zip_path TEXT,
     screenshot_path TEXT,
+    thumbnail_path TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

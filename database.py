@@ -45,6 +45,10 @@ def ensure_schema() -> None:
             cols = [row[1] for row in cur.fetchall()]
             if 'thumbnail_path' not in cols:
                 conn.execute("ALTER TABLE screenshots ADD COLUMN thumbnail_path TEXT")
+            cur = conn.execute("PRAGMA table_info(sitezips)")
+            cols = [row[1] for row in cur.fetchall()]
+            if 'thumbnail_path' not in cols:
+                conn.execute("ALTER TABLE sitezips ADD COLUMN thumbnail_path TEXT")
             conn.commit()
         finally:
             conn.close()

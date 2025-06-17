@@ -210,8 +210,12 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
     return screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executablePath)
 
 
-def save_sitezip_record(url: str, zip_name: str, screenshot_name: str, method: str = 'GET') -> int:
-    return sitezip_utils.save_record(SITEZIP_DIR, url, zip_name, screenshot_name, method)
+def save_sitezip_record(
+    url: str, zip_name: str, screenshot_name: str, thumb_name: str, method: str = 'GET'
+) -> int:
+    return sitezip_utils.save_record(
+        SITEZIP_DIR, url, zip_name, screenshot_name, thumb_name, method
+    )
 
 
 def list_sitezip_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
