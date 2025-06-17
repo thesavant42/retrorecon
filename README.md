@@ -74,6 +74,8 @@ python scripts/init_db.py  # initialize wabax.db
 python app.py
 # Optionally set RETRORECON_DB to open a specific database on launch
 # RETRORECON_DB=dsprings.db python app.py
+# Enable verbose logging by setting RETRORECON_LOG_LEVEL
+# RETRORECON_LOG_LEVEL=DEBUG python app.py
 ```
 On Windows you can run `launch_app.bat` to automatically update the repository,
 set up a `venv` and start the server:
