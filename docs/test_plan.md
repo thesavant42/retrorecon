@@ -26,6 +26,15 @@ This document describes the tests required for the new database creation and ren
    - Open a connection to the database.
    - Attempt `/rename_db` and expect an error message due to lock.
 
+6. **List Existing Databases**
+   - Create two databases in the `db/` folder.
+   - `GET /list_dbs` should return JSON containing their filenames.
+   - The unit test `test_list_dbs_and_load_saved` demonstrates this check.
+
+7. **Load Saved Database**
+   - POST `/load_saved_db` with one of the names returned from `/list_dbs`.
+   - Verify `session['db_display_name']` updates and queries return the stored URL.
+
 ## GitHub Actions Workflow
 Create `.github/workflows/ci.yml` running on pushes and pull requests:
 
