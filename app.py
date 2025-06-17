@@ -230,6 +230,7 @@ def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -
 def index() -> str:
     """Render the main search page."""
     q = request.args.get('q', '').strip()
+    select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
     try:
         page = int(request.args.get('page', 1))
     except ValueError:
@@ -354,7 +355,8 @@ def index() -> str:
         search_history=search_history,
         current_sort=sort,
         current_dir=direction,
-        open_tool=tool
+        open_tool=tool,
+        select_all_matching=select_all_matching
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
