@@ -127,6 +127,13 @@ the container.
 7. Save frequent tag searches with the **Save Tag** button or via the `/saved_tags` API.
 8. Adjust panel opacity and text size from the **Edit** menu or using the `/set_panel_opacity` and `/set_font_size` endpoints.
 
+### Loading Saved Databases
+
+The File menu now includes a **Load Saved DB** dropdown. It lists every `.db`
+file located in the configured `db` directory (which defaults to `db/` under the
+application root). Selecting one of these entries instantly switches the active
+database to the chosen file.
+
 ### Boolean Tag Searches
 
 Prefix tags with `#` and combine them using `AND`, `OR` and `NOT` in the search box. Quotes allow tags with spaces.
