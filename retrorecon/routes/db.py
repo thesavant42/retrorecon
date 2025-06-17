@@ -89,3 +89,29 @@ def rename_db():
     session['db_display_name'] = safe
     flash('Database renamed.', 'success')
     return redirect(url_for('index'))
+
+
+@bp.route('/load_saved_db', methods=['POST'])
+def load_saved_db():
+    """Load an existing database file from the DB folder."""
+    filename = request.form.get('db_file', '').strip()
+    safe = app._sanitize_db_name(filename)
+    if not safe:
+        flash('Invalid database selection.', 'error')
+        return redirect(url_for('index'))
+    path = os.path.join(app.get_db_folder(), safe)
+    if not os.path.isfile(path):
+        flash('Database not found.', 'error')
+        return redirect(url_for('index'))
+    app.close_connection(None)
+    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
+    if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
+    try:
+        app.app.config['DATABASE'] = path
+        app.ensure_schema()
+        session['db_display_name'] = safe
+        flash('Database loaded.', 'success')
+    except Exception as e:
+        flash(f'Error loading database: {e}', 'error')
+    return redirect(url_for('index'))

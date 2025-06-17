@@ -343,6 +343,14 @@ def index() -> str:
         session['db_display_name'] = actual_name
     db_name = session['db_display_name']
 
+    try:
+        saved_dbs = sorted([
+            f for f in os.listdir(get_db_folder())
+            if f.endswith('.db') and os.path.isfile(os.path.join(get_db_folder(), f))
+        ])
+    except OSError:
+        saved_dbs = []
+
     default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
 
@@ -373,6 +381,7 @@ def index() -> str:
         total_count=total_count,
         items_per_page=items_per_page,
         db_name=db_name,
+        saved_dbs=saved_dbs,
         search_history=search_history,
         current_sort=sort,
         current_dir=direction,
