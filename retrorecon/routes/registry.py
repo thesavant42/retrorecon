@@ -40,4 +40,4 @@ def registry_explorer_route():
         'platforms': data,
     }
     return jsonify(result)
-
+  
