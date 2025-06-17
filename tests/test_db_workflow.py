@@ -147,7 +147,7 @@ def test_session_name_reset(tmp_path, monkeypatch):
         with client.session_transaction() as sess:
             sess['db_display_name'] = 'stale.db'
         resp = client.get('/')
-        assert b'loaded&gt; waybax.db' in resp.data
+        assert b'[ waybax.db ]' in resp.data
         with client.session_transaction() as sess:
             assert sess['db_display_name'] == 'waybax.db'
 
