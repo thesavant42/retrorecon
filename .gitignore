@@ -1,4 +1,4 @@
-*.db
+db/*.db
 *.zip
 *.sqlite
 *.json
@@ -11,6 +11,8 @@ package-lock.json
 __pycache__/
 !reports/report.json
 last_db.txt
-static/screenshots/*
-static/sitezips/*
-venv/*
+static/screenshots/
+static/sitezips/
+logs/
+*.log
+venv/

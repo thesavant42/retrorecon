@@ -24,7 +24,7 @@ def test_create_new_db_with_name(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
         client.post('/new_db', data={'db_name': 'client1'})
-        db_file = tmp_path / 'client1.db'
+        db_file = tmp_path / 'db' / 'client1.db'
         assert db_file.exists()
         with client.session_transaction() as sess:
             assert sess['db_display_name'] == 'client1.db'
@@ -37,7 +37,7 @@ def test_create_new_db_default(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:
         client.post('/new_db')
-        db_file = tmp_path / 'waybax.db'
+        db_file = tmp_path / 'db' / 'waybax.db'
         assert not db_file.exists()
 
 
@@ -48,8 +48,8 @@ def test_rename_database(tmp_path, monkeypatch):
         with app.app.app_context():
             app.execute_db("INSERT INTO urls (url, tags) VALUES (?, ?)", ["http://a.com", ""])
         client.post('/rename_db', data={'new_name': 'renamed'})
-        assert not (tmp_path / 'orig.db').exists()
-        new_db = tmp_path / 'renamed.db'
+        assert not (tmp_path / 'db' / 'orig.db').exists()
+        new_db = tmp_path / 'db' / 'renamed.db'
         assert new_db.exists()
         with app.app.app_context():
             rows = app.query_db('SELECT url FROM urls')
@@ -73,7 +73,7 @@ def test_rename_while_open(tmp_path, monkeypatch):
         conn = sqlite3.connect(app.app.config['DATABASE'])
         monkeypatch.setattr(app.os, 'rename', lambda *a, **k: (_ for _ in ()).throw(OSError('locked')))
         client.post('/rename_db', data={'new_name': 'fail'})
-        assert (tmp_path / 'open.db').exists()
+        assert (tmp_path / 'db' / 'open.db').exists()
         conn.close()
 
 import io
@@ -107,7 +107,7 @@ def test_load_db_file(tmp_path, monkeypatch):
     with app.app.app_context():
         sample_name = app.create_new_db('sample')
         app.execute_db("INSERT INTO urls (url, tags) VALUES (?, ?)", ['http://db.example/', ''])
-    sample_bytes = (tmp_path / sample_name).read_bytes()
+    sample_bytes = (tmp_path / 'db' / sample_name).read_bytes()
 
     with app.app.test_client() as client:
         resp = client.post('/load_db', data={'db_file': (io.BytesIO(sample_bytes), 'upload.db')})
@@ -158,6 +158,6 @@ def test_new_after_rename_preserves_old_file(tmp_path, monkeypatch):
         client.post('/new_db', data={'db_name': 'orig'})
         client.post('/rename_db', data={'new_name': 'renamed'})
         client.post('/new_db', data={'db_name': 'waybax'})
-        assert (tmp_path / 'renamed.db').exists()
-        assert (tmp_path / 'waybax.db').exists()
+        assert (tmp_path / 'db' / 'renamed.db').exists()
+        assert (tmp_path / 'db' / 'waybax.db').exists()
 

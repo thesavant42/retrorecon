@@ -77,7 +77,9 @@ def create_new_db(name: Optional[str] = None) -> str:
     nm = _sanitize_db_name(name) if name else 'waybax.db'
     if nm is None:
         raise ValueError('Invalid database name.')
-    db_path = os.path.join(current_app.root_path, nm)
+    db_dir = os.path.join(current_app.root_path, 'db')
+    os.makedirs(db_dir, exist_ok=True)
+    db_path = os.path.join(db_dir, nm)
     if os.path.exists(db_path):
         os.remove(db_path)
     current_app.config['DATABASE'] = db_path
