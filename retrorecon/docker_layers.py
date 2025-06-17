@@ -23,7 +23,7 @@ class DockerRegistryClient:
         auth_url = (
             f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repo}:pull"
         )
-        async with aiohttp.ClientSession() as sess:
+        async with aiohttp.ClientSession(trust_env=True) as sess:
             async with sess.get(auth_url) as resp:
                 if resp.status != 200:
                     return None
@@ -48,7 +48,8 @@ class DockerRegistryClient:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
             self.session = aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(total=20)
+                timeout=aiohttp.ClientTimeout(total=20),
+                trust_env=True
             )
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
@@ -63,9 +64,11 @@ class DockerRegistryClient:
 
     async def fetch_bytes(self, url: str, user: str, repo: str) -> bytes:
         headers = await self._auth_headers(user, repo)
+        headers["Accept"] = "*/*"
         if self.session is None:
             self.session = aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(total=20)
+                timeout=aiohttp.ClientTimeout(total=20),
+                trust_env=True
             )
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
@@ -111,16 +114,16 @@ async def list_layer_files(image_ref: str, digest: str) -> List[str]:
 async def _layers_details(image_ref: str, manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
     layers = manifest.get("layers", [])
     tasks = [list_layer_files(image_ref, layer["digest"]) for layer in layers]
-    files_list = await asyncio.gather(*tasks)
+    files_list = await asyncio.gather(*tasks, return_exceptions=True)
     details = []
     for layer, files in zip(layers, files_list):
-        details.append(
-            {
-                "digest": layer["digest"],
-                "size": layer.get("size"),
-                "files": files,
-            }
-        )
+        if isinstance(files, Exception):
+            files = []
+        details.append({
+            "digest": layer["digest"],
+            "size": layer.get("size"),
+            "files": files,
+        })
     return details
 
 
