@@ -49,4 +49,4 @@ This document specifies the design for a new **JWT Tools** window within Retrore
 - [ ] Display algorithm and key warnings when decoding.
 - [ ] Update the navigation menu and ensure the overlay only opens from the menu.
 - [ ] Create unit tests for decoding, encoding, signing and warnings.
-- [ ] Update `README.md`, `docs/api_routes.md`, `docs/test_plan.md` and regenerate `retrorecon.postman.json`.
+- [ ] Update `README.md`, `docs/api_routes.md`, `docs/test_plan.md` and regenerate `tests/postman/retrorecon.postman.json`.

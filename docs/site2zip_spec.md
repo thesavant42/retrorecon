@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS sitezips (
 4. Store the ZIP and screenshot under `static/sitezips/` and create DB entries via `save_sitezip_record()`.
 5. Build the overlay template and accompanying JavaScript to call the new routes and update the results table.
 6. Add unit tests covering capture, listing, download and deletion.
-7. Document endpoints in `docs/api_routes.md`, update the README feature list and regenerate `retrorecon.postman.json`.
+7. Document endpoints in `docs/api_routes.md`, update the README feature list and regenerate `tests/postman/retrorecon.postman.json`.
 
 ## Task Checklist for Codex
 - [ ] Update database schema and helpers.
@@ -60,4 +60,4 @@ CREATE TABLE IF NOT EXISTS sitezips (
 - [ ] Create `site2zip.html`, styles and JavaScript for the overlay.
 - [ ] Provide unit tests for the workflow and header logging.
 - [ ] Update documentation (`README.md`, `docs/api_routes.md`, `docs/test_plan.md`).
-- [ ] Regenerate `retrorecon.postman.json` with the new routes.
+- [ ] Regenerate `tests/postman/retrorecon.postman.json` with the new routes.

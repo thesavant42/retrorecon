@@ -136,8 +136,8 @@ client.post('/tools/webpack-zip', data={'map_url': 'https://host/app.js.map'})
 
 **Usage**
 ```bash
-npm install
-npm run lint
+npm --prefix frontend install
+npm --prefix frontend run lint
 ```
 **Expected Output**
 - No lint errors reported. Checks both Stylelint rules and inline-style detection.

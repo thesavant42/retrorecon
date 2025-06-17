@@ -85,7 +85,11 @@ Table rows, buttons and form fields all inherit these colors:
 ### Changing the Font
 1. Open the desired theme file in `static/themes/` (e.g. `theme-neon.css`).
 2. Locate the `.retrorecon-root` block and edit the `font-family` property.
-3. Save the file and run `npm run lint` to ensure the stylesheet passes linting.
+3. Save the file and run:
+   ```bash
+   npm --prefix frontend run lint
+   ```
+   This ensures the stylesheet passes linting.
 
 ### Changing Font Colors
 1. In the same theme file, adjust the CSS variables `--font-main` or `--font-accent` under `:root`.

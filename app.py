@@ -110,9 +110,9 @@ if os.path.isdir(BACKGROUNDS_DIR):
 else:
     AVAILABLE_BACKGROUNDS = []
 
-IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'import_progress.json')
-DEMO_DATA_FILE = os.path.join(app.root_path, 'data/demo_data.json')
-SAVED_TAGS_FILE = os.path.join(app.root_path, 'saved_tags.json')
+IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'data', 'import_progress.json')
+DEMO_DATA_FILE = os.path.join(app.root_path, 'data', 'demo_data.json')
+SAVED_TAGS_FILE = os.path.join(app.root_path, 'data', 'saved_tags.json')
 
 # Clear any stale import progress from previous runs
 progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
