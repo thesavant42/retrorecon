@@ -5,5 +5,6 @@ from .settings import bp as settings_bp
 from .domains import bp as domains_bp
 from .docker import bp as docker_bp
 from .registry import bp as registry_bp
+from .dag import bp as dag_bp
 
-__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp']
+__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp']

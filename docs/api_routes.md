@@ -356,3 +356,28 @@ Delete one or more captures by ID.
 curl -X POST -d "ids=1,2" http://localhost:5000/delete_sitezips
 ```
 
+### `GET /dag/repo/<name>`
+List tags for a Docker repository.
+
+```
+curl http://localhost:5000/dag/repo/library/ubuntu
+```
+
+### `GET /dag/image/<ref>`
+Return the manifest JSON for an image reference.
+
+```
+curl http://localhost:5000/dag/image/library/ubuntu:latest
+```
+
+### `GET /dag/fs/<digest>/<path>`
+Extract a single file from a layer blob.
+
+Query parameter:
+- `image` – image reference containing the layer.
+
+```
+curl -O \
+  "http://localhost:5000/dag/fs/sha256:1234/etc/os-release?image=library/ubuntu:latest"
+```
+

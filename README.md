@@ -62,6 +62,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
 - **LayerPeek** inspect Docker image layers from Docker Hub
 - **Registry Explorer** query image manifests from multiple backends
+- **Dag Explorer** list repository tags and view manifests via a simple browser
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
