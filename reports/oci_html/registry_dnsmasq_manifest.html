@@ -1,0 +1,214 @@
+
+<html>
+<head>
+<title>registry.k8s.io/dnsmasq:1.1@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+.mt:hover {
+	text-decoration: underline;
+}
+
+.mt {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.link {
+	position: relative;
+	bottom: .125em;
+}
+
+.crane {
+	height: 1em;
+	width: 1em;
+}
+
+.top {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+	font-family: monospace;
+	width: fit-content;
+	overflow-wrap: anywhere;
+	padding: 12px;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+.indent {
+	margin-left: 2em;
+}
+
+.noselect {
+	user-select: none;
+	-webkit-user-select: none;
+	width: fit-content;
+	overflow-wrap: none;
+	padding-right: 1em;
+	text-align: right;
+	white-space: nowrap;
+}
+
+td {
+	vertical-align: top;
+}
+
+// Adapted from https://medium.com/allenhwkim/how-to-build-tabs-only-with-css-844718d7de2f
+input + label { display: inline-block } /* show labels in line */
+input { display: none; }                /* hide radio buttons */
+input ~ .tab { display: none }          /* hide contents */
+
+/* show contents only for selected tab */
+#tab1:checked ~ .tab.content1,
+#tab2:checked ~ .tab.content2 { display: block; }
+
+input + label {             /* box with rounded corner */
+	display: inline-block;
+  border: 1px solid #999;
+  padding: 4px 12px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  top: 1px;
+  opacity: 50%;
+}
+input:checked + label {     /* white background for selected tab */
+  opacity: 100%;
+}
+input ~ .tab {          /* grey line between tab and contents */
+  border-top: 1px solid #999;
+  padding-top: 0.5em;
+}
+</style>
+</head>
+
+<body>
+<div>
+<h1><a class="top" href="/"><img class="crane" src="/favicon.svg"/> <span class="link">Registry Explorer</span></a></h1>
+
+<h2><a class="mt" href="/?repo=registry.k8s.io/dnsmasq">registry.k8s.io/dnsmasq</a>:<a class="mt" href="/?image=registry.k8s.io/dnsmasq:1.1@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&mt=application%2Fvnd.docker.distribution.manifest.v1%2Bprettyjws">1.1@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf</a> <a href="/?referrers=registry.k8s.io/dnsmasq@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf">(referrers)</a></h2>
+
+
+<input type="radio" name="tabs" id="tab1" checked />
+<label for="tab1">HTTP</label>
+<input type="radio" name="tabs" id="tab2" />
+<label for="tab2">OCI</label>
+<div class="tab content1">
+Content-Type: <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/media-types.md">application/vnd.docker.distribution.manifest.v1+prettyjws</a><br>
+Docker-Content-Digest: <a class="mt" href="/?image=registry.k8s.io/dnsmasq@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&mt=application%2Fvnd.docker.distribution.manifest.v1%2Bprettyjws&size=8297">sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf</a><br>
+<span title="8.1 KiB">Content-Length: <a class="mt" href="/sizes/registry.k8s.io/dnsmasq@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf?mt=application/vnd.docker.distribution.manifest.v1+prettyjws&size=8297">8297</a></span><br>
+
+</div>
+<div class="tab content2">
+{<br>
+&nbsp;&nbsp;"mediaType": "application/vnd.docker.distribution.manifest.v1+prettyjws",<br>
+&nbsp;&nbsp;"digest": "sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf",<br>
+&nbsp;&nbsp;"size": 8297<br>
+}<br>
+</div>
+
+
+</div>
+
+<h4><span style="padding:0;" class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> registry.k8s.io/dnsmasq:1.1@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf | jq .</h4>
+
+
+<div>{
+<div class="indent">
+  <div>"schemaVersion": 1,</div>
+  <div>"name": &#34;google_containers/dnsmasq&#34;,</div>
+  <div>"architecture": &#34;amd64&#34;,</div>
+  <div>"fsLayers": [
+  <div class="indent">
+    <div>{
+    <div class="indent">
+      <div>"blobSum": "<a href="/fs/registry.k8s.io/dnsmasq@sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4/?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip" title="this is an empty layer that only modifies metadata, so it has no filesystem content">sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"blobSum": "<a href="/fs/registry.k8s.io/dnsmasq@sha256:1c5d74213456134a116cb4466268aaf2ab243c5255335f96cc222c6e07fcde59/?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip">sha256:1c5d74213456134a116cb4466268aaf2ab243c5255335f96cc222c6e07fcde59</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"blobSum": "<a href="/fs/registry.k8s.io/dnsmasq@sha256:6d3fb9006803e7519dd641e99125a6f9cecb092cc6392500cced845477c5b1f0/?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip">sha256:6d3fb9006803e7519dd641e99125a6f9cecb092cc6392500cced845477c5b1f0</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"blobSum": "<a href="/fs/registry.k8s.io/dnsmasq@sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4/?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip" title="this is an empty layer that only modifies metadata, so it has no filesystem content">sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"blobSum": "<a href="/fs/registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3/?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip">sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3</a>"</div>
+    </div>
+    }</div>
+  </div>
+  ],</div>
+  <div>"<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&mt=application%2Fvnd.docker.distribution.manifest.v1%2Bprettyjws&render=history">history</a>": [
+  <div class="indent">
+    <div>{
+    <div class="indent">
+      <div>"v1Compatibility": "<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&jq=.history%5B0%5D.v1Compatibility">{\&#34;id\&#34;:\&#34;a8e71fa0b9ab4d7eead548e04c52184b92c8b2829ee7e6efb358945d687c8373\&#34;,\&#34;parent\&#34;:\&#34;9c0dce950b153366efb8582c3b6adfc423a5a63ca417c85ffcc652318b940147\&#34;,\&#34;created\&#34;:\&#34;2016-05-24T18:25:03.667012859Z\&#34;,\&#34;container\&#34;:\&#34;42052489ada0491a861435111422425fec8b6fd76baabf2e76e6a0e20e2abb75\&#34;,\&#34;container_config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:[\&#34;/bin/sh\&#34;,\&#34;-c\&#34;,\&#34;#(nop) ENTRYPOINT \\u0026{[\\\&#34;dnsmasq\\\&#34; \\\&#34;--keep-in-foreground\\\&#34;]}\&#34;],\&#34;Image\&#34;:\&#34;9c0dce950b153366efb8582c3b6adfc423a5a63ca417c85ffcc652318b940147\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:[\&#34;dnsmasq\&#34;,\&#34;--keep-in-foreground\&#34;],\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;docker_version\&#34;:\&#34;1.9.1\&#34;,\&#34;author\&#34;:\&#34;Abhishek Shah \\u003cabshah@google.com\\u003e\&#34;,\&#34;config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:null,\&#34;Image\&#34;:\&#34;9c0dce950b153366efb8582c3b6adfc423a5a63ca417c85ffcc652318b940147\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:[\&#34;dnsmasq\&#34;,\&#34;--keep-in-foreground\&#34;],\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;architecture\&#34;:\&#34;amd64\&#34;,\&#34;os\&#34;:\&#34;linux\&#34;}</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"v1Compatibility": "<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&jq=.history%5B1%5D.v1Compatibility">{\&#34;id\&#34;:\&#34;9c0dce950b153366efb8582c3b6adfc423a5a63ca417c85ffcc652318b940147\&#34;,\&#34;parent\&#34;:\&#34;1cb054731667cc8b6a3406dcb830ed9f6dd0a48e660b6a0f6c7ca74be63eaad5\&#34;,\&#34;created\&#34;:\&#34;2016-05-24T18:25:03.20452576Z\&#34;,\&#34;container\&#34;:\&#34;830f44f1f5d42d24bb5054e2d4030b7a690e94756674037e9ab1e5a6f253f738\&#34;,\&#34;container_config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:[\&#34;/bin/sh\&#34;,\&#34;-c\&#34;,\&#34;#(nop) ADD file:8ff0c5185a90b137ac1dcf986923f7bb3fca34ac2eafc42c3fd6d800c9badbb5 in /etc/dnsmasq.conf\&#34;],\&#34;Image\&#34;:\&#34;1cb054731667cc8b6a3406dcb830ed9f6dd0a48e660b6a0f6c7ca74be63eaad5\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;docker_version\&#34;:\&#34;1.9.1\&#34;,\&#34;author\&#34;:\&#34;Abhishek Shah \\u003cabshah@google.com\\u003e\&#34;,\&#34;config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:null,\&#34;Image\&#34;:\&#34;1cb054731667cc8b6a3406dcb830ed9f6dd0a48e660b6a0f6c7ca74be63eaad5\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;architecture\&#34;:\&#34;amd64\&#34;,\&#34;os\&#34;:\&#34;linux\&#34;,\&#34;Size\&#34;:27}</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"v1Compatibility": "<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&jq=.history%5B2%5D.v1Compatibility">{\&#34;id\&#34;:\&#34;1cb054731667cc8b6a3406dcb830ed9f6dd0a48e660b6a0f6c7ca74be63eaad5\&#34;,\&#34;parent\&#34;:\&#34;41a74dd40feea3324817b0fd021111cf856af0a40445c5408957f9bf842547f4\&#34;,\&#34;created\&#34;:\&#34;2016-05-13T21:59:33.644992766Z\&#34;,\&#34;container\&#34;:\&#34;2b3aa8663937e8521dc46b66aa06ef6078020d18d30a3a292eb415ea4579525b\&#34;,\&#34;container_config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:[\&#34;/bin/sh\&#34;,\&#34;-c\&#34;,\&#34;apk --no-cache add dnsmasq\&#34;],\&#34;Image\&#34;:\&#34;41a74dd40feea3324817b0fd021111cf856af0a40445c5408957f9bf842547f4\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;docker_version\&#34;:\&#34;1.9.1\&#34;,\&#34;author\&#34;:\&#34;Abhishek Shah \\u003cabshah@google.com\\u003e\&#34;,\&#34;config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:null,\&#34;Image\&#34;:\&#34;41a74dd40feea3324817b0fd021111cf856af0a40445c5408957f9bf842547f4\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;architecture\&#34;:\&#34;amd64\&#34;,\&#34;os\&#34;:\&#34;linux\&#34;,\&#34;Size\&#34;:326241}</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"v1Compatibility": "<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&jq=.history%5B3%5D.v1Compatibility">{\&#34;id\&#34;:\&#34;41a74dd40feea3324817b0fd021111cf856af0a40445c5408957f9bf842547f4\&#34;,\&#34;parent\&#34;:\&#34;0a3b5ba3277d35fc1f2d7ecbd007f1f53ca289f7674854ac7a5405e5ee3e495d\&#34;,\&#34;created\&#34;:\&#34;2016-05-13T21:54:57.163844943Z\&#34;,\&#34;container\&#34;:\&#34;79723cb9c608cf3a7c31c0970d313a4040bd4e302ade28731c3f51195fa08e75\&#34;,\&#34;container_config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:[\&#34;/bin/sh\&#34;,\&#34;-c\&#34;,\&#34;#(nop) MAINTAINER Abhishek Shah \\u003cabshah@google.com\\u003e\&#34;],\&#34;Image\&#34;:\&#34;3e467a6273a3872e8c24b1810bd9dfba446c5eb28e70df8972420e13e6076fea\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;docker_version\&#34;:\&#34;1.9.1\&#34;,\&#34;author\&#34;:\&#34;Abhishek Shah \\u003cabshah@google.com\\u003e\&#34;,\&#34;config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:[\&#34;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&#34;],\&#34;Cmd\&#34;:null,\&#34;Image\&#34;:\&#34;3e467a6273a3872e8c24b1810bd9dfba446c5eb28e70df8972420e13e6076fea\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:[],\&#34;Labels\&#34;:{}},\&#34;architecture\&#34;:\&#34;amd64\&#34;,\&#34;os\&#34;:\&#34;linux\&#34;}</a>"</div>
+    </div>
+    },</div>
+    <div>{
+    <div class="indent">
+      <div>"v1Compatibility": "<a href="/?image=registry.k8s.io%2Fdnsmasq%3A1.1%40sha256%3A6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf&jq=.history%5B4%5D.v1Compatibility">{\&#34;id\&#34;:\&#34;0a3b5ba3277d35fc1f2d7ecbd007f1f53ca289f7674854ac7a5405e5ee3e495d\&#34;,\&#34;created\&#34;:\&#34;2016-05-06T14:56:49.723208146Z\&#34;,\&#34;container\&#34;:\&#34;27c9668b3d5e3a2abeefdb725e1ff739cedda4b19eff906336298608f635b00e\&#34;,\&#34;container_config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:null,\&#34;Cmd\&#34;:[\&#34;/bin/sh\&#34;,\&#34;-c\&#34;,\&#34;#(nop) ADD file:614a9122187935fccfa72039b9efa3ddbf371f6b029bb01e2073325f00c80b9f in /\&#34;],\&#34;Image\&#34;:\&#34;\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:null,\&#34;Labels\&#34;:null},\&#34;docker_version\&#34;:\&#34;1.9.1\&#34;,\&#34;config\&#34;:{\&#34;Hostname\&#34;:\&#34;27c9668b3d5e\&#34;,\&#34;Domainname\&#34;:\&#34;\&#34;,\&#34;User\&#34;:\&#34;\&#34;,\&#34;AttachStdin\&#34;:false,\&#34;AttachStdout\&#34;:false,\&#34;AttachStderr\&#34;:false,\&#34;Tty\&#34;:false,\&#34;OpenStdin\&#34;:false,\&#34;StdinOnce\&#34;:false,\&#34;Env\&#34;:null,\&#34;Cmd\&#34;:null,\&#34;Image\&#34;:\&#34;\&#34;,\&#34;Volumes\&#34;:null,\&#34;WorkingDir\&#34;:\&#34;\&#34;,\&#34;Entrypoint\&#34;:null,\&#34;OnBuild\&#34;:null,\&#34;Labels\&#34;:null},\&#34;architecture\&#34;:\&#34;amd64\&#34;,\&#34;os\&#34;:\&#34;linux\&#34;,\&#34;Size\&#34;:4796783}</a>"</div>
+    </div>
+    }</div>
+  </div>
+  ],</div>
+  <div>"signatures": [
+  <div class="indent">
+    <div>{
+    <div class="indent">
+      <div>"header": {
+      <div class="indent">
+        <div>"alg": &#34;ES256&#34;,</div>
+        <div>"jwk": {
+        <div class="indent">
+          <div>"crv": &#34;P-256&#34;,</div>
+          <div>"kid": &#34;5QLS:5U57:UQK4:VHVP:V3DY:PTWM:CROE:HHE2:ZJBT:FEMB:2DW7:NJPS&#34;,</div>
+          <div>"kty": &#34;EC&#34;,</div>
+          <div>"x": &#34;4QO9WXY_3QCik7HK6obvtNyXNVxNfOYOMMJ4bdenJCY&#34;,</div>
+          <div>"y": &#34;G_9M8EOBOLIpB3w-NfhqTxIukHLE6GE1LxJ4HJITmwg&#34;</div>
+        </div>
+        }</div>
+      </div>
+      },</div>
+      <div>"protected": &#34;eyJmb3JtYXRMZW5ndGgiOjc4NDEsImZvcm1hdFRhaWwiOiJDbjAiLCJ0aW1lIjoiMjAxNi0wNS0yNFQxODozMDoyOFoifQ&#34;,</div>
+      <div>"signature": &#34;cDsENOE-SjEufAy93Jtn3aV2PqPDkYjYTsDXoRstPD1Kj32OsGDIUfrJ7X5hLXenGW_S-MV9vW8emghSL5teeg&#34;</div>
+    </div>
+    }</div>
+  </div>
+  ],</div>
+  <div>"tag": &#34;1.1&#34;</div>
+</div>
+}</div>
+</body>
+</html>
