@@ -165,7 +165,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="layerslayer-link">DockerHub LayerPeek</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="layerpeek-link">DockerHub LayerPeek</a></div>
       </div>
     </div>
   </div>
@@ -896,35 +896,35 @@
         });
       }
 
-      const layerslayerLink = document.getElementById('layerslayer-link');
-      let layerslayerLoaded = false;
+      const layerpeekLink = document.getElementById('layerpeek-link');
+      let layerpeekLoaded = false;
 
-      async function showLayerslayer(skipPush){
-        if(!layerslayerLoaded){
-          const resp = await fetch('/layerslayer');
+      async function showLayerpeek(skipPush){
+        if(!layerpeekLoaded){
+          const resp = await fetch('/layerpeek');
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
           const script = document.createElement('script');
-          script.src = '/static/layerslayer.js';
+          script.src = '/static/layerpeek.js';
           document.body.appendChild(script);
-          layerslayerLoaded = true;
+          layerpeekLoaded = true;
         }
         document.getElementById('layerslayer-overlay').classList.remove('hidden');
         if(!skipPush){
-          history.pushState({tool:'layerslayer'}, '', '/tools/layerslayer');
+          history.pushState({tool:'layerpeek'}, '', '/tools/layerpeek');
         }
       }
 
-      function hideLayerslayer(){
+      function hideLayerpeek(){
         const ov = document.getElementById('layerslayer-overlay');
         if(ov) ov.classList.add('hidden');
       }
 
-      if(layerslayerLink){
-        layerslayerLink.addEventListener('click', async (e) => {
+      if(layerpeekLink){
+        layerpeekLink.addEventListener('click', async (e) => {
           e.preventDefault();
-          showLayerslayer();
+          showLayerpeek();
         });
       }
 
@@ -985,15 +985,15 @@
       }
 
       window.addEventListener('popstate', () => {
-        if(location.pathname === '/tools/layerslayer'){
-          showLayerslayer(true);
+        if(location.pathname === '/tools/layerpeek'){
+          showLayerpeek(true);
         } else {
-          hideLayerslayer();
+          hideLayerpeek();
         }
       });
 
-      if(location.pathname === '/tools/layerslayer' || openTool === 'layerslayer'){
-        showLayerslayer(true);
+      if(location.pathname === '/tools/layerpeek' || openTool === 'layerpeek'){
+        showLayerpeek(true);
       }
 
       window.addEventListener('popstate', () => {
