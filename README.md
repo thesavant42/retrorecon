@@ -198,6 +198,10 @@ The response includes layer digests and file lists. If the registry
 is unreachable or a timeout occurs, the JSON `error` field describes the
 problem.
 
+Set `LAYERPEEK_RANGE` to control how many bytes are fetched at a time when
+listing layer contents. The default is 2&nbsp;MB which keeps bandwidth usage
+low while still decoding most archives.
+
 ## License
 MIT
 
