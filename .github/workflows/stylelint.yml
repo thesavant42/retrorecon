@@ -12,4 +12,4 @@ jobs:
       - name: Install dependencies
         run: npm --prefix frontend install
       - name: Run linters
-        run: npm --prefix frontend run lint
+        run: npm  run lint
