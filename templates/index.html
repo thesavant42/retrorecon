@@ -167,6 +167,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="layerpeek-link">DockerHub LayerPeek</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="layerpeek-b-link">LayerPeek B</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="registry-viewer-link">Registry Explorer</a></div>
       </div>
     </div>
   </div>
@@ -1075,6 +1076,50 @@
 
       if(location.pathname === '/tools/screenshotter' || openTool === 'screenshot'){
         showScreenshot(true);
+      }
+
+      const registryLink = document.getElementById('registry-viewer-link');
+      let registryLoaded = false;
+
+      async function showRegistryViewer(skipPush){
+        if(!registryLoaded){
+          const resp = await fetch('/registry_viewer');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/registry_explorer.js';
+          document.body.appendChild(script);
+          registryLoaded = true;
+        }
+        document.getElementById('registry-explorer-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'registry'}, '', '/tools/registry_viewer');
+        }
+      }
+
+      function hideRegistryViewer(){
+        const ov = document.getElementById('registry-explorer-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
+      if(registryLink){
+        registryLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showRegistryViewer();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/registry_viewer'){
+          showRegistryViewer(true);
+        } else {
+          hideRegistryViewer();
+        }
+      });
+
+      if(location.pathname === '/tools/registry_viewer' || openTool === 'registry'){
+        showRegistryViewer(true);
       }
 
     const themeSelect = document.getElementById('theme-select');

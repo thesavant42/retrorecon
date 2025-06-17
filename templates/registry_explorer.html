@@ -1,0 +1,12 @@
+<!-- File: templates/registry_explorer.html -->
+<div id="registry-explorer-overlay" class="notes-overlay hidden">
+  <div class="mb-05">
+    <input type="text" id="registry-image" class="form-input mr-05 w-20em" placeholder="user/repo:tag" />
+    <label class="mr-05"><input type="checkbox" name="registry-method" value="extension" checked> extension</label>
+    <label class="mr-05"><input type="checkbox" name="registry-method" value="layerslayer" checked> layerslayer</label>
+    <button type="button" class="btn" id="registry-fetch-btn">Fetch</button>
+    <button type="button" class="btn" id="registry-close-btn">Close</button>
+  </div>
+  <div id="registry-info" class="mb-05"></div>
+  <div id="registry-table" class="mt-05"></div>
+</div>
