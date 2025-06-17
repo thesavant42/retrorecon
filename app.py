@@ -687,13 +687,14 @@ def bulk_action() -> Response:
 
 
 
-from retrorecon.routes import notes_bp, tools_bp, db_bp, settings_bp, domains_bp, docker_bp
+from retrorecon.routes import notes_bp, tools_bp, db_bp, settings_bp, domains_bp, docker_bp, registry_bp
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
 app.register_blueprint(db_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(domains_bp)
 app.register_blueprint(docker_bp)
+app.register_blueprint(registry_bp)
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):
