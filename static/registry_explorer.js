@@ -78,24 +78,40 @@ function initRegistryExplorer(){
   function buildTables(plats, img){
     let html = '';
     for(const plat of plats){
-      html += `<h4>${plat.os}/${plat.architecture}</h4>`;
+      const label = (plat.os || plat.architecture)
+        ? `${plat.os || '?'} / ${plat.architecture || '?'}`
+        : 'Unknown platform';
+      html += `<h4>${label}</h4>`;
       html += '<table class="table url-table w-100"><colgroup>'+
-               '<col/><col class="w-6em"/><col/><col class="w-6em"/>'+
+               '<col class="digest-col"/><col class="w-6em"/><col/>'+
+               '<col class="w-6em download-col"/>'+
                '</colgroup><thead><tr>'+
                '<th class="sortable" data-field="digest">Digest</th>'+
                '<th class="sortable" data-field="size">Size</th>'+
-               '<th>Files</th><th>Download</th>'+
+               '<th>Files</th>'+
+               '<th class="text-center no-resize">Download</th>'+
                '</tr></thead><tbody>';
       for(const layer of plat.layers){
         const files = layer.files.map(f=>`<li>${f}</li>`).join('');
         const filesHtml = `<details><summary>${layer.files.length} files</summary><ul>${files}</ul></details>`;
         const dlink = `/download_layer?image=${encodeURIComponent(img)}&digest=${encodeURIComponent(layer.digest)}`;
-        html += `<tr><td class="w-25em"><div class="cell-content">${layer.digest}</div></td>`+
+        html += `<tr><td><div class="cell-content">${layer.digest}</div></td>`+
                 `<td>${layer.size}</td><td>${filesHtml}</td>`+
-                `<td><a href="${dlink}">Get</a></td></tr>`;
+                `<td class="text-center"><a href="${dlink}">Get</a></td></tr>`;
       }
       html += '</tbody></table>';
     }
+    return html;
+  }
+
+  function buildEntry(name, plats, img){
+    let html = '<div class="registry-entry">';
+    html += `<div class="registry-entry__header">`+
+            `<h3 class="registry-entry__title">${name}</h3>`+
+            `<button type="button" class="btn registry-entry__delete-btn">Delete</button>`+
+            `</div>`;
+    html += buildTables(plats, img);
+    html += '</div>';
     return html;
   }
 
@@ -111,15 +127,23 @@ function initRegistryExplorer(){
     const imgRef = `${data.owner}/${data.repo}:${data.tag}`;
     if(data.results){
       for(const m of data.methods){
-        html += `<h3>${m}</h3>`;
-        html += buildTables(data.results[m], imgRef);
+        html += buildEntry(m, data.results[m], imgRef);
       }
     } else {
-      html = buildTables(data.platforms, imgRef);
+      const m = data.method || 'result';
+      html += buildEntry(m, data.platforms, imgRef);
     }
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('table').forEach(t=>{ attachSort(t); makeResizable(t,'registry-col-widths'); });
   }
+
+  tableDiv.addEventListener('click', ev => {
+    const btn = ev.target.closest('.registry-entry__delete-btn');
+    if(btn){
+      const entry = btn.closest('.registry-entry');
+      if(entry) entry.remove();
+    }
+  });
 
   fetchBtn.addEventListener('click', async () => {
     const img = imageInput.value.trim();

@@ -714,6 +714,30 @@
   text-align: center;
 }
 
+.retrorecon-root .digest-col {
+  width: 32em;
+}
+
+.retrorecon-root .download-col {
+  width: 6em;
+  text-align: center;
+}
+
+.retrorecon-root .registry-entry {
+  margin-bottom: 1em;
+}
+
+.retrorecon-root .registry-entry__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.retrorecon-root .registry-entry__title {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
 .retrorecon-root .col-resizer:hover {
   background: var(--accent-color);
   box-shadow: 0 0 4px var(--accent-color);
