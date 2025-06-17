@@ -24,12 +24,29 @@ function initLayerpeek(){
   fetchBtn.addEventListener('click', async () => {
     const img = imageInput.value.trim();
     if(!img) return;
-    const resp = await fetch('/docker_layers?image=' + encodeURIComponent(img));
-    if(resp.ok){
-      const data = await resp.json();
-      render(data);
-    } else {
-      alert(await resp.text());
+    fetchBtn.disabled = true;
+    const oldText = fetchBtn.textContent;
+    fetchBtn.textContent = 'Fetching...';
+    try {
+      const resp = await fetch('/docker_layers?image=' + encodeURIComponent(img));
+      if(resp.ok){
+        const data = await resp.json();
+        render(data);
+      } else {
+        let msg;
+        try {
+          const err = await resp.json();
+          msg = err.details ? `${err.error}: ${err.details}` : err.error;
+        } catch {
+          msg = await resp.text();
+        }
+        alert(msg);
+      }
+    } catch(err){
+      alert('Error: ' + err);
+    } finally {
+      fetchBtn.disabled = false;
+      fetchBtn.textContent = oldText;
     }
   });
 

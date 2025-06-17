@@ -60,6 +60,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 -  with a persistent JWT cookie jar
 - **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)
 - **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
+- **LayerPeek** inspect Docker image layers from Docker Hub
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
@@ -186,6 +187,16 @@ curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
 # View logged JWT decodes
 curl http://localhost:5000/jwt_cookies
 ```
+
+### Docker LayerPeek API
+
+```bash
+curl -G --data-urlencode "image=ubuntu:latest" \
+  http://localhost:5000/docker_layers
+```
+The response includes layer digests and file lists. If the registry
+is unreachable or a timeout occurs, the JSON `error` field describes the
+problem.
 
 ## License
 MIT
