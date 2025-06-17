@@ -1,6 +1,8 @@
 import asyncio
 import io
 import tarfile
+from datetime import datetime
+import stat
 from typing import Any, Dict, List, Optional
 import os
 
@@ -143,7 +145,7 @@ async def list_layer_files(
     digest: str,
     client: Optional[DockerRegistryClient] = None,
 ) -> List[str]:
-    """Return the list of files contained in a layer blob."""
+    """Return formatted file listing for the layer blob."""
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
     c = client or get_client()
@@ -158,7 +160,19 @@ async def list_layer_files(
     def _parse(data: bytes) -> List[str]:
         tar_bytes = io.BytesIO(data)
         with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
-            return [m.name for m in tar.getmembers()]
+            items = []
+            for m in tar.getmembers():
+                mode = m.mode
+                if m.isfile():
+                    mode |= stat.S_IFREG
+                elif m.isdir():
+                    mode |= stat.S_IFDIR
+                elif m.issym():
+                    mode |= stat.S_IFLNK
+                perms = stat.filemode(mode)
+                ts = datetime.utcfromtimestamp(m.mtime).strftime('%Y-%m-%d %H:%M')
+                items.append(f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}")
+            return items
 
     if range_size <= 0:
         data = await c.fetch_bytes(url, user, repo)

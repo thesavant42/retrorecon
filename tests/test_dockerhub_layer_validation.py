@@ -43,5 +43,6 @@ def test_dockerhub_layer_files_match(tmp_path, monkeypatch):
         with tarfile.open(fileobj=io.BytesIO(resp.data), mode="r:gz") as tar:
             tar_files = [m.name for m in tar.getmembers()]
 
-    assert sorted(api_files) == sorted(tar_files)
+    api_names = [f.split()[-1] for f in api_files]
+    assert sorted(api_names) == sorted(tar_files)
 
