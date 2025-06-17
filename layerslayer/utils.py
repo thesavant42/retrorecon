@@ -15,7 +15,12 @@ def parse_image_ref(image_ref):
         user = "library"
     return user, repo, tag
 
-def registry_base_url(user, repo):
+def registry_base_url(user: str, repo: str) -> str:
+    """Return the base registry URL for ``user`` and ``repo``."""
+    if "." in user or ":" in user or user == "localhost":
+        # ``user`` already includes a registry domain like ``ghcr.io``.
+        # Treat it as the full hostname and do not prepend Docker Hub.
+        return f"https://{user}/v2/{repo}"
     return f"https://registry-1.docker.io/v2/{user}/{repo}"
 
 def auth_headers(token=None):
