@@ -1130,3 +1130,10 @@ body.bg-hidden {
   overflow-x: auto;
   border-radius: 4px;
 }
+
+/* Dag Explorer styles */
+.retrorecon-root .mt { color: inherit; text-decoration: inherit; }
+.retrorecon-root .mt:hover { text-decoration: underline; }
+.retrorecon-root .crane { height: 1em; width: 1em; }
+.retrorecon-root .link { position: relative; bottom: .125em; }
+.retrorecon-root .top { color: inherit; text-decoration: inherit; }
