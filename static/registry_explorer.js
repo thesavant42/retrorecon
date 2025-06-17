@@ -78,21 +78,28 @@ function initRegistryExplorer(){
   function buildTables(plats, img){
     let html = '';
     for(const plat of plats){
-      html += `<h4>${plat.os}/${plat.architecture}</h4>`;
+      const label = (plat.os || plat.architecture)
+        ? `${plat.os || '?'} / ${plat.architecture || '?'}`
+        : 'Unknown platform';
+      html += `<h4>${label}</h4>`;
       html += '<table class="table url-table w-100"><colgroup>'+
-               '<col/><col class="w-6em"/><col/><col class="w-6em"/>'+
+               '<col class="digest-col"/><col class="w-6em"/><col/>'+
+               '<col class="w-6em download-col"/><col class="w-6em delete-col"/>'+
                '</colgroup><thead><tr>'+
                '<th class="sortable" data-field="digest">Digest</th>'+
                '<th class="sortable" data-field="size">Size</th>'+
-               '<th>Files</th><th>Download</th>'+
+               '<th>Files</th>'+
+               '<th class="text-center no-resize">Download</th>'+
+               '<th class="text-center no-resize">Delete</th>'+
                '</tr></thead><tbody>';
       for(const layer of plat.layers){
         const files = layer.files.map(f=>`<li>${f}</li>`).join('');
         const filesHtml = `<details><summary>${layer.files.length} files</summary><ul>${files}</ul></details>`;
         const dlink = `/download_layer?image=${encodeURIComponent(img)}&digest=${encodeURIComponent(layer.digest)}`;
-        html += `<tr><td class="w-25em"><div class="cell-content">${layer.digest}</div></td>`+
+        html += `<tr><td><div class="cell-content">${layer.digest}</div></td>`+
                 `<td>${layer.size}</td><td>${filesHtml}</td>`+
-                `<td><a href="${dlink}">Get</a></td></tr>`;
+                `<td class="text-center"><a href="${dlink}">Get</a></td>`+
+                `<td class="text-center"><button type="button" class="btn delete-entry-btn">X</button></td></tr>`;
       }
       html += '</tbody></table>';
     }
@@ -120,6 +127,14 @@ function initRegistryExplorer(){
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('table').forEach(t=>{ attachSort(t); makeResizable(t,'registry-col-widths'); });
   }
+
+  tableDiv.addEventListener('click', ev => {
+    const btn = ev.target.closest('.delete-entry-btn');
+    if(btn){
+      const row = btn.closest('tr');
+      if(row) row.remove();
+    }
+  });
 
   fetchBtn.addEventListener('click', async () => {
     const img = imageInput.value.trim();

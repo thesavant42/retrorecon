@@ -714,6 +714,16 @@
   text-align: center;
 }
 
+.retrorecon-root .digest-col {
+  width: 32em;
+}
+
+.retrorecon-root .download-col,
+.retrorecon-root .delete-col {
+  width: 6em;
+  text-align: center;
+}
+
 .retrorecon-root .col-resizer:hover {
   background: var(--accent-color);
   box-shadow: 0 0 4px var(--accent-color);
