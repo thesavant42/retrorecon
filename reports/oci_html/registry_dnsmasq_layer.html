@@ -1,0 +1,142 @@
+
+<html>
+<head>
+<title>registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+.mt:hover {
+	text-decoration: underline;
+}
+
+.mt {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.link {
+	position: relative;
+	bottom: .125em;
+}
+
+.crane {
+	height: 1em;
+	width: 1em;
+}
+
+.top {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+	font-family: monospace;
+	width: fit-content;
+	overflow-wrap: anywhere;
+	padding: 12px;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+.indent {
+	margin-left: 2em;
+}
+
+.noselect {
+	user-select: none;
+	-webkit-user-select: none;
+	width: fit-content;
+	overflow-wrap: none;
+	padding-right: 1em;
+	text-align: right;
+	white-space: nowrap;
+}
+
+td {
+	vertical-align: top;
+}
+
+// Adapted from https://medium.com/allenhwkim/how-to-build-tabs-only-with-css-844718d7de2f
+input + label { display: inline-block } /* show labels in line */
+input { display: none; }                /* hide radio buttons */
+input ~ .tab { display: none }          /* hide contents */
+
+/* show contents only for selected tab */
+#tab1:checked ~ .tab.content1,
+#tab2:checked ~ .tab.content2 { display: block; }
+
+input + label {             /* box with rounded corner */
+	display: inline-block;
+  border: 1px solid #999;
+  padding: 4px 12px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  top: 1px;
+  opacity: 50%;
+}
+input:checked + label {     /* white background for selected tab */
+  opacity: 100%;
+}
+input ~ .tab {          /* grey line between tab and contents */
+  border-top: 1px solid #999;
+  padding-top: 0.5em;
+}
+</style>
+</head>
+
+<body>
+<div>
+<h1><a class="top" href="/"><img class="crane" src="/favicon.svg"/> <span class="link">Registry Explorer</span></a></h1>
+
+<h2><a class="mt" href="/?repo=registry.k8s.io/dnsmasq">registry.k8s.io/dnsmasq</a>@<a class="mt" href="/fs/registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip">sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3</a></h2>
+
+
+<input type="radio" name="tabs" id="tab1" checked />
+<label for="tab1">HTTP</label>
+<input type="radio" name="tabs" id="tab2" />
+<label for="tab2">OCI</label>
+<div class="tab content1">
+Content-Type: <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/layer.md">application/vnd.docker.image.rootfs.diff.tar.gzip</a><br>
+Docker-Content-Digest: <a class="mt" href="/fs/registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3?mt=application%2Fvnd.docker.image.rootfs.diff.tar.gzip&size=2320212">sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3</a><br>
+<span title="2.2 MiB">Content-Length: <a class="mt" href="/size/registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3?mt=application/vnd.docker.image.rootfs.diff.tar.gzip&size=2320212">2320212</a></span><br>
+
+</div>
+<div class="tab content2">
+{<br>
+&nbsp;&nbsp;"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",<br>
+&nbsp;&nbsp;"digest": "sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3",<br>
+&nbsp;&nbsp;"size": 2320212<br>
+}<br>
+</div>
+
+
+</div>
+
+<h4><span style="padding:0;" class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_blob.md">blob</a> registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3 | tar -tvz  </h4>
+
+
+<pre>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="bin/">bin</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="dev/">dev</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="etc/">etc</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="home/">home</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="lib/">lib</a>
+lrwxrwxrwx 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="/fs/registry.k8s.io/dnsmasq@sha256:d0ca440e86378344053c79282fe959c9f288ef2ab031411295d87ef1250cfec3/bin/busybox">linuxrc -&gt; /bin/busybox</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="media/">media</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="mnt/">mnt</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="proc/">proc</a>
+drwx------ 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="root/">root</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="run/">run</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="sbin/">sbin</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="sys/">sys</a>
+drwxrwxrwt 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="tmp/">tmp</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="usr/">usr</a>
+drwxr-xr-x 0/0 <span title="0 B">              0</span> 2016-05-06 06:00 <a href="var/">var</a>
+</pre>
+</body>
+</html>

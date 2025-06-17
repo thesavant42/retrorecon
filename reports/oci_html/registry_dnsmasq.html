@@ -1,0 +1,147 @@
+
+<html>
+<head>
+<title>registry.k8s.io/dnsmasq</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+.mt:hover {
+	text-decoration: underline;
+}
+
+.mt {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.link {
+	position: relative;
+	bottom: .125em;
+}
+
+.crane {
+	height: 1em;
+	width: 1em;
+}
+
+.top {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+	font-family: monospace;
+	width: fit-content;
+	overflow-wrap: anywhere;
+	padding: 12px;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+.indent {
+	margin-left: 2em;
+}
+
+.noselect {
+	user-select: none;
+	-webkit-user-select: none;
+	width: fit-content;
+	overflow-wrap: none;
+	padding-right: 1em;
+	text-align: right;
+	white-space: nowrap;
+}
+
+td {
+	vertical-align: top;
+}
+
+// Adapted from https://medium.com/allenhwkim/how-to-build-tabs-only-with-css-844718d7de2f
+input + label { display: inline-block } /* show labels in line */
+input { display: none; }                /* hide radio buttons */
+input ~ .tab { display: none }          /* hide contents */
+
+/* show contents only for selected tab */
+#tab1:checked ~ .tab.content1,
+#tab2:checked ~ .tab.content2 { display: block; }
+
+input + label {             /* box with rounded corner */
+	display: inline-block;
+  border: 1px solid #999;
+  padding: 4px 12px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  top: 1px;
+  opacity: 50%;
+}
+input:checked + label {     /* white background for selected tab */
+  opacity: 100%;
+}
+input ~ .tab {          /* grey line between tab and contents */
+  border-top: 1px solid #999;
+  padding-top: 0.5em;
+}
+</style>
+</head>
+
+<body>
+<div>
+<h1><a class="top" href="/"><img class="crane" src="/favicon.svg"/> <span class="link">Registry Explorer</span></a></h1>
+
+<h2><a class="mt" href="/?repo=registry.k8s.io">registry.k8s.io</a>/dnsmasq</h2>
+
+
+</div>
+
+<h4><span style="padding:0;" class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/gcrane/README.md">gcrane</a> ls --json registry.k8s.io/dnsmasq | jq .</h4>
+
+
+<div>{
+<div class="indent">
+  <div>"name": &#34;k8s-artifacts-prod/images/dnsmasq&#34;,</div>
+  <div>"child": [],</div>
+  <div>"tags": [
+  <div class="indent">
+    <div>"<a href="/?image=registry.k8s.io%2Fdnsmasq:1.0">1.0</a>",</div>
+    <div>"<a href="/?image=registry.k8s.io%2Fdnsmasq:1.1">1.1</a>"</div>
+  </div>
+  ],</div>
+  <div>"manifest": {
+  <div class="indent">
+    <div>"<a href="?image=registry.k8s.io/dnsmasq@sha256:6c66fa360516f2d0c197de0f826d7570135ea6a0edce9cf0160ee809e0a4da90">sha256:6c66fa360516f2d0c197de0f826d7570135ea6a0edce9cf0160ee809e0a4da90</a>": {
+    <div class="indent">
+      <div>"mediaType": <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/media-types.md">&#34;application/vnd.docker.distribution.manifest.v1+prettyjws&#34;</a>,</div>
+      <div>"imageSizeBytes": "<span title="0 B">0</span>",</div>
+      <div>"tag": [
+      <div class="indent">
+        <div>"<a href="/?image=registry.k8s.io%2Fdnsmasq:1.0@sha256:6c66fa360516f2d0c197de0f826d7570135ea6a0edce9cf0160ee809e0a4da90">1.0</a>"</div>
+      </div>
+      ],</div>
+      <div>"timeCreatedMs": "<span title="1970-01-01 00:00:00 +0000 UTC">0</span>",</div>
+      <div>"timeUploadedMs": "<span title="2022-08-16 23:11:01.67 +0000 UTC">1660691461670</span>"</div>
+    </div>
+    },</div>
+    <div>"<a href="?image=registry.k8s.io/dnsmasq@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf">sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf</a>": {
+    <div class="indent">
+      <div>"mediaType": <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/media-types.md">&#34;application/vnd.docker.distribution.manifest.v1+prettyjws&#34;</a>,</div>
+      <div>"imageSizeBytes": "<span title="0 B">0</span>",</div>
+      <div>"tag": [
+      <div class="indent">
+        <div>"<a href="/?image=registry.k8s.io%2Fdnsmasq:1.1@sha256:6da81cd706e4b8c1bcee49c05da66557227788487470c5379ba0cb77a54d1bbf">1.1</a>"</div>
+      </div>
+      ],</div>
+      <div>"timeCreatedMs": "<span title="1970-01-01 00:00:00 +0000 UTC">0</span>",</div>
+      <div>"timeUploadedMs": "<span title="2022-08-16 23:11:00.751 +0000 UTC">1660691460751</span>"</div>
+    </div>
+    }</div>
+  </div>
+  }</div>
+</div>
+}</div>
+</body>
+</html>
