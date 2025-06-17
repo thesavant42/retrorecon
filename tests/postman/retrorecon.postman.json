@@ -721,6 +721,54 @@
       }
     },
     {
+      "name": "GET /list_dbs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/list_dbs?pattern=demo",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "list_dbs"
+          ],
+          "query": [
+            {
+              "key": "pattern",
+              "value": "demo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /load_saved_db",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "db_file",
+              "value": "example.db",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/load_saved_db",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "load_saved_db"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /set_theme",
       "request": {
         "method": "POST",
