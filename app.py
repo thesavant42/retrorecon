@@ -47,6 +47,7 @@ from retrorecon import (
     search_utils,
     screenshot_utils,
     sitezip_utils,
+    status as status_mod,
 )
 
 app = Flask(__name__)
@@ -379,10 +380,13 @@ def fetch_cdx() -> Response:
         '&collapse=urlkey&limit=1000'
     ).format(domain=domain)
 
+    status_mod.push_status('cdx_api_waiting', domain)
     try:
+        status_mod.push_status('cdx_api_downloading', domain)
         resp = requests.get(cdx_api, timeout=20)
         resp.raise_for_status()
         data = resp.json()
+        status_mod.push_status('cdx_api_download_complete', domain)
     except Exception as e:
         flash(f"Error fetching CDX data: {e}", "error")
         return redirect(url_for('index'))
@@ -414,6 +418,7 @@ def fetch_cdx() -> Response:
         inserted += 1
 
     flash(f"Fetched CDX for {domain}: inserted {inserted} new URLs.", "success")
+    status_mod.push_status('cdx_import_complete', str(inserted))
     return redirect(url_for('index'))
 
 def _background_import(file_content: bytes) -> None:
@@ -530,6 +535,21 @@ def import_progress() -> Response:
         'total': prog.get('total', 0),
         'detail': prog.get('message', '')
     })
+
+
+@app.route('/status', methods=['GET'])
+def status_route() -> Response:
+    """Return the most recent status event and clear the queue."""
+    evt = status_mod.pop_status()
+    last = evt
+    while True:
+        nxt = status_mod.pop_status()
+        if not nxt:
+            break
+        last = nxt
+    if not last:
+        return jsonify({'code': '', 'message': ''})
+    return jsonify({'code': last[0], 'message': last[1]})
 
 @app.route('/add_tag', methods=['POST'])
 def add_tag() -> Response:

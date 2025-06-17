@@ -83,6 +83,22 @@
       }
     },
     {
+      "name": "GET /status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "status"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /add_tag",
       "request": {
         "method": "POST",
