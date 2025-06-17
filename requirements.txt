@@ -7,3 +7,4 @@ pytest
 PyJWT
 Pillow
 playwright
+pyelftools

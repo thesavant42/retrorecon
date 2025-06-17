@@ -1,0 +1,34 @@
+<!-- File: templates/oci_base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title or 'Registry Explorer' }}</title>
+  <link rel="icon" href="/favicon.svg"/>
+  <style>
+  .retrorecon-root {
+    font-family: monospace;
+    width: fit-content;
+    overflow-wrap: anywhere;
+    padding: 12px;
+  }
+  .retrorecon-root pre { white-space: pre-wrap; }
+  .retrorecon-root .indent { margin-left: 2em; }
+  .retrorecon-root .mt { color: inherit; text-decoration: inherit; }
+  .retrorecon-root .mt:hover { text-decoration: underline; }
+  .retrorecon-root .noselect {
+    user-select: none;
+    -webkit-user-select: none;
+    width: fit-content;
+    overflow-wrap: none;
+    padding-right: 1em;
+    text-align: right;
+    white-space: nowrap;
+  }
+  </style>
+</head>
+<body>
+<div class="retrorecon-root">
+{% block body %}{% endblock %}
+</div>
+</body>
+</html>
