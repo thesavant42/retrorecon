@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import asyncio
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
@@ -37,3 +38,17 @@ def test_docker_layers_route(tmp_path, monkeypatch):
         assert resp.status_code == 200
         data = resp.get_json()
         assert data[0]["layers"][0]["digest"] == "sha256:a"
+
+
+def test_docker_layers_timeout(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.docker as docker_mod
+
+    async def fail_gather(img):
+        raise asyncio.TimeoutError()
+
+    monkeypatch.setattr(docker_mod, "gather_layers_info", fail_gather)
+    with app.app.test_client() as client:
+        resp = client.get('/docker_layers?image=test/test:latest')
+        assert resp.status_code == 504
+        assert resp.get_json()['error'] == 'timeout'
