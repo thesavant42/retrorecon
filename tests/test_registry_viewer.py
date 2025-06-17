@@ -18,3 +18,11 @@ def test_registry_viewer_route(tmp_path, monkeypatch):
         resp = client.get('/registry_viewer')
         assert resp.status_code == 200
         assert b'id="registry-explorer-overlay"' in resp.data
+
+
+def test_registry_viewer_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/registry_viewer')
+        assert resp.status_code == 200
+        assert b'openTool = "registry"' in resp.data

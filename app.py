@@ -264,6 +264,16 @@ def index() -> str:
         tool = 'screenshot'
     elif request.path == '/tools/subdomonster':
         tool = 'subdomonster'
+    elif request.path == '/tools/site2zip':
+        tool = 'site2zip'
+    elif request.path == '/tools/layerpeek':
+        tool = 'layerpeek'
+    elif request.path == '/tools/layerpeek-b':
+        tool = 'layerpeek-b'
+    elif request.path == '/tools/registry_viewer':
+        tool = 'registry'
+    elif request.path == '/tools/dag_explorer':
+        tool = 'dag'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()

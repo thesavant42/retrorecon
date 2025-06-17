@@ -91,3 +91,11 @@ def test_dag_layer_route(tmp_path, monkeypatch):
         resp = client.get('/dag/layer/sha256:x?image=user/repo:tag')
         assert resp.status_code == 200
         assert resp.get_json()['files'] == ['a.txt', 'b.txt']
+
+
+def test_dag_explorer_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/dag_explorer')
+        assert resp.status_code == 200
+        assert b'Back to Dashboard' in resp.data

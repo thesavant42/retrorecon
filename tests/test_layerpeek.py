@@ -18,3 +18,11 @@ def test_layerpeek_route(tmp_path, monkeypatch):
         resp = client.get('/layerpeek')
         assert resp.status_code == 200
         assert b'id="layerslayer-overlay"' in resp.data
+
+
+def test_layerpeek_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/layerpeek')
+        assert resp.status_code == 200
+        assert b'openTool = "layerpeek"' in resp.data
