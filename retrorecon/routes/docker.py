@@ -5,9 +5,10 @@ from aiohttp import ClientError
 
 from ..docker_layers import (
     gather_layers_info,
+    get_manifest_digest,
     DockerRegistryClient,
 )
-from ..layerslayer_utils import parse_image_ref, registry_base_url
+from layerslayer.utils import parse_image_ref, registry_base_url
 
 bp = Blueprint('docker', __name__)
 
@@ -19,6 +20,7 @@ def docker_layers_route():
         return jsonify({'error': 'missing_image'}), 400
     try:
         data = asyncio.run(gather_layers_info(image))
+        manifest = asyncio.run(get_manifest_digest(image))
     except asyncio.TimeoutError:
         return jsonify({'error': 'timeout'}), 504
     except ClientError as exc:
@@ -34,7 +36,15 @@ def docker_layers_route():
                 + '&digest='
                 + layer['digest']
             )
-    return jsonify(data)
+    owner, repo, tag = parse_image_ref(image)
+    result = {
+        'owner': owner,
+        'repo': repo,
+        'tag': tag,
+        'manifest': manifest,
+        'platforms': data,
+    }
+    return jsonify(result)
 
 
 @bp.route('/download_layer', methods=['GET'])

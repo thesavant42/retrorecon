@@ -32,12 +32,18 @@ def test_docker_layers_route(tmp_path, monkeypatch):
     async def fake_gather(img):
         return sample
 
+    async def fake_digest(img):
+        return "sha256:d1"
+
     monkeypatch.setattr(docker_mod, "gather_layers_info", fake_gather)
+    monkeypatch.setattr(docker_mod, "get_manifest_digest", fake_digest)
     with app.app.test_client() as client:
         resp = client.get('/docker_layers?image=test/test:latest')
         assert resp.status_code == 200
         data = resp.get_json()
-        assert data[0]["layers"][0]["digest"] == "sha256:a"
+        assert data["owner"] == "test"
+        assert data["tag"] == "latest"
+        assert data["platforms"][0]["layers"][0]["digest"] == "sha256:a"
 
 
 def test_docker_layers_timeout(tmp_path, monkeypatch):
