@@ -10,7 +10,7 @@ DEFAULT_TIMEOUT = aiohttp.ClientTimeout(
     total=int(os.environ.get("REGISTRY_TIMEOUT", "120"))
 )
 
-from .layerslayer_utils import (
+from layerslayer.utils import (
     parse_image_ref,
     registry_base_url,
     human_readable_size,
@@ -96,11 +96,39 @@ class DockerRegistryClient:
             resp.raise_for_status()
             return await resp.read()
 
+    async def fetch_digest(self, url: str, user: str, repo: str) -> Optional[str]:
+        headers = await self._auth_headers(user, repo)
+        if self.session is None:
+            self.session = aiohttp.ClientSession(
+                timeout=DEFAULT_TIMEOUT,
+                trust_env=True
+            )
+        async with self.session.head(url, headers=headers) as resp:
+            if resp.status == 401:
+                token = await self._fetch_token(user, repo)
+                if token:
+                    headers["Authorization"] = f"Bearer {token}"
+                    async with self.session.head(url, headers=headers) as resp2:
+                        resp2.raise_for_status()
+                        return resp2.headers.get("Docker-Content-Digest")
+            resp.raise_for_status()
+            return resp.headers.get("Docker-Content-Digest")
+
 
 
 def get_client() -> DockerRegistryClient:
     """Return a fresh DockerRegistryClient instance."""
     return DockerRegistryClient()
+
+
+async def get_manifest_digest(
+    image_ref: str,
+    client: Optional[DockerRegistryClient] = None,
+) -> Optional[str]:
+    user, repo, tag = parse_image_ref(image_ref)
+    url = f"{registry_base_url(user, repo)}/manifests/{tag}"
+    c = client or get_client()
+    return await c.fetch_digest(url, user, repo)
 
 
 async def get_manifest(
