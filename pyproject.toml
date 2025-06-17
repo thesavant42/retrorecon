@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "layerslayer"
+version = "0.1.0"
+description = "Docker layer inspection utilities"
+authors = [{name = "retrorecon", email = "example@example.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[project.scripts]
+layerslayer = "layerslayer.cli:main"

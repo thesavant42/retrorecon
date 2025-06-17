@@ -166,6 +166,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="layerpeek-link">DockerHub LayerPeek</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="layerpeek-b-link">LayerPeek B</a></div>
       </div>
     </div>
   </div>
@@ -938,6 +939,7 @@
       }
 
       const layerpeekLink = document.getElementById('layerpeek-link');
+      const layerpeekBLink = document.getElementById('layerpeek-b-link');
       let layerpeekLoaded = false;
 
       async function showLayerpeek(skipPush){
@@ -966,6 +968,20 @@
         layerpeekLink.addEventListener('click', async (e) => {
           e.preventDefault();
           showLayerpeek();
+        });
+      }
+
+      async function showLayerpeekB(skipPush){
+        await showLayerpeek(true);
+        if(!skipPush){
+          history.pushState({tool:'layerpeek-b'}, '', '/tools/layerpeek-b');
+        }
+      }
+
+      if(layerpeekBLink){
+        layerpeekBLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showLayerpeekB();
         });
       }
 
@@ -1033,8 +1049,20 @@
         }
       });
 
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/layerpeek-b'){
+          showLayerpeekB(true);
+        } else {
+          hideLayerpeek();
+        }
+      });
+
       if(location.pathname === '/tools/layerpeek' || openTool === 'layerpeek'){
         showLayerpeek(true);
+      }
+
+      if(location.pathname === '/tools/layerpeek-b' || openTool === 'layerpeek-b'){
+        showLayerpeekB(true);
       }
 
       window.addEventListener('popstate', () => {
