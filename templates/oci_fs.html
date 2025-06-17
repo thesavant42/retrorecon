@@ -1,0 +1,11 @@
+<!-- File: templates/oci_fs.html -->
+{% extends 'oci_base.html' %}
+{% block body %}
+<h1><a class="mt" href="/">Registry Explorer</a></h1>
+<h2>{{ repo }}@{{ digest }}: {{ path }}</h2>
+<ul>
+{% for name in items %}
+  <li><a class="mt" href="/fs/{{ repo }}@{{ digest }}/{{ name }}">{{ name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

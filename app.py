@@ -699,6 +699,7 @@ from retrorecon.routes import (
     docker_bp,
     registry_bp,
     dag_bp,
+    oci_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -708,6 +709,7 @@ app.register_blueprint(domains_bp)
 app.register_blueprint(docker_bp)
 app.register_blueprint(registry_bp)
 app.register_blueprint(dag_bp)
+app.register_blueprint(oci_bp)
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):

@@ -1,0 +1,8 @@
+<!-- File: templates/oci_repo.html -->
+{% extends 'oci_base.html' %}
+{% block body %}
+<h1><a class="mt" href="/">Registry Explorer</a></h1>
+<h2>{{ repo }}</h2>
+<h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/gcrane/README.md">gcrane</a> ls --json {{ repo }} | jq .</h4>
+<pre>{{ data|tojson(indent=2) }}</pre>
+{% endblock %}
