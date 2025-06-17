@@ -38,24 +38,30 @@ def split_docker_domain(name: str) -> tuple[str, str]:
 async def fetch_token(repo: str, session: Optional[aiohttp.ClientSession] = None) -> str:
     """Fetch an anonymous pull token for the given repository."""
     domain, remainder = split_docker_domain(repo)
-    sess = session or aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
-    async with sess.get(f"https://{domain}/v2/") as resp:
-        auth = resp.headers.get("www-authenticate")
-    realm = "https://auth.docker.io/token"
-    service = "registry.docker.io"
-    if auth:
-        m = re.search(r'realm="([^"]+)"', auth)
-        if m:
-            realm = m.group(1)
-        m = re.search(r'service="([^"]+)"', auth)
-        if m:
-            service = m.group(1)
-    async with sess.get(
-        f"{realm}?service={service}&scope=repository:{remainder}:pull"
-    ) as resp:
-        resp.raise_for_status()
-        data = await resp.json()
-        return data.get("token", "")
+
+    async def _do(sess: aiohttp.ClientSession) -> str:
+        async with sess.get(f"https://{domain}/v2/") as resp:
+            auth = resp.headers.get("www-authenticate")
+        realm = "https://auth.docker.io/token"
+        service = "registry.docker.io"
+        if auth:
+            m = re.search(r'realm="([^"]+)"', auth)
+            if m:
+                realm = m.group(1)
+            m = re.search(r'service="([^"]+)"', auth)
+            if m:
+                service = m.group(1)
+        async with sess.get(
+            f"{realm}?service={service}&scope=repository:{remainder}:pull"
+        ) as resp:
+            resp.raise_for_status()
+            data = await resp.json()
+            return data.get("token", "")
+
+    if session is not None:
+        return await _do(session)
+    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+        return await _do(sess)
 
 
 ACCEPT_HEADERS = (
@@ -75,16 +81,22 @@ async def fetch_index_or_manifest(
     domain, remainder = split_docker_domain(repo)
     url = f"https://{domain}/v2/{remainder}/manifests/{digest_or_tag}"
     headers = {"Accept": ACCEPT_HEADERS, "Authorization": f"Bearer {token}"}
-    sess = session or aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
-    async with sess.get(url, headers=headers) as resp:
-        resp.raise_for_status()
-        body = await resp.json()
-        return {
-            "digest": resp.headers.get("docker-content-digest"),
-            "contentType": resp.headers.get("content-type"),
-            "_digestOrTag": digest_or_tag,
-            **body,
-        }
+
+    async def _do(sess: aiohttp.ClientSession) -> Dict[str, Any]:
+        async with sess.get(url, headers=headers) as resp:
+            resp.raise_for_status()
+            body = await resp.json()
+            return {
+                "digest": resp.headers.get("docker-content-digest"),
+                "contentType": resp.headers.get("content-type"),
+                "_digestOrTag": digest_or_tag,
+                **body,
+            }
+
+    if session is not None:
+        return await _do(session)
+    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+        return await _do(sess)
 
 
 async def fetch_blob(
@@ -96,10 +108,16 @@ async def fetch_blob(
     domain, remainder = split_docker_domain(repo)
     url = f"https://{domain}/v2/{remainder}/blobs/{digest}"
     headers = {"Authorization": f"Bearer {token}"}
-    sess = session or aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
-    async with sess.get(url, headers=headers) as resp:
-        resp.raise_for_status()
-        return await resp.read()
+
+    async def _do(sess: aiohttp.ClientSession) -> bytes:
+        async with sess.get(url, headers=headers) as resp:
+            resp.raise_for_status()
+            return await resp.read()
+
+    if session is not None:
+        return await _do(session)
+    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+        return await _do(sess)
 
 
 async def list_layer_files(
@@ -131,10 +149,15 @@ async def get_manifest_digest(
         "Accept": "application/vnd.docker.distribution.manifest.v2+json",
         "Authorization": f"Bearer {token}",
     }
-    sess = session or aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
-    async with sess.head(url, headers=headers) as resp:
-        resp.raise_for_status()
-        return resp.headers.get("Docker-Content-Digest")
+    async def _do(sess: aiohttp.ClientSession) -> Optional[str]:
+        async with sess.head(url, headers=headers) as resp:
+            resp.raise_for_status()
+            return resp.headers.get("Docker-Content-Digest")
+
+    if session is not None:
+        return await _do(session)
+    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+        return await _do(sess)
 
 
 async def _layers_details(repo: str, manifest: Dict[str, Any], token: str, session: aiohttp.ClientSession) -> List[Dict[str, Any]]:
