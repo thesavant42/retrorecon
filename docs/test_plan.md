@@ -6,12 +6,12 @@ This document describes the tests required for the new database creation and ren
 
 1. **Create New DB with Name**
    - POST `/new_db` with `db_name=client1`.
-   - Verify a file `client1.db` is created and `session['db_display_name']` equals `client1.db`.
+   - Verify a file `db/client1.db` is created and `session['db_display_name']` equals `client1.db`.
    - Ensure tables exist by querying `urls`.
 
 2. **Create New DB with Default Name**
    - POST `/new_db` with no name.
-   - Expect file `waybax.db` and matching session value.
+   - Expect file `db/waybax.db` and matching session value.
 
 3. **Rename Database**
    - Start with a temporary database.

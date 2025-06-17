@@ -12,7 +12,7 @@ def new_db():
         flash('Invalid database name.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    temp_path = os.path.join(app.app.root_path, app.TEMP_DB_NAME)
+    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:
@@ -34,9 +34,9 @@ def load_db_route():
     if not filename:
         flash('Invalid database file.', 'error')
         return redirect(url_for('index'))
-    db_path = os.path.join(app.app.root_path, filename)
+    db_path = os.path.join(app.get_db_folder(), filename)
     app.close_connection(None)
-    temp_path = os.path.join(app.app.root_path, app.TEMP_DB_NAME)
+    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:
@@ -78,7 +78,7 @@ def rename_db():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    new_path = os.path.join(app.app.root_path, safe)
+    new_path = os.path.join(app.get_db_folder(), safe)
     try:
         os.rename(app.app.config['DATABASE'], new_path)
     except OSError as e:

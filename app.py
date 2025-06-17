@@ -53,6 +53,12 @@ from retrorecon import (
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
+
+def get_db_folder() -> str:
+    """Return the folder where database files are stored."""
+    folder = os.path.join(app.root_path, 'db')
+    os.makedirs(folder, exist_ok=True)
+    return folder
 log_level_name = app.config.get('LOG_LEVEL', 'WARNING').upper()
 numeric_level = getattr(logging, log_level_name, logging.WARNING)
 logging.basicConfig(level=numeric_level, format='%(levelname)s:%(name)s:%(message)s')
@@ -60,7 +66,7 @@ logger = logging.getLogger(__name__)
 app.jwt = jwt
 env_db = app.config.get('DB_ENV')
 if env_db:
-    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app.root_path, env_db)
+    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(get_db_folder(), env_db)
 else:
     app.config['DATABASE'] = None
 app.secret_key = app.config.get('SECRET_KEY', 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY')
@@ -118,7 +124,7 @@ TEMP_DISPLAY_NAME = 'UNSAVED'
 
 def _create_temp_db() -> None:
     """Create a fresh temporary database for this session."""
-    app.config['DATABASE'] = os.path.join(app.root_path, TEMP_DB_NAME)
+    app.config['DATABASE'] = os.path.join(get_db_folder(), TEMP_DB_NAME)
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
@@ -717,6 +723,14 @@ app.register_blueprint(docker_bp)
 app.register_blueprint(registry_bp)
 app.register_blueprint(dag_bp)
 app.register_blueprint(oci_bp)
+
+
+@app.after_request
+def add_no_cache_headers(response: Response) -> Response:
+    """Disable caching so templates always reload."""
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['Pragma'] = 'no-cache'
+    return response
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):
