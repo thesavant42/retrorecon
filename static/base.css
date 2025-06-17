@@ -59,7 +59,6 @@
 .retrorecon-root .d-none { display: none; }
 .retrorecon-root .cursor-pointer { cursor: pointer; }
 .retrorecon-root .fw-bold { font-weight: bold; }
-.retrorecon-root .version-text { font-size: 0.7em; color: var(--accent-color); }
 .retrorecon-root .db-info {
   font-size: 1em;
   letter-spacing: 0.04em;
