@@ -10,7 +10,11 @@ DEFAULT_TIMEOUT = aiohttp.ClientTimeout(
     total=int(os.environ.get("REGISTRY_TIMEOUT", "120"))
 )
 
-from .layerslayer_utils import parse_image_ref, registry_base_url
+from .layerslayer_utils import (
+    parse_image_ref,
+    registry_base_url,
+    human_readable_size,
+)
 
 
 class DockerRegistryClient:
@@ -119,13 +123,34 @@ async def list_layer_files(
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
     c = client or get_client()
-    data = await c.fetch_bytes(url, user, repo)
-    tar_bytes = io.BytesIO(data)
-    files: List[str] = []
-    with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
-        for member in tar.getmembers():
-            files.append(member.name)
-    return files
+
+    headers = await c._auth_headers(user, repo)
+    headers["Accept"] = "*/*"
+    if c.session is None:
+        c.session = aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
+
+    range_size = int(os.environ.get("LAYERPEEK_RANGE", "2097152"))
+    start = 0
+    data = bytearray()
+    while True:
+        h = dict(headers)
+        h["Range"] = f"bytes={start}-{start + range_size - 1}"
+        async with c.session.get(url, headers=h) as resp:
+            if resp.status == 416:
+                break
+            resp.raise_for_status()
+            chunk = await resp.read()
+            data.extend(chunk)
+        try:
+            tar_bytes = io.BytesIO(data)
+            with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
+                return [m.name for m in tar.getmembers()]
+        except tarfile.ReadError:
+            if len(chunk) < range_size:
+                break
+            start += range_size
+            continue
+    return []
 
 
 async def _layers_details(
@@ -134,17 +159,19 @@ async def _layers_details(
     client: DockerRegistryClient,
 ) -> List[Dict[str, Any]]:
     layers = manifest.get("layers", [])
-    tasks = [list_layer_files(image_ref, layer["digest"], client) for layer in layers]
-    files_list = await asyncio.gather(*tasks, return_exceptions=True)
-    details = []
-    for layer, files in zip(layers, files_list):
-        if isinstance(files, Exception):
+    details: List[Dict[str, Any]] = []
+    for layer in layers:
+        try:
+            files = await list_layer_files(image_ref, layer["digest"], client)
+        except Exception:
             files = []
-        details.append({
-            "digest": layer["digest"],
-            "size": layer.get("size"),
-            "files": files,
-        })
+        details.append(
+            {
+                "digest": layer["digest"],
+                "size": human_readable_size(layer.get("size", 0) or 0),
+                "files": files,
+            }
+        )
     return details
 
 
