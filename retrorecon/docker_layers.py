@@ -15,6 +15,12 @@ class DockerRegistryClient:
         self.session: Optional[aiohttp.ClientSession] = None
         self.token_cache: Dict[str, str] = {}
 
+    async def __aenter__(self) -> "DockerRegistryClient":
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        await self.close()
+
     async def close(self) -> None:
         if self.session:
             await self.session.close()
@@ -82,27 +88,33 @@ class DockerRegistryClient:
             return await resp.read()
 
 
-_client: Optional[DockerRegistryClient] = None
-
 
 def get_client() -> DockerRegistryClient:
-    global _client
-    if _client is None:
-        _client = DockerRegistryClient()
-    return _client
+    """Return a fresh DockerRegistryClient instance."""
+    return DockerRegistryClient()
 
 
-async def get_manifest(image_ref: str, specific_digest: Optional[str] = None) -> Dict[str, Any]:
+async def get_manifest(
+    image_ref: str,
+    specific_digest: Optional[str] = None,
+    client: Optional[DockerRegistryClient] = None,
+) -> Dict[str, Any]:
     user, repo, tag = parse_image_ref(image_ref)
     ref = specific_digest or tag
     url = f"{registry_base_url(user, repo)}/manifests/{ref}"
-    return await get_client().fetch_json(url, user, repo)
+    c = client or get_client()
+    return await c.fetch_json(url, user, repo)
 
 
-async def list_layer_files(image_ref: str, digest: str) -> List[str]:
+async def list_layer_files(
+    image_ref: str,
+    digest: str,
+    client: Optional[DockerRegistryClient] = None,
+) -> List[str]:
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
-    data = await get_client().fetch_bytes(url, user, repo)
+    c = client or get_client()
+    data = await c.fetch_bytes(url, user, repo)
     tar_bytes = io.BytesIO(data)
     files: List[str] = []
     with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
@@ -111,9 +123,13 @@ async def list_layer_files(image_ref: str, digest: str) -> List[str]:
     return files
 
 
-async def _layers_details(image_ref: str, manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def _layers_details(
+    image_ref: str,
+    manifest: Dict[str, Any],
+    client: DockerRegistryClient,
+) -> List[Dict[str, Any]]:
     layers = manifest.get("layers", [])
-    tasks = [list_layer_files(image_ref, layer["digest"]) for layer in layers]
+    tasks = [list_layer_files(image_ref, layer["digest"], client) for layer in layers]
     files_list = await asyncio.gather(*tasks, return_exceptions=True)
     details = []
     for layer, files in zip(layers, files_list):
@@ -128,30 +144,33 @@ async def _layers_details(image_ref: str, manifest: Dict[str, Any]) -> List[Dict
 
 
 async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
-    manifest_index = await get_manifest(image_ref)
-    result: List[Dict[str, Any]] = []
-    if manifest_index.get("manifests"):
-        platforms = manifest_index["manifests"]
-        for m in platforms:
-            plat = m.get("platform", {})
-            digest = m["digest"]
-            manifest = await get_manifest(image_ref, specific_digest=digest)
-            layers = await _layers_details(image_ref, manifest)
+    async with DockerRegistryClient() as client:
+        manifest_index = await get_manifest(image_ref, client=client)
+        result: List[Dict[str, Any]] = []
+        if manifest_index.get("manifests"):
+            platforms = manifest_index["manifests"]
+            for m in platforms:
+                plat = m.get("platform", {})
+                digest = m["digest"]
+                manifest = await get_manifest(
+                    image_ref, specific_digest=digest, client=client
+                )
+                layers = await _layers_details(image_ref, manifest, client)
+                result.append(
+                    {
+                        "os": plat.get("os"),
+                        "architecture": plat.get("architecture"),
+                        "layers": layers,
+                    }
+                )
+        else:
+            layers = await _layers_details(image_ref, manifest_index, client)
             result.append(
                 {
-                    "os": plat.get("os"),
-                    "architecture": plat.get("architecture"),
+                    "os": manifest_index.get("os"),
+                    "architecture": manifest_index.get("architecture"),
                     "layers": layers,
                 }
             )
-    else:
-        layers = await _layers_details(image_ref, manifest_index)
-        result.append(
-            {
-                "os": manifest_index.get("os"),
-                "architecture": manifest_index.get("architecture"),
-                "layers": layers,
-            }
-        )
-    return result
+        return result
 

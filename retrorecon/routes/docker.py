@@ -3,7 +3,10 @@ import io
 import asyncio
 from aiohttp import ClientError
 
-from ..docker_layers import gather_layers_info, get_client
+from ..docker_layers import (
+    gather_layers_info,
+    DockerRegistryClient,
+)
 from ..layerslayer_utils import parse_image_ref, registry_base_url
 
 bp = Blueprint('docker', __name__)
@@ -42,6 +45,11 @@ def download_layer_route():
         return ('', 400)
     user, repo, _ = parse_image_ref(image)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
-    data = asyncio.run(get_client().fetch_bytes(url, user, repo))
+
+    async def _fetch() -> bytes:
+        async with DockerRegistryClient() as client:
+            return await client.fetch_bytes(url, user, repo)
+
+    data = asyncio.run(_fetch())
     filename = digest.replace(':', '_') + '.tar.gz'
     return send_file(io.BytesIO(data), as_attachment=True, download_name=filename, mimetype='application/gzip')
