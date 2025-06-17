@@ -236,7 +236,14 @@ def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -
 
 @app.route('/', methods=['GET'])
 def index() -> str:
-    """Render the main search page."""
+    """Render the main search page or redirect to registry explorer views."""
+    repo_param = request.args.get("repo")
+    image_param = request.args.get("image")
+    if repo_param:
+        return redirect(url_for("oci.repo_view", repo=repo_param))
+    if image_param:
+        return redirect(url_for("oci.image_view", image=image_param))
+
     q = request.args.get('q', '').strip()
     select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
     try:
