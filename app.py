@@ -552,7 +552,7 @@ def status_route() -> Response:
             break
         last = nxt
     if not last:
-        return jsonify({'code': '', 'message': ''})
+        return ('', 204)
     return jsonify({'code': last[0], 'message': last[1]})
 
 @app.route('/add_tag', methods=['POST'])
