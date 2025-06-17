@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
+import app
 import asyncio
 from aiohttp import ClientError
 
@@ -6,6 +7,16 @@ from layerslayer.utils import parse_image_ref
 from .. import registry_explorer as rex
 
 bp = Blueprint('registry', __name__)
+
+
+@bp.route('/registry_viewer', methods=['GET'])
+def registry_viewer_page():
+    return render_template('registry_explorer.html')
+
+
+@bp.route('/tools/registry_viewer', methods=['GET'])
+def registry_viewer_full_page():
+    return app.index()
 
 
 @bp.route('/registry_explorer', methods=['GET'])
