@@ -179,14 +179,14 @@ async def list_layer_files(
             data.extend(chunk)
         try:
             return _parse(data)
-        except tarfile.ReadError:
+        except (tarfile.TarError, OSError, EOFError):
             if len(chunk) < range_size:
                 break
             start += range_size
             continue
     try:
         return _parse(data)
-    except tarfile.ReadError:
+    except (tarfile.TarError, OSError, EOFError):
         try:
             data = await c.fetch_bytes(url, user, repo)
             return _parse(data)
