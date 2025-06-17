@@ -1079,6 +1079,8 @@ body.bg-hidden {
   padding: 1em;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .retrorecon-root .notes-overlay.hidden {
   display: none;
