@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 import asyncio
+import io
+import tarfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
@@ -85,5 +87,63 @@ def test_download_layer_timeout(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         resp = client.get('/download_layer?image=test/test:tag&digest=sha256:abc')
         assert resp.status_code == 504
+
+
+def test_list_layer_files_fallback(monkeypatch):
+    import retrorecon.docker_layers as dl
+    # create a tiny tar.gz archive
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode='w:gz') as tar:
+        info = tarfile.TarInfo('hello.txt')
+        data = b'hello'
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    tar_bytes = buf.getvalue()
+
+    async def fake_fetch_bytes(self, url, user, repo):
+        return tar_bytes
+
+    async def fake_auth_headers(self, user, repo):
+        return {}
+
+    class FakeResp:
+        def __init__(self, data, status):
+            self._data = data
+            self.status = status
+            self.headers = {}
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            pass
+
+        async def read(self):
+            return self._data
+
+        def raise_for_status(self):
+            if self.status >= 400 and self.status != 416:
+                raise Exception('error')
+
+    class FakeSession:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, url, headers=None):
+            self.calls += 1
+            if self.calls == 1:
+                return FakeResp(b'invalid', 206)
+            return FakeResp(b'', 416)
+
+    monkeypatch.setattr(dl.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
+    monkeypatch.setattr(dl.DockerRegistryClient, '_auth_headers', fake_auth_headers)
+
+    async def run():
+        client = dl.DockerRegistryClient()
+        client.session = FakeSession()
+        return await dl.list_layer_files('user/repo:tag', 'sha256:x', client=client)
+
+    files = asyncio.run(run())
+    assert files == ['hello.txt']
 
 

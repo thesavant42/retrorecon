@@ -148,6 +148,12 @@ async def list_layer_files(
     digest: str,
     client: Optional[DockerRegistryClient] = None,
 ) -> List[str]:
+    """Return the list of files contained in a layer blob.
+
+    The function first attempts ranged GET requests to avoid downloading large
+    layers in full. If the collected bytes cannot be parsed as a tar archive it
+    falls back to downloading the entire blob via ``fetch_bytes``.
+    """
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
     c = client or get_client()
@@ -158,6 +164,17 @@ async def list_layer_files(
         c.session = aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
 
     range_size = int(os.environ.get("LAYERPEEK_RANGE", "2097152"))
+
+    def _parse(data: bytes) -> List[str]:
+        tar_bytes = io.BytesIO(data)
+        with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
+            return [m.name for m in tar.getmembers()]
+
+    # range_size <= 0 means fetch the whole blob immediately
+    if range_size <= 0:
+        data = await c.fetch_bytes(url, user, repo)
+        return _parse(data)
+
     start = 0
     data = bytearray()
     while True:
@@ -168,22 +185,25 @@ async def list_layer_files(
                 break
             resp.raise_for_status()
             chunk = await resp.read()
+            if not chunk:
+                break
             data.extend(chunk)
         try:
-            tar_bytes = io.BytesIO(data)
-            with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
-                return [m.name for m in tar.getmembers()]
+            return _parse(data)
         except tarfile.ReadError:
             if len(chunk) < range_size:
                 break
             start += range_size
             continue
     try:
-        tar_bytes = io.BytesIO(data)
-        with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
-            return [m.name for m in tar.getmembers()]
+        return _parse(data)
     except tarfile.ReadError:
-        return []
+        # Final attempt failed → download the entire blob and parse
+        try:
+            data = await c.fetch_bytes(url, user, repo)
+            return _parse(data)
+        except Exception:
+            return []
 
 
 async def _layers_details(
