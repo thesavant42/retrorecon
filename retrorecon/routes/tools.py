@@ -7,7 +7,18 @@ import urllib.parse
 import requests
 import zipfile
 import app
-from flask import Blueprint, request, Response, jsonify, render_template, redirect, url_for, flash, send_file
+from flask import (
+    Blueprint,
+    request,
+    Response,
+    jsonify,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    send_file,
+    current_app,
+)
 
 bp = Blueprint('tools', __name__)
 
@@ -321,12 +332,24 @@ def site2zip_route():
     ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
+    thumb_name = f'site_{ts}_th.png'
     os.makedirs(app.SITEZIP_DIR, exist_ok=True)
     with open(os.path.join(app.SITEZIP_DIR, zip_name), 'wb') as f:
         f.write(zip_bytes)
-    with open(os.path.join(app.SITEZIP_DIR, shot_name), 'wb') as f:
+    shot_path = os.path.join(app.SITEZIP_DIR, shot_name)
+    with open(shot_path, 'wb') as f:
         f.write(shot_bytes)
-    sid = app.save_sitezip_record(url, zip_name, shot_name, 'GET')
+    thumb_path = os.path.join(app.SITEZIP_DIR, thumb_name)
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(shot_bytes))
+        img.thumbnail((160, 160))
+        img.save(thumb_path, format='PNG')
+    except Exception as e:
+        current_app.logger.debug('thumbnail generation failed: %s', e)
+        with open(thumb_path, 'wb') as f:
+            f.write(shot_bytes)
+    sid = app.save_sitezip_record(url, zip_name, shot_name, thumb_name, 'GET')
     return jsonify({'id': sid})
 
 
@@ -337,7 +360,7 @@ def sitezips_route():
     rows = app.list_sitezip_data()
     for r in rows:
         r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
-        r['preview'] = url_for('static', filename='sitezips/' + r['screenshot_path'])
+        r['preview'] = url_for('static', filename='sitezips/' + r['thumbnail_path'])
     return jsonify(rows)
 
 

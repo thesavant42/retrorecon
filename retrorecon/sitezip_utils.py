@@ -13,11 +13,18 @@ from database import execute_db, query_db
 from . import screenshot_utils
 
 
-def save_record(dir_path: str, url: str, zip_path: str, screenshot_path: str, method: str = 'GET') -> int:
+def save_record(
+    dir_path: str,
+    url: str,
+    zip_path: str,
+    screenshot_path: str,
+    thumbnail_path: str,
+    method: str = 'GET',
+) -> int:
     os.makedirs(dir_path, exist_ok=True)
     return execute_db(
-        "INSERT INTO sitezips (url, method, zip_path, screenshot_path) VALUES (?, ?, ?, ?)",
-        [url, method, zip_path, screenshot_path],
+        "INSERT INTO sitezips (url, method, zip_path, screenshot_path, thumbnail_path) VALUES (?, ?, ?, ?, ?)",
+        [url, method, zip_path, screenshot_path, thumbnail_path],
     )
 
 
@@ -29,7 +36,7 @@ def list_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
         where = f"WHERE id IN ({placeholders})"
         params.extend(ids)
     rows = query_db(
-        f"SELECT id, url, method, zip_path, screenshot_path, created_at FROM sitezips {where} ORDER BY id DESC",
+        f"SELECT id, url, method, zip_path, screenshot_path, thumbnail_path, created_at FROM sitezips {where} ORDER BY id DESC",
         params,
     )
     result = []
@@ -41,6 +48,7 @@ def list_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
                 "method": r["method"],
                 "zip_path": r["zip_path"],
                 "screenshot_path": r["screenshot_path"],
+                "thumbnail_path": r["thumbnail_path"],
                 "created_at": r["created_at"],
             }
         )
@@ -52,12 +60,12 @@ def delete_records(dir_path: str, ids: List[int]) -> None:
         return
     for sid in ids:
         row = query_db(
-            "SELECT zip_path, screenshot_path FROM sitezips WHERE id = ?",
+            "SELECT zip_path, screenshot_path, thumbnail_path FROM sitezips WHERE id = ?",
             [sid],
             one=True,
         )
         if row:
-            for fname in (row["zip_path"], row["screenshot_path"]):
+            for fname in (row["zip_path"], row["screenshot_path"], row["thumbnail_path"]):
                 path = os.path.join(dir_path, fname)
                 try:
                     os.remove(path)

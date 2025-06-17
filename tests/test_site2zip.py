@@ -38,6 +38,7 @@ def test_site2zip_workflow(tmp_path, monkeypatch):
         resp = client.get('/sitezips')
         rows = resp.get_json()
         assert rows and rows[0]['url'] == 'http://example.com'
+        assert 'preview' in rows[0]
         resp = client.post('/delete_sitezips', data={'ids': sid})
         assert resp.status_code == 204
         assert client.get('/sitezips').get_json() == []
