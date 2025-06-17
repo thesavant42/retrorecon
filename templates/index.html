@@ -606,6 +606,7 @@
 
     let statusTimer = null;
     let statusClear = null;
+    let statusDelay = 1000;
     function showStatus(msg){
       const text = document.getElementById('import-status-text');
       text.textContent = msg;
@@ -619,10 +620,16 @@
         .then(data => {
           if(data.code){
             showStatus(data.message || data.code);
+            statusDelay = 1000;
+          } else {
+            statusDelay = Math.min(statusDelay * 2, 30000);
           }
-          statusTimer = setTimeout(pollStatus, 1000);
+          statusTimer = setTimeout(pollStatus, statusDelay);
         })
-        .catch(() => { statusTimer = setTimeout(pollStatus, 5000); });
+        .catch(() => {
+          statusDelay = 5000;
+          statusTimer = setTimeout(pollStatus, statusDelay);
+        });
     }
 
     pollStatus();

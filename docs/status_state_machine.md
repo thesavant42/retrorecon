@@ -10,5 +10,6 @@ Status events are retrieved via the `/status` API and shown in the UI.
 - `cdx_api_download_complete` – finished downloading the CDX data.
 - `cdx_import_complete` – all CDX records processed and inserted.
 
-The client polls `/status` every second and displays the most recent message.
-After a short delay the display resets to `idle`.
+The client polls `/status` frequently when new messages are being emitted and
+gradually backs off to a slower pace when idle, up to 30 seconds between
+requests. After a short delay the display resets to `idle`.
