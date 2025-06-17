@@ -218,7 +218,7 @@ application's security posture.
 ```markdown
 - [ ] Load `app.secret_key` from an environment variable and document the requirement.
 - [ ] Implement CSRF protection across all POST forms (consider Flask-WTF).
-- [ ] Refactor `templates/index.html` to avoid placing `{{ url.url }}` inside JavaScript strings. 
+- [x] Refactor `templates/index.html` to avoid placing `{{ url.url }}` inside JavaScript strings.
   - Use `data-url` attributes and event listeners defined in JS.
   - Sanitize URLs before opening (e.g., verify `http/https`).
 - [ ] Validate `map_url` in `/tools/webpack-zip`:

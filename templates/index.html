@@ -244,7 +244,7 @@
               </thead>
               <tbody>
                 {% for url in urls %}
-                <tr class="url-row-main url-result cursor-pointer" onclick="window.open('{{ url.url }}', '_blank');">
+                <tr class="url-row-main url-result cursor-pointer" data-url="{{ url.url }}">
                   <td class="checkbox-col">
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
@@ -257,7 +257,7 @@
                   <td></td>
                   <td colspan="4">
                     <div class="url-tools-row nowrap">
-                      <select class="form-select tool-select menu-btn" onchange="handleToolSelect(this, '{{ url.url }}')">
+                      <select class="form-select tool-select menu-btn" data-url="{{ url.url }}">
                         <option value="">Tools…</option>
                         <option value="archive">Web Archive</option>
                         <option value="shodan">Shodan.io</option>
@@ -1214,6 +1214,7 @@
     const urlTable = document.querySelector('.url-table');
     if(urlTable) makeResizable(urlTable, 'url-col-widths');
   </script>
-  </div>
+</div>
+<script src="{{ url_for('static', filename='index_page.js') }}"></script>
 </body>
 </html>
