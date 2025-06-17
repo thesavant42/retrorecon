@@ -10,7 +10,7 @@ from aiohttp import ClientError
 from flask import Blueprint, jsonify, render_template, request, send_file
 
 import app
-from layerslayer.client import DockerRegistryClient, get_manifest
+from layerslayer.client import DockerRegistryClient, get_manifest, list_layer_files
 from layerslayer.utils import parse_image_ref, registry_base_url
 
 bp = Blueprint("dag", __name__)
@@ -100,3 +100,24 @@ def dag_fs(digest: str, path: str):
         data = file_obj.read()
     filename = Path(path).name
     return send_file(io.BytesIO(data), download_name=filename, as_attachment=False)
+
+
+@bp.route("/dag/layer/<digest>", methods=["GET"])
+def dag_layer(digest: str):
+    image = request.args.get("image")
+    if not image:
+        return jsonify({"error": "missing_image"}), 400
+
+    async def _fetch() -> list[str]:
+        async with DockerRegistryClient() as client:
+            return await list_layer_files(image, digest, client=client)
+
+    try:
+        files = asyncio.run(_fetch())
+    except asyncio.TimeoutError:
+        return jsonify({"error": "timeout"}), 504
+    except ClientError as exc:
+        return jsonify({"error": "client_error", "details": str(exc)}), 502
+    except Exception as exc:  # pragma: no cover - unexpected
+        return jsonify({"error": "server_error", "details": str(exc)}), 500
+    return jsonify({"files": files})
