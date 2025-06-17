@@ -29,7 +29,7 @@ def dag_explorer_page():
 
 @bp.route("/tools/dag_explorer", methods=["GET"])
 def dag_explorer_full_page():
-    return app.index()
+    return render_template("dag_explorer_page.html")
 
 
 @bp.route("/dag/repo/<path:repo>", methods=["GET"])
