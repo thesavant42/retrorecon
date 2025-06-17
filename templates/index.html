@@ -24,7 +24,7 @@
 </head>
 <body class="app">
   <div class="retrorecon-root">
-  {% macro render_pagination(page, total_pages, q, total_count, items_per_page) %}
+{% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) %}
   <div class="pagination mt-1">
     <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
       <input type="hidden" name="count" id="items-count-input" />
@@ -36,29 +36,29 @@
     </select>
     <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
     {% if page > 1 %}
-      <a href="?page=1&q={{ q }}" class="pagination-arrow" aria-label="First">&laquo;&laquo;</a>
-      <a href="?page={{ page - 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Prev">&laquo;</a>
+      <a href="?page=1&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}" class="pagination-arrow" aria-label="First">&laquo;&laquo;</a>
+      <a href="?page={{ page - 1 }}&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}" class="pagination-arrow" aria-label="Prev">&laquo;</a>
     {% endif %}
     {% set start = page - 2 if page - 2 > 2 else 1 %}
     {% set end = page + 2 if page + 2 < total_pages - 1 else total_pages %}
     {% if start > 1 %}
-      <a href="?page=1&q={{ q }}">1</a>
+      <a href="?page=1&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}">1</a>
       {% if start > 2 %}<span>...</span>{% endif %}
     {% endif %}
     {% for p in range(start, end + 1) %}
       {% if p == page %}
         <strong>{{ p }}</strong>
       {% else %}
-        <a href="?page={{ p }}&q={{ q }}">{{ p }}</a>
+        <a href="?page={{ p }}&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}">{{ p }}</a>
       {% endif %}
     {% endfor %}
     {% if end < total_pages %}
       {% if end < total_pages - 1 %}<span>...</span>{% endif %}
-      <a href="?page={{ total_pages }}&q={{ q }}">{{ total_pages }}</a>
+      <a href="?page={{ total_pages }}&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}">{{ total_pages }}</a>
     {% endif %}
     {% if page < total_pages %}
-      <a href="?page={{ page + 1 }}&q={{ q }}" class="pagination-arrow" aria-label="Next">&raquo;</a>
-      <a href="?page={{ total_pages }}&q={{ q }}" class="pagination-arrow" aria-label="Last">&raquo;&raquo;</a>
+      <a href="?page={{ page + 1 }}&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}" class="pagination-arrow" aria-label="Next">&raquo;</a>
+      <a href="?page={{ total_pages }}&q={{ q }}{% if select_all_matching %}&select_all_matching=true{% endif %}" class="pagination-arrow" aria-label="Last">&raquo;&raquo;</a>
     {% endif %}
     <form class="d-inline ml-1" onsubmit="return gotoPage(this);">
       <input type="hidden" name="q" value="{{ q }}" />
@@ -206,7 +206,7 @@
   <table id="layout-c" class="w-100 mt-1">
     <tr>
       <td class="text-left">
-        {{ render_pagination(page, total_pages, q, total_count, items_per_page) }}
+        {{ render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) }}
       </td>
     </tr>
   </table>
@@ -220,7 +220,7 @@
           {% if urls %}
           <form method="POST" action="/bulk_action" id="bulk-form">
             <input type="hidden" name="q" value="{{ q }}" />
-            <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="false" />
+            <input type="hidden" name="select_all_matching" id="select-all-matching-input" value="{{ 'true' if select_all_matching else 'false' }}" />
 
             <!-- Data table -->
             <table class="url-table">
@@ -306,7 +306,7 @@
     </tr>
     <tr>
       <td class="text-center mt-1">
-        {{ render_pagination(page, total_pages, q, total_count, items_per_page) }}
+        {{ render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) }}
       </td>
     </tr>
     <tr>
@@ -428,6 +428,9 @@
       const matchCb = document.getElementById('select-all-matching');
       if(matchCb) matchCb.checked = false;
       document.getElementById('select-all-matching-input').value = "false";
+      const url = new URL(window.location);
+      url.searchParams.delete('select_all_matching');
+      window.history.replaceState(null, '', url);
     }
 
     function toggleSelectAllMatching(cb) {
@@ -437,6 +440,13 @@
       if (cb.checked) {
         document.querySelectorAll('.row-checkbox').forEach(c => c.checked = true);
       }
+      const url = new URL(window.location);
+      if(cb.checked){
+        url.searchParams.set('select_all_matching', 'true');
+      } else {
+        url.searchParams.delete('select_all_matching');
+      }
+      window.history.replaceState(null, '', url);
     }
 
     function toggleSelectAllRows(cb) {
@@ -469,6 +479,9 @@
       if(p) {
         const params = new URLSearchParams();
         if(f.q && f.q.value) params.set('q', f.q.value);
+        if(document.getElementById('select-all-matching-input').value === 'true') {
+          params.set('select_all_matching', 'true');
+        }
         params.set('page', p);
         window.location = '/?' + params.toString();
       }
