@@ -171,7 +171,7 @@ async def list_layer_files(
             data.extend(chunk)
         try:
             tar_bytes = io.BytesIO(data)
-            with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
+            with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
                 return [m.name for m in tar.getmembers()]
         except tarfile.ReadError:
             if len(chunk) < range_size:
@@ -180,7 +180,7 @@ async def list_layer_files(
             continue
     try:
         tar_bytes = io.BytesIO(data)
-        with tarfile.open(fileobj=tar_bytes, mode="r:gz") as tar:
+        with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
             return [m.name for m in tar.getmembers()]
     except tarfile.ReadError:
         return []
