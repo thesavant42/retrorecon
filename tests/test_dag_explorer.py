@@ -25,6 +25,14 @@ def test_dag_explorer_page(tmp_path, monkeypatch):
         assert b'id="dag-explorer-overlay"' in resp.data
 
 
+def test_dag_explorer_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/dag_explorer')
+        assert resp.status_code == 200
+        assert b'Back to Dashboard' in resp.data
+
+
 def test_dag_repo_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.dag as dag
