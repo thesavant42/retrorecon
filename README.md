@@ -216,6 +216,18 @@ data = asyncio.run(gather_layers_info("ubuntu:latest"))
 print(data[0]["layers"][0]["digest"])
 ```
 
+### Layer Slayer CLI
+
+Run the command-line tool under `tools/` to peek at or log individual layers.
+
+```bash
+python tools/layer_slayer.py -t ubuntu:latest --peek-layer 2
+python tools/layer_slayer.py -t ubuntu:latest --peek-all --log-file layers.log --log-layer 0
+```
+
+`--peek-layer` displays a single layer's contents while `--log-layer` records
+messages for that layer in a separate file like `layers.log.layer0.log`.
+
 ### Registry Explorer API
 
 Query Docker Hub manifests using different backends. Provide a single
