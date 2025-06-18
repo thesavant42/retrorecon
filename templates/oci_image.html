@@ -10,9 +10,12 @@
 {% for k, v in data.headers.items() %}
 {{ k }}: {{ v }}<br>
 {% endfor %}
+<pre class="manifest-json">{{ data.descriptor|tojson(indent=2) }}</pre>
 </div>
 <div class="tab content2">
+<pre class="manifest-json">{{ data.descriptor|tojson(indent=2) }}</pre>
+</div>
+
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ image }} | jq .</h4>
 <pre class="manifest-json">{{ data.manifest|manifest_links(image) }}</pre>
-</div>
 {% endblock %}
