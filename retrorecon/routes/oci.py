@@ -52,13 +52,20 @@ def repo_view(repo: str):
 
 
 async def _image_data(image: str) -> Dict[str, Any]:
-    """Return manifest information for ``image`` without downloading layers."""
+    """Return manifest or index information for ``image``."""
+    async with DockerRegistryClient() as client:
+        manifest = await get_manifest(image, client=client)
+    return {"manifest": manifest}
+
+
+async def _resolve_manifest(image: str) -> Dict[str, Any]:
+    """Return a concrete manifest for ``image`` resolving indexes."""
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
         if manifest.get("manifests"):
             digest = manifest["manifests"][0]["digest"]
             manifest = await get_manifest(image, specific_digest=digest, client=client)
-    return {"manifest": manifest}
+    return manifest
 
 
 @bp.route("/image/<path:image>", methods=["GET"])
@@ -71,7 +78,7 @@ def image_view(image: str):
         return (str(exc), 502)
     except Exception:
         return ("server error", 500)
-    return render_template("oci_image.html", image=image, data=data)
+    return render_template("oci_image.html", image=image, data=data, title=image)
 
 
 async def _read_layer(repo: str, digest: str) -> bytes:
@@ -132,10 +139,10 @@ def fs_view(repo: str, digest: str, subpath: str):
 @bp.route("/layers/<path:image>/<path:subpath>", methods=["GET"])
 def layer_dir(image: str, subpath: str):
     try:
-        data = asyncio.run(_image_data(image))
+        manifest = asyncio.run(_resolve_manifest(image))
     except Exception:
         return ("error", 500)
-    layers = data.get("manifest", {}).get("layers", [])
+    layers = manifest.get("layers", [])
     if not layers:
         return ("no layers", 404)
     digest = layers[0]["digest"]
