@@ -90,15 +90,18 @@ def dag_fs(digest: str, path: str):
     except Exception as exc:
         return jsonify({"error": "server_error", "details": str(exc)}), 500
 
-    with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
-        try:
-            member = tar.getmember(path)
-        except KeyError:
-            return jsonify({"error": "not_found"}), 404
-        file_obj = tar.extractfile(member)
-        if not file_obj:
-            return jsonify({"error": "not_found"}), 404
-        data = file_obj.read()
+    try:
+        with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+            try:
+                member = tar.getmember(path)
+            except KeyError:
+                return jsonify({"error": "not_found"}), 404
+            file_obj = tar.extractfile(member)
+            if not file_obj:
+                return jsonify({"error": "not_found"}), 404
+            data = file_obj.read()
+    except tarfile.TarError:
+        return jsonify({"error": "invalid_blob"}), 415
     filename = Path(path).name
     return send_file(io.BytesIO(data), download_name=filename, as_attachment=False)
 

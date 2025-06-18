@@ -163,18 +163,24 @@ def layer_size_view(repo: str, digest: str):
         )
 
     entries = []
-    with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
-        for m in tar.getmembers():
-            mode = m.mode
-            if m.isfile():
-                mode |= stat.S_IFREG
-            elif m.isdir():
-                mode |= stat.S_IFDIR
-            elif m.issym():
-                mode |= stat.S_IFLNK
-            perms = stat.filemode(mode)
-            ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
-            entries.append((m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}"))
+    try:
+        with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+            for m in tar.getmembers():
+                mode = m.mode
+                if m.isfile():
+                    mode |= stat.S_IFREG
+                elif m.isdir():
+                    mode |= stat.S_IFDIR
+                elif m.issym():
+                    mode |= stat.S_IFLNK
+                perms = stat.filemode(mode)
+                ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
+                entries.append((m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}"))
+    except tarfile.TarError:
+        return (
+            render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
+            415,
+        )
 
     entries.sort(key=lambda x: x[0], reverse=True)
     lines = [e[1] for e in entries]
@@ -217,21 +223,27 @@ def fs_view(repo: str, digest: str, subpath: str):
             render_template("oci_error.html", repo=repo, message="server error"),
             500,
         )
-    with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
-        if not subpath:
-            names = [m.name for m in tar.getmembers()]
-            return render_template("oci_fs.html", repo=repo, digest=digest, path="", items=names)
-        try:
-            member = tar.getmember(subpath)
-        except KeyError:
-            return ("not found", 404)
-        if member.isdir():
-            names = [m.name for m in tar.getmembers() if m.name.startswith(subpath) and m.name != subpath]
-            return render_template("oci_fs.html", repo=repo, digest=digest, path=subpath, items=names)
-        file_obj = tar.extractfile(member)
-        if not file_obj:
-            return ("not found", 404)
-        data = file_obj.read()
+    try:
+        with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+            if not subpath:
+                names = [m.name for m in tar.getmembers()]
+                return render_template("oci_fs.html", repo=repo, digest=digest, path="", items=names)
+            try:
+                member = tar.getmember(subpath)
+            except KeyError:
+                return ("not found", 404)
+            if member.isdir():
+                names = [m.name for m in tar.getmembers() if m.name.startswith(subpath) and m.name != subpath]
+                return render_template("oci_fs.html", repo=repo, digest=digest, path=subpath, items=names)
+            file_obj = tar.extractfile(member)
+            if not file_obj:
+                return ("not found", 404)
+            data = file_obj.read()
+    except tarfile.TarError:
+        return (
+            render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
+            415,
+        )
     if render_mode == "hex":
         return render_template("oci_hex.html", data=_hexdump(data), path=subpath)
     if render_mode == "elf":
