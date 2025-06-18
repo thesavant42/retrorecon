@@ -52,15 +52,13 @@ def repo_view(repo: str):
 
 
 async def _image_data(image: str) -> Dict[str, Any]:
+    """Return manifest information for ``image`` without downloading layers."""
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
         if manifest.get("manifests"):
             digest = manifest["manifests"][0]["digest"]
             manifest = await get_manifest(image, specific_digest=digest, client=client)
-        layers: List[str] = []
-        if manifest.get("layers"):
-            layers = await list_layer_files(image, manifest["layers"][0]["digest"], client=client)
-    return {"manifest": manifest, "layers": layers}
+    return {"manifest": manifest}
 
 
 @bp.route("/image/<path:image>", methods=["GET"])

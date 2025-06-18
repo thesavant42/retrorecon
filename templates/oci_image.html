@@ -3,15 +3,6 @@
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
 <h2>{{ image }}</h2>
-<h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/gcrane/README.md">gcrane</a> pull {{ image }}</h4>
+<h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ image }} | jq .</h4>
 <pre>{{ data.manifest|tojson(indent=2) }}</pre>
-{% if data.layers %}
-<h3>First layer files</h3>
-<ul>
-{% for f in data.layers %}
-  {% set fname = f.split(' ', 5)[5] %}
-  <li><a class="mt" href="/fs/{{ image.split(':')[0] }}@{{ data.manifest.layers[0].digest }}/{{ fname|replace(' ', '%20') }}">{{ f }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
 {% endblock %}
