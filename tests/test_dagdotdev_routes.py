@@ -48,6 +48,11 @@ def test_r_image_route(tmp_path, monkeypatch):
 
     monkeypatch.setattr(oci, "get_manifest", fake_manifest)
 
+    async def fake_digest(image, client=None):
+        return "sha256:x"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
+
     with app.app.test_client() as client:
         resp = client.get("/r/user/repo:tag")
         assert resp.status_code == 200

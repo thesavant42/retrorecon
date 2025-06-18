@@ -43,6 +43,11 @@ def test_image_route(tmp_path, monkeypatch):
 
     monkeypatch.setattr(oci, "get_manifest", fake_manifest)
 
+    async def fake_digest(image, client=None):
+        return "sha256:x"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
+
     with app.app.test_client() as client:
         resp = client.get("/image/user/repo:tag")
         assert resp.status_code == 200
@@ -60,6 +65,11 @@ def test_image_route_manifest_index(tmp_path, monkeypatch):
         return {"layers": [{"digest": "sha256:x"}]}
 
     monkeypatch.setattr(oci, "get_manifest", fake_manifest)
+
+    async def fake_digest(image, client=None):
+        return "sha256:d"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
 
     with app.app.test_client() as client:
         resp = client.get("/image/user/repo:tag")

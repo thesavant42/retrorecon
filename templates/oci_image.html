@@ -2,6 +2,17 @@
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
 <h2>{{ image }}</h2>
+<input type="radio" name="tabs" id="tab1" checked>
+<label for="tab1">HTTP</label>
+<input type="radio" name="tabs" id="tab2">
+<label for="tab2">OCI</label>
+<div class="tab content1">
+{% for k, v in data.headers.items() %}
+{{ k }}: {{ v }}<br>
+{% endfor %}
+</div>
+<div class="tab content2">
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ image }} | jq .</h4>
 <pre class="manifest-json">{{ data.manifest|manifest_links(image) }}</pre>
+</div>
 {% endblock %}

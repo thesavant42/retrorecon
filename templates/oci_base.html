@@ -24,6 +24,22 @@
     text-align: right;
     white-space: nowrap;
   }
+  /* simple tab styling used by registry explorer pages */
+  input + label { display: inline-block; }
+  input { display: none; }
+  input ~ .tab { display: none; }
+  #tab1:checked ~ .tab.content1,
+  #tab2:checked ~ .tab.content2 { display: block; }
+  input + label {
+    border: 1px solid #999;
+    padding: 4px 12px;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    top: 1px;
+    opacity: 50%;
+  }
+  input:checked + label { opacity: 100%; }
+  input ~ .tab { border-top: 1px solid #999; padding-top: 0.5em; }
   </style>
 </head>
 <body>
