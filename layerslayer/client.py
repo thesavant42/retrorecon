@@ -178,6 +178,7 @@ async def list_layer_files(
         data = await c.fetch_bytes(url, user, repo)
         return _parse(data)
 
+    lookback = 32768
     start = 0
     data = bytearray()
     while True:
@@ -196,7 +197,11 @@ async def list_layer_files(
         except (tarfile.TarError, OSError, EOFError):
             if len(chunk) < range_size:
                 break
-            start += range_size
+            if len(data) > lookback:
+                start = len(data) - lookback
+                data = data[-lookback:]
+            else:
+                start = len(data)
             continue
     try:
         return _parse(data)
