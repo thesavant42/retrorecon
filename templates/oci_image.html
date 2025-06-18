@@ -9,7 +9,8 @@
 <h3>First layer files</h3>
 <ul>
 {% for f in data.layers %}
-  <li><a class="mt" href="/fs/{{ image.split(':')[0] }}@{{ data.manifest.layers[0].digest }}/{{ f }}">{{ f }}</a></li>
+  {% set fname = f.split(' ', 5)[5] %}
+  <li><a class="mt" href="/fs/{{ image.split(':')[0] }}@{{ data.manifest.layers[0].digest }}/{{ fname|replace(' ', '%20') }}">{{ f }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}
