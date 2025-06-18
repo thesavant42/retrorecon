@@ -68,7 +68,7 @@ def repo_view(repo: str):
 
 
 async def _image_data(image: str) -> Dict[str, Any]:
-    """Return manifest or index information for ``image`` along with basic HTTP headers."""
+    """Return manifest or index information for ``image`` along with HTTP details."""
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
         digest = await get_manifest_digest(image, client=client)
@@ -77,12 +77,18 @@ async def _image_data(image: str) -> Dict[str, Any]:
         if manifest.get("manifests")
         else "application/vnd.oci.image.manifest.v1+json"
     )
+    size = len(json.dumps(manifest))
     http_headers = {
         "Content-Type": media_type,
         "Docker-Content-Digest": digest or "",
-        "Content-Length": str(len(json.dumps(manifest))),
+        "Content-Length": str(size),
     }
-    return {"manifest": manifest, "headers": http_headers}
+    descriptor = {
+        "mediaType": media_type,
+        "digest": digest or "",
+        "size": size,
+    }
+    return {"manifest": manifest, "headers": http_headers, "descriptor": descriptor}
 
 
 async def _resolve_manifest(image: str) -> Dict[str, Any]:
