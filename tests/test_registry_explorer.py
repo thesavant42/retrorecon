@@ -26,7 +26,7 @@ def test_registry_explorer_route(tmp_path, monkeypatch):
     ]
     import retrorecon.routes.registry as reg
 
-    async def fake_gather(img, method="extension"):
+    async def fake_gather(img, method="extension", **kwargs):
         assert method == "extension"
         return sample
 
@@ -37,7 +37,7 @@ def test_registry_explorer_route(tmp_path, monkeypatch):
     monkeypatch.setattr(reg.rex, "get_manifest_digest", fake_digest)
 
     with app.app.test_client() as client:
-        resp = client.get("/registry_explorer?image=test/test:tag&method=extension")
+        resp = client.get("/registry_explorer?image=test/test:tag&method=extension&files=1")
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["manifest"] == "sha256:d1"
@@ -48,7 +48,7 @@ def test_registry_explorer_timeout(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.registry as reg
 
-    async def fail_gather(img, method="extension"):
+    async def fail_gather(img, method="extension", **kwargs):
         raise asyncio.TimeoutError()
 
     monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fail_gather)
@@ -63,7 +63,7 @@ def test_registry_explorer_multi_methods(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.registry as reg
 
-    async def fake_multi(img, methods):
+    async def fake_multi(img, methods, **kwargs):
         assert set(methods) == {"extension", "layerslayer"}
         return {
             "extension": [
@@ -113,7 +113,7 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
     ]
     import retrorecon.routes.registry as reg
 
-    async def fake_gather(img, method="extension"):
+    async def fake_gather(img, method="extension", **kwargs):
         return sample
 
     async def fake_digest(img):
@@ -153,7 +153,7 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
         return html
 
     with app.app.test_client() as client:
-        resp = client.get("/registry_explorer?image=test/test:tag&method=extension")
+        resp = client.get("/registry_explorer?image=test/test:tag&method=extension&files=1")
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["manifest"] == "sha256:d3"
