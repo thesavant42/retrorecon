@@ -52,6 +52,7 @@ def test_image_route(tmp_path, monkeypatch):
         resp = client.get("/image/user/repo:tag")
         assert resp.status_code == 200
         assert b"sha256:x" in resp.data
+        assert b'/layers/user/repo:tag@sha256:x/' in resp.data
 
 
 def test_image_route_manifest_index(tmp_path, monkeypatch):

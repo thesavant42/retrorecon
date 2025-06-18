@@ -17,5 +17,5 @@
 </div>
 
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ image }} | jq .</h4>
-<pre class="manifest-json">{{ data.manifest|manifest_links(image) }}</pre>
+<pre class="manifest-json">{{ data.manifest|manifest_links(image, data.descriptor.digest) }}</pre>
 {% endblock %}
