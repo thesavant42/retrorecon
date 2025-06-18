@@ -43,11 +43,20 @@ def repo_view(repo: str):
     try:
         data = asyncio.run(_repo_data(repo))
     except asyncio.TimeoutError:
-        return ("timeout", 504)
+        return (
+            render_template("oci_error.html", repo=repo, message="timeout"),
+            504,
+        )
     except ClientError as exc:
-        return (str(exc), 502)
+        return (
+            render_template("oci_error.html", repo=repo, message=str(exc)),
+            502,
+        )
     except Exception:
-        return ("server error", 500)
+        return (
+            render_template("oci_error.html", repo=repo, message="server error"),
+            500,
+        )
     return render_template("oci_repo.html", repo=repo, data=data)
 
 
@@ -73,11 +82,20 @@ def image_view(image: str):
     try:
         data = asyncio.run(_image_data(image))
     except asyncio.TimeoutError:
-        return ("timeout", 504)
+        return (
+            render_template("oci_error.html", image=image, message="timeout"),
+            504,
+        )
     except ClientError as exc:
-        return (str(exc), 502)
+        return (
+            render_template("oci_error.html", image=image, message=str(exc)),
+            502,
+        )
     except Exception:
-        return ("server error", 500)
+        return (
+            render_template("oci_error.html", image=image, message="server error"),
+            500,
+        )
     return render_template("oci_image.html", image=image, data=data, title=image)
 
 
@@ -103,11 +121,20 @@ def fs_view(repo: str, digest: str, subpath: str):
     try:
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
-        return ("timeout", 504)
+        return (
+            render_template("oci_error.html", repo=repo, message="timeout"),
+            504,
+        )
     except ClientError as exc:
-        return (str(exc), 502)
+        return (
+            render_template("oci_error.html", repo=repo, message=str(exc)),
+            502,
+        )
     except Exception:
-        return ("server error", 500)
+        return (
+            render_template("oci_error.html", repo=repo, message="server error"),
+            500,
+        )
     with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
         if not subpath:
             names = [m.name for m in tar.getmembers()]
@@ -145,10 +172,16 @@ def layer_dir(image: str, subpath: str):
     try:
         manifest = asyncio.run(_resolve_manifest(image))
     except Exception:
-        return ("error", 500)
+        return (
+            render_template("oci_error.html", image=image, message="error"),
+            500,
+        )
     layers = manifest.get("layers", [])
     if not layers:
-        return ("no layers", 404)
+        return (
+            render_template("oci_error.html", image=image, message="no layers"),
+            404,
+        )
     digest = layers[0]["digest"]
     repo = image.split(":")[0]
     return fs_view(repo, digest, subpath)
