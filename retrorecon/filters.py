@@ -59,9 +59,7 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str, manifest_digest: st
     parts.append(f'<span class="indent">"size": {size_link}</span>')
     platform = entry.get("platform")
     if platform is not None:
-        parts.append(
-            f'<span class="indent">"platform": {_render_obj(platform, repo, manifest_digest, image_ref)}</span>'
-        )
+        parts.append('<span class="indent">"platform": {_render_obj(platform, repo, manifest_digest, image_ref)}</span>')
     parts.append("}")
     return "\n".join(parts)
 
@@ -101,6 +99,7 @@ def _render_obj(obj: Any, repo: str, manifest_digest: str = "", image_ref: str |
                 lines.append(f'<span class="indent">"{key_html}": {value_html}{comma}</span>')
             else:
                 lines.append(f'<span class="indent">"{escape(k)}": {value_html}{comma}</span>')
+
         lines.append('}')
         return "\n".join(lines)
     if isinstance(obj, list):
