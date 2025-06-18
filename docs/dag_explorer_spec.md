@@ -39,3 +39,7 @@ Layers open to:
 ```
 https://oci.dag.dev/layers/migueldisney/dev:TAE-254@sha256:2eb5ae5626329845e85d70a53694a99165471ae7970435ed4d4bad24933d963c/
 ```
+
+## Partial Tar Ranges
+
+Dag Explorer intentionally issues HTTP range requests to peek inside layer blobs. When about 32 KiB of uncompressed data before a target offset is available, the gzip stream can be repositioned to read arbitrary sections. Storing only ~1% of a layer allows directory listings without downloading the entire archive. As a result the data may appear as an "invalid tar" when viewed in full, but this is expected behavior.

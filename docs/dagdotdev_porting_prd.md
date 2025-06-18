@@ -83,6 +83,7 @@ The following sections summarize key features and recommended Python implementat
 
 - **Environment Variables:** `CACHE_DIR`, `CACHE_BUCKET`, `CLIENT_ID`, `CLIENT_SECRET`, `REDIRECT_URL`, `AUTH`.
 - **Performance:** Consider async handlers for network-bound operations.
+- **Partial layer fetches:** Directory listings rely on HTTP range requests. By caching roughly 32 KiB of data before a target offset, the gzip stream can be jumped to arbitrary positions so only about 1% of a layer needs downloading. Tar warnings from truncated blobs are expected.
 - **Testing:** Write integration tests to ensure route parity and feature completeness.
 
 ### Why Is Retrorecon Slower?
