@@ -22,6 +22,7 @@ def registry_viewer_full_page():
 @bp.route('/registry_explorer', methods=['GET'])
 def registry_explorer_route():
     image = request.args.get('image')
+    files_flag = request.args.get('files', 'false').lower() in {'1', 'true', 'yes'}
     methods_param = request.args.get('methods')
     if methods_param:
         methods = [m.strip() for m in methods_param.split(',') if m.strip()]
@@ -32,8 +33,12 @@ def registry_explorer_route():
 
     async def _gather():
         if len(methods) == 1:
-            return await rex.gather_image_info_with_backend(image, methods[0])
-        return await rex.gather_image_info_multi(image, methods)
+            return await rex.gather_image_info_with_backend(
+                image, methods[0], fetch_files=files_flag
+            )
+        return await rex.gather_image_info_multi(
+            image, methods, fetch_files=files_flag
+        )
 
     async def _digest() -> str | None:
         return await rex.get_manifest_digest(image)

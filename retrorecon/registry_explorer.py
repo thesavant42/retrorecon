@@ -176,16 +176,31 @@ async def get_manifest_digest(
         return await _do(sess)
 
 
-async def _layers_details(repo: str, manifest: Dict[str, Any], token: str, session: aiohttp.ClientSession) -> List[Dict[str, Any]]:
+async def _layers_details(
+    repo: str,
+    manifest: Dict[str, Any],
+    token: str,
+    session: aiohttp.ClientSession,
+    fetch_files: bool = True,
+) -> List[Dict[str, Any]]:
+    """Return layer metadata and optionally file lists."""
     layers = manifest.get("layers", [])
     details: List[Dict[str, Any]] = []
     for layer in layers:
-        files = await list_layer_files(repo, layer["digest"], token, session)
-        details.append({"digest": layer["digest"], "size": layer.get("size", 0), "files": files})
+        files: List[str] = []
+        if fetch_files:
+            files = await list_layer_files(repo, layer["digest"], token, session)
+        details.append(
+            {
+                "digest": layer["digest"],
+                "size": layer.get("size", 0),
+                "files": files,
+            }
+        )
     return details
 
 
-async def gather_image_info(image_ref: str) -> List[Dict[str, Any]]:
+async def gather_image_info(image_ref: str, fetch_files: bool = True) -> List[Dict[str, Any]]:
     """Gather layer details for an image using direct registry calls."""
     user, repo, tag = parse_image_ref(image_ref)
     repo_full = f"{user}/{repo}"
@@ -198,33 +213,48 @@ async def gather_image_info(image_ref: str) -> List[Dict[str, Any]]:
                 plat = m.get("platform", {})
                 digest = m["digest"]
                 manifest = await fetch_index_or_manifest(repo_full, digest, token, session)
-                layers = await _layers_details(repo_full, manifest, token, session)
+                layers = await _layers_details(
+                    repo_full, manifest, token, session, fetch_files=fetch_files
+                )
                 result.append({"os": plat.get("os"), "architecture": plat.get("architecture"), "layers": layers})
         else:
-            layers = await _layers_details(repo_full, root, token, session)
+            layers = await _layers_details(
+                repo_full, root, token, session, fetch_files=fetch_files
+            )
             result.append({"os": root.get("os"), "architecture": root.get("architecture"), "layers": layers})
         return result
 
 
 
 async def gather_image_info_with_backend(
-    image_ref: str, method: str = "layerslayer"
+    image_ref: str,
+    method: str = "layerslayer",
+    *,
+    fetch_files: bool = True,
 ) -> List[Dict[str, Any]]:
     """Return layer info using the selected backend."""
     if method == "layerslayer":
         from .docker_layers import gather_layers_info as gl
-        return await gl(image_ref)
+        if fetch_files:
+            return await gl(image_ref)
+        # Fall back to direct registry calls without files
+        return await gather_image_info(image_ref, fetch_files=False)
     if method in {"layertools", "extension"}:
-        return await gather_image_info(image_ref)
+        return await gather_image_info(image_ref, fetch_files=fetch_files)
     raise ValueError(f"unknown method: {method}")
 
 
 async def gather_image_info_multi(
-    image_ref: str, methods: List[str]
+    image_ref: str,
+    methods: List[str],
+    *,
+    fetch_files: bool = True,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Run :func:`gather_image_info_with_backend` for all ``methods`` in parallel."""
     tasks = {
-        m: asyncio.create_task(gather_image_info_with_backend(image_ref, m))
+        m: asyncio.create_task(
+            gather_image_info_with_backend(image_ref, m, fetch_files=fetch_files)
+        )
         for m in methods
     }
     results: Dict[str, List[Dict[str, Any]]] = {}
