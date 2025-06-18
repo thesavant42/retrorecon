@@ -722,6 +722,7 @@ from retrorecon.routes import (
     registry_bp,
     dag_bp,
     oci_bp,
+    dagdotdev_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -732,6 +733,7 @@ app.register_blueprint(docker_bp)
 app.register_blueprint(registry_bp)
 app.register_blueprint(dag_bp)
 app.register_blueprint(oci_bp)
+app.register_blueprint(dagdotdev_bp)
 
 
 @app.after_request
