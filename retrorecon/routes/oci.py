@@ -267,3 +267,12 @@ def layer_dir(image: str, subpath: str):
     digest = layers[0]["digest"]
     repo = image.split(":")[0]
     return fs_view(repo, digest, subpath)
+
+
+@bp.route("/layers/<path:image>@<digest>/", defaults={"subpath": ""}, methods=["GET"])
+@bp.route("/layers/<path:image>@<digest>/<path:subpath>", methods=["GET"])
+def layer_digest_dir(image: str, digest: str, subpath: str):
+    """Browse ``digest`` from ``image`` starting at ``subpath``."""
+    user, repo, _ = parse_image_ref(image)
+    repo_full = f"{user}/{repo}"
+    return fs_view(repo_full, digest, subpath)

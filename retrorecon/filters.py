@@ -42,7 +42,7 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
     return "\n".join(parts)
 
 
-def _render_manifest_entry(entry: Dict[str, Any], repo: str) -> str:
+def _render_manifest_entry(entry: Dict[str, Any], repo: str, manifest_digest: str = "", image_ref: str | None = None) -> str:
     media_type = str(entry.get("mediaType", ""))
     digest = str(entry.get("digest", ""))
     size = int(entry.get("size", 0) or 0)
@@ -60,19 +60,24 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str) -> str:
     platform = entry.get("platform")
     if platform is not None:
         parts.append(
-            f'<span class="indent">"platform": {_render_obj(platform, repo)}</span>'
+            f'<span class="indent">"platform": {_render_obj(platform, repo, manifest_digest, image_ref)}</span>'
         )
     parts.append("}")
     return "\n".join(parts)
 
 
-def _render_obj(obj: Any, repo: str) -> str:
+def _render_obj(obj: Any, repo: str, manifest_digest: str = "", image_ref: str | None = None) -> str:
     if isinstance(obj, dict):
         lines = ['{']
         items = list(obj.items())
         for idx, (k, v) in enumerate(items):
             comma = ',' if idx < len(items) - 1 else ''
             if k == 'layers' and isinstance(v, list):
+                key_html = (
+                    f'<a href="/layers/{image_ref}@{manifest_digest}/">layers</a>'
+                    if manifest_digest and image_ref
+                    else escape(k)
+                )
                 layer_lines = ['[']
                 for i, layer in enumerate(v):
                     layer_html = _render_layer(layer, repo)
@@ -83,7 +88,7 @@ def _render_obj(obj: Any, repo: str) -> str:
             elif k == 'manifests' and isinstance(v, list):
                 man_lines = ['[']
                 for i, m in enumerate(v):
-                    man_html = _render_manifest_entry(m, repo)
+                    man_html = _render_manifest_entry(m, repo, manifest_digest, image_ref)
                     suffix = ',' if i < len(v)-1 else ''
                     man_lines.append(f'<span class="indent">{man_html}{suffix}</span>')
                 man_lines.append(']')
@@ -91,15 +96,18 @@ def _render_obj(obj: Any, repo: str) -> str:
             elif k == 'mediaType' and isinstance(v, str):
                 value_html = f'"{_link_media_type(v)}"'
             else:
-                value_html = _render_obj(v, repo)
-            lines.append(f'<span class="indent">"{escape(k)}": {value_html}{comma}</span>')
+                value_html = _render_obj(v, repo, manifest_digest, image_ref)
+            if k == 'layers' and isinstance(v, list) and manifest_digest:
+                lines.append(f'<span class="indent">"{key_html}": {value_html}{comma}</span>')
+            else:
+                lines.append(f'<span class="indent">"{escape(k)}": {value_html}{comma}</span>')
         lines.append('}')
         return "\n".join(lines)
     if isinstance(obj, list):
         lines = ['[']
         for i, item in enumerate(obj):
             comma = ',' if i < len(obj) - 1 else ''
-            lines.append(f'<span class="indent">{_render_obj(item, repo)}{comma}</span>')
+            lines.append(f'<span class="indent">{_render_obj(item, repo, manifest_digest, image_ref)}{comma}</span>')
         lines.append(']')
         return "\n".join(lines)
     if isinstance(obj, str):
@@ -107,10 +115,10 @@ def _render_obj(obj: Any, repo: str) -> str:
     return escape(json.dumps(obj))
 
 
-def manifest_links(manifest: Dict[str, Any], image: str) -> Markup:
+def manifest_links(manifest: Dict[str, Any], image: str, digest: str = "") -> Markup:
     """Return HTML for ``manifest`` with layer digests and sizes hyperlinked."""
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
-    html = _render_obj(manifest, repo_full)
+    html = _render_obj(manifest, repo_full, digest, image)
     return Markup(html)
 
