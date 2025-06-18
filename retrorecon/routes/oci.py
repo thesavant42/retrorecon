@@ -8,10 +8,17 @@ from typing import Any, Dict, List
 
 from flask import Blueprint, render_template, request, send_file
 from aiohttp import ClientError
+import aiohttp
 import asyncio
 
 from layerslayer.utils import parse_image_ref, registry_base_url
-from layerslayer.client import DockerRegistryClient, get_manifest, list_layer_files
+from layerslayer.client import (
+    DockerRegistryClient,
+    get_manifest,
+    get_manifest_digest,
+    list_layer_files,
+    DEFAULT_TIMEOUT,
+)
 from retrorecon.registry_explorer import fetch_token, fetch_blob
 
 bp = Blueprint("oci", __name__)
@@ -61,10 +68,21 @@ def repo_view(repo: str):
 
 
 async def _image_data(image: str) -> Dict[str, Any]:
-    """Return manifest or index information for ``image``."""
+    """Return manifest or index information for ``image`` along with basic HTTP headers."""
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
-    return {"manifest": manifest}
+        digest = await get_manifest_digest(image, client=client)
+    media_type = (
+        "application/vnd.oci.image.index.v1+json"
+        if manifest.get("manifests")
+        else "application/vnd.oci.image.manifest.v1+json"
+    )
+    http_headers = {
+        "Content-Type": media_type,
+        "Docker-Content-Digest": digest or "",
+        "Content-Length": str(len(json.dumps(manifest))),
+    }
+    return {"manifest": manifest, "headers": http_headers}
 
 
 async def _resolve_manifest(image: str) -> Dict[str, Any]:
