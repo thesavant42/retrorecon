@@ -42,6 +42,30 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
     return "\n".join(parts)
 
 
+def _render_manifest_entry(entry: Dict[str, Any], repo: str) -> str:
+    media_type = str(entry.get("mediaType", ""))
+    digest = str(entry.get("digest", ""))
+    size = int(entry.get("size", 0) or 0)
+    digest_link = f'<a href="/?image={repo}@{digest}">{escape(digest)}</a>'
+    size_link = (
+        f'<a href="/size/{digest}?image={escape(repo)}">'
+        f'<span title="{human_readable_size(size)}">{size}</span></a>'
+    )
+    parts = ["{"]
+    parts.append(
+        f'<span class="indent">"mediaType": "{_link_media_type(media_type)}",</span>'
+    )
+    parts.append(f'<span class="indent">"digest": "{digest_link}",</span>')
+    parts.append(f'<span class="indent">"size": {size_link}</span>')
+    platform = entry.get("platform")
+    if platform is not None:
+        parts.append(
+            f'<span class="indent">"platform": {_render_obj(platform, repo)}</span>'
+        )
+    parts.append("}")
+    return "\n".join(parts)
+
+
 def _render_obj(obj: Any, repo: str) -> str:
     if isinstance(obj, dict):
         lines = ['{']
@@ -56,6 +80,14 @@ def _render_obj(obj: Any, repo: str) -> str:
                     layer_lines.append(f'<span class="indent">{layer_html}{suffix}</span>')
                 layer_lines.append(']')
                 value_html = "\n".join(layer_lines)
+            elif k == 'manifests' and isinstance(v, list):
+                man_lines = ['[']
+                for i, m in enumerate(v):
+                    man_html = _render_manifest_entry(m, repo)
+                    suffix = ',' if i < len(v)-1 else ''
+                    man_lines.append(f'<span class="indent">{man_html}{suffix}</span>')
+                man_lines.append(']')
+                value_html = "\n".join(man_lines)
             elif k == 'mediaType' and isinstance(v, str):
                 value_html = f'"{_link_media_type(v)}"'
             else:
