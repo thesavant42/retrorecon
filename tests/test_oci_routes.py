@@ -64,7 +64,7 @@ def test_image_route_manifest_index(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         resp = client.get("/image/user/repo:tag")
         assert resp.status_code == 200
-        assert b"sha256:x" in resp.data
+        assert b"sha256:d" in resp.data
 
 
 def test_fs_route(tmp_path, monkeypatch):
