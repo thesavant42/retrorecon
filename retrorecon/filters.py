@@ -29,7 +29,7 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
     size = int(layer.get("size", 0) or 0)
     digest_link = f'<a href="/fs/{repo}@{digest}">{escape(digest)}</a>'
     size_link = (
-        f'<a href="/size/{digest}?image={escape(repo)}">'
+        f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' 
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
     )
     parts = [
@@ -48,7 +48,7 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str) -> str:
     size = int(entry.get("size", 0) or 0)
     digest_link = f'<a href="/?image={repo}@{digest}">{escape(digest)}</a>'
     size_link = (
-        f'<a href="/size/{digest}?image={escape(repo)}">'
+        f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' 
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
     )
     parts = ["{"]
