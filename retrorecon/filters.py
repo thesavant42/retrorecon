@@ -71,9 +71,10 @@ def _render_obj(obj: Any, repo: str, manifest_digest: str = "", image_ref: str |
         for idx, (k, v) in enumerate(items):
             comma = ',' if idx < len(items) - 1 else ''
             if k == 'layers' and isinstance(v, list):
+                first_digest = v[0].get("digest") if v else ""
                 key_html = (
-                    f'<a href="/layers/{image_ref}@{manifest_digest}/">layers</a>'
-                    if manifest_digest and image_ref
+                    f'<a href="/layers/{image_ref}@{first_digest}/">layers</a>'
+                    if first_digest and image_ref
                     else escape(k)
                 )
                 layer_lines = ['[']
