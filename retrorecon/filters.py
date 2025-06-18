@@ -34,12 +34,12 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
     )
     parts = [
         '{',
-        f'<div class="indent">"mediaType": "{_link_media_type(media_type)}",</div>',
-        f'<div class="indent">"digest": "{digest_link}",</div>',
-        f'<div class="indent">"size": {size_link}</div>',
+        f'<span class="indent">"mediaType": "{_link_media_type(media_type)}",</span>',
+        f'<span class="indent">"digest": "{digest_link}",</span>',
+        f'<span class="indent">"size": {size_link}</span>',
         '}',
     ]
-    return "<br>".join(parts)
+    return "\n".join(parts)
 
 
 def _render_obj(obj: Any, repo: str) -> str:
@@ -52,23 +52,24 @@ def _render_obj(obj: Any, repo: str) -> str:
                 layer_lines = ['[']
                 for i, layer in enumerate(v):
                     layer_html = _render_layer(layer, repo)
-                    layer_lines.append(f'<div class="indent">{layer_html}</div>' + (' ,' if i < len(v)-1 else ''))
+                    suffix = ',' if i < len(v)-1 else ''
+                    layer_lines.append(f'<span class="indent">{layer_html}{suffix}</span>')
                 layer_lines.append(']')
-                value_html = "<br>".join(layer_lines)
+                value_html = "\n".join(layer_lines)
             elif k == 'mediaType' and isinstance(v, str):
                 value_html = f'"{_link_media_type(v)}"'
             else:
                 value_html = _render_obj(v, repo)
-            lines.append(f'<div class="indent">"{escape(k)}": {value_html}{comma}</div>')
+            lines.append(f'<span class="indent">"{escape(k)}": {value_html}{comma}</span>')
         lines.append('}')
-        return "<br>".join(lines)
+        return "\n".join(lines)
     if isinstance(obj, list):
         lines = ['[']
         for i, item in enumerate(obj):
             comma = ',' if i < len(obj) - 1 else ''
-            lines.append(f'<div class="indent">{_render_obj(item, repo)}{comma}</div>')
+            lines.append(f'<span class="indent">{_render_obj(item, repo)}{comma}</span>')
         lines.append(']')
-        return "<br>".join(lines)
+        return "\n".join(lines)
     if isinstance(obj, str):
         return f'"{escape(obj)}"'
     return escape(json.dumps(obj))
