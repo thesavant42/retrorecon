@@ -5,6 +5,8 @@ import json
 import tarfile
 from pathlib import Path
 from typing import Any, Dict, List
+from datetime import datetime
+import stat
 
 from flask import Blueprint, render_template, request, send_file
 from aiohttp import ClientError
@@ -20,6 +22,7 @@ from layerslayer.client import (
     DEFAULT_TIMEOUT,
 )
 from retrorecon.registry_explorer import fetch_token, fetch_blob
+from layerslayer.utils import human_readable_size
 
 bp = Blueprint("oci", __name__)
 
@@ -136,6 +139,61 @@ def _hexdump(data: bytes) -> str:
         text = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
         hex_lines.append(f"{i:08x}: {hex_bytes:<47} {text}")
     return "\n".join(hex_lines)
+
+
+@bp.route("/size/<path:repo>@<digest>", methods=["GET"])
+def layer_size_view(repo: str, digest: str):
+    """Return a formatted directory listing for the layer blob."""
+    try:
+        blob = asyncio.run(_read_layer(repo, digest))
+    except asyncio.TimeoutError:
+        return (
+            render_template("oci_error.html", repo=repo, message="timeout"),
+            504,
+        )
+    except ClientError as exc:
+        return (
+            render_template("oci_error.html", repo=repo, message=str(exc)),
+            502,
+        )
+    except Exception:
+        return (
+            render_template("oci_error.html", repo=repo, message="server error"),
+            500,
+        )
+
+    entries = []
+    with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+        for m in tar.getmembers():
+            mode = m.mode
+            if m.isfile():
+                mode |= stat.S_IFREG
+            elif m.isdir():
+                mode |= stat.S_IFDIR
+            elif m.issym():
+                mode |= stat.S_IFLNK
+            perms = stat.filemode(mode)
+            ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
+            entries.append((m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}"))
+
+    entries.sort(key=lambda x: x[0], reverse=True)
+    lines = [e[1] for e in entries]
+
+    mt = request.args.get("mt", "application/vnd.docker.image.rootfs.diff.tar.gzip")
+    size_param = request.args.get("size")
+    blob_size = int(size_param) if size_param else len(blob)
+    size_hr = human_readable_size(blob_size)
+
+    return render_template(
+        "oci_layer.html",
+        repo=repo,
+        digest=digest,
+        media_type=mt,
+        size=blob_size,
+        size_hr=size_hr,
+        lines=lines,
+        title=f"{repo}@{digest}",
+    )
 
 
 @bp.route("/fs/<path:repo>@<digest>", defaults={"subpath": ""}, methods=["GET"])
