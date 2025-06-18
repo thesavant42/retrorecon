@@ -78,6 +78,20 @@ def test_dag_fs_route(tmp_path, monkeypatch):
         assert resp.data == b'hello'
 
 
+def test_dag_fs_invalid_tar(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.dag as dag
+
+    async def fake_fetch_bytes(self, url, user, repo):
+        return b"invalid"
+
+    monkeypatch.setattr(dag.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
+    with app.app.test_client() as client:
+        resp = client.get('/dag/fs/sha256:x/a.txt?image=user/repo:tag')
+        assert resp.status_code == 415
+        assert resp.get_json()['error'] == 'invalid_blob'
+
+
 def test_dag_layer_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.dag as dag
