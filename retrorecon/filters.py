@@ -27,11 +27,9 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
     media_type = str(layer.get("mediaType", ""))
     digest = str(layer.get("digest", ""))
     size = int(layer.get("size", 0) or 0)
-    digest_link = (
-        f'<a href="/fs/{repo}@{digest}?mt={escape(media_type)}&size={size}">{escape(digest)}</a>'
-    )
+    digest_link = f'<a href="/fs/{repo}@{digest}">{escape(digest)}</a>'
     size_link = (
-        f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' \
+        f'<a href="/size/{digest}?image={escape(repo)}">'
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
     )
     parts = [
