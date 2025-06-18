@@ -49,10 +49,12 @@ from retrorecon import (
     sitezip_utils,
     status as status_mod,
 )
+from retrorecon.filters import manifest_links
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
+app.add_template_filter(manifest_links, name="manifest_links")
 
 def get_db_folder() -> str:
     """Return the folder where database files are stored."""

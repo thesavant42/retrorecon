@@ -4,5 +4,5 @@
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
 <h2>{{ image }}</h2>
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ image }} | jq .</h4>
-<pre>{{ data.manifest|tojson(indent=2) }}</pre>
+<pre>{{ data.manifest|manifest_links(image) }}</pre>
 {% endblock %}
