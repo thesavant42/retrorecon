@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import io
 import tarfile
+import logging
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
@@ -78,7 +79,7 @@ def test_dag_fs_route(tmp_path, monkeypatch):
         assert resp.data == b'hello'
 
 
-def test_dag_fs_invalid_tar(tmp_path, monkeypatch):
+def test_dag_fs_invalid_tar(tmp_path, monkeypatch, caplog):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.dag as dag
 
@@ -87,9 +88,11 @@ def test_dag_fs_invalid_tar(tmp_path, monkeypatch):
 
     monkeypatch.setattr(dag.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
     with app.app.test_client() as client:
+        caplog.set_level(logging.WARNING)
         resp = client.get('/dag/fs/sha256:x/a.txt?image=user/repo:tag')
         assert resp.status_code == 415
         assert resp.get_json()['error'] == 'invalid_blob'
+        assert any('invalid tar blob' in rec.message for rec in caplog.records)
 
 
 def test_dag_layer_route(tmp_path, monkeypatch):

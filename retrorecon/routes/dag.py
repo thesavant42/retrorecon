@@ -101,6 +101,7 @@ def dag_fs(digest: str, path: str):
                 return jsonify({"error": "not_found"}), 404
             data = file_obj.read()
     except tarfile.TarError:
+        app.logger.warning("invalid tar blob for %s at %s", image, digest)
         return jsonify({"error": "invalid_blob"}), 415
     filename = Path(path).name
     return send_file(io.BytesIO(data), download_name=filename, as_attachment=False)

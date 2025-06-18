@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 from datetime import datetime
 import stat
 
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, render_template, request, send_file, current_app
 from aiohttp import ClientError
 import aiohttp
 import asyncio
@@ -177,6 +177,7 @@ def layer_size_view(repo: str, digest: str):
                 ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
                 entries.append((m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}"))
     except tarfile.TarError:
+        current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
             render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
             415,
@@ -240,6 +241,7 @@ def fs_view(repo: str, digest: str, subpath: str):
                 return ("not found", 404)
             data = file_obj.read()
     except tarfile.TarError:
+        current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
             render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
             415,

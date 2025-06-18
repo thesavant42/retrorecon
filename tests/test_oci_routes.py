@@ -1,5 +1,6 @@
 import io
 import tarfile
+import logging
 from pathlib import Path
 import app
 
@@ -105,7 +106,7 @@ def test_fs_route(tmp_path, monkeypatch):
         assert resp.data == b"hi"
 
 
-def test_fs_route_invalid_tar(tmp_path, monkeypatch):
+def test_fs_route_invalid_tar(tmp_path, monkeypatch, caplog):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
 
@@ -119,7 +120,9 @@ def test_fs_route_invalid_tar(tmp_path, monkeypatch):
     monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
 
     with app.app.test_client() as client:
+        caplog.set_level(logging.WARNING)
         resp = client.get("/fs/user/repo@sha256:x/a.txt")
         assert resp.status_code == 415
         assert b"invalid tar" in resp.data
+        assert any("invalid tar for user/repo@sha256:x" in rec.message for rec in caplog.records)
 
