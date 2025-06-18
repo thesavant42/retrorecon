@@ -12,6 +12,7 @@ function initLayerpeek(){
   const infoDiv = document.getElementById('layerslayer-info');
   const consoleDiv = document.getElementById('layerslayer-console');
   const closeBtn = document.getElementById('layerslayer-close-btn');
+  const statusSpan = document.getElementById('layerslayer-status');
 
   function logStatus(msg){
     if(!consoleDiv) return;
@@ -122,7 +123,7 @@ function initLayerpeek(){
     startPolling();
     fetchBtn.disabled = true;
     const oldText = fetchBtn.textContent;
-    fetchBtn.textContent = 'Fetching...';
+    if(statusSpan) statusSpan.textContent = 'Fetching...';
     try {
       const resp = await fetch('/docker_layers?image=' + encodeURIComponent(img));
       if(resp.ok){
@@ -146,6 +147,7 @@ function initLayerpeek(){
     } finally {
       fetchBtn.disabled = false;
       fetchBtn.textContent = oldText;
+      if(statusSpan) statusSpan.textContent = '';
     }
   });
 
