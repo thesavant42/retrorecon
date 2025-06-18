@@ -63,6 +63,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **LayerPeek** inspect Docker image layers from Docker Hub
 - **Registry Explorer** query image manifests from multiple backends
 - **Dag Explorer** list repository tags and view manifests via a simple browser; works with public registries like [ghcr.io](https://ghcr.io). Example: [oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz](https://oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz)
+- **Golden Rule** the local route `http://127.0.0.1:5000/image/ubuntu:latest` must show the same output as `https://oci.dag.dev/?image=ubuntu%3Alatest`.
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor

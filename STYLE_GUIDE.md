@@ -48,3 +48,7 @@ Key element defaults derived from `static/base.css`:
 Inputs, dropdowns, and other controls follow the same naming pattern (`.input`, `.dropdown`, `.dropdown--open`). Ensure every rule is scoped under `.retrorecon-root`.
 
 Adhering to these conventions keeps Retrorecon styles clear, maintainable, and easy to extend with additional themes.
+
+## Golden Rule: OCI Mirror Parity
+
+The example URL `https://oci.dag.dev/?image=ubuntu%3Alatest` defines the canonical output for image views. The local route `http://127.0.0.1:5000/image/ubuntu:latest` must render the same information with no fabricated data.

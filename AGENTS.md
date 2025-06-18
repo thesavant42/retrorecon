@@ -177,3 +177,14 @@ python scripts/generate_midnight_themes.py
 
 When creating new CSS, follow `STYLE_GUIDE.md` which mandates that selectors be scoped under `.retrorecon-root` using BEM-style naming. Running `npm run lint` checks for inline styles and standard Stylelint rules.
 
+## Golden Rule: OCI Mirror Parity
+
+Routes under `/image/` must mirror the behavior of the hosted service at [oci.dag.dev](https://oci.dag.dev). Example:
+
+```
+https://oci.dag.dev/?image=ubuntu%3Alatest    # canonical reference
+http://127.0.0.1:5000/image/ubuntu:latest     # must produce the same content
+```
+
+The local output should match the remote HTML and manifest data exactly. Do not fake results—always fetch real registry data.
+
