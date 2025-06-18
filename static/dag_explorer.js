@@ -9,16 +9,98 @@ function initDagExplorer(){
   const output = document.getElementById('dag-output');
   const manifestDiv = document.getElementById('dag-manifest');
 
-  function buildTable(manifest, img){
-    const layers = manifest.layers || [];
-    let html = '<table class="table url-table w-100"><thead><tr>'+
-               '<th>Digest</th><th>Size</th><th>Files</th></tr></thead><tbody>';
-    for(const layer of layers){
-      const link = `<a href="#" class="layer-link" data-digest="${layer.digest}">${layer.digest}</a>`;
-      html += `<tr><td>${link}</td><td>${layer.size || layer.size_bytes || ''}</td><td></td></tr>`;
+  const SPEC_LINKS = {
+    'application/vnd.docker.distribution.manifest.v2+json':
+      'https://github.com/opencontainers/image-spec/blob/main/manifest.md',
+    'application/vnd.docker.image.rootfs.diff.tar.gzip':
+      'https://github.com/opencontainers/image-spec/blob/main/layer.md',
+    'application/vnd.docker.container.image.v1+json':
+      'https://github.com/opencontainers/image-spec/blob/main/config.md'
+  };
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  function humanReadableSize(size){
+    const units = ['B','KB','MB','GB','TB'];
+    let i = 0;
+    while(size >= 1024 && i < units.length-1){
+      size /= 1024;
+      i++;
     }
-    html += '</tbody></table>';
-    return html;
+    return size.toFixed(1) + ' ' + units[i];
+  }
+
+  function linkMediaType(mt){
+    const url = SPEC_LINKS[mt];
+    const text = escapeHtml(mt);
+    return url ? `<a class="mt" href="${url}">${text}</a>` : text;
+  }
+
+  function renderLayer(layer, repo){
+    const mt = String(layer.mediaType || '');
+    const digest = String(layer.digest || '');
+    const size = Number(layer.size || layer.size_bytes || 0);
+    const digestLink = `<a href="/fs/${repo}@${digest}?mt=${encodeURIComponent(mt)}&size=${size}" class="mt layer-link" data-digest="${digest}">${escapeHtml(digest)}</a>`;
+    const sizeLink = `<a href="/size/${repo}@${digest}?mt=${encodeURIComponent(mt)}&size=${size}"><span title="${humanReadableSize(size)}">${size}</span></a>`;
+    return '{<br>'+
+      `<div class="indent">"mediaType": "${linkMediaType(mt)}",</div>`+
+      `<div class="indent">"digest": "${digestLink}",</div>`+
+      `<div class="indent">"size": ${sizeLink}</div>`+
+      '}';
+  }
+
+  function renderObj(obj, repo){
+    if(Array.isArray(obj)){
+      const lines = ['['];
+      obj.forEach((v,i) => {
+        const comma = i < obj.length - 1 ? ',' : '';
+        lines.push(`<div class="indent">${renderObj(v, repo)}${comma}</div>`);
+      });
+      lines.push(']');
+      return lines.join('<br>');
+    }
+    if(obj && typeof obj === 'object'){
+      const keys = Object.keys(obj);
+      const lines = ['{'];
+      keys.forEach((k,i) => {
+        const v = obj[k];
+        const comma = i < keys.length - 1 ? ',' : '';
+        let valueHtml;
+        if(k === 'layers' && Array.isArray(v)){
+          const arr = ['['];
+          v.forEach((layer,j) => {
+            arr.push(`<div class="indent">${renderLayer(layer, repo)}</div>` + (j < v.length-1 ? ' ,' : ''));
+          });
+          arr.push(']');
+          valueHtml = arr.join('<br>');
+        } else if(k === 'mediaType' && typeof v === 'string'){
+          valueHtml = `"${linkMediaType(v)}"`;
+        } else {
+          valueHtml = renderObj(v, repo);
+        }
+        lines.push(`<div class="indent">"${escapeHtml(k)}": ${valueHtml}${comma}</div>`);
+      });
+      lines.push('}');
+      return lines.join('<br>');
+    }
+    if(typeof obj === 'string'){
+      return `"${escapeHtml(obj)}"`;
+    }
+    return escapeHtml(JSON.stringify(obj));
+  }
+
+  function parseRepo(image){
+    const ref = image.split('@')[0];
+    let repo = ref.split(':')[0];
+    if(!repo.includes('/')) repo = 'library/' + repo;
+    return repo;
+  }
+
+  function renderManifest(manifest, image){
+    const repo = parseRepo(image);
+    return renderObj(manifest, repo);
   }
 
   async function fetchManifest(){
@@ -27,7 +109,7 @@ function initDagExplorer(){
     const resp = await fetch('/dag/image/' + encodeURIComponent(img));
     if(resp.ok){
       const data = await resp.json();
-      manifestDiv.innerHTML = buildTable(data, img);
+      manifestDiv.innerHTML = renderManifest(data, img);
     } else {
       manifestDiv.textContent = await resp.text();
     }
