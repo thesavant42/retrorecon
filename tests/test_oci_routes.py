@@ -54,6 +54,29 @@ def test_image_route(tmp_path, monkeypatch):
         assert b"a.txt" in resp.data
 
 
+def test_image_route_manifest_index(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_manifest(image, specific_digest=None, client=None):
+        if specific_digest is None:
+            return {"manifests": [{"digest": "sha256:d"}]}
+        assert specific_digest == "sha256:d"
+        return {"layers": [{"digest": "sha256:x"}]}
+
+    async def fake_list(image, digest, client=None):
+        return ["file.txt"]
+
+    monkeypatch.setattr(oci, "get_manifest", fake_manifest)
+    monkeypatch.setattr(oci, "list_layer_files", fake_list)
+
+    with app.app.test_client() as client:
+        resp = client.get("/image/user/repo:tag")
+        assert resp.status_code == 200
+        assert b"sha256:x" in resp.data
+        assert b"file.txt" in resp.data
+
+
 def test_fs_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
