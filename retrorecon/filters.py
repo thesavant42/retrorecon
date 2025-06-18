@@ -60,13 +60,13 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str) -> str:
     platform = entry.get("platform")
     if platform is not None:
         parts.append(
-            f'<span class="indent">"platform": {_render_obj(platform, repo)}</span>'
+            f'<span class="indent">"platform": {_render_obj(platform, repo, image)}</span>'
         )
     parts.append("}")
     return "\n".join(parts)
 
 
-def _render_obj(obj: Any, repo: str) -> str:
+def _render_obj(obj: Any, repo: str, image: str, *, _root: bool = False) -> str:
     if isinstance(obj, dict):
         lines = ['{']
         items = list(obj.items())
@@ -91,15 +91,18 @@ def _render_obj(obj: Any, repo: str) -> str:
             elif k == 'mediaType' and isinstance(v, str):
                 value_html = f'"{_link_media_type(v)}"'
             else:
-                value_html = _render_obj(v, repo)
-            lines.append(f'<span class="indent">"{escape(k)}": {value_html}{comma}</span>')
+                value_html = _render_obj(v, repo, image)
+            key_html = escape(k)
+            if _root and k == 'layers':
+                key_html = f'<a class="mt" href="/layers/{escape(image)}/">{key_html}</a>'
+            lines.append(f'<span class="indent">"{key_html}": {value_html}{comma}</span>')
         lines.append('}')
         return "\n".join(lines)
     if isinstance(obj, list):
         lines = ['[']
         for i, item in enumerate(obj):
             comma = ',' if i < len(obj) - 1 else ''
-            lines.append(f'<span class="indent">{_render_obj(item, repo)}{comma}</span>')
+            lines.append(f'<span class="indent">{_render_obj(item, repo, image)}{comma}</span>')
         lines.append(']')
         return "\n".join(lines)
     if isinstance(obj, str):
@@ -111,6 +114,6 @@ def manifest_links(manifest: Dict[str, Any], image: str) -> Markup:
     """Return HTML for ``manifest`` with layer digests and sizes hyperlinked."""
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
-    html = _render_obj(manifest, repo_full)
+    html = _render_obj(manifest, repo_full, image, _root=True)
     return Markup(html)
 
