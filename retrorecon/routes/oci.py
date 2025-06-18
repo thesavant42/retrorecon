@@ -263,6 +263,49 @@ def fs_view(repo: str, digest: str, subpath: str):
     return send_file(io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False)
 
 
+def _parse_ls_line(line: str) -> tuple[str, bool]:
+    parts = line.split(None, 4)
+    if len(parts) < 5:
+        return "", False
+    return parts[4], parts[0].startswith("d")
+
+
+async def _build_overlay(image: str) -> dict[str, tuple[str, bool]]:
+    async with DockerRegistryClient() as client:
+        manifest = await get_manifest(image, client=client)
+        if manifest.get("manifests"):
+            digest = manifest["manifests"][0]["digest"]
+            manifest = await get_manifest(image, specific_digest=digest, client=client)
+        mapping: dict[str, tuple[str, bool]] = {}
+        for layer in manifest.get("layers", []):
+            files = await list_layer_files(image, layer["digest"], client=client)
+            for line in files:
+                path, is_dir = _parse_ls_line(line)
+                if path:
+                    mapping[path] = (layer["digest"], is_dir)
+        return mapping
+
+
+def _overlay_view(image: str, digest: str, subpath: str):
+    overlay = asyncio.run(_build_overlay(image))
+    user, repo, _ = parse_image_ref(image)
+    repo_full = f"{user}/{repo}"
+    entry = overlay.get(subpath)
+    if entry and not entry[1]:
+        return fs_view(repo_full, entry[0], subpath)
+
+    prefix = subpath.rstrip("/")
+    if prefix:
+        prefix += "/"
+    names = set()
+    for path in overlay:
+        if not path.startswith(prefix) or path == subpath:
+            continue
+        remainder = path[len(prefix):]
+        names.add(remainder.split("/", 1)[0])
+    return render_template("oci_fs.html", repo=repo_full, digest=digest, path=subpath, items=sorted(names))
+
+
 @bp.route("/layers/<path:image>/<path:subpath>", methods=["GET"])
 def layer_dir(image: str, subpath: str):
     try:
@@ -287,6 +330,13 @@ def layer_dir(image: str, subpath: str):
 @bp.route("/layers/<path:image>@<digest>/<path:subpath>", methods=["GET"])
 def layer_digest_dir(image: str, digest: str, subpath: str):
     """Browse ``digest`` from ``image`` starting at ``subpath``."""
+    try:
+        manifest_digest = asyncio.run(get_manifest_digest(image))
+    except Exception:
+        manifest_digest = ""
+    if digest == manifest_digest:
+        return _overlay_view(image, digest, subpath)
+
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
     return fs_view(repo_full, digest, subpath)
