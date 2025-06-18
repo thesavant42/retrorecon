@@ -96,6 +96,7 @@ def _hexdump(data: bytes) -> str:
     return "\n".join(hex_lines)
 
 
+@bp.route("/fs/<path:repo>@<digest>", defaults={"subpath": ""}, methods=["GET"])
 @bp.route("/fs/<path:repo>@<digest>/<path:subpath>", methods=["GET"])
 def fs_view(repo: str, digest: str, subpath: str):
     render_mode = request.args.get("render")
@@ -108,6 +109,9 @@ def fs_view(repo: str, digest: str, subpath: str):
     except Exception:
         return ("server error", 500)
     with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+        if not subpath:
+            names = [m.name for m in tar.getmembers()]
+            return render_template("oci_fs.html", repo=repo, digest=digest, path="", items=names)
         try:
             member = tar.getmember(subpath)
         except KeyError:
