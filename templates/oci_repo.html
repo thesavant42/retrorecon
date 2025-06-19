@@ -15,8 +15,14 @@
   {% endfor %}
   </div>
   <div>],</div>
-  <div>"tags": {{ data.tags|tojson }},</div>
-  <div>"manifest": {{ data.manifest|tojson }}</div>
+  <div>"tags": [</div>
+  <div class="indent">
+  {% for tag in data.tags %}
+    <div>"<a href="/?image={{ (repo ~ ':' ~ tag)|urlencode }}">{{ tag }}</a>"{% if not loop.last %},{% endif %}</div>
+  {% endfor %}
+  </div>
+  ],</div>
+  <div>"manifest": {{ data.manifest|oci_obj(repo) }}</div>
 </div>
 }</div>
 {% endblock %}
