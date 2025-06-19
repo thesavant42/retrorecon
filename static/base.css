@@ -1118,6 +1118,13 @@ body {
   color: inherit;
 }
 
+/* <<<<<<< codex/improve-dashboard-layout-and-pagination
+.retrorecon-root #layout-d {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
 /* --- End of update --- */
 body.bg-hidden {
