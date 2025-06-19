@@ -234,10 +234,35 @@ def layer_size_view(repo: str, digest: str):
     )
 
 
+def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
+    prefix = subpath.rstrip("/")
+    if prefix:
+        prefix += "/"
+    mapping: dict[str, bool] = {}
+    for m in tar.getmembers():
+        if not m.name.startswith(prefix) or m.name == subpath.rstrip("/"):
+            continue
+        remainder = m.name[len(prefix) :]
+        part = remainder.split("/", 1)[0]
+        if not part:
+            continue
+        is_dir = "/" in remainder or m.isdir()
+        mapping[part] = mapping.get(part, False) or is_dir
+    items = []
+    for name in sorted(mapping):
+        child_path = prefix + name
+        if mapping[name] and not child_path.endswith("/"):
+            child_path += "/"
+        items.append({"name": name, "path": child_path, "is_dir": mapping[name]})
+    return items
+
+
 @bp.route("/fs/<path:repo>@<digest>", defaults={"subpath": ""}, methods=["GET"])
 @bp.route("/fs/<path:repo>@<digest>/<path:subpath>", methods=["GET"])
 def fs_view(repo: str, digest: str, subpath: str):
     render_mode = request.args.get("render")
+    q = request.args.get("q", "")
+    q_lower = q.lower()
     try:
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
@@ -257,16 +282,35 @@ def fs_view(repo: str, digest: str, subpath: str):
         )
     try:
         with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
-            if not subpath:
-                names = [m.name for m in tar.getmembers()]
-                return render_template("oci_fs.html", repo=repo, digest=digest, path="", items=names)
+            if not subpath or subpath.endswith("/"):
+                items = _list_children(tar, subpath)
+                if q:
+                    items = [it for it in items if q_lower in it["name"].lower()]
+                disp = "/" + subpath.rstrip("/") if subpath else "/"
+                return render_template(
+                    "oci_fs.html",
+                    repo=repo,
+                    digest=digest,
+                    path=disp,
+                    items=items,
+                    q=q,
+                )
             try:
                 member = tar.getmember(subpath)
             except KeyError:
                 return ("not found", 404)
             if member.isdir():
-                names = [m.name for m in tar.getmembers() if m.name.startswith(subpath) and m.name != subpath]
-                return render_template("oci_fs.html", repo=repo, digest=digest, path=subpath, items=names)
+                items = _list_children(tar, subpath)
+                if q:
+                    items = [it for it in items if q_lower in it["name"].lower()]
+                return render_template(
+                    "oci_fs.html",
+                    repo=repo,
+                    digest=digest,
+                    path="/" + subpath.rstrip("/"),
+                    items=items,
+                    q=q,
+                )
             file_obj = tar.extractfile(member)
             if not file_obj:
                 return ("not found", 404)
@@ -325,16 +369,35 @@ def _overlay_view(image: str, digest: str, subpath: str):
     if entry and not entry[1]:
         return fs_view(repo_full, entry[0], subpath)
 
+    q = request.args.get("q", "")
+    q_lower = q.lower()
     prefix = subpath.rstrip("/")
     if prefix:
         prefix += "/"
-    names = set()
+    mapping: dict[str, bool] = {}
     for path in overlay:
         if not path.startswith(prefix) or path == subpath:
             continue
         remainder = path[len(prefix):]
-        names.add(remainder.split("/", 1)[0])
-    return render_template("oci_fs.html", repo=repo_full, digest=digest, path=subpath, items=sorted(names))
+        part = remainder.split("/", 1)[0]
+        is_dir = "/" in remainder or overlay.get(prefix + part, ("", False))[1]
+        mapping[part] = mapping.get(part, False) or is_dir
+    items = []
+    for name in sorted(mapping):
+        if q and q_lower not in name.lower():
+            continue
+        child_path = prefix + name
+        if mapping[name] and not child_path.endswith("/"):
+            child_path += "/"
+        items.append({"name": name, "path": child_path, "is_dir": mapping[name]})
+    return render_template(
+        "oci_fs.html",
+        repo=repo_full,
+        digest=digest,
+        path="/" + subpath.rstrip("/") if subpath else "/",
+        items=items,
+        q=q,
+    )
 
 
 @bp.route("/layers/<path:image>/<path:subpath>", methods=["GET"])

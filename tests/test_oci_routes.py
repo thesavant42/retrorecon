@@ -143,6 +143,42 @@ def test_fs_route(tmp_path, monkeypatch):
         assert resp.data == b"hi"
 
 
+def test_fs_root_listing(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        info = tarfile.TarInfo("dir/file.txt")
+        data = b""
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+        info2 = tarfile.TarInfo("top.txt")
+        info2.size = 0
+        tar.addfile(info2, io.BytesIO(b""))
+    tar_bytes = buf.getvalue()
+
+    async def fake_fetch_token(repo):
+        return "t"
+
+    async def fake_fetch_blob(repo, digest, token, session=None):
+        return tar_bytes
+
+    monkeypatch.setattr(oci, "fetch_token", fake_fetch_token)
+    monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
+
+    with app.app.test_client() as client:
+        resp = client.get("/fs/user/repo@sha256:x")
+        assert resp.status_code == 200
+        html = resp.data.decode()
+        assert "dir/" in html
+        assert "top.txt" in html
+        resp = client.get("/fs/user/repo@sha256:x?q=top")
+        html = resp.data.decode()
+        assert "top.txt" in html
+        assert "dir/" not in html
+
+
 def test_fs_route_invalid_tar(tmp_path, monkeypatch, caplog):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
