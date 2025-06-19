@@ -171,8 +171,9 @@
   font-family: var(--font-main);
   font-size: 14px;
   margin: 0;
-  min-height: 100vh;
-  padding: 0 0 4em 0;
+  height: 100vh;
+  padding: 0 0 10px;
+  overflow: hidden;
   color: #ffffff;
   line-height: 1.5;
 }
@@ -583,7 +584,9 @@
   border-radius: 8px;
   box-shadow: 0 1px 6px var(--fg-color);
   padding: 0.5em;
-  min-height: 30em;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Styling for the "no results" message */
@@ -1081,6 +1084,7 @@
 }
 .retrorecon-root .bottom-container {
   margin-top: auto;
+  padding-top: 1em;
 }
 
 /* Misc: checkboxes for row selection */
@@ -1108,6 +1112,13 @@
 .retrorecon-root #layout-d td {
   background: transparent;
   color: inherit;
+}
+
+.retrorecon-root #layout-d {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* --- End of update --- */
