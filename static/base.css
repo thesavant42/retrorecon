@@ -68,7 +68,7 @@ body {
   letter-spacing: 0.04em;
   font-weight: bold;
   color: var(--accent-color);
-  margin-left: 10px;
+  margin-left: 0;
 }
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
@@ -344,7 +344,7 @@ body {
 /* Navbar layout */
 .retrorecon-root .navbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
   margin: 0 10px;
   width: 100%;
@@ -352,6 +352,7 @@ body {
 .retrorecon-root .navbar__menus {
   display: flex;
   gap: 0.6em;
+  justify-self: start;
 }
 .retrorecon-root .navbar__title {
   text-align: center;
