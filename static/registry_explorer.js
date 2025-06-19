@@ -75,7 +75,7 @@ function initRegistryExplorer(){
     });
   }
 
-  function buildTables(plats, img){
+  function buildTables(plats, img, manifestDigest){
     let html = '';
     for(const plat of plats){
       const label = (plat.os || plat.architecture)
@@ -96,7 +96,9 @@ function initRegistryExplorer(){
         const files = layer.files.map(f=>{
           const p = f.split('/').map(encodeURIComponent).join('/');
           const imgEnc = img.split('/').map(encodeURIComponent).join('/');
-          const href = `/layers/${imgEnc}/${p}`;
+          const href = manifestDigest
+            ? `/layers/${imgEnc}@${manifestDigest}/${p}`
+            : `/layers/${imgEnc}/${p}`;
           return `<li><a class="mt" href="${href}" target="_blank">${f}</a></li>`;
         }).join('');
         const filesHtml = `<details><summary>${layer.files.length} files</summary><ul>${files}</ul></details>`;
@@ -124,10 +126,10 @@ function initRegistryExplorer(){
     if(data.results){
       for(const m of data.methods){
         html += `<h3>${m}</h3>`;
-        html += buildTables(data.results[m], imgRef);
+        html += buildTables(data.results[m], imgRef, data.manifest);
       }
     } else {
-      html = buildTables(data.platforms, imgRef);
+      html = buildTables(data.platforms, imgRef, data.manifest);
     }
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('table').forEach(t=>{ attachSort(t); makeResizable(t,'registry-col-widths'); });
