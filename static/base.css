@@ -358,6 +358,7 @@
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;
+  margin-right: 1em;
   display: flex;
   align-items: center;
   justify-self: start;
