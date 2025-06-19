@@ -166,6 +166,8 @@
 .retrorecon-root {
   background: var(--bg-color) url("/static/img/background.jpg") no-repeat center center fixed;
   background-size: cover;
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-main);
   font-size: 14px;
   margin: 0;
@@ -574,6 +576,13 @@
   margin: 10px;
   gap: 1em;
 }
+.retrorecon-root .results-frame {
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  border-radius: 8px;
+  box-shadow: 0 1px 6px var(--fg-color);
+  padding: 0.5em;
+  min-height: 30em;
+}
 
 /* Styling for the "no results" message */
 .retrorecon-root .results-grid__no-results {
@@ -680,7 +689,8 @@
   border-collapse: collapse;
   background: rgb(var(--bg-rgb)/0.36);
   margin-bottom: 0.7em;
-  box-shadow: 0 1px 8px var(--fg-color);
+  box-shadow: 0 1px 6px var(--fg-color);
+  border-radius: 8px;
 }
 .retrorecon-root .fs-table {
   width: 100%;
@@ -1066,6 +1076,9 @@
   color: var(--fg-color);
   font-size: 0.97em;
   margin-right: 50px;
+}
+.retrorecon-root .bottom-container {
+  margin-top: auto;
 }
 
 /* Misc: checkboxes for row selection */
