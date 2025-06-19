@@ -340,6 +340,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   margin: 0 10px;
+  width: 100%;
 }
 .retrorecon-root .navbar__menus {
   display: flex;
@@ -1030,6 +1031,7 @@
   display: flex;
   align-items: center;
   gap: 0.4em;
+  white-space: nowrap;
   font-size: 1em;
   letter-spacing: 0.04em;
   font-weight: bold;
