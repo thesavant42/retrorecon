@@ -22,6 +22,7 @@ from flask import (
     url_for,
     flash,
     send_file,
+    send_from_directory,
     session,
     jsonify,
     Response,
@@ -55,6 +56,18 @@ app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
 app.add_template_filter(manifest_links, name="manifest_links")
+
+
+@app.route('/favicon.ico')
+def favicon_ico() -> Response:
+    """Serve the favicon.ico from the application root."""
+    return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/favicon.svg')
+def favicon_svg() -> Response:
+    """Serve the favicon.svg from the application root."""
+    return send_from_directory(app.root_path, 'favicon.svg', mimetype='image/svg+xml')
 
 def get_db_folder() -> str:
     """Return the folder where database files are stored."""
