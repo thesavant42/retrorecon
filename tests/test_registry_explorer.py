@@ -122,7 +122,7 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
     monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fake_gather)
     monkeypatch.setattr(reg.rex, "get_manifest_digest", fake_digest)
 
-    def build_tables(plats, img):
+    def build_tables(plats, img, manifest):
         html = ""
         for plat in plats:
             html += f"<h4>{plat['os']}/{plat['architecture']}</h4>"
@@ -137,7 +137,7 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
             )
             for layer in plat["layers"]:
                 files = "".join(
-                    f'<li><a class="mt" href="/layers/{img}/{f}">{f}</a></li>'
+                    f'<li><a class="mt" href="/layers/{img}@{manifest}/{f}">{f}</a></li>'
                     for f in layer["files"]
                 )
                 files_html = (
@@ -157,6 +157,6 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["manifest"] == "sha256:d3"
-        html = build_tables(data["platforms"], "test/test:tag")
+        html = build_tables(data["platforms"], "test/test:tag", data["manifest"])
         assert "dir/file1" in html
         assert "dir/file2" in html
