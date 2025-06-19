@@ -50,13 +50,14 @@ from retrorecon import (
     sitezip_utils,
     status as status_mod,
 )
-from retrorecon.filters import manifest_links, oci_obj
+from retrorecon.filters import manifest_links, oci_obj, human_readable
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
 app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
+app.add_template_filter(human_readable, name="human_readable")
 
 
 @app.route('/favicon.ico')

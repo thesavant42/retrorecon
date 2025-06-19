@@ -7,13 +7,30 @@
   <input type="text" name="q" value="{{ q }}" placeholder="Filter" class="form-input mr-05" />
   <button type="submit" class="btn">Apply</button>
 </form>
-<ul>
-{% for item in items %}
-  <li>
-    <a class="mt" href="/fs/{{ repo }}@{{ digest }}/{{ item.path }}{% if q %}?q={{ q|urlencode }}{% endif %}">
-      {{ item.name }}{% if item.is_dir %}/{% endif %}
-    </a>
-  </li>
-{% endfor %}
-</ul>
+<table class="fs-table">
+  <thead>
+    <tr>
+      <th>Perms</th>
+      <th>Owner</th>
+      <th>Size</th>
+      <th>Modified</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in items %}
+    <tr>
+      <td class="text-mono">{{ item.perms }}</td>
+      <td class="text-mono">{{ item.owner }}</td>
+      <td class="text-right" title="{{ item.size|human_readable }}">{{ item.size }}</td>
+      <td>{{ item.mtime }}</td>
+      <td>
+        <a class="mt" href="/fs/{{ repo }}@{{ digest }}/{{ item.path }}{% if q %}?q={{ q|urlencode }}{% endif %}">
+          {{ item.name }}{% if item.is_dir %}/{% endif %}
+        </a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

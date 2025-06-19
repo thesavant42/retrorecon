@@ -8,6 +8,15 @@ from markupsafe import Markup, escape
 from layerslayer.utils import parse_image_ref, human_readable_size
 
 
+def human_readable(value: Any) -> str:
+    """Return ``value`` formatted as human readable size."""
+    try:
+        num = int(value)
+    except Exception:
+        num = 0
+    return human_readable_size(num)
+
+
 _SPEC_LINKS = {
     "application/vnd.docker.distribution.manifest.v2+json": "https://github.com/opencontainers/image-spec/blob/main/manifest.md",
     "application/vnd.docker.image.rootfs.diff.tar.gzip": "https://github.com/opencontainers/image-spec/blob/main/layer.md",

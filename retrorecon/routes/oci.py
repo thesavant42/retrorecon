@@ -235,10 +235,13 @@ def layer_size_view(repo: str, digest: str):
 
 
 def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
+    """Return child entries for ``subpath`` with file metadata."""
+
     prefix = subpath.rstrip("/")
     if prefix:
         prefix += "/"
-    mapping: dict[str, bool] = {}
+
+    mapping: dict[str, dict[str, Any]] = {}
     for m in tar.getmembers():
         if not m.name.startswith(prefix) or m.name == subpath.rstrip("/"):
             continue
@@ -247,14 +250,51 @@ def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
         if not part:
             continue
         is_dir = "/" in remainder or m.isdir()
-        mapping[part] = mapping.get(part, False) or is_dir
-    items = []
-    for name in sorted(mapping):
-        child_path = prefix + name
-        if mapping[name] and not child_path.endswith("/"):
-            child_path += "/"
-        items.append({"name": name, "path": child_path, "is_dir": mapping[name]})
-    return items
+        entry = mapping.get(part)
+        if entry is None:
+            # try to find a direct member for accurate metadata
+            ti = None
+            try:
+                ti = tar.getmember(prefix + part)
+            except KeyError:
+                try:
+                    ti = tar.getmember(prefix + part + "/")
+                except KeyError:
+                    ti = None
+            if ti is None:
+                perms = ("d" if is_dir else "-") + "?????????"
+                owner = "?/?"
+                size = 0
+                mtime = "????-??-?? ??:??"
+            else:
+                mode = ti.mode
+                if ti.isfile():
+                    mode |= stat.S_IFREG
+                elif ti.isdir():
+                    mode |= stat.S_IFDIR
+                elif ti.issym():
+                    mode |= stat.S_IFLNK
+                perms = stat.filemode(mode)
+                owner = f"{ti.uid}/{ti.gid}"
+                size = ti.size
+                mtime = datetime.utcfromtimestamp(ti.mtime).strftime("%Y-%m-%d %H:%M")
+            path = prefix + part
+            if is_dir and not path.endswith("/"):
+                path += "/"
+            mapping[part] = {
+                "name": part,
+                "path": path,
+                "is_dir": is_dir,
+                "perms": perms,
+                "owner": owner,
+                "size": size,
+                "mtime": mtime,
+            }
+        else:
+            if is_dir:
+                entry["is_dir"] = True
+
+    return [mapping[name] for name in sorted(mapping)]
 
 
 @bp.route("/fs/<path:repo>@<digest>", defaults={"subpath": ""}, methods=["GET"])
