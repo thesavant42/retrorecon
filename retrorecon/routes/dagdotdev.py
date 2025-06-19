@@ -21,14 +21,20 @@ def r_route(ref: str):
 
 @bp.route("/fs/<digest>/<path:path>", methods=["GET"])
 def fs_route(digest: str, path: str):
-    """Alias for ``/dag/fs`` route."""
-    return dag.dag_fs(digest, path)
+    """Alias for ``/dag/fs`` route using ``image`` query."""
+    image = request.args.get("image")
+    if not image:
+        return jsonify({"error": "missing_image"}), 400
+    return dag.dag_fs(image, digest, path)
 
 
 @bp.route("/layer/<digest>", methods=["GET"])
 def layer_route(digest: str):
-    """Alias for ``/dag/layer`` route."""
-    return dag.dag_layer(digest)
+    """Alias for ``/dag/layer`` route using ``image`` query."""
+    image = request.args.get("image")
+    if not image:
+        return jsonify({"error": "missing_image"}), 400
+    return dag.dag_layer(image, digest)
 
 
 @bp.route("/size/<digest>", methods=["GET"])

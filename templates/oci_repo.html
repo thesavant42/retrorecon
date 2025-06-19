@@ -11,7 +11,7 @@
   <div>"child": [</div>
   <div class="indent">
   {% for child in data.child %}
-    <div>"<a href="/?repo={{ repo|urlencode }}%2F{{ child|urlencode }}">{{ child }}</a>",</div>
+    <div>"<a href="/repo/{{ (repo ~ '/' ~ child)|urlencode }}">{{ child }}</a>",</div>
   {% endfor %}
   </div>
   <div>],</div>
