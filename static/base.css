@@ -337,7 +337,7 @@
 /* Navbar layout */
 .retrorecon-root .navbar {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   margin: 0 10px;
 }
@@ -354,6 +354,8 @@
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;
+  display: flex;
+  align-items: center;
 }
 .retrorecon-root .navbar__title h1 {
   margin: 0;

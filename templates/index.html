@@ -181,9 +181,10 @@
     </div>
   </div>
   <div class="navbar__title">
-      <h1></h1>
+      <span class="glow cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
+    </div>
+    <div class="navbar__info">
       <div id="import-status-block" class="db-info">
-        <span class="glow cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
         <span class="ml-01"><strong>Status:</strong></span>
         <span id="import-status-text">idle</span>
         <div id="import-progress-bar-container" class="d-none">
