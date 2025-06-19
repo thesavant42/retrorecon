@@ -2,7 +2,7 @@
 {% extends 'oci_base.html' %}
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
-<h2><a class="mt" href="/?repo={{ repo }}">{{ repo }}</a>@<a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ media_type }}&size={{ size }}">{{ digest }}</a></h2>
+<h2><a class="mt" href="/repo/{{ repo }}">{{ repo }}</a>@<a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ media_type }}&size={{ size }}">{{ digest }}</a></h2>
 <input type="radio" name="tabs" id="tab1" checked>
 <label for="tab1">HTTP</label>
 <input type="radio" name="tabs" id="tab2">

@@ -69,11 +69,8 @@ def dag_image(image: str):
     return jsonify(data)
 
 
-@bp.route("/dag/fs/<digest>/<path:path>", methods=["GET"])
-def dag_fs(digest: str, path: str):
-    image = request.args.get("image")
-    if not image:
-        return jsonify({"error": "missing_image"}), 400
+@bp.route("/dag/fs/<path:image>@<digest>/<path:path>", methods=["GET"])
+def dag_fs(image: str, digest: str, path: str):
 
     async def _fetch() -> bytes:
         user, repo, _ = parse_image_ref(image)
@@ -107,11 +104,8 @@ def dag_fs(digest: str, path: str):
     return send_file(io.BytesIO(data), download_name=filename, as_attachment=False)
 
 
-@bp.route("/dag/layer/<digest>", methods=["GET"])
-def dag_layer(digest: str):
-    image = request.args.get("image")
-    if not image:
-        return jsonify({"error": "missing_image"}), 400
+@bp.route("/dag/layer/<path:image>@<digest>", methods=["GET"])
+def dag_layer(image: str, digest: str):
 
     async def _fetch() -> list[str]:
         async with DockerRegistryClient() as client:

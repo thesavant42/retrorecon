@@ -74,7 +74,7 @@ def test_dag_fs_route(tmp_path, monkeypatch):
 
     monkeypatch.setattr(dag.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
     with app.app.test_client() as client:
-        resp = client.get('/dag/fs/sha256:x/a.txt?image=user/repo:tag')
+        resp = client.get('/dag/fs/user/repo:tag@sha256:x/a.txt')
         assert resp.status_code == 200
         assert resp.data == b'hello'
 
@@ -89,7 +89,7 @@ def test_dag_fs_invalid_tar(tmp_path, monkeypatch, caplog):
     monkeypatch.setattr(dag.DockerRegistryClient, 'fetch_bytes', fake_fetch_bytes)
     with app.app.test_client() as client:
         caplog.set_level(logging.WARNING)
-        resp = client.get('/dag/fs/sha256:x/a.txt?image=user/repo:tag')
+        resp = client.get('/dag/fs/user/repo:tag@sha256:x/a.txt')
         assert resp.status_code == 415
         assert resp.get_json()['error'] == 'invalid_blob'
         assert any('invalid tar blob' in rec.message for rec in caplog.records)
@@ -107,6 +107,6 @@ def test_dag_layer_route(tmp_path, monkeypatch):
     monkeypatch.setattr(dag, 'list_layer_files', fake_list)
 
     with app.app.test_client() as client:
-        resp = client.get('/dag/layer/sha256:x?image=user/repo:tag')
+        resp = client.get('/dag/layer/user/repo:tag@sha256:x')
         assert resp.status_code == 200
         assert resp.get_json()['files'] == ['a.txt', 'b.txt']

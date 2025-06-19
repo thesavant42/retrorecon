@@ -43,7 +43,7 @@ function initDagExplorer(){
     const digest = String(layer.digest || '');
     const size = Number(layer.size || layer.size_bytes || 0);
     const digestLink = `<a href="/fs/${repo}@${digest}" class="mt layer-link" data-digest="${digest}">${escapeHtml(digest)}</a>`;
-    const sizeLink = `<a href="/size/${digest}?image=${encodeURIComponent(repo)}"><span title="${humanReadableSize(size)}">${size}</span></a>`;
+    const sizeLink = `<a href="/size/${repo}@${digest}"><span title="${humanReadableSize(size)}">${size}</span></a>`;
     return '{<br>'+
       `<div class="indent">"mediaType": "${linkMediaType(mt)}",</div>`+
       `<div class="indent">"digest": "${digestLink}",</div>`+
@@ -132,7 +132,7 @@ function initDagExplorer(){
     const digest = link.dataset.digest;
     const img = imgInput.value.trim();
     if(!digest || !img) return;
-    const resp = await fetch(`/dag/layer/${encodeURIComponent(digest)}?image=${encodeURIComponent(img)}`);
+    const resp = await fetch(`/dag/layer/${encodeURIComponent(img)}@${encodeURIComponent(digest)}`);
     if(resp.ok){
       const data = await resp.json();
       output.textContent = data.files.join('\n');

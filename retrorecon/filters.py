@@ -46,7 +46,7 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str, manifest_digest: st
     media_type = str(entry.get("mediaType", ""))
     digest = str(entry.get("digest", ""))
     size = int(entry.get("size", 0) or 0)
-    digest_link = f'<a href="/?image={repo}@{digest}">{escape(digest)}</a>'
+    digest_link = f'<a href="/image/{repo}@{digest}">{escape(digest)}</a>'
     size_link = (
         f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' 
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
