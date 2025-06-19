@@ -7,6 +7,16 @@ def test_parse_image_ref():
     assert repo == "repo"
     assert tag == "tag"
 
+    user, repo, tag = parse_image_ref("ghcr.io/foo/bar:latest")
+    assert user == "ghcr.io"
+    assert repo == "foo/bar"
+    assert tag == "latest"
+
+    user, repo, tag = parse_image_ref("registry.k8s.io")
+    assert user == "registry.k8s.io"
+    assert repo == ""
+    assert tag == "latest"
+
 
 def test_human_readable_size():
     assert human_readable_size(2048) == "2.0 KB"

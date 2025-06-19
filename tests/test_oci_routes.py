@@ -35,6 +35,33 @@ def test_repo_route(tmp_path, monkeypatch):
         assert b"sha256:d" in resp.data
 
 
+def test_repo_route_domain_only(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    called = {}
+
+    async def fake_fetch_json(self, url, user, repo):
+        called["url"] = url
+        called["user"] = user
+        called["repo"] = repo
+        return {"child": ["a"]}
+
+    async def fake_fetch_digest(self, url, user, repo):
+        return None
+
+    monkeypatch.setattr(oci.DockerRegistryClient, "fetch_json", fake_fetch_json)
+    monkeypatch.setattr(oci.DockerRegistryClient, "fetch_digest", fake_fetch_digest)
+
+    with app.app.test_client() as client:
+        resp = client.get("/repo/registry.k8s.io")
+        assert resp.status_code == 200
+        assert b"registry.k8s.io" in resp.data
+        assert called["user"] == "registry.k8s.io"
+        assert called["repo"] == ""
+        assert called["url"].startswith("https://registry.k8s.io/v2/")
+
+
 def test_image_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci

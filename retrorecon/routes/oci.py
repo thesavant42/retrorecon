@@ -34,14 +34,15 @@ def oci_index():
 
 async def _repo_data(repo: str) -> Dict[str, Any]:
     user, repo_name = parse_image_ref(f"{repo}:latest")[:2]
-    url = f"{registry_base_url(user, repo_name)}/tags/list"
+    base = registry_base_url(user, repo_name).rstrip("/")
+    url = f"{base}/tags/list"
     async with DockerRegistryClient() as client:
         data = await client.fetch_json(url, user, repo_name)
         tags = data.get("tags", [])
         manifests: Dict[str, Any] = {}
         for tag in tags:
             digest = await client.fetch_digest(
-                f"{registry_base_url(user, repo_name)}/manifests/{tag}", user, repo_name
+                f"{base}/manifests/{tag}", user, repo_name
             )
             if digest:
                 manifests.setdefault(digest, {"tag": []})["tag"].append(tag)
