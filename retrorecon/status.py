@@ -21,7 +21,11 @@ def pop_status() -> Optional[Tuple[str, str]]:
     with _STATUS_LOCK:
         if _STATUS_QUEUE:
             evt = _STATUS_QUEUE.popleft()
-            logger.debug("pop_status returning %s: %s (len=%d)", evt[0], evt[1], len(_STATUS_QUEUE))
+            logger.debug(
+                "pop_status returning %s: %s (len=%d)",
+                evt[0],
+                evt[1],
+                len(_STATUS_QUEUE),
+            )
             return evt
-    logger.debug("pop_status called but queue empty")
     return None
