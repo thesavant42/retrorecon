@@ -43,3 +43,8 @@ https://oci.dag.dev/layers/migueldisney/dev:TAE-254@sha256:2eb5ae5626329845e85d7
 ## Partial Tar Ranges
 
 Dag Explorer intentionally issues HTTP range requests to peek inside layer blobs. When about 32 KiB of uncompressed data before a target offset is available, the gzip stream can be repositioned to read arbitrary sections. Storing only ~1% of a layer allows directory listings without downloading the entire archive. As a result the data may appear as an "invalid tar" when viewed in full, but this is expected behavior.
+
+## Sample Registry HTML
+
+A full crawl of the Kubernetes registry on [oci.dag.dev](https://oci.dag.dev/) is available in `docs/html-container-reg-k8s.txt`. These pages show the minimal markup returned by the Go version of Dag Explorer. Retrorecon uses nearly identical HTML, but links differ slightly: the hosted service relies on query parameters like `/?repo=<name>` and `/?image=<ref>` whereas Retrorecon exposes path-based routes such as `/repo/<name>` and `/image/<ref>`. The captured HTML can be used as a reference when updating the templates or comparing behaviors.
+
