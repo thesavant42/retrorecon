@@ -679,6 +679,23 @@
   margin-bottom: 0.7em;
   box-shadow: 0 1px 8px var(--fg-color);
 }
+.retrorecon-root .fs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5em;
+}
+.retrorecon-root .fs-table th,
+.retrorecon-root .fs-table td {
+  padding: 0.2em 0.4em;
+  text-align: left;
+}
+.retrorecon-root .fs-table td.text-right {
+  text-align: right;
+}
+.retrorecon-root .text-mono {
+  font-family: var(--font-main);
+  white-space: nowrap;
+}
 
 /* Table header style this seems wrong to me JB*/
 .retrorecon-root .url-table thead {

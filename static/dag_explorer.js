@@ -7,6 +7,7 @@ function initDagExplorer(){
   const tagsBtn = document.getElementById('dag-tags-btn');
   const closeBtn = document.getElementById('dag-close-btn');
   const output = document.getElementById('dag-output');
+  const pathDiv = document.getElementById('dag-path');
   const manifestDiv = document.getElementById('dag-manifest');
 
   const SPEC_LINKS = {
@@ -98,6 +99,74 @@ function initDagExplorer(){
     return repo;
   }
 
+  function parseLsLine(line){
+    const m = line.match(/^(\S+)\s+(\S+)\s+(\d+)\s+(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+(.+)$/);
+    if(!m) return null;
+    const path = m[6];
+    const lastSep = path.lastIndexOf('/') + 1;
+    const dir = lastSep > 0 ? path.slice(0, lastSep) : '';
+    const name = lastSep > 0 ? path.slice(lastSep) : path;
+    return {
+      perms: m[1],
+      owner: m[2],
+      size: Number(m[3]),
+      mtime: m[4] + ' ' + m[5],
+      path,
+      dir,
+      name,
+      isDir: m[1].startsWith('d') || path.endsWith('/')
+    };
+  }
+
+  function renderPath(path){
+    const parts = path ? path.split('/').filter(Boolean) : [];
+    let acc = '';
+    let html = '<a href="#" class="dag-path" data-path="">/</a>';
+    for(const p of parts){
+      acc += p + '/';
+      html += ' / <a href="#" class="dag-path" data-path="' + acc + '">' + escapeHtml(p) + '</a>';
+    }
+    pathDiv.innerHTML = html;
+  }
+
+  function renderTable(all, path, image, digest){
+    const rows = [];
+    for(const f of all){
+      if(f.dir !== path) continue;
+      const sizeHR = humanReadableSize(f.size);
+      let nameHtml;
+      if(f.isDir){
+        const newPath = (path ? path : '') + f.name + '/';
+        nameHtml = '<a href="#" class="dag-dir" data-path="' + newPath + '">' + escapeHtml(f.name) + '/</a>';
+      }else{
+        const url = '/dag/fs/' + encodeURIComponent(image) + '@' + encodeURIComponent(digest) + '/' + encodeURIComponent(f.path);
+        nameHtml = '<a class="mt" href="' + url + '">' + escapeHtml(f.name) + '</a>';
+      }
+      rows.push('<tr>' +
+        '<td class="text-mono">' + escapeHtml(f.perms) + '</td>' +
+        '<td class="text-mono">' + escapeHtml(f.owner) + '</td>' +
+        '<td class="text-right" title="' + escapeHtml(sizeHR) + '">' + f.size + '</td>' +
+        '<td>' + escapeHtml(f.mtime) + '</td>' +
+        '<td>' + nameHtml + '</td>' +
+        '</tr>');
+    }
+    rows.sort((a,b)=>{
+      const ra = a.toLowerCase();
+      const rb = b.toLowerCase();
+      if(ra < rb) return -1;
+      if(ra > rb) return 1;
+      return 0;
+    });
+    output.innerHTML = '<table class="fs-table"><thead><tr>'+
+      '<th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th>Name</th></tr></thead><tbody>'+
+      rows.join('') + '</tbody></table>';
+  }
+
+  let allFiles = [];
+  let currentPath = '';
+  let currentImage = '';
+  let currentDigest = '';
+
   function renderManifest(manifest, image){
     const repo = parseRepo(image);
     return renderObj(manifest, repo);
@@ -135,9 +204,34 @@ function initDagExplorer(){
     const resp = await fetch(`/dag/layer/${encodeURIComponent(img)}@${encodeURIComponent(digest)}`);
     if(resp.ok){
       const data = await resp.json();
-      output.textContent = data.files.join('\n');
+      allFiles = data.files.map(parseLsLine).filter(Boolean);
+      currentPath = '';
+      currentImage = img;
+      currentDigest = digest;
+      renderPath(currentPath);
+      renderTable(allFiles, currentPath, currentImage, currentDigest);
     }else{
       output.textContent = await resp.text();
+    }
+  });
+
+  output.addEventListener('click', ev => {
+    const dir = ev.target.closest('.dag-dir');
+    if(dir){
+      ev.preventDefault();
+      currentPath = dir.dataset.path;
+      renderPath(currentPath);
+      renderTable(allFiles, currentPath, currentImage, currentDigest);
+    }
+  });
+
+  pathDiv.addEventListener('click', ev => {
+    const p = ev.target.closest('.dag-path');
+    if(p){
+      ev.preventDefault();
+      currentPath = p.dataset.path;
+      renderPath(currentPath);
+      renderTable(allFiles, currentPath, currentImage, currentDigest);
     }
   });
   closeBtn.addEventListener('click', () => {
