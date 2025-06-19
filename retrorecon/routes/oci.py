@@ -36,6 +36,24 @@ async def _repo_data(repo: str) -> Dict[str, Any]:
     user, repo_name = parse_image_ref(f"{repo}:latest")[:2]
     base = registry_base_url(user, repo_name).rstrip("/")
     url = f"{base}/tags/list"
+
+    # ``registry.k8s.io`` and similar public registries allow anonymous
+    # access to ``/v2/tags/list`` which returns a list of child repositories.
+    # ``DockerRegistryClient`` is hardcoded to use Docker Hub authentication
+    # and fails for these registries. If ``repo_name`` is empty we perform a
+    # simple anonymous request instead.
+    if repo_name == "":
+        async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+            async with sess.get(url) as resp:
+                resp.raise_for_status()
+                data = await resp.json()
+        return {
+            "name": repo,
+            "child": data.get("child", []),
+            "tags": data.get("tags", []),
+            "manifest": data.get("manifest", {}),
+        }
+
     async with DockerRegistryClient() as client:
         data = await client.fetch_json(url, user, repo_name)
         tags = data.get("tags", [])
@@ -46,7 +64,12 @@ async def _repo_data(repo: str) -> Dict[str, Any]:
             )
             if digest:
                 manifests.setdefault(digest, {"tag": []})["tag"].append(tag)
-        return {"name": f"{repo}", "child": [], "tags": tags, "manifest": manifests}
+        return {
+            "name": repo,
+            "child": data.get("child", []),
+            "tags": tags,
+            "manifest": manifests,
+        }
 
 
 @bp.route("/repo/<path:repo>", methods=["GET"])
@@ -68,7 +91,14 @@ def repo_view(repo: str):
             render_template("oci_error.html", repo=repo, message="server error"),
             500,
         )
-    return render_template("oci_repo.html", repo=repo, data=data)
+    user, repo_name = parse_image_ref(f"{repo}:latest")[:2]
+    data_url = f"{registry_base_url(user, repo_name).rstrip('/')}/tags/list"
+    return render_template(
+        "oci_repo.html",
+        repo=repo,
+        data=data,
+        data_url=data_url,
+    )
 
 
 async def _image_data(image: str) -> Dict[str, Any]:

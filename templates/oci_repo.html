@@ -1,8 +1,22 @@
 <!-- File: templates/oci_repo.html -->
 {% extends 'oci_base.html' %}
 {% block body %}
-<h1><a class="mt" href="/">Registry Explorer</a></h1>
+<h1><a class="top" href="/"><img class="crane" src="/favicon.svg"/> <span class="link">Registry Explorer</span></a></h1>
 <h2>{{ repo }}</h2>
-<h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/gcrane/README.md">gcrane</a> ls --json {{ repo }} | jq .</h4>
-<pre>{{ data|tojson(indent=2) }}</pre>
+<h4><span style="padding:0;" class="noselect">$ </span>curl -sL "{{ data_url }}" | jq .</h4>
+
+<div>{
+<div class="indent">
+  <div>"name": &#34;{{ data.name }}&#34;,</div>
+  <div>"child": [</div>
+  <div class="indent">
+  {% for child in data.child %}
+    <div>"<a href="/?repo={{ repo|urlencode }}%2F{{ child|urlencode }}">{{ child }}</a>",</div>
+  {% endfor %}
+  </div>
+  <div>],</div>
+  <div>"tags": {{ data.tags|tojson }},</div>
+  <div>"manifest": {{ data.manifest|tojson }}</div>
+</div>
+}</div>
 {% endblock %}
