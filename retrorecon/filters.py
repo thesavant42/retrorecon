@@ -121,3 +121,9 @@ def manifest_links(manifest: Dict[str, Any], image: str, digest: str = "") -> Ma
     html = _render_obj(manifest, repo_full, digest, image)
     return Markup(html)
 
+
+def oci_obj(obj: Any, repo: str) -> Markup:
+    """Return HTML representation for arbitrary OCI JSON structures."""
+    html = _render_obj(obj, repo)
+    return Markup(html)
+
