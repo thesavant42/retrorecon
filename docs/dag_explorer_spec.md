@@ -19,25 +19,25 @@ You can explore the same image using the local Dag Explorer or the hosted versio
 Local server example:
 
 ```
-http://127.0.0.1:5000/image/migueldisney/dev:TAE-254
+http://127.0.0.1:5000/image/ubuntu/dev:TAE-254
 ```
 
 This page links each layer to:
 
 ```
-http://127.0.0.1:5000/layers/migueldisney/dev:TAE-254@sha256:2eb5ae5626329845e85d70a53694a99165471ae7970435ed4d4bad24933d963c/
+http://127.0.0.1:5000/layers/ubuntu/dev:TAE-254@sha256:2eb5ae5626329845e85d70a53694a99165471ae7970435ed4d4bad24933d963c/
 ```
 
 Hosted equivalent:
 
 ```
-https://oci.dag.dev/?image=migueldisney/dev:TAE-254
+https://oci.dag.dev/?image=ubuntu/dev:TAE-254
 ```
 
 Layers open to:
 
 ```
-https://oci.dag.dev/layers/migueldisney/dev:TAE-254@sha256:2eb5ae5626329845e85d70a53694a99165471ae7970435ed4d4bad24933d963c/
+https://oci.dag.dev/layers/ubuntu/dev:TAE-254@sha256:2eb5ae5626329845e85d70a53694a99165471ae7970435ed4d4bad24933d963c/
 ```
 
 ## Partial Tar Ranges
