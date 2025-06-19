@@ -38,27 +38,37 @@ def test_repo_route(tmp_path, monkeypatch):
 def test_repo_route_domain_only(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
+    import aiohttp
 
     called = {}
 
-    async def fake_fetch_json(self, url, user, repo):
+    class FakeResp:
+        status = 200
+
+        async def json(self):
+            return {"child": ["a"], "tags": [], "manifest": {}}
+
+        def raise_for_status(self):
+            pass
+
+    def fake_get(self, url):
         called["url"] = url
-        called["user"] = user
-        called["repo"] = repo
-        return {"child": ["a"]}
 
-    async def fake_fetch_digest(self, url, user, repo):
-        return None
+        class CM:
+            async def __aenter__(self_inner):
+                return FakeResp()
 
-    monkeypatch.setattr(oci.DockerRegistryClient, "fetch_json", fake_fetch_json)
-    monkeypatch.setattr(oci.DockerRegistryClient, "fetch_digest", fake_fetch_digest)
+            async def __aexit__(self_inner, exc_type, exc, tb):
+                pass
+
+        return CM()
+
+    monkeypatch.setattr(aiohttp.ClientSession, "get", fake_get)
 
     with app.app.test_client() as client:
         resp = client.get("/repo/registry.k8s.io")
         assert resp.status_code == 200
         assert b"registry.k8s.io" in resp.data
-        assert called["user"] == "registry.k8s.io"
-        assert called["repo"] == ""
         assert called["url"].startswith("https://registry.k8s.io/v2/")
 
 

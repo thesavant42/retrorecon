@@ -4,6 +4,9 @@
 <title>{{ title or 'Registry Explorer' }}</title>
 <link rel="icon" href="/favicon.svg">
 <style>
+  :root {
+    color-scheme: light dark;
+  }
   .retrorecon-root {
     font-family: monospace;
     width: fit-content;
@@ -15,6 +18,9 @@
   .retrorecon-root .indent { margin-left: 2em; display: block; }
   .retrorecon-root .mt { color: inherit; text-decoration: inherit; }
   .retrorecon-root .mt:hover { text-decoration: underline; }
+  .retrorecon-root .link { position: relative; bottom: .125em; }
+  .retrorecon-root .crane { height: 1em; width: 1em; }
+  .retrorecon-root .top { color: inherit; text-decoration: inherit; }
   .retrorecon-root .noselect {
     user-select: none;
     -webkit-user-select: none;
