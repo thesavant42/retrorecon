@@ -99,3 +99,20 @@ def test_subdomain_virustotal(tmp_path, monkeypatch):
         assert set(subs) == {'a.example.com', 'b.example.com'}
         assert all(r['source'] == 'virustotal' for r in data)
 
+
+def test_export_and_mark_cdx(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('exp')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.get('/export_subdomains?domain=example.com&format=csv')
+        assert resp.status_code == 200
+        assert b'subdomain,domain,source,cdx_indexed' in resp.data
+        resp = client.post('/mark_subdomain_cdx', data={'subdomain': 'a.example.com'})
+        assert resp.status_code == 204
+    with app.app.app_context():
+        rows = subdomain_utils.list_subdomains('example.com')
+        assert rows[0]['cdx_indexed'] is True
+

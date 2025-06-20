@@ -49,6 +49,10 @@ def ensure_schema() -> None:
             cols = [row[1] for row in cur.fetchall()]
             if 'thumbnail_path' not in cols:
                 conn.execute("ALTER TABLE sitezips ADD COLUMN thumbnail_path TEXT")
+            cur = conn.execute("PRAGMA table_info(domains)")
+            cols = [row[1] for row in cur.fetchall()]
+            if 'cdx_indexed' not in cols:
+                conn.execute("ALTER TABLE domains ADD COLUMN cdx_indexed INTEGER DEFAULT 0")
             conn.commit()
         finally:
             conn.close()
