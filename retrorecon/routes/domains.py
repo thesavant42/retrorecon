@@ -75,3 +75,15 @@ def mark_subdomain_cdx():
         return ('', 400)
     subdomain_utils.mark_cdxed(subdomain)
     return ('', 204)
+
+
+@bp.route('/delete_subdomain', methods=['POST'])
+def delete_subdomain_route():
+    if not app._db_loaded():
+        return ('', 400)
+    domain = request.form.get('domain', '').strip().lower()
+    subdomain = request.form.get('subdomain', '').strip().lower()
+    if not domain or not subdomain:
+        return ('', 400)
+    app.delete_subdomain(domain, subdomain)
+    return ('', 204)
