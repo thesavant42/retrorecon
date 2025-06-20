@@ -1,6 +1,6 @@
 import logging
 import requests
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from database import execute_db, query_db
 
@@ -84,3 +84,27 @@ def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
             }
         )
     return results
+
+
+def scrape_from_urls(target_root: Optional[str] = None) -> int:
+    """Insert subdomains found in ``urls``. Return number inserted."""
+    if target_root:
+        rows = query_db(
+            "SELECT DISTINCT domain FROM urls WHERE domain = ? OR domain LIKE ?",
+            [target_root, f'%.{target_root}'],
+        )
+    else:
+        rows = query_db("SELECT DISTINCT domain FROM urls")
+
+    count = 0
+    for r in rows:
+        host = (r["domain"] or "").lower()
+        if not host:
+            continue
+        if target_root:
+            root = target_root
+        else:
+            parts = host.split(".")
+            root = ".".join(parts[-2:]) if len(parts) >= 2 else host
+        count += insert_records(root, [host], "scrape")
+    return count

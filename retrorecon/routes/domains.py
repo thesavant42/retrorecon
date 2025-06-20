@@ -4,6 +4,7 @@ import re
 from flask import Blueprint, request, jsonify, render_template, Response
 import app
 from retrorecon import subdomain_utils
+from typing import Optional
 
 bp = Blueprint('domains', __name__)
 
@@ -75,3 +76,15 @@ def mark_subdomain_cdx():
         return ('', 400)
     subdomain_utils.mark_cdxed(subdomain)
     return ('', 204)
+
+
+@bp.route('/scrape_subdomains', methods=['POST'])
+def scrape_subdomains():
+    """Scrape existing URL records and insert any discovered subdomains."""
+    if not app._db_loaded():
+        return ('', 400)
+    domain = request.form.get('domain', '').strip().lower()
+    if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
+        return ('Invalid domain', 400)
+    inserted = subdomain_utils.scrape_from_urls(domain or None)
+    return jsonify({'inserted': inserted})
