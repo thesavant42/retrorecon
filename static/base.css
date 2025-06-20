@@ -591,7 +591,8 @@ body {
   box-shadow: 0 1px 6px var(--fg-color);
   padding: 0.5em;
   flex: 1 1 auto;
-  min-height: 0;
+  /* Maintain visible frame even when no URLs are listed */
+  min-height: 810px;
   overflow-y: auto;
 }
 
