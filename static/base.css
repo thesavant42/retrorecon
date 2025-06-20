@@ -85,6 +85,10 @@ body {
 .retrorecon-root .btn:hover {
   opacity: 0.85;
 }
+.retrorecon-root .btn--small {
+  padding: 1px 6px;
+  font-size: 0.75em;
+}
 
 .retrorecon-root .form-input,
 .retrorecon-root .form-file,

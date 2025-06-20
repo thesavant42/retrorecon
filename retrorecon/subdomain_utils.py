@@ -71,23 +71,55 @@ def delete_record(root_domain: str, subdomain: str) -> None:
 
 
 def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
-    """Return all subdomains for ``root_domain``."""
+    """Return all subdomains for ``root_domain`` aggregated by source."""
     rows = query_db(
         """
-        SELECT d.subdomain, d.root_domain as domain, d.source, d.cdx_indexed,
+        SELECT d.subdomain, d.root_domain as domain,
+               GROUP_CONCAT(DISTINCT d.source) AS sources,
+               MAX(d.cdx_indexed) AS cdxed,
                EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
-        FROM domains d WHERE d.root_domain = ? ORDER BY d.subdomain
+        FROM domains d
+        WHERE d.root_domain = ?
+        GROUP BY d.subdomain, d.root_domain
+        ORDER BY d.subdomain
         """,
         [root_domain],
     )
     results = []
     for r in rows:
-        indexed = r["cdx_indexed"] or r["in_urls"]
+        indexed = r["cdxed"] or r["in_urls"]
         results.append(
             {
                 "subdomain": r["subdomain"],
                 "domain": r["domain"],
-                "source": r["source"],
+                "source": r["sources"],
+                "cdx_indexed": bool(indexed),
+            }
+        )
+    return results
+
+
+def list_all_subdomains() -> List[Dict[str, str]]:
+    """Return all subdomain records aggregated across all root domains."""
+    rows = query_db(
+        """
+        SELECT d.subdomain, d.root_domain as domain,
+               GROUP_CONCAT(DISTINCT d.source) AS sources,
+               MAX(d.cdx_indexed) AS cdxed,
+               EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
+        FROM domains d
+        GROUP BY d.subdomain, d.root_domain
+        ORDER BY d.subdomain
+        """
+    )
+    results = []
+    for r in rows:
+        indexed = r["cdxed"] or r["in_urls"]
+        results.append(
+            {
+                "subdomain": r["subdomain"],
+                "domain": r["domain"],
+                "source": r["sources"],
                 "cdx_indexed": bool(indexed),
             }
         )

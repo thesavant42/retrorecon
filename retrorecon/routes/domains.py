@@ -10,7 +10,10 @@ bp = Blueprint('domains', __name__)
 
 @bp.route('/subdomonster', methods=['GET'])
 def subdomonster_page():
-    return render_template('subdomonster.html')
+    data = []
+    if app._db_loaded():
+        data = subdomain_utils.list_all_subdomains()
+    return render_template('subdomonster.html', initial_data=data)
 
 
 @bp.route('/tools/subdomonster', methods=['GET'])
