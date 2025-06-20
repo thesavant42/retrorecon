@@ -48,6 +48,7 @@ from retrorecon import (
     search_utils,
     screenshot_utils,
     sitezip_utils,
+    subdomain_utils,
     status as status_mod,
 )
 from retrorecon.filters import manifest_links, oci_obj
@@ -254,6 +255,11 @@ def delete_sitezips(ids: List[int]) -> None:
 
 def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -> Tuple[bytes, bytes]:
     return sitezip_utils.capture_site(url, user_agent, spoof_referrer, executablePath)
+
+
+def delete_subdomain(root_domain: str, subdomain: str) -> None:
+    """Remove a subdomain entry from the database."""
+    subdomain_utils.delete_record(root_domain, subdomain)
 
 
 @app.route('/', methods=['GET'])
