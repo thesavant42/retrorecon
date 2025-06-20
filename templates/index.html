@@ -222,10 +222,8 @@
   </table>
 
   <!-- Table D : Results -->
-  <table id="layout-d" class="w-100 mt-1">
-    <tr>
-      <td>
-        <div class="results-grid results-frame">
+  <div id="layout-d" class="w-100 mt-1">
+    <div class="results-grid results-frame">
 
           {% if urls %}
           <form method="POST" action="/bulk_action" id="bulk-form">
@@ -312,9 +310,6 @@
             <div class="m-2em text-center results-grid__no-results">No URLs found for this query.</div>
           {% endif %}
         </div>
-      </td>
-      </tr>
-  </table>
 
   <div class="bottom-container text-center mt-1">
     {{ render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) }}
