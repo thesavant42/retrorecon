@@ -77,6 +77,7 @@ def mark_subdomain_cdx():
     return ('', 204)
 
 
+
 @bp.route('/scrape_subdomains', methods=['POST'])
 def scrape_subdomains():
     """Scrape existing URL records and insert any discovered subdomains."""
@@ -87,3 +88,14 @@ def scrape_subdomains():
         return ('Invalid domain', 400)
     inserted = subdomain_utils.scrape_from_urls(domain or None)
     return jsonify({'inserted': inserted})
+
+@bp.route('/delete_subdomain', methods=['POST'])
+def delete_subdomain_route():
+    if not app._db_loaded():
+        return ('', 400)
+    domain = request.form.get('domain', '').strip().lower()
+    subdomain = request.form.get('subdomain', '').strip().lower()
+    if not domain or not subdomain:
+        return ('', 400)
+    app.delete_subdomain(domain, subdomain)
+    return ('', 204)

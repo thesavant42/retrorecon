@@ -88,7 +88,7 @@ function initSubdomonster(){
       '<th class="no-resize">Send</th>'+
       '</tr></thead><tbody>';
     for(const r of sorted){
-      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn send-btn">Send!</button></td></tr>`;
+      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn send-btn">Send!</button> <button type="button" class="btn delete-btn">Delete</button></td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
@@ -122,6 +122,23 @@ function initSubdomonster(){
             } else {
               alert('CDX fetch failed');
             }
+          }
+        }
+      });
+    });
+    table.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+        const tr = btn.closest('tr');
+        if(tr && confirm('Delete this subdomain?')){
+          const sub = tr.dataset.sub;
+          const domain = tr.dataset.domain;
+          const resp = await fetch('/delete_subdomain', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain, subdomain: sub})});
+          if(resp.ok){
+            tableData = tableData.filter(r => r.subdomain !== sub);
+            render();
+          } else {
+            alert('Delete failed');
           }
         }
       });

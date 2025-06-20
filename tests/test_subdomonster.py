@@ -117,6 +117,7 @@ def test_export_and_mark_cdx(tmp_path, monkeypatch):
         assert rows[0]['cdx_indexed'] is True
 
 
+
 def test_scrape_subdomains(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.app_context():
@@ -139,4 +140,17 @@ def test_scrape_subdomains(tmp_path, monkeypatch):
         rows = subdomain_utils.list_subdomains('example.com')
         subs = [r['subdomain'] for r in rows]
         assert 'a.example.com' in subs
+
+def test_delete_subdomain(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('del')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['bad.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.post('/delete_subdomain', data={'domain': 'example.com', 'subdomain': 'bad.example.com'})
+        assert resp.status_code == 204
+    with app.app.app_context():
+        rows = subdomain_utils.list_subdomains('example.com')
+        assert rows == []
 
