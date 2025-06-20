@@ -62,6 +62,14 @@ def mark_cdxed(subdomain: str) -> None:
     )
 
 
+def delete_record(root_domain: str, subdomain: str) -> None:
+    """Remove ``subdomain`` for ``root_domain`` from the DB."""
+    execute_db(
+        "DELETE FROM domains WHERE root_domain = ? AND subdomain = ?",
+        [root_domain, subdomain],
+    )
+
+
 def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
     """Return all subdomains for ``root_domain``."""
     rows = query_db(

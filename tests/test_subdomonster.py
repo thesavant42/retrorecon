@@ -131,3 +131,17 @@ def test_subdomain_multiple_domains(tmp_path, monkeypatch):
     assert subs_one == ['shared.one']
     assert subs_two == ['shared.one']
 
+def test_delete_subdomain(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('del')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['bad.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.post('/delete_subdomain', data={'domain': 'example.com', 'subdomain': 'bad.example.com'})
+        assert resp.status_code == 204
+    with app.app.app_context():
+        rows = subdomain_utils.list_subdomains('example.com')
+        assert rows == []
+
+
