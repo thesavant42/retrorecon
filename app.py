@@ -28,7 +28,8 @@ from flask import (
     Response,
 )
 
-import retrorecon.routes.oci as oci  # for direct repo/image views
+# defer importing the OCI blueprint to avoid circular imports
+oci = None
 from markupsafe import escape
 from config import Config
 from database import (
@@ -270,9 +271,11 @@ def index() -> str:
     repo_param = request.args.get("repo")
     image_param = request.args.get("image")
     if repo_param:
-        return oci.repo_view(repo_param)
+        from retrorecon.routes.oci import repo_view
+        return repo_view(repo_param)
     if image_param:
-        return oci.image_view(image_param)
+        from retrorecon.routes.oci import image_view
+        return image_view(image_param)
 
     q = request.args.get('q', '').strip()
     select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
