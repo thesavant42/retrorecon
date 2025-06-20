@@ -381,3 +381,227 @@ curl -O \
   "http://localhost:5000/dag/fs/sha256:1234/etc/os-release?image=library/ubuntu:latest"
 ```
 
+
+### `POST /delete_jwt_cookies`
+Delete stored JWT cookie entries.
+
+Parameter:
+- `ids` – comma-separated IDs.
+
+```
+curl -X POST -d "ids=1,2" http://localhost:5000/delete_jwt_cookies
+```
+
+### `POST /update_jwt_cookie`
+Edit notes for a saved JWT record.
+
+Parameters:
+- `id` – record ID.
+- `notes` – text notes.
+
+```
+curl -X POST -d "id=1" -d "notes=ok" http://localhost:5000/update_jwt_cookie
+```
+
+### `GET /export_jwt_cookies`
+Export decoded JWT history as JSON.
+
+```
+curl http://localhost:5000/export_jwt_cookies
+```
+
+
+### `GET /screenshotter`
+Serve the screenshot overlay.
+
+```
+curl http://localhost:5000/screenshotter
+```
+
+### `GET /tools/screenshotter`
+Full-page screenshot overlay.
+
+```
+curl http://localhost:5000/tools/screenshotter
+```
+
+### `POST /tools/screenshot`
+Capture a screenshot and return JSON with the ID.
+
+Parameters:
+- `url` – target URL.
+- `user_agent` – optional agent string.
+- `spoof_referrer` – `1` to spoof the referrer header.
+
+```
+curl -X POST -d "url=https://example.com" http://localhost:5000/tools/screenshot
+```
+
+### `GET /screenshots`
+List captured screenshots as JSON.
+
+```
+curl http://localhost:5000/screenshots
+```
+
+### `POST /delete_screenshots`
+Delete screenshots by ID.
+
+```
+curl -X POST -d "ids=1,2" http://localhost:5000/delete_screenshots
+```
+
+
+### `GET /subdomonster`
+Serve the Subdomonster overlay.
+
+```
+curl http://localhost:5000/subdomonster
+```
+
+### `GET /tools/subdomonster`
+Full-page subdomain overlay.
+
+```
+curl http://localhost:5000/tools/subdomonster
+```
+
+### `POST /subdomains`
+Fetch subdomains from crt.sh or VirusTotal.
+
+Parameters:
+- `domain` – target domain.
+- `source` – `crtsh` or `virustotal`.
+- `api_key` – required for VirusTotal.
+
+```
+curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
+```
+
+### `GET /export_subdomains`
+Export subdomains for a domain.
+
+```
+curl "http://localhost:5000/export_subdomains?domain=example.com"
+```
+
+### `POST /mark_subdomain_cdx`
+Mark a subdomain as indexed by CDX.
+
+```
+curl -X POST -d "subdomain=dev.example.com" http://localhost:5000/mark_subdomain_cdx
+```
+
+### `POST /scrape_subdomains`
+Scrape discovered subdomains from existing URLs.
+
+```
+curl -X POST -d "domain=example.com" http://localhost:5000/scrape_subdomains
+```
+
+### `POST /delete_subdomain`
+Delete a subdomain entry.
+
+```
+curl -X POST -d "domain=example.com" -d "subdomain=dev" http://localhost:5000/delete_subdomain
+```
+
+
+### `POST /load_saved_db`
+Switch to a database file stored under `db/`.
+
+```
+curl -X POST -d "db_file=wabax.db" http://localhost:5000/load_saved_db
+```
+
+### `POST /set_items_per_page`
+Change how many results display on the search page.
+
+```
+curl -X POST -d "count=20" http://localhost:5000/set_items_per_page
+```
+
+### `GET /docker_layers`
+Return layer and manifest details for an image as JSON.
+
+```
+curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/docker_layers
+```
+
+### `GET /download_layer`
+Download a compressed layer blob.
+
+```
+curl -L "http://localhost:5000/download_layer?image=ubuntu:latest&digest=sha256:1234" -o layer.tar.gz
+```
+
+### `GET /registry_viewer`
+Serve the Registry Explorer overlay.
+
+```
+curl http://localhost:5000/registry_viewer
+```
+
+### `GET /tools/registry_viewer`
+Full-page Registry Explorer.
+
+```
+curl http://localhost:5000/tools/registry_viewer
+```
+
+### `GET /registry_explorer`
+Query manifest information for an image.
+
+```
+curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_explorer
+```
+
+### `GET /dag_explorer`
+Serve the Dag Explorer overlay.
+
+```
+curl http://localhost:5000/dag_explorer
+```
+
+### `GET /tools/dag_explorer`
+Full-page Dag Explorer overlay.
+
+```
+curl http://localhost:5000/tools/dag_explorer
+```
+
+### `GET /dag/layer/<image>@<digest>`
+List files in a layer.
+
+```
+curl http://localhost:5000/dag/layer/library/ubuntu@sha256:abcd
+```
+
+### `GET /repo/<repo>`
+View tags for a repository.
+
+```
+curl http://localhost:5000/repo/library/ubuntu
+```
+
+### `GET /image/<ref>`
+Render manifest details for an image reference.
+
+```
+curl http://localhost:5000/image/library/ubuntu:latest
+```
+
+### `GET /image/<repo>@<digest>`
+Render details for an image digest.
+
+```
+curl http://localhost:5000/image/library/ubuntu@sha256:abcd
+```
+
+### `GET /size/<repo>@<digest>`
+Return the uncompressed size of a layer.
+
+```
+curl http://localhost:5000/size/library/ubuntu@sha256:abcd
+```
+
