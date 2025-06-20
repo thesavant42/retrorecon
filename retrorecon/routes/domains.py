@@ -1,5 +1,7 @@
+import io
+import csv
 import re
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, Response
 import app
 from retrorecon import subdomain_utils
 
@@ -38,3 +40,38 @@ def subdomains_route():
         return (f'Error fetching: {e}', 500)
     subdomain_utils.insert_records(domain, subs, source)
     return jsonify(subdomain_utils.list_subdomains(domain))
+
+
+@bp.route('/export_subdomains', methods=['GET'])
+def export_subdomains():
+    if not app._db_loaded():
+        return jsonify([])
+    domain = request.args.get('domain', '').strip().lower()
+    if not domain:
+        return jsonify([])
+    rows = subdomain_utils.list_subdomains(domain)
+    fmt = request.args.get('format', 'json')
+    if fmt == 'csv':
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['subdomain', 'domain', 'source', 'cdx_indexed'])
+        for r in rows:
+            writer.writerow([r['subdomain'], r['domain'], r['source'], r['cdx_indexed']])
+        return Response(output.getvalue(), mimetype='text/csv')
+    if fmt == 'md':
+        lines = ['| subdomain | domain | source | cdx_indexed |', '|---|---|---|---|']
+        for r in rows:
+            lines.append(f"| {r['subdomain']} | {r['domain']} | {r['source']} | {int(r['cdx_indexed'])} |")
+        return Response('\n'.join(lines), mimetype='text/markdown')
+    return jsonify(rows)
+
+
+@bp.route('/mark_subdomain_cdx', methods=['POST'])
+def mark_subdomain_cdx():
+    if not app._db_loaded():
+        return ('', 400)
+    subdomain = request.form.get('subdomain', '').strip().lower()
+    if not subdomain:
+        return ('', 400)
+    subdomain_utils.mark_cdxed(subdomain)
+    return ('', 204)

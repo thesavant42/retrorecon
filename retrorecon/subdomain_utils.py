@@ -54,13 +54,33 @@ def insert_records(root_domain: str, subs: List[str], source: str = "crtsh") -> 
     return count
 
 
+def mark_cdxed(subdomain: str) -> None:
+    """Mark a subdomain as indexed by CDX."""
+    execute_db(
+        "UPDATE domains SET cdx_indexed = 1 WHERE subdomain = ?",
+        [subdomain],
+    )
+
+
 def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
     """Return all subdomains for ``root_domain``."""
     rows = query_db(
-        "SELECT subdomain, root_domain as domain, source FROM domains WHERE root_domain = ? ORDER BY subdomain",
+        """
+        SELECT d.subdomain, d.root_domain as domain, d.source, d.cdx_indexed,
+               EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
+        FROM domains d WHERE d.root_domain = ? ORDER BY d.subdomain
+        """,
         [root_domain],
     )
-    return [
-        {"subdomain": r["subdomain"], "domain": r["domain"], "source": r["source"]}
-        for r in rows
-    ]
+    results = []
+    for r in rows:
+        indexed = r["cdx_indexed"] or r["in_urls"]
+        results.append(
+            {
+                "subdomain": r["subdomain"],
+                "domain": r["domain"],
+                "source": r["source"],
+                "cdx_indexed": bool(indexed),
+            }
+        )
+    return results

@@ -6,6 +6,8 @@ function initSubdomonster(){
   const fetchBtn = document.getElementById('subdomonster-fetch-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const closeBtn = document.getElementById('subdomonster-close-btn');
+  const exportCsvBtn = document.getElementById('subdomonster-export-csv-btn');
+  const exportMdBtn = document.getElementById('subdomonster-export-md-btn');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let tableData = [];
@@ -76,14 +78,15 @@ function initSubdomonster(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/>'+
+      '<col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
+      '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
       '</tr></thead><tbody>';
     for(const r of sorted){
-      html += `<tr><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td></tr>`;
+      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
@@ -102,6 +105,23 @@ function initSubdomonster(){
       });
     });
     makeResizable(table, 'subdomonster-col-widths');
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      tr.addEventListener('click', async () => {
+        if(tr.dataset.cdx === '0'){
+          if(confirm('Send this subdomain to the CDX API?')){
+            const sub = tr.dataset.sub;
+            const resp = await fetch('/fetch_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain: sub})});
+            if(resp.ok){
+              await fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
+              tr.dataset.cdx = '1';
+              tr.querySelector('td:last-child').textContent = 'yes';
+            } else {
+              alert('CDX fetch failed');
+            }
+          }
+        }
+      });
+    });
   }
 
   fetchBtn.addEventListener('click', async () => {
@@ -117,6 +137,41 @@ function initSubdomonster(){
       render();
     } else {
       alert(await resp.text());
+    }
+  });
+
+  exportCsvBtn.addEventListener('click', async () => {
+    const domain = domainInput.value.trim();
+    if(!domain) return;
+    const resp = await fetch('/export_subdomains?format=csv&domain=' + encodeURIComponent(domain));
+    if(resp.ok){
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = domain + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      alert('Export failed');
+    }
+  });
+
+  exportMdBtn.addEventListener('click', async () => {
+    const domain = domainInput.value.trim();
+    if(!domain) return;
+    const resp = await fetch('/export_subdomains?format=md&domain=' + encodeURIComponent(domain));
+    if(resp.ok){
+      const text = await resp.text();
+      const blob = new Blob([text], {type:'text/markdown'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = domain + '.md';
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      alert('Export failed');
     }
   });
 

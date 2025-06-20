@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS domains (
     root_domain TEXT NOT NULL,
     subdomain TEXT NOT NULL,
     source TEXT NOT NULL,
+    cdx_indexed INTEGER DEFAULT 0,
     fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(subdomain, source)
 );
