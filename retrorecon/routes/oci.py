@@ -465,8 +465,9 @@ def layer_dir(image: str, subpath: str):
             404,
         )
     digest = layers[0]["digest"]
-    repo = image.split(":")[0]
-    return fs_view(repo, digest, subpath)
+    user, repo, _ = parse_image_ref(image)
+    repo_full = f"{user}/{repo}"
+    return fs_view(repo_full, digest, subpath)
 
 
 @bp.route("/layers/<path:image>@<digest>/", defaults={"subpath": ""}, methods=["GET"])
