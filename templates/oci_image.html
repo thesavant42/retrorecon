@@ -1,6 +1,7 @@
 {% extends 'oci_base.html' %}
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
+<button type="button" class="btn" id="image-close-btn">Close</button>
 <h2>{{ display_image or image }}</h2>
 <input type="radio" name="tabs" id="tab1" checked>
 <label for="tab1">HTTP</label>
@@ -18,4 +19,5 @@
 
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ display_image or image }} | jq .</h4>
 <pre class="manifest-json">{{ data.manifest|manifest_links(image, data.descriptor.digest) }}</pre>
+<script src="{{ url_for('static', filename='oci_image.js') }}"></script>
 {% endblock %}
