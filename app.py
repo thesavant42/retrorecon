@@ -643,34 +643,22 @@ def bulk_action() -> Response:
     if select_all_matching:
         q = request.form.get('q', '').strip()
 
-        where_clauses = []
-        params = []
+        where_sql = ""
+        params: List[str] = []
         if q:
-            url_match = re.match(r'^url:"?(.*?)"?$', q, re.IGNORECASE)
-            if url_match:
-                val = url_match.group(1)
-                where_clauses.append("url LIKE ?")
-                params.append(f"%{val}%")
-            elif '#' in q:
-                tag_expr = search_utils.quote_hashtags(q)
-                tag_expr = tag_expr.replace('#', '')
-                try:
-                    tag_sql, tag_params = search_utils.build_tag_filter_sql(tag_expr)
-                    where_clauses.append(tag_sql)
-                    params.extend(tag_params)
-                except Exception:
-                    where_clauses.append("tags LIKE ?")
-                    params.append(f"%{tag_expr}%")
-            else:
-                where_clauses.append("(" 
+            try:
+                search_sql, params = search_utils.build_search_sql(q)
+                where_sql = f"WHERE {search_sql}"
+            except Exception:
+                where_sql = (
+                    "WHERE ("
                     "url LIKE ? OR tags LIKE ? OR "
                     "CAST(timestamp AS TEXT) LIKE ? OR "
-                    "CAST(status_code AS TEXT) LIKE ?"
-                ")")
-                params.extend([f"%{q}%"] * 4)
-        where_sql = ""
-        if where_clauses:
-            where_sql = "WHERE " + " AND ".join(where_clauses)
+                    "CAST(status_code AS TEXT) LIKE ? OR "
+                    "mime_type LIKE ?"
+                    ")"
+                )
+                params = [f"%{q}%"] * 5
 
         rows = query_db(f"SELECT id FROM urls {where_sql}", params)
         selected_ids = [str(r['id']) for r in rows]
