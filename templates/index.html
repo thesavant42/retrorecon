@@ -328,6 +328,7 @@
   </div>
 
   <script>
+    const totalResultsCount = {{ total_count }};
 
     const notesOverlay = document.getElementById('notes-overlay');
     const noteInput = document.getElementById('note-input');
@@ -428,6 +429,7 @@
       const url = new URL(window.location);
       url.searchParams.delete('select_all_matching');
       window.history.replaceState(null, '', url);
+      showStatus(state ? `${boxes.length} selected` : 'Selection cleared');
     }
 
     function toggleSelectAllMatching(cb) {
@@ -436,6 +438,9 @@
       if(pageCb) pageCb.checked = false;
       if (cb.checked) {
         document.querySelectorAll('.row-checkbox').forEach(c => c.checked = true);
+        showStatus(`${totalResultsCount} selected`);
+      } else {
+        showStatus('Selection cleared');
       }
       const url = new URL(window.location);
       if(cb.checked){
