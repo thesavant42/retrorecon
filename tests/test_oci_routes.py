@@ -116,6 +116,34 @@ def test_image_route_manifest_index(tmp_path, monkeypatch):
         assert b'<a href="/image/user/repo@sha256:d">sha256:d</a>' in resp.data
 
 
+def test_image_route_manifest_annotations(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_manifest(image, specific_digest=None, client=None):
+        if specific_digest is None:
+            return {"manifests": [{"digest": "sha256:d", "annotations": {"foo": "bar"}}]}
+        assert specific_digest == "sha256:d"
+        return {"layers": [{"digest": "sha256:x", "annotations": {"hello": "world"}}]}
+
+    monkeypatch.setattr(oci, "get_manifest", fake_manifest)
+
+    async def fake_digest(image, client=None):
+        return "sha256:d"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
+
+    with app.app.test_client() as client:
+        resp = client.get("/image/user/repo:tag")
+        assert resp.status_code == 200
+        html = resp.data.decode()
+        assert '"foo": "bar"' in html
+        resp = client.get("/image/user/repo@sha256:d")
+        assert resp.status_code == 200
+        html = resp.data.decode()
+        assert '"hello": "world"' in html
+
+
 def test_image_digest_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci

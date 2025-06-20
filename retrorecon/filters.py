@@ -32,23 +32,39 @@ def _render_layer(layer: Dict[str, Any], repo: str) -> str:
         f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' 
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
     )
-    parts = [
-        '{',
-        f'<span class="indent">"mediaType": "{_link_media_type(media_type)}",</span>',
-        f'<span class="indent">"digest": "{digest_link}",</span>',
-        f'<span class="indent">"size": {size_link}</span>',
-        '}',
-    ]
+    parts = ["{"]
+    parts.append(
+        f'<span class="indent">"mediaType": "{_link_media_type(media_type)}",</span>'
+    )
+    parts.append(f'<span class="indent">"digest": "{digest_link}",</span>')
+    parts.append(f'<span class="indent">"size": {size_link}</span>')
+    annotations = layer.get("annotations")
+    if annotations is not None:
+        parts.append(
+            f'<span class="indent">"annotations": {_render_obj(annotations, repo)}</span>'
+        )
+    for k, v in layer.items():
+        if k in {"mediaType", "digest", "size", "annotations"}:
+            continue
+        parts.append(
+            f'<span class="indent">"{escape(k)}": {_render_obj(v, repo)}</span>'
+        )
+    parts.append("}")
     return "\n".join(parts)
 
 
-def _render_manifest_entry(entry: Dict[str, Any], repo: str, manifest_digest: str = "", image_ref: str | None = None) -> str:
+def _render_manifest_entry(
+    entry: Dict[str, Any],
+    repo: str,
+    manifest_digest: str = "",
+    image_ref: str | None = None,
+) -> str:
     media_type = str(entry.get("mediaType", ""))
     digest = str(entry.get("digest", ""))
     size = int(entry.get("size", 0) or 0)
     digest_link = f'<a href="/image/{repo}@{digest}">{escape(digest)}</a>'
     size_link = (
-        f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">' 
+        f'<a href="/size/{repo}@{digest}?mt={escape(media_type)}&size={size}">'
         f'<span title="{human_readable_size(size)}">{size}</span></a>'
     )
     parts = ["{"]
@@ -59,7 +75,23 @@ def _render_manifest_entry(entry: Dict[str, Any], repo: str, manifest_digest: st
     parts.append(f'<span class="indent">"size": {size_link}</span>')
     platform = entry.get("platform")
     if platform is not None:
-        parts.append('<span class="indent">"platform": {_render_obj(platform, repo, manifest_digest, image_ref)}</span>')
+        parts.append(
+            '<span class="indent">"platform": '
+            f'{_render_obj(platform, repo, manifest_digest, image_ref)}</span>'
+        )
+    annotations = entry.get("annotations")
+    if annotations is not None:
+        parts.append(
+            '<span class="indent">"annotations": '
+            f'{_render_obj(annotations, repo, manifest_digest, image_ref)}</span>'
+        )
+    for k, v in entry.items():
+        if k in {"mediaType", "digest", "size", "platform", "annotations"}:
+            continue
+        parts.append(
+            f'<span class="indent">"{escape(k)}": '
+            f'{_render_obj(v, repo, manifest_digest, image_ref)}</span>'
+        )
     parts.append("}")
     return "\n".join(parts)
 
