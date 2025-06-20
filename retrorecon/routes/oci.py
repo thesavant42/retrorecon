@@ -135,6 +135,26 @@ async def _resolve_manifest(image: str) -> Dict[str, Any]:
     return manifest
 
 
+async def _image_data_digest(repo: str, digest: str) -> Dict[str, Any]:
+    """Return manifest information for ``repo`` pinned to ``digest``."""
+    image_ref = f"{repo}:latest"
+    async with DockerRegistryClient() as client:
+        manifest = await get_manifest(image_ref, specific_digest=digest, client=client)
+    media_type = (
+        "application/vnd.oci.image.index.v1+json"
+        if manifest.get("manifests")
+        else "application/vnd.oci.image.manifest.v1+json"
+    )
+    size = len(json.dumps(manifest))
+    http_headers = {
+        "Content-Type": media_type,
+        "Docker-Content-Digest": digest,
+        "Content-Length": str(size),
+    }
+    descriptor = {"mediaType": media_type, "digest": digest, "size": size}
+    return {"manifest": manifest, "headers": http_headers, "descriptor": descriptor}
+
+
 @bp.route("/image/<path:image>", methods=["GET"])
 def image_view(image: str):
     try:
@@ -155,6 +175,35 @@ def image_view(image: str):
             500,
         )
     return render_template("oci_image.html", image=image, data=data, title=image)
+
+
+@bp.route("/image/<path:repo>@<digest>", methods=["GET"])
+def image_digest_view(repo: str, digest: str):
+    display = f"{repo}@{digest}"
+    try:
+        data = asyncio.run(_image_data_digest(repo, digest))
+    except asyncio.TimeoutError:
+        return (
+            render_template("oci_error.html", image=display, message="timeout"),
+            504,
+        )
+    except ClientError as exc:
+        return (
+            render_template("oci_error.html", image=display, message=str(exc)),
+            502,
+        )
+    except Exception:
+        return (
+            render_template("oci_error.html", image=display, message="server error"),
+            500,
+        )
+    return render_template(
+        "oci_image.html",
+        image=repo,
+        display_image=display,
+        data=data,
+        title=display,
+    )
 
 
 async def _read_layer(repo: str, digest: str) -> bytes:
