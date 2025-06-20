@@ -116,3 +116,18 @@ def test_export_and_mark_cdx(tmp_path, monkeypatch):
         rows = subdomain_utils.list_subdomains('example.com')
         assert rows[0]['cdx_indexed'] is True
 
+
+def test_subdomain_multiple_domains(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('multi')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('one.com', ['shared.one'], 'crtsh')
+        subdomain_utils.insert_records('two.com', ['shared.one'], 'crtsh')
+        rows_one = subdomain_utils.list_subdomains('one.com')
+        rows_two = subdomain_utils.list_subdomains('two.com')
+    subs_one = [r['subdomain'] for r in rows_one]
+    subs_two = [r['subdomain'] for r in rows_two]
+    assert subs_one == ['shared.one']
+    assert subs_two == ['shared.one']
+

@@ -53,6 +53,27 @@ def ensure_schema() -> None:
             cols = [row[1] for row in cur.fetchall()]
             if 'cdx_indexed' not in cols:
                 conn.execute("ALTER TABLE domains ADD COLUMN cdx_indexed INTEGER DEFAULT 0")
+            # Migrate unique constraint to include root_domain
+            cur = conn.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='domains'")
+            row = cur.fetchone()
+            if row and 'UNIQUE(subdomain, source)' in row[0] and 'root_domain, subdomain' not in row[0]:
+                conn.executescript(
+                    """
+                    ALTER TABLE domains RENAME TO domains_old;
+                    CREATE TABLE domains (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        root_domain TEXT NOT NULL,
+                        subdomain TEXT NOT NULL,
+                        source TEXT NOT NULL,
+                        cdx_indexed INTEGER DEFAULT 0,
+                        fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(root_domain, subdomain, source)
+                    );
+                    INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed, fetched_at)
+                        SELECT root_domain, subdomain, source, cdx_indexed, fetched_at FROM domains_old;
+                    DROP TABLE domains_old;
+                    """
+                )
             conn.commit()
         finally:
             conn.close()
