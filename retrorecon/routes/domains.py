@@ -4,7 +4,6 @@ import re
 from flask import Blueprint, request, jsonify, render_template, Response
 import app
 from retrorecon import subdomain_utils
-from typing import Optional
 
 bp = Blueprint('domains', __name__)
 
