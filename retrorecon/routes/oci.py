@@ -224,6 +224,22 @@ def _hexdump(data: bytes) -> str:
 @bp.route("/size/<path:repo>@<digest>", methods=["GET"])
 def layer_size_view(repo: str, digest: str):
     """Return a formatted directory listing for the layer blob."""
+    mt = request.args.get("mt", "application/vnd.docker.image.rootfs.diff.tar.gzip")
+    if not (
+        mt.startswith("application/vnd.docker.image.rootfs.diff.tar")
+        or mt.startswith("application/vnd.oci.image.layer")
+    ):
+        current_app.logger.warning("unsupported media type %s for %s@%s", mt, repo, digest)
+        return (
+            render_template(
+                "oci_error.html",
+                repo=repo,
+                digest=digest,
+                message="unsupported media type",
+            ),
+            415,
+        )
+
     try:
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
@@ -266,7 +282,6 @@ def layer_size_view(repo: str, digest: str):
     entries.sort(key=lambda x: x[0], reverse=True)
     lines = [e[1] for e in entries]
 
-    mt = request.args.get("mt", "application/vnd.docker.image.rootfs.diff.tar.gzip")
     size_param = request.args.get("size")
     blob_size = int(size_param) if size_param else len(blob)
     size_hr = human_readable_size(blob_size)
