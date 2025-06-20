@@ -78,15 +78,16 @@ function initSubdomonster(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/>'+
+      '<col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
+      '<th class="no-resize">Send</th>'+
       '</tr></thead><tbody>';
     for(const r of sorted){
-      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td></tr>`;
+      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn send-btn">Send!</button></td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
@@ -105,16 +106,18 @@ function initSubdomonster(){
       });
     });
     makeResizable(table, 'subdomonster-col-widths');
-    table.querySelectorAll('tbody tr').forEach(tr => {
-      tr.addEventListener('click', async () => {
-        if(tr.dataset.cdx === '0'){
+    table.querySelectorAll('.send-btn').forEach(btn => {
+      btn.addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+        const tr = btn.closest('tr');
+        if(tr && tr.dataset.cdx === '0'){
           if(confirm('Send this subdomain to the CDX API?')){
             const sub = tr.dataset.sub;
             const resp = await fetch('/fetch_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain: sub})});
             if(resp.ok){
               await fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
               tr.dataset.cdx = '1';
-              tr.querySelector('td:last-child').textContent = 'yes';
+              tr.querySelector('td:nth-child(4)').textContent = 'yes';
             } else {
               alert('CDX fetch failed');
             }
