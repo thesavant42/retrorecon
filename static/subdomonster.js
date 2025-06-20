@@ -12,6 +12,11 @@ function initSubdomonster(){
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let tableData = [];
+  const init = document.getElementById('subdomonster-init');
+  if(init){
+    try{ tableData = JSON.parse(init.textContent); }catch{}
+    init.remove();
+  }
   let sortField = 'subdomain';
   let sortDir = 'asc';
 
@@ -79,7 +84,7 @@ function initSubdomonster(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/><col/>'+
+      '<col/><col/><col/><col/><col class="send-col"/>'+
       '</colgroup><thead><tr>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
@@ -88,7 +93,7 @@ function initSubdomonster(){
       '<th class="no-resize">Send</th>'+
       '</tr></thead><tbody>';
     for(const r of sorted){
-      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn send-btn">Send!</button> <button type="button" class="btn delete-btn">Delete</button></td></tr>`;
+      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn btn--small delete-btn">x</button> <button type="button" class="btn send-btn">Send!</button></td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
@@ -214,6 +219,10 @@ function initSubdomonster(){
       history.pushState({}, '', '/');
     }
   });
+
+  if(tableData.length){
+    render();
+  }
 }
 
 if(document.readyState==='loading'){

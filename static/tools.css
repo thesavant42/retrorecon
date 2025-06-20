@@ -102,3 +102,6 @@
   table-layout: fixed;
   font-size: 0.875em;
 }
+.retrorecon-root #subdomonster-table col.send-col {
+  width: 160px;
+}
