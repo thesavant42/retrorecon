@@ -4,6 +4,7 @@ function initSubdomonster(){
   if(!overlay) return;
   const domainInput = document.getElementById('subdomonster-domain');
   const fetchBtn = document.getElementById('subdomonster-fetch-btn');
+  const scrapeBtn = document.getElementById('subdomonster-scrape-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const closeBtn = document.getElementById('subdomonster-close-btn');
   const exportCsvBtn = document.getElementById('subdomonster-export-csv-btn');
@@ -157,6 +158,18 @@ function initSubdomonster(){
       render();
     } else {
       alert(await resp.text());
+    }
+  });
+
+  scrapeBtn.addEventListener('click', async () => {
+    const domain = domainInput.value.trim();
+    const body = new URLSearchParams();
+    if(domain) body.append('domain', domain);
+    const resp = await fetch('/scrape_subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
+    if(resp.ok){
+      fetchBtn.click();
+    } else {
+      alert('Scrape failed');
     }
   });
 
