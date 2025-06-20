@@ -27,6 +27,8 @@ from flask import (
     jsonify,
     Response,
 )
+
+import retrorecon.routes.oci as oci  # for direct repo/image views
 from markupsafe import escape
 from config import Config
 from database import (
@@ -264,13 +266,13 @@ def delete_subdomain(root_domain: str, subdomain: str) -> None:
 
 @app.route('/', methods=['GET'])
 def index() -> str:
-    """Render the main search page or redirect to registry explorer views."""
+    """Render the main search page or serve registry explorer views."""
     repo_param = request.args.get("repo")
     image_param = request.args.get("image")
     if repo_param:
-        return redirect(url_for("oci.repo_view", repo=repo_param))
+        return oci.repo_view(repo_param)
     if image_param:
-        return redirect(url_for("oci.image_view", image=image_param))
+        return oci.image_view(image_param)
 
     q = request.args.get('q', '').strip()
     select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
