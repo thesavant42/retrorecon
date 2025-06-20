@@ -61,6 +61,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)
 - **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
 - **LayerPeek** inspect Docker image layers from Docker Hub
+- **Subdomonster** enumerate subdomains via crt.sh or VirusTotal
 - **Registry Explorer** query image manifests from multiple backends
 - **Dag Explorer** list repository tags and view manifests via a simple browser; works with public registries like [ghcr.io](https://ghcr.io). Example: [oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz](https://oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz)
 - Save favorite tag searches for quick reuse
@@ -248,6 +249,13 @@ curl -G --data-urlencode "image=ubuntu:latest" \
 curl -G --data-urlencode "image=ubuntu:latest" \
   'http://localhost:5000/registry_explorer?methods=extension,layerslayer'
 ```
+### Subdomain API
+
+```bash
+curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
+curl http://localhost:5000/export_subdomains?domain=example.com
+```
+
 
 ## License
 MIT

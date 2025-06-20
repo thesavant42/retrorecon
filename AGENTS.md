@@ -177,3 +177,57 @@ python scripts/generate_midnight_themes.py
 
 When creating new CSS, follow `STYLE_GUIDE.md` which mandates that selectors be scoped under `.retrorecon-root` using BEM-style naming. Running `npm run lint` checks for inline styles and standard Stylelint rules.
 
+
+## 13. ScreenshotAgent
+**Purpose**: Capture website screenshots in a headless browser.
+
+**Input Schema**
+```json
+{
+  "url": "<string>",
+  "user_agent": "<string>",
+  "spoof_referrer": "<bool>"
+}
+```
+**Example Call**
+```python
+client.post('/tools/screenshot', data={'url': 'https://example.com'})
+```
+**Expected Output**
+- JSON like `{ "id": 1 }` representing the screenshot record.
+
+## 14. SiteZipAgent
+**Purpose**: Crawl a page and download all assets as a ZIP archive.
+
+**Input Schema**
+```json
+{
+  "url": "<string>",
+  "agent": "<string>",
+  "spoof_referrer": "<bool>"
+}
+```
+**Example Call**
+```python
+client.post('/tools/site2zip', data={'url': 'https://example.com'})
+```
+**Expected Output**
+- JSON like `{ "id": 5 }` with the capture ID.
+
+## 15. SubdomainFetcher
+**Purpose**: Retrieve subdomains for a domain from crt.sh or VirusTotal.
+
+**Input Schema**
+```json
+{
+  "domain": "<string>",
+  "source": "<crtsh|virustotal>",
+  "api_key": "<string>"
+}
+```
+**Example Call**
+```python
+client.post('/subdomains', data={'domain': 'example.com', 'source': 'crtsh'})
+```
+**Expected Output**
+- JSON list of discovered subdomain records.
