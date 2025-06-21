@@ -471,9 +471,11 @@ List subdomains from the database.
 
 Parameters (optional):
 - `domain` – limit results to a root domain.
+- `page` – return a specific page of results.
+- `items` – number of subdomains per page.
 
 ```
-curl "http://localhost:5000/subdomains?domain=example.com"
+curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
 ```
 
 ### `POST /subdomains`

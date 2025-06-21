@@ -6,6 +6,7 @@ function initSubdomonster(){
   const fetchBtn = document.getElementById('subdomonster-fetch-btn');
   const scrapeBtn = document.getElementById('subdomonster-scrape-btn');
   const tableDiv = document.getElementById('subdomonster-table');
+  const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
   const exportCsvBtn = document.getElementById('subdomonster-export-csv-btn');
   const exportMdBtn = document.getElementById('subdomonster-export-md-btn');
@@ -16,9 +17,12 @@ function initSubdomonster(){
   if(init){
     try{ tableData = JSON.parse(init.textContent); }catch{}
     init.remove();
+    currentPage = 1;
   }
   let sortField = 'subdomain';
   let sortDir = 'asc';
+  let currentPage = 1;
+  let itemsPerPage = 25;
 
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
@@ -62,6 +66,57 @@ function initSubdomonster(){
     });
   }
 
+  function renderPagination(totalPages){
+    if(!paginationDiv) return;
+    let html = '<div class="pagination">';
+    html += '<select id="subdom-items" class="form-select menu-btn">';
+    [10,25,50,100].forEach(n => {
+      const sel = n === itemsPerPage ? ' selected' : '';
+      html += `<option value="${n}"${sel}>${(''+n).padStart(2,'0')}</option>`;
+    });
+    html += '</select>';
+    html += `<span class="page-info">Page ${currentPage} of ${totalPages}</span>`;
+    if(currentPage>1){
+      html += `<a href="#" data-p="1" class="pagination-arrow" aria-label="First">&laquo;&laquo;</a>`;
+      html += `<a href="#" data-p="${currentPage-1}" class="pagination-arrow" aria-label="Prev">&laquo;</a>`;
+    }
+    let start = currentPage - 2 > 2 ? currentPage - 2 : 1;
+    let end = currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages;
+    if(start>1){
+      html += `<a href="#" data-p="1">1</a>`;
+      if(start>2) html += '<span>...</span>';
+    }
+    for(let p=start; p<=end; p++){
+      if(p===currentPage) html += `<strong>${p}</strong>`;
+      else html += `<a href="#" data-p="${p}">${p}</a>`;
+    }
+    if(end<totalPages){
+      if(end<totalPages-1) html += '<span>...</span>';
+      html += `<a href="#" data-p="${totalPages}">${totalPages}</a>`;
+    }
+    if(currentPage<totalPages){
+      html += `<a href="#" data-p="${currentPage+1}" class="pagination-arrow" aria-label="Next">&raquo;</a>`;
+      html += `<a href="#" data-p="${totalPages}" class="pagination-arrow" aria-label="Last">&raquo;&raquo;</a>`;
+    }
+    html += '</div>';
+    paginationDiv.innerHTML = html;
+    const sel = document.getElementById('subdom-items');
+    if(sel){
+      sel.addEventListener('change', ()=>{
+        itemsPerPage = parseInt(sel.value,10);
+        currentPage = 1;
+        render();
+      });
+    }
+    paginationDiv.querySelectorAll('a[data-p]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        e.preventDefault();
+        currentPage = parseInt(a.dataset.p,10);
+        render();
+      });
+    });
+  }
+
   for(const rb of sourceRadios){
     rb.addEventListener('change', () => {
       const val = rb.value;
@@ -86,6 +141,9 @@ function initSubdomonster(){
       if(av > bv) return sortDir==='asc'? 1:-1;
       return 0;
     });
+    const totalPages = Math.max(1, Math.ceil(sorted.length / itemsPerPage));
+    if(currentPage > totalPages) currentPage = totalPages;
+    const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
       '<col/><col/><col/><col/><col class="send-col"/>'+
       '</colgroup><thead><tr>'+
@@ -95,7 +153,7 @@ function initSubdomonster(){
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
       '<th class="no-resize">Send</th>'+
       '</tr></thead><tbody>';
-    for(const r of sorted){
+    for(const r of pageData){
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn btn--small delete-btn">x</button> <button type="button" class="btn send-btn">Send!</button></td></tr>`;
     }
     html += '</tbody></table>';
@@ -151,6 +209,7 @@ function initSubdomonster(){
         }
       });
     });
+    renderPagination(totalPages);
   }
 
   fetchBtn.addEventListener('click', async () => {
@@ -165,6 +224,7 @@ function initSubdomonster(){
       if(resp.ok){
         const data = await resp.json();
         tableData = Array.isArray(data) ? data : [];
+        currentPage = 1;
         render();
       } else {
         alert(await resp.text());
@@ -177,6 +237,7 @@ function initSubdomonster(){
     if(resp.ok){
       const data = await resp.json();
       tableData = Array.isArray(data) ? data : [];
+      currentPage = 1;
       render();
     } else {
       alert(await resp.text());
@@ -194,6 +255,7 @@ function initSubdomonster(){
       if(r.ok){
         const data = await r.json();
         tableData = Array.isArray(data) ? data : [];
+        currentPage = 1;
         render();
       } else {
         fetchBtn.click();

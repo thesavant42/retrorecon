@@ -231,3 +231,36 @@ def test_scrape_multitld_and_ip(tmp_path, monkeypatch):
         assert ('a.example.co.uk', 'example.co.uk') in results
         assert ('192.168.1.10', '192.168.1.10') in results
 
+
+def test_subdomain_pagination(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('paginate')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com', 'b.example.com', 'c.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.get('/subdomains?domain=example.com&page=2&items=2')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['page'] == 2
+        assert data['total_pages'] == 2
+        assert data['total_count'] == 3
+        subs = [r['subdomain'] for r in data['results']]
+        assert subs == ['c.example.com']
+
+
+def test_subdomain_pagination_all(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('paginateall')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com'], 'scrape', cdx=True)
+        subdomain_utils.insert_records('test.org', ['b.test.org', 'c.test.org'], 'scrape', cdx=True)
+    with app.app.test_client() as client:
+        resp = client.get('/subdomains?page=1&items=2')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['total_count'] == 3
+        assert data['total_pages'] == 2
+        assert len(data['results']) == 2
+

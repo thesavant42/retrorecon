@@ -253,6 +253,7 @@ curl -G --data-urlencode "image=ubuntu:latest" \
 
 ```bash
 curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
+curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
 curl http://localhost:5000/export_subdomains?domain=example.com
 ```
 
