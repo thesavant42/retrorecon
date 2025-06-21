@@ -180,9 +180,7 @@
   </div>
   <div class="navbar__title">
       <span class="glow cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
-    </div>
-    <div class="navbar__info">
-      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form">
+      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form" class="ml-5px">
         <select name="db_file" id="load-saved-db-bar-select" class="form-select menu-btn">
           <option value="">Load Saved DB...</option>
           {% for db in saved_dbs %}
@@ -190,6 +188,8 @@
           {% endfor %}
         </select>
       </form>
+    </div>
+    <div class="navbar__info">
       <div id="import-status-block" class="db-info">
         <span class="ml-01"><strong>Status:</strong></span>
         <span id="import-status-text">idle</span>
