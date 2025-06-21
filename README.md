@@ -91,11 +91,28 @@ launch_app.bat
 Then open <http://127.0.0.1:5000> in your browser.
 ### Playwright on Windows
 If screenshot capture shows a placeholder image, Playwright may not have the Chromium browser installed.
+
 Run `python -m playwright install` to download the browsers. If you previously
 set the `PLAYWRIGHT_BROWSERS_PATH` environment variable, remove it so Playwright
 can use its default location. Alternatively set `PLAYWRIGHT_CHROMIUM_PATH` to an
 existing Chrome executable. You can also assign a path to `app.executablePath`
 before calling screenshot functions to override the Chromium binary.
+
+### Secrets File
+Create a `secrets.json` file alongside `app.py` to store sensitive values like
+API tokens. The application loads this file on startup and sets any variables
+found inside if they are not already defined in the environment. A different
+path can be specified via the `RETRORECON_SECRETS_FILE` environment variable.
+
+Example `secrets.json`:
+
+```json
+{
+  "RETRORECON_SECRET": "change_me",
+  "DOCKERHUB_API": "",
+  "VIRUSTOTAL_API": ""
+}
+```
 
 ### Docker Quick Start
 
@@ -289,7 +306,7 @@ production deployment. Below is the outstanding task list to improve the
 application's security posture.
 
 ```markdown
-- [ ] Load `app.secret_key` from an environment variable and document the requirement.
+- [x] Load `app.secret_key` from an environment variable and document the requirement.
 - [ ] Implement CSRF protection across all POST forms (consider Flask-WTF).
 - [x] Refactor `templates/index.html` to avoid placing `{{ url.url }}` inside JavaScript strings.
   - Use `data-url` attributes and event listeners defined in JS.

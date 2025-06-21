@@ -3,6 +3,7 @@ db/*.db
 *.sqlite
 *.json
 !data/demo_data.json
+!secrets.example.json
 !frontend/package.json
 !frontend/.stylelintrc.json
 !tests/postman/retrorecon.postman.json
