@@ -214,3 +214,20 @@ def test_local_scrape_cdx_flag(tmp_path, monkeypatch):
         row = next(r for r in data if r['subdomain'] == 'c.example.com')
         assert row['cdx_indexed'] is True
 
+
+def test_scrape_multitld_and_ip(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('tldip')
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://a.example.co.uk'])
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://192.168.1.10/path'])
+    with app.app.test_client() as client:
+        resp = client.post('/scrape_subdomains')
+        assert resp.status_code == 200
+    with app.app.app_context():
+        from retrorecon import subdomain_utils
+        rows = subdomain_utils.list_all_subdomains()
+        results = {(r['subdomain'], r['domain']) for r in rows}
+        assert ('a.example.co.uk', 'example.co.uk') in results
+        assert ('192.168.1.10', '192.168.1.10') in results
+

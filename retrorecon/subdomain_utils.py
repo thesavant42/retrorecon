@@ -2,6 +2,7 @@ import logging
 import urllib.parse
 import requests
 from typing import List, Dict, Optional
+import tldextract
 
 from database import execute_db, query_db
 
@@ -154,7 +155,10 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
         if target_root:
             root = target_root
         else:
-            parts = host.split(".")
-            root = ".".join(parts[-2:]) if len(parts) >= 2 else host
+            ext = tldextract.extract(host)
+            if ext.suffix:
+                root = f"{ext.domain}.{ext.suffix}"
+            else:
+                root = host
         count += insert_records(root, [host], "scrape", cdx=True)
     return count

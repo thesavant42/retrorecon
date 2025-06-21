@@ -8,3 +8,4 @@ PyJWT
 Pillow
 playwright
 pyelftools
+tldextract
