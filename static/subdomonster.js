@@ -64,7 +64,10 @@ function initSubdomonster(){
 
   for(const rb of sourceRadios){
     rb.addEventListener('change', () => {
-      apiInput.classList.toggle('hidden', rb.value !== 'virustotal' || !rb.checked);
+      const val = rb.value;
+      if(rb.checked){
+        apiInput.classList.toggle('hidden', val !== 'virustotal');
+      }
     });
   }
   // initialize visibility
@@ -152,9 +155,23 @@ function initSubdomonster(){
 
   fetchBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
-    if(!domain) return;
     let source = 'crtsh';
     for(const rb of sourceRadios){ if(rb.checked){ source = rb.value; break; } }
+    if(source === 'local'){
+      const body = new URLSearchParams();
+      if(domain) body.append('domain', domain);
+      body.append('source', 'local');
+      const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
+      if(resp.ok){
+        const data = await resp.json();
+        tableData = Array.isArray(data) ? data : [];
+        render();
+      } else {
+        alert(await resp.text());
+      }
+      return;
+    }
+    if(!domain) return;
     const api_key = apiInput.value.trim();
     const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain, source, api_key})});
     if(resp.ok){

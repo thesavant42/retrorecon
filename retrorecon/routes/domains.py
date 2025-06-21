@@ -33,12 +33,21 @@ def subdomains_route():
         return jsonify(subdomain_utils.list_all_subdomains())
 
     domain = request.form.get('domain', '').strip().lower()
+    source = request.form.get('source', 'crtsh')
+    api_key = request.form.get('api_key', '').strip()
+
+    if source == 'local':
+        if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
+            return ('Invalid domain', 400)
+        subdomain_utils.scrape_from_urls(domain or None)
+        if domain:
+            return jsonify(subdomain_utils.list_subdomains(domain))
+        return jsonify(subdomain_utils.list_all_subdomains())
+
     if not domain:
         return ('Missing domain', 400)
     if not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
         return ('Invalid domain', 400)
-    source = request.form.get('source', 'crtsh')
-    api_key = request.form.get('api_key', '').strip()
     try:
         if source == 'virustotal':
             if not api_key:

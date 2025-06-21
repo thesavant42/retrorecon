@@ -168,3 +168,33 @@ def test_delete_subdomain(tmp_path, monkeypatch):
         rows = subdomain_utils.list_subdomains('example.com')
         assert rows == []
 
+
+def test_scrape_uses_url_when_domain_missing(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('scrapeurl')
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://x.example.com/a'])
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://y.test.org/b'])
+    with app.app.test_client() as client:
+        resp = client.post('/scrape_subdomains')
+        assert resp.status_code == 200
+    with app.app.app_context():
+        from retrorecon import subdomain_utils
+        all_rows = subdomain_utils.list_all_subdomains()
+        subs = {r['subdomain'] for r in all_rows}
+        assert {'x.example.com', 'y.test.org'} <= subs
+
+
+def test_subdomains_route_local_source(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('localsrc')
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://a.example.com/'])
+        app.execute_db("INSERT INTO urls (url, tags) VALUES (?, '')", ['http://b.test.org/'])
+    with app.app.test_client() as client:
+        resp = client.post('/subdomains', data={'source': 'local'})
+        assert resp.status_code == 200
+        data = resp.get_json()
+        subs = {r['subdomain'] for r in data}
+        assert {'a.example.com', 'b.test.org'} <= subs
+
