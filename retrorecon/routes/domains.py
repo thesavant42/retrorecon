@@ -56,7 +56,10 @@ def subdomains_route():
     api_key = request.form.get('api_key', '').strip()
 
     if source == 'local':
-        if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
+        # Allow single-label hostnames or IPs when scraping local URLs. A very
+        # loose check avoids rejecting common internal domains like
+        # "localhost" while still filtering obvious bad input.
+        if domain and not re.match(r'^[A-Za-z0-9.-]+$', domain):
             return ('Invalid domain', 400)
         status_mod.push_status('subdomonster_local_start', domain or 'all')
         inserted = subdomain_utils.scrape_from_urls(domain or None)
