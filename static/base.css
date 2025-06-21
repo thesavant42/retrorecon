@@ -364,7 +364,7 @@ body {
   align-items: center;
   justify-content: center;
   justify-self: center;
-  gap: 0.5em;
+  gap: 5px;
 }
 .retrorecon-root .navbar__info {
   margin-left: 0;

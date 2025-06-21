@@ -179,6 +179,14 @@
     </div>
   </div>
   <div class="navbar__title">
+      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form">
+        <select name="db_file" id="load-saved-db-bar-select" class="form-select menu-btn">
+          <option value="">Load Saved DB...</option>
+          {% for db in saved_dbs %}
+          <option value="{{ db }}">{{ db }}</option>
+          {% endfor %}
+        </select>
+      </form>
       <span class="glow cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
     </div>
     <div class="navbar__info">
@@ -793,6 +801,15 @@
       savedSelect.addEventListener('change', () => {
         if (savedSelect.value) {
           savedForm.submit();
+        }
+      });
+    }
+    const savedBarSelect = document.getElementById('load-saved-db-bar-select');
+    const savedBarForm = document.getElementById('load-saved-db-bar-form');
+    if (savedBarSelect && savedBarForm) {
+      savedBarSelect.addEventListener('change', () => {
+        if (savedBarSelect.value) {
+          savedBarForm.submit();
         }
       });
     }
