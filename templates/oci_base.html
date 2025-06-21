@@ -3,7 +3,18 @@
 <head>
   <title>{{ title or 'Registry Explorer' }}</title>
   <link rel="icon" href="{{ url_for('favicon_svg') }}">
-<style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+  {% set current_theme = session.get('theme') %}
+  {% if current_theme %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}">
+  {% endif %}
+  {% set current_background = session.get('background') %}
+  {% if current_background %}
+  <style>
+    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
+  </style>
+  {% endif %}
+  <style>
   :root {
     color-scheme: light dark;
   }
