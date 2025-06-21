@@ -4,7 +4,7 @@ import requests
 from typing import List, Dict, Optional, Any
 import tldextract
 
-from database import execute_db, query_db
+from database import execute_db, executemany_db, query_db, get_db
 
 logger = logging.getLogger(__name__)
 
@@ -53,17 +53,28 @@ def insert_records(
     cdx: bool = False,
 ) -> int:
     """Insert ``subs`` for ``root_domain`` and return count inserted."""
-    count = 0
-    for sub in subs:
-        try:
-            execute_db(
-                "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
-                [root_domain, sub, source, int(cdx)],
-            )
-            count += 1
-        except Exception as exc:  # pragma: no cover - log only
-            logger.debug("insert failed: %s", exc)
-    return count
+    params = [
+        (root_domain, sub, source, int(cdx))
+        for sub in subs
+    ]
+    try:
+        return executemany_db(
+            "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
+            params,
+        )
+    except Exception as exc:  # pragma: no cover - log only
+        logger.debug("batch insert failed: %s", exc)
+        count = 0
+        for p in params:
+            try:
+                execute_db(
+                    "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
+                    list(p),
+                )
+                count += 1
+            except Exception as exc2:  # pragma: no cover - log only
+                logger.debug("insert failed: %s", exc2)
+        return count
 
 
 def mark_cdxed(subdomain: str) -> None:
@@ -193,30 +204,39 @@ def list_subdomains_page(
 
 def scrape_from_urls(target_root: Optional[str] = None) -> int:
     """Insert subdomains found in ``urls``. Return number inserted."""
-    if target_root:
-        rows = query_db(
-            "SELECT DISTINCT url, domain FROM urls "
-            "WHERE url LIKE ? OR domain = ? OR domain LIKE ?",
-            [f"%{target_root}%", target_root, f"%.{target_root}"],
-        )
-    else:
-        rows = query_db("SELECT DISTINCT url, domain FROM urls")
-
+    db = get_db()
+    offset = 0
+    limit = 500
+    cache: Dict[str, str] = {}
     count = 0
-    for r in rows:
-        host = (r["domain"] or "").lower()
-        if not host:
-            host = urllib.parse.urlsplit(r["url"]).hostname or ""
-            host = host.lower()
-        if not host:
-            continue
+    while True:
         if target_root:
-            root = target_root
+            rows = db.execute(
+                "SELECT DISTINCT url, domain FROM urls WHERE url LIKE ? OR domain = ? OR domain LIKE ? LIMIT ? OFFSET ?",
+                (f"%{target_root}%", target_root, f"%.{target_root}", limit, offset),
+            ).fetchall()
         else:
-            ext = _EXTRACTOR(host)
-            if ext.suffix:
-                root = f"{ext.domain}.{ext.suffix}"
+            rows = db.execute(
+                "SELECT DISTINCT url, domain FROM urls LIMIT ? OFFSET ?",
+                (limit, offset),
+            ).fetchall()
+        if not rows:
+            break
+        for r in rows:
+            host = (r["domain"] or "").lower()
+            if not host:
+                host = urllib.parse.urlsplit(r["url"]).hostname or ""
+                host = host.lower()
+            if not host:
+                continue
+            if target_root:
+                root = target_root
             else:
-                root = host
-        count += insert_records(root, [host], "scrape", cdx=True)
+                root = cache.get(host)
+                if not root:
+                    ext = _EXTRACTOR(host)
+                    root = f"{ext.domain}.{ext.suffix}" if ext.suffix else host
+                    cache[host] = root
+            count += insert_records(root, [host], "scrape", cdx=True)
+        offset += limit
     return count

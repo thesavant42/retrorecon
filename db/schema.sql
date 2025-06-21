@@ -72,3 +72,7 @@ CREATE TABLE IF NOT EXISTS domains (
     fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(subdomain, source)
 );
+
+CREATE INDEX IF NOT EXISTS idx_urls_domain ON urls(domain);
+CREATE INDEX IF NOT EXISTS idx_domains_root ON domains(root_domain);
+CREATE INDEX IF NOT EXISTS idx_domains_subdomain ON domains(subdomain);
