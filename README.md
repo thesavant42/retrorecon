@@ -79,6 +79,7 @@ python app.py
 # RETRORECON_DB=dsprings.db python app.py
 # Enable verbose logging by setting RETRORECON_LOG_LEVEL
 # RETRORECON_LOG_LEVEL=DEBUG python app.py
+# See docs/debugging_style_guide.md for logging conventions
 ```
 On Windows you can run `launch_app.bat` to automatically update the repository,
 set up a `venv` and start the server:
