@@ -453,14 +453,14 @@ curl -X POST -d "ids=1,2" http://localhost:5000/delete_screenshots
 
 
 ### `GET /subdomonster`
-Serve the Subdomonster overlay.
+Serve the Subdomonster overlay with bulk-selection checkboxes.
 
 ```
 curl http://localhost:5000/subdomonster
 ```
 
 ### `GET /tools/subdomonster`
-Full-page subdomain overlay.
+Full-page subdomain overlay with the same bulk-selection features.
 
 ```
 curl http://localhost:5000/tools/subdomonster

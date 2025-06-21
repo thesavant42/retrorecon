@@ -13,6 +13,10 @@ function initSubdomonster(){
   const searchInput = document.getElementById('subdomonster-search');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
+  const selectAllCb = document.getElementById('subdomonster-select-all');
+  const clearBtn = document.getElementById('subdomonster-clear-btn');
+  const bulkSel = document.getElementById('subdom-bulk-target');
+  const bulkSendBtn = document.getElementById('subdom-bulk-send-btn');
   let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
@@ -25,9 +29,14 @@ function initSubdomonster(){
   let sortDir = 'asc';
   let itemsPerPage = 25;
   let searchText = '';
+  const selectedSubs = new Set();
 
   let statusTimer = null;
   let statusDelay = 1000;
+
+  function updateSelectionStatus(){
+    showStatus(selectedSubs.size + ' selected');
+  }
 
   function showStatus(msg){
     if(statusSpan){
@@ -68,7 +77,9 @@ function initSubdomonster(){
     searchInput.addEventListener('input', () => {
       searchText = searchInput.value.trim().toLowerCase();
       currentPage = 1;
+      selectedSubs.clear();
       render();
+      updateSelectionStatus();
     });
   }
 
@@ -197,8 +208,9 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/><col class="send-col"/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col class="send-col"/>'+
       '</colgroup><thead><tr>'+
+      '<th class="w-2em no-resize text-center"><input type="checkbox" id="subdom-page-cb" class="form-checkbox"/></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
@@ -207,7 +219,9 @@ function initSubdomonster(){
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
+      const checked = selectedSubs.has(r.subdomain) ? ' checked' : '';
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
+        `<td class="checkbox-col"><input type="checkbox" class="row-checkbox" data-sub="${r.subdomain}"${checked}/></td>`+
         `<td><span class="ml-5px">${r.subdomain}</span></td>`+
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
@@ -229,6 +243,25 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     const table = tableDiv.querySelector('table');
+    const pageCb = document.getElementById('subdom-page-cb');
+    if(pageCb){
+      pageCb.checked = pageData.every(r => selectedSubs.has(r.subdomain));
+      pageCb.addEventListener('change', () => {
+        pageData.forEach(r => {
+          if(pageCb.checked) selectedSubs.add(r.subdomain); else selectedSubs.delete(r.subdomain);
+        });
+        table.querySelectorAll('.row-checkbox').forEach(c => c.checked = pageCb.checked);
+        updateSelectionStatus();
+      });
+    }
+    table.querySelectorAll('.row-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const sub = cb.dataset.sub;
+        if(cb.checked) selectedSubs.add(sub); else selectedSubs.delete(sub);
+        if(pageCb) pageCb.checked = pageData.every(r => selectedSubs.has(r.subdomain));
+        updateSelectionStatus();
+      });
+    });
     table.querySelectorAll('th.sortable').forEach(th => {
       th.addEventListener('click', ev => {
         if(ev.target.closest('.col-resizer')) return;
@@ -300,7 +333,9 @@ function initSubdomonster(){
       const data = await resp.json();
       tableData = Array.isArray(data) ? data : [];
       currentPage = 1;
+      selectedSubs.clear();
       render();
+      updateSelectionStatus();
     } else {
       alert(await resp.text());
     }
@@ -348,12 +383,56 @@ function initSubdomonster(){
     }
   });
 
+  if(selectAllCb){
+    selectAllCb.addEventListener('change', () => {
+      if(selectAllCb.checked){
+        tableData.forEach(r => selectedSubs.add(r.subdomain));
+      }else{
+        selectedSubs.clear();
+      }
+      render();
+      updateSelectionStatus();
+    });
+  }
+
+  if(clearBtn){
+    clearBtn.addEventListener('click', () => {
+      selectedSubs.clear();
+      if(selectAllCb) selectAllCb.checked = false;
+      render();
+      updateSelectionStatus();
+    });
+  }
+
+  if(bulkSendBtn){
+    bulkSendBtn.addEventListener('click', () => {
+      const tool = bulkSel ? bulkSel.value : '';
+      if(!tool || selectedSubs.size === 0) return;
+      selectedSubs.forEach(sub => {
+        const encoded = encodeURIComponent(sub);
+        let url = '';
+        switch(tool){
+          case 'screenshotter':
+            url = '/tools/screenshotter?url=' + encoded; break;
+          case 'site2zip':
+            url = '/tools/site2zip?url=' + encoded; break;
+          case 'webpack':
+            url = '/tools/webpack-zip?map_url=' + encoded; break;
+          case 'text':
+            url = '/text_tools?text=' + encoded; break;
+        }
+        if(url) window.open(url, '_blank');
+      });
+    });
+  }
+
   closeBtn.addEventListener('click', () => {
     history.back();
   });
 
   if(tableData.length){
     render();
+    updateSelectionStatus();
   }
   window.startSubdomonsterStatus = startStatusPolling;
   window.stopSubdomonsterStatus = stopStatusPolling;

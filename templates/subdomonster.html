@@ -13,6 +13,20 @@
     <button type="button" class="btn" id="subdomonster-close-btn">Close</button>
     <span id="subdomonster-status" class="ml-05"></span>
   </div>
+  <div class="bulk-controls mb-05">
+    <label class="select-all-label">
+      <input type="checkbox" id="subdomonster-select-all" class="form-checkbox" /> Select All
+    </label>
+    <button type="button" class="btn" id="subdomonster-clear-btn">Clear</button>
+    <select id="subdom-bulk-target" class="form-select menu-btn">
+      <option value="">Send to…</option>
+      <option value="screenshotter">Screen Shotter</option>
+      <option value="site2zip">Site2Zip</option>
+      <option value="webpack">Webpack Explode...</option>
+      <option value="text">Text Tools</option>
+    </select>
+    <button type="button" class="btn" id="subdom-bulk-send-btn">Go</button>
+  </div>
   <div id="subdomonster-table" class="mt-05"></div>
   <div id="subdomonster-pagination" class="mt-05"></div>
   <script type="application/json" id="subdomonster-init">{{ initial_data|tojson }}</script>
