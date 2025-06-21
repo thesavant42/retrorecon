@@ -479,15 +479,18 @@ curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
 ```
 
 ### `POST /subdomains`
-Fetch subdomains from crt.sh or VirusTotal.
+Fetch subdomains from crt.sh, VirusTotal, or the local URL list.
 
 Parameters:
-- `domain` – target domain.
-- `source` – `crtsh` or `virustotal`.
+- `domain` – target domain (optional when using the `local` source).
+- `source` – `crtsh`, `virustotal`, or `local`.
 - `api_key` – required for VirusTotal.
 
+Use `source=local` to import subdomains discovered by scraping existing URLs.
+
 ```
-curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
+curl -X POST -d "domain=example.com" -d "source=crtsh" http://localhost:5000/subdomains
+curl -X POST -d "source=local" http://localhost:5000/subdomains
 ```
 
 ### `GET /export_subdomains`
