@@ -258,15 +258,20 @@ function initSubdomonster(){
     if(source === 'local'){
       const body = new URLSearchParams();
       if(domain) body.append('domain', domain);
-      body.append('source', 'local');
-      const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
+      const resp = await fetch('/scrape_subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
       if(resp.ok){
-        const data = await resp.json();
-        tableData = Array.isArray(data) ? data : [];
-        currentPage = 1;
-        render();
+        const q = domain ? ('?domain=' + encodeURIComponent(domain)) : '';
+        const r = await fetch('/subdomains' + q);
+        if(r.ok){
+          const data = await r.json();
+          tableData = Array.isArray(data) ? data : [];
+          currentPage = 1;
+          render();
+        } else {
+          alert(await r.text());
+        }
       } else {
-        alert(await resp.text());
+        alert('Scrape failed');
       }
       return;
     }
