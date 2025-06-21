@@ -93,6 +93,27 @@ def test_image_route(tmp_path, monkeypatch):
         assert b'/layers/user/repo:tag@sha256:x/' in resp.data
 
 
+def test_image_route_no_size_links(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_manifest(image, client=None):
+        return {"layers": [{"digest": "sha256:x", "size": 1}]}
+
+    monkeypatch.setattr(oci, "get_manifest", fake_manifest)
+
+    async def fake_digest(image, client=None):
+        return "sha256:x"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
+
+    with app.app.test_client() as client:
+        resp = client.get("/image/user/repo:tag")
+        assert resp.status_code == 200
+        html = resp.data.decode()
+        assert "/size/user/repo" not in html
+
+
 def test_image_route_manifest_index(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
@@ -245,6 +266,27 @@ def test_fs_route_invalid_tar(tmp_path, monkeypatch, caplog):
         assert resp.status_code == 415
         assert b"invalid tar" in resp.data
         assert any("invalid tar for user/repo@sha256:x" in rec.message for rec in caplog.records)
+
+
+def test_size_route_unsupported_media(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_fetch_token(repo):
+        return "t"
+
+    async def fake_fetch_blob(repo, digest, token, session=None):
+        return b"{}"
+
+    monkeypatch.setattr(oci, "fetch_token", fake_fetch_token)
+    monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
+
+    with app.app.test_client() as client:
+        resp = client.get(
+            "/size/user/repo@sha256:x?mt=application/vnd.oci.image.manifest.v1+json"
+        )
+        assert resp.status_code == 415
+        assert b"unsupported media type" in resp.data
 
 
 def test_layers_overlay_listing(tmp_path, monkeypatch):
