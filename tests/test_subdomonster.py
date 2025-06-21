@@ -117,6 +117,20 @@ def test_export_and_mark_cdx(tmp_path, monkeypatch):
         assert rows[0]['cdx_indexed'] is True
 
 
+def test_export_filter(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('expfilter')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com', 'b.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.get('/export_subdomains?domain=example.com&format=csv&q=a.example')
+        assert resp.status_code == 200
+        text = resp.data.decode()
+        assert 'a.example.com' in text
+        assert 'b.example.com' not in text
+
+
 
 def test_scrape_subdomains(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)

@@ -10,6 +10,7 @@ function initSubdomonster(){
   const statusSpan = document.getElementById('subdomonster-status');
   const exportCsvBtn = document.getElementById('subdomonster-export-csv-btn');
   const exportMdBtn = document.getElementById('subdomonster-export-md-btn');
+  const searchInput = document.getElementById('subdomonster-search');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let currentPage = 1;
@@ -23,6 +24,7 @@ function initSubdomonster(){
   let sortField = 'subdomain';
   let sortDir = 'asc';
   let itemsPerPage = 25;
+  let searchText = '';
 
   let statusTimer = null;
   let statusDelay = 1000;
@@ -60,6 +62,14 @@ function initSubdomonster(){
       clearTimeout(statusTimer);
       statusTimer = null;
     }
+  }
+
+  if(searchInput){
+    searchInput.addEventListener('input', () => {
+      searchText = searchInput.value.trim().toLowerCase();
+      currentPage = 1;
+      render();
+    });
   }
 
   function makeResizable(table, key){
@@ -173,7 +183,10 @@ function initSubdomonster(){
   })();
 
   function render(){
-    const sorted = tableData.slice().sort((a,b)=>{
+    const filtered = searchText ?
+      tableData.filter(r => r.subdomain.toLowerCase().includes(searchText)) :
+      tableData;
+    const sorted = filtered.slice().sort((a,b)=>{
       const av = (a[sortField] || '').toString().toLowerCase();
       const bv = (b[sortField] || '').toString().toLowerCase();
       if(av < bv) return sortDir==='asc'? -1:1;
@@ -297,7 +310,10 @@ function initSubdomonster(){
   exportCsvBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
     if(!domain) return;
-    const resp = await fetch('/export_subdomains?format=csv&domain=' + encodeURIComponent(domain));
+    const q = searchInput ? searchInput.value.trim() : '';
+    let requestUrl = '/export_subdomains?format=csv&domain=' + encodeURIComponent(domain);
+    if(q) requestUrl += '&q=' + encodeURIComponent(q);
+    const resp = await fetch(requestUrl);
     if(resp.ok){
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
@@ -314,7 +330,10 @@ function initSubdomonster(){
   exportMdBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
     if(!domain) return;
-    const resp = await fetch('/export_subdomains?format=md&domain=' + encodeURIComponent(domain));
+    const q = searchInput ? searchInput.value.trim() : '';
+    let requestUrl = '/export_subdomains?format=md&domain=' + encodeURIComponent(domain);
+    if(q) requestUrl += '&q=' + encodeURIComponent(q);
+    const resp = await fetch(requestUrl);
     if(resp.ok){
       const text = await resp.text();
       const blob = new Blob([text], {type:'text/markdown'});
