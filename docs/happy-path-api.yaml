@@ -5,7 +5,7 @@ info:
   description: |
     OpenAPI 3 specification for the OCI Registry Explorer (dagdotdev).
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:5000
 paths:
   /:
     get:
