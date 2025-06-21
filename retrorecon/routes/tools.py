@@ -27,6 +27,12 @@ def text_tools_page():
     return render_template('text_tools.html')
 
 
+@bp.route('/tools/text_tools', methods=['GET'])
+def text_tools_full_page():
+    """Serve the full page with Text Tools overlay loaded."""
+    return app.index()
+
+
 def _get_text_param():
     text = request.form.get('text', '')
     if len(text.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:

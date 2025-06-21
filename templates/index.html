@@ -865,21 +865,46 @@
 
       const textToolsLink = document.getElementById('text-tools-link');
       let textToolsLoaded = false;
+
+      async function showTextTools(skipPush){
+        if(!textToolsLoaded){
+          const resp = await fetch('/text_tools');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/text_tools.js';
+          document.body.appendChild(script);
+          textToolsLoaded = true;
+        }
+        document.getElementById('text-tools-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'text'}, '', '/tools/text_tools');
+        }
+      }
+
+      function hideTextTools(){
+        const ov = document.getElementById('text-tools-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
       if (textToolsLink) {
         textToolsLink.addEventListener('click', async (e) => {
           e.preventDefault();
-          if (!textToolsLoaded) {
-            const resp = await fetch('/text_tools');
-            const html = await resp.text();
-            const root = document.querySelector('.retrorecon-root') || document.body;
-            root.insertAdjacentHTML('beforeend', html);
-            const script = document.createElement('script');
-            script.src = '/static/text_tools.js';
-            document.body.appendChild(script);
-            textToolsLoaded = true;
-          }
-          document.getElementById('text-tools-overlay').classList.remove('hidden');
+          showTextTools();
         });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/text_tools'){
+          showTextTools(true);
+        } else {
+          hideTextTools();
+        }
+      });
+
+      if(location.pathname === '/tools/text_tools' || openTool === 'text'){
+        showTextTools(true);
       }
 
       const jwtToolsLink = document.getElementById('jwt-tools-link');
