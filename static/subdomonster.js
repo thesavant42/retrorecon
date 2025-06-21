@@ -12,6 +12,7 @@ function initSubdomonster(){
   const exportMdBtn = document.getElementById('subdomonster-export-md-btn');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
+  let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
   if(init){
@@ -21,7 +22,6 @@ function initSubdomonster(){
   }
   let sortField = 'subdomain';
   let sortDir = 'asc';
-  let currentPage = 1;
   let itemsPerPage = 25;
 
   let statusTimer = null;
