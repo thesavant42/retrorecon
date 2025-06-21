@@ -105,3 +105,14 @@
 .retrorecon-root #subdomonster-table col.send-col {
   width: 160px;
 }
+.retrorecon-root #subdomonster-overlay {
+  overflow: hidden;
+}
+.retrorecon-root #subdomonster-table {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+.retrorecon-root #subdomonster-table td {
+  padding: 0.3em 0.6em;
+  word-break: break-all;
+}

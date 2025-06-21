@@ -146,8 +146,8 @@ def test_list_all_subdomains_route(tmp_path, monkeypatch):
     with app.app.app_context():
         app.create_new_db('listall')
         from retrorecon import subdomain_utils
-        subdomain_utils.insert_records('example.com', ['a.example.com'], 'scrape')
-        subdomain_utils.insert_records('test.org', ['b.test.org'], 'scrape')
+        subdomain_utils.insert_records('example.com', ['a.example.com'], 'scrape', cdx=True)
+        subdomain_utils.insert_records('test.org', ['b.test.org'], 'scrape', cdx=True)
     with app.app.test_client() as client:
         resp = client.get('/subdomains')
         assert resp.status_code == 200
@@ -197,4 +197,20 @@ def test_subdomains_route_local_source(tmp_path, monkeypatch):
         data = resp.get_json()
         subs = {r['subdomain'] for r in data}
         assert {'a.example.com', 'b.test.org'} <= subs
+
+
+def test_local_scrape_cdx_flag(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('cdxflag')
+        app.execute_db(
+            "INSERT INTO urls (url, domain, tags) VALUES (?, ?, '')",
+            ['http://c.example.com', 'c.example.com'],
+        )
+    with app.app.test_client() as client:
+        resp = client.post('/subdomains', data={'source': 'local'})
+        assert resp.status_code == 200
+        data = resp.get_json()
+        row = next(r for r in data if r['subdomain'] == 'c.example.com')
+        assert row['cdx_indexed'] is True
 
