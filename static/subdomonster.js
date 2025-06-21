@@ -189,10 +189,28 @@ function initSubdomonster(){
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
-      '<th class="no-resize">Send</th>'+
+      '<th class="no-resize">Actions:</th>'+
       '</tr></thead><tbody>';
     for(const r of pageData){
-      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}"><td>${r.subdomain}</td><td>${r.domain}</td><td>${r.source}</td><td>${r.cdx_indexed? 'yes':'no'}</td><td><button type="button" class="btn btn--small delete-btn">x</button> <button type="button" class="btn send-btn">Send!</button></td></tr>`;
+      const encoded = encodeURIComponent(r.subdomain);
+      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
+        `<td><span class="ml-5px">${r.subdomain}</span></td>`+
+        `<td>${r.domain}</td>`+
+        `<td>${r.source}</td>`+
+        `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
+        `<td>`+
+          `<button type="button" class="btn btn--small delete-btn">x</button> `+
+          `<div class="dropdown d-inline-block ml-4px">`+
+            `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+
+            `<div class="dropdown-content">`+
+              `<div class="menu-row"><a class="menu-btn" href="/tools/screenshotter?url=${encoded}" target="_blank">Screen Shotter</a></div>`+
+              `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
+              `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
+              `<div class="menu-row"><a class="menu-btn" href="/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
+            `</div>`+
+          `</div>`+
+        `</td>`+
+      `</tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
@@ -211,25 +229,6 @@ function initSubdomonster(){
       });
     });
     makeResizable(table, 'subdomonster-col-widths');
-    table.querySelectorAll('.send-btn').forEach(btn => {
-      btn.addEventListener('click', async (ev) => {
-        ev.stopPropagation();
-        const tr = btn.closest('tr');
-        if(tr && tr.dataset.cdx === '0'){
-          if(confirm('Send this subdomain to the CDX API?')){
-            const sub = tr.dataset.sub;
-            const resp = await fetch('/fetch_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain: sub})});
-            if(resp.ok){
-              await fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
-              tr.dataset.cdx = '1';
-              tr.querySelector('td:nth-child(4)').textContent = 'yes';
-            } else {
-              alert('CDX fetch failed');
-            }
-          }
-        }
-      });
-    });
     table.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         ev.stopPropagation();
@@ -244,6 +243,22 @@ function initSubdomonster(){
           } else {
             alert('Delete failed');
           }
+        }
+      });
+    });
+
+    const shade = document.getElementById('dropdown-shade');
+    table.querySelectorAll('.dropbtn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const item = btn.parentElement;
+        const show = !item.classList.contains('show');
+        table.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+        if(show){
+          item.classList.add('show');
+          if(shade) shade.classList.add('show');
+        } else {
+          if(shade) shade.classList.remove('show');
         }
       });
     });

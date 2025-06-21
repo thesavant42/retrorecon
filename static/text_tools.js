@@ -11,6 +11,10 @@ function initTextTools(){
   const urlDecodeBtn = document.getElementById('url-decode-btn');
   const urlEncodeBtn = document.getElementById('url-encode-btn');
 
+  const initParams = new URLSearchParams(location.search);
+  const presetText = initParams.get('text');
+  if(presetText) input.value = presetText;
+
   async function transform(url){
     const text = input.value;
     try {
