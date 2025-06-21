@@ -28,7 +28,9 @@ def init_db() -> None:
     conn = sqlite3.connect(app.config['DATABASE'])
     for statement in sql.split(';'):
         stmt = statement.strip()
-        if stmt.upper().startswith('CREATE TABLE IF NOT EXISTS'):
+        if not stmt:
+            continue
+        if stmt.upper().startswith('CREATE TABLE IF NOT EXISTS') or stmt.upper().startswith('CREATE INDEX IF NOT EXISTS'):
             conn.execute(stmt)
     conn.commit()
     conn.close()
@@ -124,4 +126,14 @@ def execute_db(query: str, args: Union[Tuple, List] = ()) -> int:
     cur = db.execute(query, args)
     db.commit()
     return cur.lastrowid
+
+
+def executemany_db(query: str, args_list: List[Tuple]) -> int:
+    """Execute ``query`` for each tuple in ``args_list`` and return rows inserted."""
+    if not args_list:
+        return 0
+    db = get_db()
+    cur = db.executemany(query, args_list)
+    db.commit()
+    return cur.rowcount
 
