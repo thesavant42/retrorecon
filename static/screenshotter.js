@@ -13,6 +13,10 @@ function initScreenshotter(){
   let sortField = 'created_at';
   let sortDir = 'desc';
 
+  const initParams = new URLSearchParams(location.search);
+  const presetUrl = initParams.get('url');
+  if(presetUrl) urlInput.value = presetUrl;
+
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
     const ths = table.querySelectorAll('th');
