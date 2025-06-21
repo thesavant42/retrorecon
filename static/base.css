@@ -1153,6 +1153,17 @@ body.bg-hidden {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+
+.retrorecon-root .dropdown-shade {
+  position: fixed;
+  inset: 0;
+  background: rgba(var(--bg-rgb) / 0.8);
+  z-index: 99;
+  display: none;
+}
+.retrorecon-root .dropdown-shade.show {
+  display: block;
+}
 .retrorecon-root .notes-overlay.hidden {
   display: none;
 }
