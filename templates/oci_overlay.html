@@ -15,9 +15,7 @@ Docker-Content-Digest: <a class="mt" href="/?image={{ repo }}@{{ digest }}&mt={{
 <pre class="manifest-json">{{ descriptor|tojson(indent=2) }}</pre>
 </div>
 <h4><span style="padding:0;" class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_export.md">export</a> {{ image }} | tar -tv{% if path %} {{ path }}{% endif %}</h4>
-<pre>
-{% for it in items %}
-<a href="/fs/{{ repo }}@{{ it.digest }}">{{ it.digest[:8] }}</a> {{ it.perms }} {{ it.owner }} <span title="{{ it.size_hr }}">{{ '%12s'|format(it.size) }}</span> {{ it.ts }} <a href="/fs/{{ repo }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a>
-{% endfor %}
-</pre>
+<pre>{%- for it in items %}
+<a href="/fs/{{ repo }}@{{ it.digest }}">{{ it.digest[:8] }}</a> {{ it.perms }} {{ it.owner }} <span title="{{ it.size_hr }}">{{ '%12s'|format(it.size) }}</span> {{ it.ts }} <a href="/fs/{{ repo }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a>{% if not loop.last %}\n{% endif %}
+{%- endfor %}</pre>
 {% endblock %}
