@@ -104,7 +104,7 @@ function initSubdomonster(){
     });
   }
 
-  function renderPagination(totalPages){
+  function renderPagination(totalPages, totalCount){
     if(!paginationDiv) return;
     let html = '<div class="pagination">';
     html += '<select id="subdom-items" class="form-select menu-btn">';
@@ -136,6 +136,7 @@ function initSubdomonster(){
       html += `<a href="#" data-p="${currentPage+1}" class="pagination-arrow" aria-label="Next">&raquo;</a>`;
       html += `<a href="#" data-p="${totalPages}" class="pagination-arrow" aria-label="Last">&raquo;&raquo;</a>`;
     }
+    html += `<span class="total-count">Total results: ${totalCount}</span>`;
     html += '</div>';
     paginationDiv.innerHTML = html;
     const sel = document.getElementById('subdom-items');
@@ -247,6 +248,7 @@ function initSubdomonster(){
       });
     });
 
+    renderPagination(totalPages, sorted.length);
     const shade = document.getElementById('dropdown-shade');
     table.querySelectorAll('.dropbtn').forEach(btn => {
       btn.addEventListener('click', e => {
