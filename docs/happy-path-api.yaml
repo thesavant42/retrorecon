@@ -1,0 +1,204 @@
+openapi: 3.0.3
+info:
+  title: OCI Registry Explorer API
+  version: "1.0.0"
+  description: |
+    OpenAPI 3 specification for the OCI Registry Explorer (dagdotdev).
+servers:
+  - url: http://localhost:8080
+paths:
+  /:
+    get:
+      summary: Landing page and query-based operations
+      parameters:
+        - in: query
+          name: history
+          schema:
+            type: string
+          description: Show manifest history for the given image
+        - in: query
+          name: image
+          schema:
+            type: string
+          description: Render manifest for the given image
+        - in: query
+          name: blob
+          schema:
+            type: string
+          description: Retrieve blob JSON for the given image
+        - in: query
+          name: repo
+          schema:
+            type: string
+          description: List tags for the given repository
+        - in: query
+          name: referrers
+          schema:
+            type: string
+          description: List referrers for the given manifest
+      responses:
+        '200':
+          description: Successful response
+  /fs/{fullPath}:
+    get:
+      summary: Explore file system of a layer or blob
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful file system exploration
+  /size/{fullPath}:
+    get:
+      summary: Show size of files in a layer or blob
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful size retrieval
+  /sizes/{fullPath}:
+    get:
+      summary: Show sizes of files in a layer or blob (multiple)
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful multiple size retrieval
+  /http/{fullPath}:
+    get:
+      summary: Workaround for URLs field (same as /fs/)
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful HTTP FS exploration
+  /https/{fullPath}:
+    get:
+      summary: Workaround for HTTPS URLs field (same as /fs/)
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful HTTPS FS exploration
+  /layers/{fullPath}:
+    get:
+      summary: Explore layers of the image
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful layers exploration
+  /cache/{fullPath}:
+    get:
+      summary: Explore cache/index for SOCI snapshots
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful index exploration
+  /blob/{fullPath}:
+    get:
+      summary: Render blob data (FS fallback if unknown media type)
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful blob rendering
+  /zurl/{fullPath}:
+    get:
+      summary: Generate signed URL for blob download
+      parameters:
+        - in: path
+          name: fullPath
+          required: true
+          schema:
+            type: string
+            pattern: ".+"
+          description: Path parameter capturing the full resource path
+      responses:
+        '200':
+          description: Successful zURL generation
+  /oauth:
+    get:
+      summary: OAuth2 authentication callback
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: OAuth2 authorization code
+        - in: query
+          name: state
+          schema:
+            type: string
+          required: true
+          description: Original request URL/state
+      responses:
+        '302':
+          description: Redirect to original URL after setting authentication cookies
+  /favicon.svg:
+    get:
+      summary: Favicon (SVG)
+      responses:
+        '200':
+          description: SVG icon
+  /favicon.ico:
+    get:
+      summary: Favicon (SVG served as .ico)
+      responses:
+        '200':
+          description: Favicon icon
+  /robots.txt:
+    get:
+      summary: robots.txt
+      responses:
+        '200':
+          description: robots.txt file
