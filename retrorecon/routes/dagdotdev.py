@@ -21,11 +21,21 @@ def r_route(ref: str):
 
 @bp.route("/fs/<digest>/<path:path>", methods=["GET"])
 def fs_route(digest: str, path: str):
-    """Alias for ``/dag/fs`` route using ``image`` query."""
+    """Alias for ``/fs`` route with ``image`` query.
+
+    This mirrors the behavior of :func:`oci.fs_view` so that binary files are
+    rendered as a hex dump rather than being immediately downloaded. The
+    original implementation delegated to :func:`dag.dag_fs`, which always
+    returned the raw bytes and caused browsers to trigger a download. That broke
+    parity with the OCI explorer's ``/fs`` route.
+    """
     image = request.args.get("image")
     if not image:
         return jsonify({"error": "missing_image"}), 400
-    return dag.dag_fs(image, digest, path)
+    user, repo, _ = parse_image_ref(image)
+    repo_full = f"{user}/{repo}"
+    # Reuse the standard OCI view logic for consistent rendering.
+    return oci.fs_view(repo_full, digest, path)
 
 
 @bp.route("/layer/<digest>", methods=["GET"])
