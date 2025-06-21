@@ -387,31 +387,36 @@ def fs_view(repo: str, digest: str, subpath: str):
     return send_file(io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False)
 
 
-def _parse_ls_line(line: str) -> tuple[str, bool]:
-    parts = line.split(None, 4)
-    if len(parts) < 5:
-        return "", False
-    return parts[4], parts[0].startswith("d")
+def _parse_ls_line(line: str) -> tuple[str, bool, str, str, str, str]:
+    parts = line.split(None, 5)
+    if len(parts) < 6:
+        return "", False, "", "", "", ""
+    perms, owner, size, date, time, name = parts
+    is_dir = perms.startswith("d")
+    return name, is_dir, perms, owner, size, f"{date} {time}"
 
 
-async def _build_overlay(image: str) -> dict[str, tuple[str, bool]]:
+async def _build_overlay(image: str) -> dict[str, tuple[str, bool, str, str, str, str]]:
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
         if manifest.get("manifests"):
             digest = manifest["manifests"][0]["digest"]
             manifest = await get_manifest(image, specific_digest=digest, client=client)
-        mapping: dict[str, tuple[str, bool]] = {}
+        mapping: dict[str, tuple[str, bool, str, str, str, str]] = {}
         for layer in manifest.get("layers", []):
             files = await list_layer_files(image, layer["digest"], client=client)
             for line in files:
-                path, is_dir = _parse_ls_line(line)
+                path, is_dir, perms, owner, size, ts = _parse_ls_line(line)
                 if path:
-                    mapping[path] = (layer["digest"], is_dir)
+                    mapping[path] = (layer["digest"], is_dir, perms, owner, size, ts)
         return mapping
 
 
 def _overlay_view(image: str, digest: str, subpath: str):
     overlay = asyncio.run(_build_overlay(image))
+    data = asyncio.run(_image_data(image))
+    descriptor = data["descriptor"]
+    desc_size_hr = human_readable_size(descriptor["size"])
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
     entry = overlay.get(subpath)
@@ -438,12 +443,27 @@ def _overlay_view(image: str, digest: str, subpath: str):
         child_path = prefix + name
         if mapping[name] and not child_path.endswith("/"):
             child_path += "/"
-        items.append({"name": name, "path": child_path, "is_dir": mapping[name]})
+        digest_val, _, perms, owner, size, ts = overlay.get(child_path, ("", False, "", "", "0", ""))
+        items.append({
+            "name": name,
+            "path": child_path,
+            "is_dir": mapping[name],
+            "digest": digest_val,
+            "perms": perms,
+            "owner": owner,
+            "size": size,
+            "size_hr": human_readable_size(int(size) if str(size).isdigit() else 0),
+            "ts": ts,
+        })
     return render_template(
-        "oci_fs.html",
+        "oci_overlay.html",
         repo=repo_full,
+        image=image,
         digest=digest,
-        path="/" + subpath.rstrip("/") if subpath else "/",
+        headers=data["headers"],
+        descriptor=descriptor,
+        descriptor_size_hr=desc_size_hr,
+        path="/" + subpath.rstrip("/") if subpath else "",
         items=items,
         q=q,
     )
