@@ -21,10 +21,17 @@ def subdomonster_full_page():
     return app.index()
 
 
-@bp.route('/subdomains', methods=['POST'])
+@bp.route('/subdomains', methods=['GET', 'POST'])
 def subdomains_route():
     if not app._db_loaded():
         return jsonify({'error': 'no_db'}), 400
+
+    if request.method == 'GET':
+        domain = request.args.get('domain', '').strip().lower()
+        if domain:
+            return jsonify(subdomain_utils.list_subdomains(domain))
+        return jsonify(subdomain_utils.list_all_subdomains())
+
     domain = request.form.get('domain', '').strip().lower()
     if not domain:
         return ('Missing domain', 400)
