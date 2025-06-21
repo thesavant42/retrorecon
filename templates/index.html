@@ -438,6 +438,11 @@
       dropdownShade.classList.remove('show');
     });
 
+    function closeMenus(){
+      document.querySelectorAll('.dropdown').forEach(it => it.classList.remove('show'));
+      dropdownShade.classList.remove('show');
+    }
+
     function toggleSelectAllPage(cb) {
       const boxes = document.querySelectorAll('.row-checkbox');
       let state = cb.checked;
@@ -1064,6 +1069,7 @@
       if(subLink){
         subLink.addEventListener('click', async (e) => {
           e.preventDefault();
+          closeMenus();
           showSubdomonster();
         });
       }
