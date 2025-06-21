@@ -13,6 +13,13 @@ function initSubdomonster(){
   const searchInput = document.getElementById('subdomonster-search');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
+  const selectPageCb = document.getElementById('subdom-select-all-page');
+  const selectAllCb = document.getElementById('subdom-select-all-matching');
+  const bulkTag = document.getElementById('subdom-bulk-tag');
+  const addTagBtn = document.getElementById('subdom-add-tag-btn');
+  const removeTagBtn = document.getElementById('subdom-remove-tag-btn');
+  const clearTagsBtn = document.getElementById('subdom-clear-tags-btn');
+  const deleteBtn = document.getElementById('subdom-delete-btn');
   let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
@@ -25,6 +32,7 @@ function initSubdomonster(){
   let sortDir = 'asc';
   let itemsPerPage = 25;
   let searchText = '';
+  let selectAll = false;
 
   let statusTimer = null;
   let statusDelay = 1000;
@@ -33,6 +41,24 @@ function initSubdomonster(){
     if(statusSpan){
       statusSpan.textContent = msg;
       setTimeout(() => { if(statusSpan.textContent === msg) statusSpan.textContent = ''; }, 4000);
+    }
+  }
+
+  function toggleSelectPage(state){
+    document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c=>c.checked=state);
+    if(selectAllCb) selectAllCb.checked = false;
+    selectAll = false;
+  }
+
+  function toggleSelectAllMatching(state){
+    selectAll = state;
+    if(selectAllCb) selectAllCb.checked = state;
+    if(selectPageCb) selectPageCb.checked = false;
+    if(state){
+      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c=>c.checked=true);
+      showStatus('All matching selected');
+    } else {
+      showStatus('Selection cleared');
     }
   }
 
@@ -62,6 +88,13 @@ function initSubdomonster(){
       clearTimeout(statusTimer);
       statusTimer = null;
     }
+  }
+
+  if(selectPageCb){
+    selectPageCb.addEventListener('change',()=>toggleSelectPage(selectPageCb.checked));
+  }
+  if(selectAllCb){
+    selectAllCb.addEventListener('change',()=>toggleSelectAllMatching(selectAllCb.checked));
   }
 
   if(searchInput){
@@ -184,7 +217,7 @@ function initSubdomonster(){
 
   function render(){
     const filtered = searchText ?
-      tableData.filter(r => r.subdomain.toLowerCase().includes(searchText)) :
+      tableData.filter(r => r.subdomain.toLowerCase().includes(searchText) || (r.tags||'').toLowerCase().includes(searchText)) :
       tableData;
     const sorted = filtered.slice().sort((a,b)=>{
       const av = (a[sortField] || '').toString().toLowerCase();
@@ -197,21 +230,25 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/><col class="send-col"/>'+
+      '<col/><col/><col/><col/><col/><col class="send-col"/>'+
       '</colgroup><thead><tr>'+
+      '<th class="w-2em"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;if(selectPageCb)selectPageCb.checked=this.checked;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
+      '<th>Tags</th>'+
       '<th class="no-resize">Actions:</th>'+
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
+        `<td class="text-center"><input type="checkbox" class="row-checkbox" value="${r.domain}|${r.subdomain}" /></td>`+
         `<td><span class="ml-5px">${r.subdomain}</span></td>`+
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
         `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
+        `<td>${r.tags || ''}</td>`+
         `<td>`+
           `<button type="button" class="btn btn--small delete-btn">x</button> `+
           `<div class="dropdown d-inline-block ml-4px">`+
@@ -347,6 +384,38 @@ function initSubdomonster(){
       alert('Export failed');
     }
   });
+
+  async function bulkAction(action){
+    const selected = Array.from(document.querySelectorAll('#subdomonster-table .row-checkbox:checked')).map(c=>c.value);
+    if(!selectAll && selected.length === 0){
+      alert('No entries selected');
+      return;
+    }
+    const params = new URLSearchParams();
+    params.append('action', action);
+    if(selectAll){
+      params.append('select_all_matching','true');
+      params.append('q', searchInput ? searchInput.value.trim() : '');
+      params.append('domain', domainInput.value.trim());
+    } else {
+      for(const val of selected){ params.append('selected', val); }
+    }
+    const tag = bulkTag ? bulkTag.value.trim() : '';
+    if(tag) params.append('tag', tag);
+    const resp = await fetch('/subdomain_action', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params});
+    if(resp.ok){
+      const data = await resp.json();
+      showStatus('Updated ' + data.updated);
+      fetchBtn.click();
+    } else {
+      alert('Action failed');
+    }
+  }
+
+  if(addTagBtn){ addTagBtn.addEventListener('click', ()=>bulkAction('add_tag')); }
+  if(removeTagBtn){ removeTagBtn.addEventListener('click', ()=>bulkAction('remove_tag')); }
+  if(clearTagsBtn){ clearTagsBtn.addEventListener('click', ()=>bulkAction('clear_tags')); }
+  if(deleteBtn){ deleteBtn.addEventListener('click', ()=>bulkAction('delete')); }
 
   closeBtn.addEventListener('click', () => {
     history.back();

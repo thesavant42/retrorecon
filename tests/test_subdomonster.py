@@ -300,3 +300,26 @@ def test_fetch_then_local_scrape(tmp_path, monkeypatch):
         expected = {"a.example.com", "2.example.com", "3example.com", "3.3xample.com"}
         assert expected <= subs
 
+
+def test_subdomain_tagging_and_delete(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('tagdel')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com', 'b.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.post('/subdomain_action', data={'action':'add_tag', 'selected':'example.com|a.example.com', 'tag':'test'})
+        assert resp.status_code == 200
+        assert resp.get_json()['updated'] == 1
+    with app.app.app_context():
+        rows = subdomain_utils.list_subdomains('example.com')
+        row = next(r for r in rows if r['subdomain']=='a.example.com')
+        assert 'test' in row['tags']
+    with app.app.test_client() as client:
+        resp = client.post('/subdomain_action', data={'action':'delete','selected':'example.com|b.example.com'})
+        assert resp.status_code == 200
+    with app.app.app_context():
+        rows = subdomain_utils.list_subdomains('example.com')
+        subs = {r['subdomain'] for r in rows}
+        assert 'b.example.com' not in subs
+

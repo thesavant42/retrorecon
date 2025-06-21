@@ -14,6 +14,18 @@ logger = logging.getLogger(__name__)
 _EXTRACTOR = tldextract.TLDExtract(suffix_list_urls=None)
 
 
+def _merge_tags(tag_str: Optional[str]) -> str:
+    """Return a deduplicated comma list from ``tag_str``."""
+    if not tag_str:
+        return ""
+    tags: List[str] = []
+    for t in tag_str.split(','):
+        t = t.strip()
+        if t and t not in tags:
+            tags.append(t)
+    return ','.join(tags)
+
+
 def fetch_from_crtsh(domain: str) -> List[str]:
     """Return subdomains for *domain* fetched from crt.sh."""
     url = f"https://crt.sh/json?identity={domain}"
@@ -54,12 +66,12 @@ def insert_records(
 ) -> int:
     """Insert ``subs`` for ``root_domain`` and return count inserted."""
     params = [
-        (root_domain, sub, source, int(cdx))
+        (root_domain, sub, source, "", int(cdx))
         for sub in subs
     ]
     try:
         return executemany_db(
-            "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, tags, cdx_indexed) VALUES (?, ?, ?, ?, ?)",
             params,
         )
     except Exception as exc:  # pragma: no cover - log only
@@ -68,7 +80,7 @@ def insert_records(
         for p in params:
             try:
                 execute_db(
-                    "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
+                    "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, tags, cdx_indexed) VALUES (?, ?, ?, ?, ?)",
                     list(p),
                 )
                 count += 1
@@ -93,12 +105,90 @@ def delete_record(root_domain: str, subdomain: str) -> None:
     )
 
 
+def add_tag(root_domain: str, subdomain: str, tag: str) -> None:
+    rows = query_db(
+        "SELECT id, tags FROM domains WHERE root_domain = ? AND subdomain = ?",
+        [root_domain, subdomain],
+    )
+    for r in rows:
+        tag_list = [t.strip() for t in (r["tags"] or "").split(',') if t.strip()]
+        if tag not in tag_list:
+            tag_list.append(tag)
+            execute_db(
+                "UPDATE domains SET tags = ? WHERE id = ?",
+                [','.join(tag_list), r["id"]],
+            )
+
+
+def remove_tag(root_domain: str, subdomain: str, tag: str) -> None:
+    rows = query_db(
+        "SELECT id, tags FROM domains WHERE root_domain = ? AND subdomain = ?",
+        [root_domain, subdomain],
+    )
+    for r in rows:
+        tag_list = [
+            t.strip()
+            for t in (r["tags"] or "").split(',')
+            if t.strip() and t.strip() != tag
+        ]
+        execute_db(
+            "UPDATE domains SET tags = ? WHERE id = ?",
+            [','.join(tag_list), r["id"]],
+        )
+
+
+def clear_tags(root_domain: str, subdomain: str) -> None:
+    execute_db(
+        "UPDATE domains SET tags = '' WHERE root_domain = ? AND subdomain = ?",
+        [root_domain, subdomain],
+    )
+
+
+def search_subdomains(term: str, root_domain: Optional[str] = None) -> List[Dict[str, str]]:
+    """Return subdomains matching ``term`` in name or tags."""
+    term = f"%{term.lower()}%"
+    params: List[Any] = []
+    where = "WHERE (d.subdomain LIKE ? OR d.tags LIKE ?)"
+    params.extend([term, term])
+    if root_domain:
+        where += " AND d.root_domain = ?"
+        params.append(root_domain)
+    rows = query_db(
+        f"""
+        SELECT d.subdomain, d.root_domain as domain,
+               GROUP_CONCAT(DISTINCT d.source) AS sources,
+               GROUP_CONCAT(d.tags, ',') AS tags,
+               MAX(d.cdx_indexed) AS cdxed,
+               EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
+        FROM domains d
+        {where}
+        GROUP BY d.subdomain, d.root_domain
+        ORDER BY d.subdomain
+        """,
+        params,
+    )
+    results = []
+    for r in rows:
+        indexed = r["cdxed"] or r["in_urls"]
+        results.append(
+            {
+                "subdomain": r["subdomain"],
+                "domain": r["domain"],
+                "source": r["sources"],
+                "tags": _merge_tags(r["tags"]),
+                "cdx_indexed": bool(indexed),
+            }
+        )
+    return results
+
+
 def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
     """Return all subdomains for ``root_domain`` aggregated by source."""
     rows = query_db(
         """
         SELECT d.subdomain, d.root_domain as domain,
                GROUP_CONCAT(DISTINCT d.source) AS sources,
+               GROUP_CONCAT(d.tags, ',') AS tags,
                MAX(d.cdx_indexed) AS cdxed,
                EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
         FROM domains d
@@ -116,6 +206,7 @@ def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
                 "subdomain": r["subdomain"],
                 "domain": r["domain"],
                 "source": r["sources"],
+                "tags": _merge_tags(r["tags"]),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -128,6 +219,7 @@ def list_all_subdomains() -> List[Dict[str, str]]:
         """
         SELECT d.subdomain, d.root_domain as domain,
                GROUP_CONCAT(DISTINCT d.source) AS sources,
+               GROUP_CONCAT(d.tags, ',') AS tags,
                MAX(d.cdx_indexed) AS cdxed,
                EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
         FROM domains d
@@ -143,6 +235,7 @@ def list_all_subdomains() -> List[Dict[str, str]]:
                 "subdomain": r["subdomain"],
                 "domain": r["domain"],
                 "source": r["sources"],
+                "tags": _merge_tags(r["tags"]),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -178,6 +271,7 @@ def list_subdomains_page(
         f"""
         SELECT d.subdomain, d.root_domain as domain,
                GROUP_CONCAT(DISTINCT d.source) AS sources,
+               GROUP_CONCAT(d.tags, ',') AS tags,
                MAX(d.cdx_indexed) AS cdxed,
                EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
         FROM domains d
@@ -196,6 +290,7 @@ def list_subdomains_page(
                 "subdomain": r["subdomain"],
                 "domain": r["domain"],
                 "source": r["sources"],
+                "tags": _merge_tags(r["tags"]),
                 "cdx_indexed": bool(indexed),
             }
         )

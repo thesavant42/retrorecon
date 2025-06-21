@@ -13,6 +13,15 @@
     <button type="button" class="btn" id="subdomonster-close-btn">Close</button>
     <span id="subdomonster-status" class="ml-05"></span>
   </div>
+  <div class="mb-05">
+    <input type="checkbox" id="subdom-select-all-page" class="form-checkbox mr-05" /> Select Page
+    <input type="checkbox" id="subdom-select-all-matching" class="form-checkbox mr-05" /> Select All Matching
+    <input type="text" id="subdom-bulk-tag" class="form-input mr-05" placeholder="tag" />
+    <button type="button" class="btn" id="subdom-add-tag-btn">Add Tag</button>
+    <button type="button" class="btn" id="subdom-remove-tag-btn">Remove Tag</button>
+    <button type="button" class="btn" id="subdom-clear-tags-btn">Clear Tags</button>
+    <button type="button" class="btn" id="subdom-delete-btn">Delete Selected</button>
+  </div>
   <div id="subdomonster-table" class="mt-05"></div>
   <div id="subdomonster-pagination" class="mt-05"></div>
   <script type="application/json" id="subdomonster-init">{{ initial_data|tojson }}</script>

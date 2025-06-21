@@ -55,6 +55,8 @@ def ensure_schema() -> None:
             cols = [row[1] for row in cur.fetchall()]
             if 'cdx_indexed' not in cols:
                 conn.execute("ALTER TABLE domains ADD COLUMN cdx_indexed INTEGER DEFAULT 0")
+            if 'tags' not in cols:
+                conn.execute("ALTER TABLE domains ADD COLUMN tags TEXT DEFAULT ''")
             conn.commit()
         finally:
             conn.close()
