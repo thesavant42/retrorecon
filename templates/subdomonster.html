@@ -8,14 +8,21 @@
     <input type="text" id="subdomonster-api-key" class="form-input mr-05 hidden" placeholder="API key" />
     <button type="button" class="btn" id="subdomonster-fetch-btn">Fetch</button>
     <input type="text" id="subdomonster-search" class="form-input mr-05" placeholder="search" />
-    <button type="button" class="btn" id="subdomonster-export-csv-btn">Export CSV</button>
-    <button type="button" class="btn" id="subdomonster-export-md-btn">Export MD</button>
+    <select id="subdom-export-formats" class="form-select mr-05" multiple>
+      <option value="csv">CSV</option>
+      <option value="md">Markdown</option>
+    </select>
+    <button type="button" class="btn" id="subdom-export-btn">Export</button>
     <button type="button" class="btn" id="subdomonster-close-btn">Close</button>
     <span id="subdomonster-status" class="ml-05"></span>
   </div>
   <div class="mb-05">
-    <input type="checkbox" id="subdom-select-all-page" class="form-checkbox mr-05" /> Select Page
-    <input type="checkbox" id="subdom-select-all-matching" class="form-checkbox mr-05" /> Select All Matching
+    <select id="subdom-select-mode" class="form-select mr-05">
+      <option value="" selected>Select...</option>
+      <option value="page">Select Page</option>
+      <option value="all">Select All Matching</option>
+      <option value="none">Select None</option>
+    </select>
     <input type="text" id="subdom-bulk-tag" class="form-input mr-05" placeholder="tag" />
     <button type="button" class="btn" id="subdom-add-tag-btn">Add Tag</button>
     <button type="button" class="btn" id="subdom-remove-tag-btn">Remove Tag</button>
