@@ -91,6 +91,9 @@ def export_subdomains():
     if not domain:
         return jsonify([])
     rows = subdomain_utils.list_subdomains(domain)
+    q = request.args.get('q', '').strip().lower()
+    if q:
+        rows = [r for r in rows if q in r['subdomain'].lower()]
     fmt = request.args.get('format', 'json')
     if fmt == 'csv':
         output = io.StringIO()
