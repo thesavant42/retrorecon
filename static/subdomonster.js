@@ -264,6 +264,7 @@ function initSubdomonster(){
     } else if(source !== 'local' && !domain){
       return;
     }
+    showStatus('Fetching...');
     const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     if(resp.ok){
       const data = await resp.json();
@@ -312,9 +313,7 @@ function initSubdomonster(){
   });
 
   closeBtn.addEventListener('click', () => {
-    overlay.classList.add('hidden');
-    stopStatusPolling();
-    history.pushState({}, '', '/');
+    history.back();
   });
 
   if(tableData.length){
