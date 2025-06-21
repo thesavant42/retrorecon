@@ -8,6 +8,11 @@ from database import execute_db, query_db
 
 logger = logging.getLogger(__name__)
 
+# Use a preconfigured TLDExtract instance that never performs network lookups.
+# This avoids long delays or failures in environments without outbound network
+# access when ``scrape_from_urls`` tries to parse hostnames.
+_EXTRACTOR = tldextract.TLDExtract(suffix_list_urls=None)
+
 
 def fetch_from_crtsh(domain: str) -> List[str]:
     """Return subdomains for *domain* fetched from crt.sh."""
@@ -208,7 +213,7 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
         if target_root:
             root = target_root
         else:
-            ext = tldextract.extract(host)
+            ext = _EXTRACTOR(host)
             if ext.suffix:
                 root = f"{ext.domain}.{ext.suffix}"
             else:
