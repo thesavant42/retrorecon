@@ -40,14 +40,19 @@ def fetch_from_virustotal(domain: str, api_key: str) -> List[str]:
     return sorted(set(s for s in subs if s))
 
 
-def insert_records(root_domain: str, subs: List[str], source: str = "crtsh") -> int:
+def insert_records(
+    root_domain: str,
+    subs: List[str],
+    source: str = "crtsh",
+    cdx: bool = False,
+) -> int:
     """Insert ``subs`` for ``root_domain`` and return count inserted."""
     count = 0
     for sub in subs:
         try:
             execute_db(
-                "INSERT OR IGNORE INTO domains (root_domain, subdomain, source) VALUES (?, ?, ?)",
-                [root_domain, sub, source],
+                "INSERT OR IGNORE INTO domains (root_domain, subdomain, source, cdx_indexed) VALUES (?, ?, ?, ?)",
+                [root_domain, sub, source, int(cdx)],
             )
             count += 1
         except Exception as exc:  # pragma: no cover - log only
@@ -151,5 +156,5 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
         else:
             parts = host.split(".")
             root = ".".join(parts[-2:]) if len(parts) >= 2 else host
-        count += insert_records(root, [host], "scrape")
+        count += insert_records(root, [host], "scrape", cdx=True)
     return count
