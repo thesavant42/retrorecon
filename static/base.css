@@ -598,7 +598,7 @@ body {
   display: flex;
   flex-direction: column;
   /* Maintain visible frame even when no URLs are listed */
-  min-height: 810px;
+  min-height: 600px;
   overflow-y: auto;
 }
 
@@ -960,7 +960,7 @@ body {
 
 /* Pagination styling */
 .retrorecon-root .pagination {
-    margin: 0.5em 1em;
+    margin: 0.2em 0.5em;
     border-radius: 4px;
     transition: background 0.2s;
     /* border: 1px solid var(--color-contrast); */
@@ -1093,11 +1093,11 @@ body {
   text-align: center;
   color: var(--fg-color);
   font-size: 0.97em;
-  margin-right: 50px;
+  margin-right: 0;
 }
 .retrorecon-root .bottom-container {
   margin-top: auto;
-  padding-top: 0.5em;
+  padding-top: 0.25em;
 }
 
 /* Misc: checkboxes for row selection */
