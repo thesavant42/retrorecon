@@ -43,7 +43,9 @@ async def _repo_data(repo: str) -> Dict[str, Any]:
     # and fails for these registries. If ``repo_name`` is empty we perform a
     # simple anonymous request instead.
     if repo_name == "":
-        async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+        async with aiohttp.ClientSession(
+            timeout=DEFAULT_TIMEOUT, trust_env=True
+        ) as sess:
             async with sess.get(url) as resp:
                 resp.raise_for_status()
                 data = await resp.json()
@@ -255,11 +257,15 @@ def layer_size_view(repo: str, digest: str):
                     mode |= stat.S_IFLNK
                 perms = stat.filemode(mode)
                 ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
-                entries.append((m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}"))
+                entries.append(
+                    (m.size, f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}")
+                )
     except tarfile.TarError:
         current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
-            render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
+            render_template(
+                "oci_error.html", repo=repo, digest=digest, message="invalid tar"
+            ),
             415,
         )
 
@@ -284,10 +290,13 @@ def layer_size_view(repo: str, digest: str):
 
 
 def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
+    """Return file entries for ``subpath`` with metadata."""
     prefix = subpath.rstrip("/")
     if prefix:
         prefix += "/"
+
     mapping: dict[str, bool] = {}
+    info_map: dict[str, tarfile.TarInfo] = {}
     for m in tar.getmembers():
         if not m.name.startswith(prefix) or m.name == subpath.rstrip("/"):
             continue
@@ -297,17 +306,44 @@ def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
             continue
         is_dir = "/" in remainder or m.isdir()
         mapping[part] = mapping.get(part, False) or is_dir
+        info_map.setdefault(part, m)
+
     items = []
     for name in sorted(mapping):
         child_path = prefix + name
         if mapping[name] and not child_path.endswith("/"):
             child_path += "/"
-        display_path = "/" + child_path
-        items.append({
-            "name": name,
-            "path": display_path,
-            "is_dir": mapping[name],
-        })
+        m = info_map.get(name)
+        if m:
+            mode = m.mode
+            if m.isfile():
+                mode |= stat.S_IFREG
+            elif m.isdir():
+                mode |= stat.S_IFDIR
+            elif m.issym():
+                mode |= stat.S_IFLNK
+            perms = stat.filemode(mode)
+            owner = f"{m.uid}/{m.gid}"
+            size = m.size
+            ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
+        else:
+            perms = ""
+            owner = ""
+            size = 0
+            ts = ""
+        items.append(
+            {
+                "name": name,
+                "path": "/" + child_path,
+                "link": name + ("/" if mapping[name] else ""),
+                "is_dir": mapping[name],
+                "perms": perms,
+                "owner": owner,
+                "size": size,
+                "size_hr": human_readable_size(size),
+                "ts": ts,
+            }
+        )
     return items
 
 
@@ -317,6 +353,9 @@ def fs_view(repo: str, digest: str, subpath: str):
     render_mode = request.args.get("render")
     q = request.args.get("q", "")
     q_lower = q.lower()
+    media_type = request.args.get(
+        "mt", "application/vnd.docker.image.rootfs.diff.tar.gzip"
+    )
     try:
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
@@ -336,6 +375,13 @@ def fs_view(repo: str, digest: str, subpath: str):
         )
     try:
         with tarfile.open(fileobj=io.BytesIO(blob), mode="r:*") as tar:
+            blob_size = len(blob)
+            size_param = request.args.get("size")
+            if size_param is not None:
+                try:
+                    blob_size = int(size_param)
+                except ValueError:
+                    pass
             if not subpath or subpath.endswith("/"):
                 items = _list_children(tar, subpath)
                 if q:
@@ -348,6 +394,10 @@ def fs_view(repo: str, digest: str, subpath: str):
                     path=disp,
                     items=items,
                     q=q,
+                    subpath=subpath,
+                    media_type=media_type,
+                    size=blob_size,
+                    size_hr=human_readable_size(blob_size),
                 )
             try:
                 member = tar.getmember(subpath)
@@ -364,6 +414,10 @@ def fs_view(repo: str, digest: str, subpath: str):
                     path="/" + subpath.rstrip("/"),
                     items=items,
                     q=q,
+                    subpath=subpath,
+                    media_type=media_type,
+                    size=blob_size,
+                    size_hr=human_readable_size(blob_size),
                 )
             file_obj = tar.extractfile(member)
             if not file_obj:
@@ -372,7 +426,9 @@ def fs_view(repo: str, digest: str, subpath: str):
     except tarfile.TarError:
         current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
-            render_template("oci_error.html", repo=repo, digest=digest, message="invalid tar"),
+            render_template(
+                "oci_error.html", repo=repo, digest=digest, message="invalid tar"
+            ),
             415,
         )
     if render_mode == "hex":
@@ -388,8 +444,12 @@ def fs_view(repo: str, digest: str, subpath: str):
             info = {"class": elf.elfclass, "entry": elf.header["e_entry"]}
         except Exception:
             info = {"error": "invalid elf"}
-        return render_template("oci_elf.html", info=json.dumps(info, indent=2), path=subpath)
-    return send_file(io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False)
+        return render_template(
+            "oci_elf.html", info=json.dumps(info, indent=2), path=subpath
+        )
+    return send_file(
+        io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False
+    )
 
 
 def _parse_ls_line(line: str) -> tuple[str, bool, str, str, str, str]:
@@ -437,7 +497,7 @@ def _overlay_view(image: str, digest: str, subpath: str):
     for path in overlay:
         if not path.startswith(prefix) or path == subpath:
             continue
-        remainder = path[len(prefix):]
+        remainder = path[len(prefix) :]
         part = remainder.split("/", 1)[0]
         is_dir = "/" in remainder or overlay.get(prefix + part, ("", False))[1]
         mapping[part] = mapping.get(part, False) or is_dir
@@ -449,18 +509,22 @@ def _overlay_view(image: str, digest: str, subpath: str):
         if mapping[name] and not child_path.endswith("/"):
             child_path += "/"
         display_path = "/" + child_path
-        digest_val, _, perms, owner, size, ts = overlay.get(child_path, ("", False, "", "", "0", ""))
-        items.append({
-            "name": name,
-            "path": display_path,
-            "is_dir": mapping[name],
-            "digest": digest_val,
-            "perms": perms,
-            "owner": owner,
-            "size": size,
-            "size_hr": human_readable_size(int(size) if str(size).isdigit() else 0),
-            "ts": ts,
-        })
+        digest_val, _, perms, owner, size, ts = overlay.get(
+            child_path, ("", False, "", "", "0", "")
+        )
+        items.append(
+            {
+                "name": name,
+                "path": display_path,
+                "is_dir": mapping[name],
+                "digest": digest_val,
+                "perms": perms,
+                "owner": owner,
+                "size": size,
+                "size_hr": human_readable_size(int(size) if str(size).isdigit() else 0),
+                "ts": ts,
+            }
+        )
     return render_template(
         "oci_overlay.html",
         repo=repo_full,
