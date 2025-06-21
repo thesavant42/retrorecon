@@ -16,9 +16,5 @@ Docker-Content-Digest: <a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ med
 <pre class="manifest-json">{{ {'mediaType': media_type, 'digest': digest, 'size': size}|tojson(indent=2) }}</pre>
 </div>
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_blob.md">blob</a> {{ repo }}@{{ digest }} | tar -tvz | sort -n -r -k3</h4>
-<pre>
-{% for line in lines %}
-{{ line }}
-{% endfor %}
-</pre>
+<pre>{{ lines|join('\n') }}</pre>
 {% endblock %}
