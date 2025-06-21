@@ -10,7 +10,7 @@
 <ul>
 {% for item in items %}
   <li>
-    <a class="mt" href="/fs/{{ repo }}@{{ digest }}/{{ item.path }}{% if q %}?q={{ q|urlencode }}{% endif %}">
+    <a class="mt" href="/fs/{{ repo }}@{{ digest }}{{ item.path }}{% if q %}?q={{ q|urlencode }}{% endif %}">
       {{ item.name }}{% if item.is_dir %}/{% endif %}
     </a>
   </li>

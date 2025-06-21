@@ -302,7 +302,12 @@ def _list_children(tar: tarfile.TarFile, subpath: str) -> list[dict[str, Any]]:
         child_path = prefix + name
         if mapping[name] and not child_path.endswith("/"):
             child_path += "/"
-        items.append({"name": name, "path": child_path, "is_dir": mapping[name]})
+        display_path = "/" + child_path
+        items.append({
+            "name": name,
+            "path": display_path,
+            "is_dir": mapping[name],
+        })
     return items
 
 
@@ -443,10 +448,11 @@ def _overlay_view(image: str, digest: str, subpath: str):
         child_path = prefix + name
         if mapping[name] and not child_path.endswith("/"):
             child_path += "/"
+        display_path = "/" + child_path
         digest_val, _, perms, owner, size, ts = overlay.get(child_path, ("", False, "", "", "0", ""))
         items.append({
             "name": name,
-            "path": child_path,
+            "path": display_path,
             "is_dir": mapping[name],
             "digest": digest_val,
             "perms": perms,
