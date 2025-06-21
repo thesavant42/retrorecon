@@ -262,5 +262,27 @@ def test_subdomain_pagination_all(tmp_path, monkeypatch):
         data = resp.get_json()
         assert data['total_count'] == 3
         assert data['total_pages'] == 2
-        assert len(data['results']) == 2
+    assert len(data['results']) == 2
+
+
+def test_fetch_then_local_scrape(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('fetchlocal')
+    sample = [
+        ["orig", "t", "200", "text/plain"],
+        ["http://a.example.com", "", "200", "text"],
+        ["http://2.example.com", "", "200", "text"],
+        ["http://3example.com", "", "200", "text"],
+        ["http://3.3xample.com", "", "200", "text"],
+    ]
+    monkeypatch.setattr(app.requests, 'get', lambda *a, **k: FakeResp(sample))
+    with app.app.test_client() as client:
+        client.post('/fetch_cdx', data={'domain': 'example.com'})
+        resp = client.post('/subdomains', data={'source': 'local'})
+        assert resp.status_code == 200
+        data = resp.get_json()
+        subs = {r['subdomain'] for r in data}
+        expected = {"a.example.com", "2.example.com", "3example.com", "3.3xample.com"}
+        assert expected <= subs
 

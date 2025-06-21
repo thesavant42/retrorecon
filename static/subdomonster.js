@@ -4,7 +4,6 @@ function initSubdomonster(){
   if(!overlay) return;
   const domainInput = document.getElementById('subdomonster-domain');
   const fetchBtn = document.getElementById('subdomonster-fetch-btn');
-  const scrapeBtn = document.getElementById('subdomonster-scrape-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
@@ -255,29 +254,17 @@ function initSubdomonster(){
     const domain = domainInput.value.trim();
     let source = 'crtsh';
     for(const rb of sourceRadios){ if(rb.checked){ source = rb.value; break; } }
-    if(source === 'local'){
-      const body = new URLSearchParams();
-      if(domain) body.append('domain', domain);
-      const resp = await fetch('/scrape_subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
-      if(resp.ok){
-        const q = domain ? ('?domain=' + encodeURIComponent(domain)) : '';
-        const r = await fetch('/subdomains' + q);
-        if(r.ok){
-          const data = await r.json();
-          tableData = Array.isArray(data) ? data : [];
-          currentPage = 1;
-          render();
-        } else {
-          alert(await r.text());
-        }
-      } else {
-        alert('Scrape failed');
-      }
+    const params = new URLSearchParams();
+    if(domain) params.append('domain', domain);
+    params.append('source', source);
+    if(source === 'virustotal'){
+      const api_key = apiInput.value.trim();
+      params.append('api_key', api_key);
+      if(!domain) return;
+    } else if(source !== 'local' && !domain){
       return;
     }
-    if(!domain) return;
-    const api_key = apiInput.value.trim();
-    const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({domain, source, api_key})});
+    const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     if(resp.ok){
       const data = await resp.json();
       tableData = Array.isArray(data) ? data : [];
@@ -288,26 +275,6 @@ function initSubdomonster(){
     }
   });
 
-  scrapeBtn.addEventListener('click', async () => {
-    const domain = domainInput.value.trim();
-    const body = new URLSearchParams();
-    if(domain) body.append('domain', domain);
-    const resp = await fetch('/scrape_subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
-    if(resp.ok){
-      const q = domain ? ('?domain=' + encodeURIComponent(domain)) : '';
-      const r = await fetch('/subdomains' + q);
-      if(r.ok){
-        const data = await r.json();
-        tableData = Array.isArray(data) ? data : [];
-        currentPage = 1;
-        render();
-      } else {
-        fetchBtn.click();
-      }
-    } else {
-      alert('Scrape failed');
-    }
-  });
 
   exportCsvBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
