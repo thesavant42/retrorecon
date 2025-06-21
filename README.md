@@ -120,12 +120,15 @@ the container.
 
 ### Docker Dev Deploy
 
-If you only need to update the Docker image without cutting a new release,
-use the helper script:
+To push a new image without cutting a release, trigger the **Dev Docker Deploy**
+workflow from the Actions tab. Provide the desired tag (defaults to `edge`) and
+GitHub will build and push the Docker image.
 
-```bash
-DOCKERHUB_USERNAME=yourname \
-DOCKERHUB_PAT=yourtoken \
+To run the helper script locally on Windows with Docker Desktop:
+
+```cmd
+set DOCKERHUB_USERNAME=yourname
+set DOCKERHUB_PAT=yourtoken
 python scripts/deploy_docker.py
 ```
 
