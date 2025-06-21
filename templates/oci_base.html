@@ -46,10 +46,12 @@
   }
   input:checked + label { opacity: 100%; }
   input ~ .tab { border-top: 1px solid #999; padding-top: 0.5em; }
+  .retrorecon-root .close-btn { float: right; margin-left: 1em; }
   </style>
 </head>
 <body>
 <div class="retrorecon-root">
+  <button type="button" class="btn btn--small close-btn" onclick="history.back();">Close</button>
 {% block body %}{% endblock %}
 </div>
 </body>
