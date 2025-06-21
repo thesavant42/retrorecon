@@ -22,7 +22,7 @@ Docker-Content-Digest: <a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ med
 <h4><span style="padding:0;" class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_blob.md">blob</a> {{ repo }}@{{ digest }} | tar -tvz{% if subpath %}  {{ subpath }}{% endif %}</h4>
 <pre>
 {% for item in items %}
-{{ item.perms }} {{ item.owner }} <span title="{{ item.size_hr }}">{{ '%12s'|format(item.size) }}</span> {{ item.ts }} <a href="{{ item.link }}">{{ item.name }}{% if item.is_dir %}/{% endif %}</a>
+{{ item.perms }} {{ item.owner }} <span title="{{ item.size_hr }}">{{ '%12s'|format(item.size) }}</span> {{ item.ts }} <a href="/fs/{{ repo }}@{{ digest }}{{ item.path }}">{{ item.name }}{% if item.is_dir %}/{% endif %}</a>
 {% endfor %}
 </pre>
 {% endblock %}
