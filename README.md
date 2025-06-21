@@ -135,6 +135,22 @@ docker run -p 5000:5000 \
 The mounted volumes store databases, uploaded files and screenshots outside
 the container.
 
+### Docker Dev Deploy
+
+To push a new image without cutting a release, trigger the **Dev Docker Deploy**
+workflow from the Actions tab. Provide the desired tag (defaults to `edge`) and
+GitHub will build and push the Docker image.
+
+To run the helper script locally on Windows with Docker Desktop:
+
+```cmd
+set DOCKERHUB_USERNAME=yourname
+set DOCKERHUB_PAT=yourtoken
+python scripts/deploy_docker.py
+```
+
+`IMAGE_TAG` defaults to `edge`; set it to another value to push a custom tag.
+
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
 2. **Import from JSON**: upload a JSON file containing URLs or full CDX records.
