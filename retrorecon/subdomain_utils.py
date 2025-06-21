@@ -1,4 +1,5 @@
 import logging
+import urllib.parse
 import requests
 from typing import List, Dict, Optional
 
@@ -130,15 +131,19 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
     """Insert subdomains found in ``urls``. Return number inserted."""
     if target_root:
         rows = query_db(
-            "SELECT DISTINCT domain FROM urls WHERE domain = ? OR domain LIKE ?",
-            [target_root, f'%.{target_root}'],
+            "SELECT DISTINCT url, domain FROM urls "
+            "WHERE url LIKE ? OR domain = ? OR domain LIKE ?",
+            [f"%{target_root}%", target_root, f"%.{target_root}"],
         )
     else:
-        rows = query_db("SELECT DISTINCT domain FROM urls")
+        rows = query_db("SELECT DISTINCT url, domain FROM urls")
 
     count = 0
     for r in rows:
         host = (r["domain"] or "").lower()
+        if not host:
+            host = urllib.parse.urlsplit(r["url"]).hostname or ""
+            host = host.lower()
         if not host:
             continue
         if target_root:
