@@ -33,9 +33,14 @@ function initSubdomonster(){
   let itemsPerPage = 25;
   let searchText = '';
   let selectAll = false;
+  const selectedSubs = new Set();
 
   let statusTimer = null;
   let statusDelay = 1000;
+
+  function updateSelectionStatus(){
+    showStatus(selectedSubs.size + ' selected');
+  }
 
   function showStatus(msg){
     if(statusSpan){
@@ -60,6 +65,21 @@ function initSubdomonster(){
     } else {
       showStatus('Selection cleared');
     }
+
+  function openCdxImport(sub){
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/fetch_cdx';
+    form.target = '_blank';
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = 'domain';
+    inp.value = sub;
+    form.appendChild(inp);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
   }
 
   function pollStatus(){
@@ -101,7 +121,9 @@ function initSubdomonster(){
     searchInput.addEventListener('input', () => {
       searchText = searchInput.value.trim().toLowerCase();
       currentPage = 1;
+      selectedSubs.clear();
       render();
+      updateSelectionStatus();
     });
   }
 
@@ -242,6 +264,7 @@ function initSubdomonster(){
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
+      const checked = selectedSubs.has(r.subdomain) ? ' checked' : '';
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
         `<td class="text-center"><input type="checkbox" class="row-checkbox" value="${r.domain}|${r.subdomain}" /></td>`+
         `<td><span class="ml-5px">${r.subdomain}</span></td>`+
@@ -258,6 +281,7 @@ function initSubdomonster(){
               `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
+              `<div class="menu-row"><a class="menu-btn cdx-import-link" href="#" data-sub="${encoded}">Wayback Import</a></div>`+
             `</div>`+
           `</div>`+
         `</td>`+
@@ -266,6 +290,25 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     const table = tableDiv.querySelector('table');
+    const pageCb = document.getElementById('subdom-page-cb');
+    if(pageCb){
+      pageCb.checked = pageData.every(r => selectedSubs.has(r.subdomain));
+      pageCb.addEventListener('change', () => {
+        pageData.forEach(r => {
+          if(pageCb.checked) selectedSubs.add(r.subdomain); else selectedSubs.delete(r.subdomain);
+        });
+        table.querySelectorAll('.row-checkbox').forEach(c => c.checked = pageCb.checked);
+        updateSelectionStatus();
+      });
+    }
+    table.querySelectorAll('.row-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const sub = cb.dataset.sub;
+        if(cb.checked) selectedSubs.add(sub); else selectedSubs.delete(sub);
+        if(pageCb) pageCb.checked = pageData.every(r => selectedSubs.has(r.subdomain));
+        updateSelectionStatus();
+      });
+    });
     table.querySelectorAll('th.sortable').forEach(th => {
       th.addEventListener('click', ev => {
         if(ev.target.closest('.col-resizer')) return;
@@ -294,6 +337,21 @@ function initSubdomonster(){
           } else {
             alert('Delete failed');
           }
+        }
+      });
+    });
+    table.querySelectorAll('.cdx-import-link').forEach(link => {
+      link.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const sub = decodeURIComponent(link.dataset.sub);
+        openCdxImport(sub);
+        const row = link.closest('tr');
+        if(row){
+          row.dataset.cdx = '1';
+          const cell = row.querySelector('td:nth-child(5)');
+          if(cell) cell.textContent = 'yes';
+          const item = tableData.find(r => r.subdomain === sub);
+          if(item) item.cdx_indexed = true;
         }
       });
     });
@@ -337,7 +395,9 @@ function initSubdomonster(){
       const data = await resp.json();
       tableData = Array.isArray(data) ? data : [];
       currentPage = 1;
+      selectedSubs.clear();
       render();
+      updateSelectionStatus();
     } else {
       alert(await resp.text());
     }
@@ -423,6 +483,7 @@ function initSubdomonster(){
 
   if(tableData.length){
     render();
+    updateSelectionStatus();
   }
   window.startSubdomonsterStatus = startStatusPolling;
   window.stopSubdomonsterStatus = stopStatusPolling;
