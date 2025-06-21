@@ -263,8 +263,8 @@ def test_layers_overlay_listing(tmp_path, monkeypatch):
 
     async def fake_list(image_ref, digest, client=None):
         if digest == "sha256:a":
-            return ["-rw-r--r-- 0/0 0 2024-01-01 foo.txt"]
-        return ["-rw-r--r-- 0/0 0 2024-01-01 bar.txt"]
+            return ["-rw-r--r-- 0/0 0 2024-01-01 00:00 foo.txt"]
+        return ["-rw-r--r-- 0/0 0 2024-01-01 00:00 bar.txt"]
 
     monkeypatch.setattr(oci, "list_layer_files", fake_list)
 
@@ -296,8 +296,11 @@ def test_layers_overlay_listing(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         resp = client.get("/layers/user/repo:tag@sha256:m/")
         assert resp.status_code == 200
-        assert b"foo.txt" in resp.data
-        assert b"bar.txt" in resp.data
+        html = resp.data.decode()
+        assert "foo.txt" in html
+        assert "bar.txt" in html
+        assert '/fs/user/repo@sha256:a' in html
+        assert 'href="foo.txt"' in html
 
         resp = client.get("/layers/user/repo:tag@sha256:m/foo.txt")
         assert resp.status_code == 200
