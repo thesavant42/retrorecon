@@ -314,9 +314,7 @@ function initSubdomonster(){
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
     stopStatusPolling();
-    if(location.pathname === '/tools/subdomonster'){
-      history.pushState({}, '', '/');
-    }
+    history.pushState({}, '', '/');
   });
 
   if(tableData.length){
