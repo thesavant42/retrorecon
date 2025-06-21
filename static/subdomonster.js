@@ -40,8 +40,19 @@ function initSubdomonster(){
   let statusTimer = null;
   let statusDelay = 1000;
 
+  function getMatchingCount(){
+    const q = searchText;
+    if(!q) return tableData.length;
+    return tableData.filter(r =>
+      r.subdomain.toLowerCase().includes(q) ||
+      r.domain.toLowerCase().includes(q) ||
+      (r.tags || '').toLowerCase().includes(q)
+    ).length;
+  }
+
   function updateSelectionStatus(){
-    showStatus(selectedSubs.size + ' selected');
+    const count = selectAll ? getMatchingCount() : selectedSubs.size;
+    showStatus(count + ' selected');
   }
 
   function showStatus(msg){
@@ -52,20 +63,33 @@ function initSubdomonster(){
   }
 
   function toggleSelectPage(state){
-    document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c=>c.checked=state);
+    document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => {
+      c.checked = state;
+      const sub = c.dataset.sub;
+      if(state) selectedSubs.add(sub); else selectedSubs.delete(sub);
+    });
     selectAll = false;
     if(selectModeSel) selectModeSel.value = state ? 'page' : '';
+    updateSelectionStatus();
   }
 
   function toggleSelectAllMatching(state){
     selectAll = state;
     if(selectModeSel) selectModeSel.value = state ? 'all' : '';
     if(state){
-      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c=>c.checked=true);
+      selectedSubs.clear();
+      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => {
+        c.checked = true;
+        const sub = c.dataset.sub;
+        selectedSubs.add(sub);
+      });
       showStatus('All matching selected');
     } else {
+      selectedSubs.clear();
+      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => c.checked=false);
       showStatus('Selection cleared');
     }
+    updateSelectionStatus();
   }
 
   function openCdxImport(sub){
@@ -280,9 +304,9 @@ function initSubdomonster(){
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
-      const checked = selectedSubs.has(r.subdomain) ? ' checked' : '';
+      const checked = selectAll || selectedSubs.has(r.subdomain) ? ' checked' : '';
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
-        `<td class="text-center"><input type="checkbox" class="row-checkbox" value="${r.domain}|${r.subdomain}" /></td>`+
+        `<td class="text-center"><input type="checkbox" class="row-checkbox" data-sub="${r.subdomain}" data-domain="${r.domain}" value="${r.domain}|${r.subdomain}"${checked} /></td>`+
         `<td><span class="ml-5px">${r.subdomain}</span></td>`+
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
@@ -319,7 +343,7 @@ function initSubdomonster(){
     }
     table.querySelectorAll('.row-checkbox').forEach(cb => {
       cb.addEventListener('change', () => {
-        const sub = cb.dataset.sub;
+        const sub = cb.dataset.sub || (cb.closest('tr') ? cb.closest('tr').dataset.sub : '');
         if(cb.checked) selectedSubs.add(sub); else selectedSubs.delete(sub);
         if(pageCb) pageCb.checked = pageData.every(r => selectedSubs.has(r.subdomain));
         updateSelectionStatus();
