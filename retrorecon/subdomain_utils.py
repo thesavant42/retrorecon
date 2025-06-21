@@ -1,7 +1,7 @@
 import logging
 import urllib.parse
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import tldextract
 
 from database import execute_db, query_db
@@ -118,6 +118,59 @@ def list_all_subdomains() -> List[Dict[str, str]]:
         GROUP BY d.subdomain, d.root_domain
         ORDER BY d.subdomain
         """
+    )
+    results = []
+    for r in rows:
+        indexed = r["cdxed"] or r["in_urls"]
+        results.append(
+            {
+                "subdomain": r["subdomain"],
+                "domain": r["domain"],
+                "source": r["sources"],
+                "cdx_indexed": bool(indexed),
+            }
+        )
+    return results
+
+
+def count_subdomains(root_domain: Optional[str] = None) -> int:
+    """Return the number of unique subdomains for ``root_domain`` or all."""
+    if root_domain:
+        row = query_db(
+            "SELECT COUNT(DISTINCT subdomain) AS cnt FROM domains WHERE root_domain = ?",
+            [root_domain],
+            one=True,
+        )
+    else:
+        row = query_db(
+            "SELECT COUNT(DISTINCT subdomain) AS cnt FROM domains",
+            one=True,
+        )
+    return row["cnt"] if row else 0
+
+
+def list_subdomains_page(
+    root_domain: Optional[str], offset: int, limit: int
+) -> List[Dict[str, str]]:
+    """Return subdomains for ``root_domain`` limited by ``offset``/``limit``."""
+    params: List[Any] = []
+    where = ""
+    if root_domain:
+        where = "WHERE d.root_domain = ?"
+        params.append(root_domain)
+    rows = query_db(
+        f"""
+        SELECT d.subdomain, d.root_domain as domain,
+               GROUP_CONCAT(DISTINCT d.source) AS sources,
+               MAX(d.cdx_indexed) AS cdxed,
+               EXISTS(SELECT 1 FROM urls u WHERE u.domain = d.subdomain) AS in_urls
+        FROM domains d
+        {where}
+        GROUP BY d.subdomain, d.root_domain
+        ORDER BY d.subdomain
+        LIMIT ? OFFSET ?
+        """,
+        params + [limit, offset],
     )
     results = []
     for r in rows:
