@@ -45,6 +45,22 @@ function initSubdomonster(){
     }
   }
 
+  function openCdxImport(sub){
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/fetch_cdx';
+    form.target = '_blank';
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = 'domain';
+    inp.value = sub;
+    form.appendChild(inp);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
+  }
+
   function pollStatus(){
     if(overlay.classList.contains('hidden')){ statusTimer = null; return; }
     fetch('/status')
@@ -235,6 +251,7 @@ function initSubdomonster(){
               `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
+              `<div class="menu-row"><a class="menu-btn cdx-import-link" href="#" data-sub="${encoded}">Wayback Import</a></div>`+
             `</div>`+
           `</div>`+
         `</td>`+
@@ -290,6 +307,21 @@ function initSubdomonster(){
           } else {
             alert('Delete failed');
           }
+        }
+      });
+    });
+    table.querySelectorAll('.cdx-import-link').forEach(link => {
+      link.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const sub = decodeURIComponent(link.dataset.sub);
+        openCdxImport(sub);
+        const row = link.closest('tr');
+        if(row){
+          row.dataset.cdx = '1';
+          const cell = row.querySelector('td:nth-child(5)');
+          if(cell) cell.textContent = 'yes';
+          const item = tableData.find(r => r.subdomain === sub);
+          if(item) item.cdx_indexed = true;
         }
       });
     });
@@ -420,9 +452,12 @@ function initSubdomonster(){
             url = '/tools/webpack-zip?map_url=' + encoded; break;
           case 'text':
             url = '/text_tools?text=' + encoded; break;
+          case 'cdx':
+            openCdxImport(sub); url = ''; const item = tableData.find(r => r.subdomain === sub); if(item) item.cdx_indexed = true; break;
         }
         if(url) window.open(url, '_blank');
       });
+      render();
     });
   }
 
