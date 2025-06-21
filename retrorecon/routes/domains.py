@@ -3,7 +3,7 @@ import csv
 import re
 from flask import Blueprint, request, jsonify, render_template, Response
 import app
-from retrorecon import subdomain_utils
+from retrorecon import subdomain_utils, status as status_mod
 
 bp = Blueprint('domains', __name__)
 
@@ -58,7 +58,9 @@ def subdomains_route():
     if source == 'local':
         if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
             return ('Invalid domain', 400)
-        subdomain_utils.scrape_from_urls(domain or None)
+        status_mod.push_status('subdomonster_local_start', domain or 'all')
+        inserted = subdomain_utils.scrape_from_urls(domain or None)
+        status_mod.push_status('subdomonster_local_done', str(inserted))
         if domain:
             return jsonify(subdomain_utils.list_subdomains(domain))
         return jsonify(subdomain_utils.list_all_subdomains())
@@ -76,7 +78,8 @@ def subdomains_route():
             subs = subdomain_utils.fetch_from_crtsh(domain)
     except Exception as e:  # pragma: no cover - network errors
         return (f'Error fetching: {e}', 500)
-    subdomain_utils.insert_records(domain, subs, source)
+    inserted = subdomain_utils.insert_records(domain, subs, source)
+    status_mod.push_status('subdomonster_import_done', f"{domain}:{inserted}")
     return jsonify(subdomain_utils.list_subdomains(domain))
 
 
@@ -124,7 +127,9 @@ def scrape_subdomains():
     domain = request.form.get('domain', '').strip().lower()
     if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
         return ('Invalid domain', 400)
+    status_mod.push_status('subdomonster_scrape_start', domain or 'all')
     inserted = subdomain_utils.scrape_from_urls(domain or None)
+    status_mod.push_status('subdomonster_scrape_done', str(inserted))
     return jsonify({'inserted': inserted})
 
 @bp.route('/delete_subdomain', methods=['POST'])

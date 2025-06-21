@@ -8,6 +8,7 @@ function initSubdomonster(){
   const tableDiv = document.getElementById('subdomonster-table');
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
+  const statusSpan = document.getElementById('subdomonster-status');
   const exportCsvBtn = document.getElementById('subdomonster-export-csv-btn');
   const exportMdBtn = document.getElementById('subdomonster-export-md-btn');
   const sourceRadios = document.getElementsByName('subdomonster-source');
@@ -23,6 +24,44 @@ function initSubdomonster(){
   let sortDir = 'asc';
   let currentPage = 1;
   let itemsPerPage = 25;
+
+  let statusTimer = null;
+  let statusDelay = 1000;
+
+  function showStatus(msg){
+    if(statusSpan){
+      statusSpan.textContent = msg;
+      setTimeout(() => { if(statusSpan.textContent === msg) statusSpan.textContent = ''; }, 4000);
+    }
+  }
+
+  function pollStatus(){
+    if(overlay.classList.contains('hidden')){ statusTimer = null; return; }
+    fetch('/status')
+      .then(r => r.status === 204 ? null : r.json())
+      .then(data => {
+        if(data && data.code && data.code.startsWith('subdomonster')){
+          showStatus(data.message || data.code);
+          statusDelay = 1000;
+        } else {
+          statusDelay = Math.min(statusDelay * 2, 3000);
+        }
+        statusTimer = setTimeout(pollStatus, statusDelay);
+      })
+      .catch(() => { statusTimer = setTimeout(pollStatus, 5000); });
+  }
+
+  function startStatusPolling(){
+    if(statusSpan) statusSpan.textContent = '';
+    if(!statusTimer) pollStatus();
+  }
+
+  function stopStatusPolling(){
+    if(statusTimer){
+      clearTimeout(statusTimer);
+      statusTimer = null;
+    }
+  }
 
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
@@ -302,6 +341,7 @@ function initSubdomonster(){
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
+    stopStatusPolling();
     if(location.pathname === '/tools/subdomonster'){
       history.pushState({}, '', '/');
     }
@@ -310,6 +350,8 @@ function initSubdomonster(){
   if(tableData.length){
     render();
   }
+  window.startSubdomonsterStatus = startStatusPolling;
+  window.stopSubdomonsterStatus = stopStatusPolling;
 }
 
 if(document.readyState==='loading'){

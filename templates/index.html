@@ -1055,7 +1055,11 @@
           });
           subLoaded = true;
         }
-        document.getElementById('subdomonster-overlay').classList.remove('hidden');
+        const ov = document.getElementById('subdomonster-overlay');
+        ov.classList.remove('hidden');
+        if(window.startSubdomonsterStatus){
+          window.startSubdomonsterStatus();
+        }
         if(!skipPush){
           history.pushState({tool:'subdomonster'}, '', '/tools/subdomonster');
         }
@@ -1063,7 +1067,12 @@
 
       function hideSubdomonster(){
         const ov = document.getElementById('subdomonster-overlay');
-        if(ov) ov.classList.add('hidden');
+        if(ov){
+          ov.classList.add('hidden');
+          if(window.stopSubdomonsterStatus){
+            window.stopSubdomonsterStatus();
+          }
+        }
       }
 
       if(subLink){
