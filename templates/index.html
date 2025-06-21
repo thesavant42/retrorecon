@@ -24,6 +24,7 @@
 </head>
 <body class="app">
   <div class="retrorecon-root">
+    <div id="dropdown-shade" class="dropdown-shade hidden"></div>
 {% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) %}
   <div class="pagination mt-1">
     <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
@@ -403,17 +404,30 @@
       }
     });
 
+    const dropdownShade = document.getElementById('dropdown-shade');
     document.querySelectorAll('.dropbtn').forEach(btn => {
       btn.addEventListener('click', function(e){
         e.preventDefault();
         const item = this.parentElement;
-        item.classList.toggle('show');
+        const show = !item.classList.contains('show');
+        document.querySelectorAll('.dropdown').forEach(it => it.classList.remove('show'));
+        if(show){
+          item.classList.add('show');
+          dropdownShade.classList.add('show');
+        } else {
+          dropdownShade.classList.remove('show');
+        }
       });
     });
     document.addEventListener('click', function(e){
-      document.querySelectorAll('.dropdown').forEach(it => {
-        if(!it.contains(e.target)) it.classList.remove('show');
-      });
+      if(!e.target.closest('.dropdown')){
+        document.querySelectorAll('.dropdown').forEach(it => it.classList.remove('show'));
+        dropdownShade.classList.remove('show');
+      }
+    });
+    dropdownShade.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown').forEach(it => it.classList.remove('show'));
+      dropdownShade.classList.remove('show');
     });
 
     function toggleSelectAllPage(cb) {
