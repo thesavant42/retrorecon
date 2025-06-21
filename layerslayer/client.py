@@ -124,8 +124,10 @@ async def get_manifest_digest(
 ) -> Optional[str]:
     user, repo, tag = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/manifests/{tag}"
-    c = client or get_client()
-    return await c.fetch_digest(url, user, repo)
+    if client is not None:
+        return await client.fetch_digest(url, user, repo)
+    async with DockerRegistryClient() as c:
+        return await c.fetch_digest(url, user, repo)
 
 
 async def get_manifest(
@@ -136,8 +138,10 @@ async def get_manifest(
     user, repo, tag = parse_image_ref(image_ref)
     ref = specific_digest or tag
     url = f"{registry_base_url(user, repo)}/manifests/{ref}"
-    c = client or get_client()
-    return await c.fetch_json(url, user, repo)
+    if client is not None:
+        return await client.fetch_json(url, user, repo)
+    async with DockerRegistryClient() as c:
+        return await c.fetch_json(url, user, repo)
 
 
 async def list_layer_files(
@@ -148,7 +152,8 @@ async def list_layer_files(
     """Return formatted file listing for the layer blob."""
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
-    c = client or get_client()
+    own_client = client is None
+    c = client or DockerRegistryClient()
 
     headers = await c._auth_headers(user, repo)
     headers["Accept"] = "*/*"
@@ -211,6 +216,9 @@ async def list_layer_files(
             return _parse(data)
         except Exception:
             return []
+    finally:
+        if own_client:
+            await c.close()
 
 
 async def _layers_details(
