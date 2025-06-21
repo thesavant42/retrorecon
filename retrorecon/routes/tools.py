@@ -108,17 +108,17 @@ def jwt_decode_route():
 
     result: dict = {"header": header, "payload": payload}
 
-    now = datetime.datetime.now(datetime.UTC).timestamp()
+    now = datetime.datetime.now(datetime.timezone.utc).timestamp()
     if isinstance(payload, dict):
         for field in ["iat", "nbf", "exp"]:
             val = payload.get(field)
             if isinstance(val, (int, float)):
-                dt = datetime.datetime.fromtimestamp(val, datetime.UTC)
+                dt = datetime.datetime.fromtimestamp(val, datetime.timezone.utc)
                 result[f"{field}_readable"] = dt.strftime("%Y-%m-%d %H:%M:%S")
     exp_val = payload.get("exp")
     if isinstance(exp_val, (int, float)):
         result["expired"] = now > exp_val
-        result["exp_readable"] = datetime.datetime.fromtimestamp(exp_val, datetime.UTC).strftime("%Y-%m-%d %H:%M:%S")
+        result["exp_readable"] = datetime.datetime.fromtimestamp(exp_val, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     else:
         result["expired"] = False
 
@@ -261,7 +261,7 @@ def screenshot_route():
         img_bytes = app.take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
-    ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
+    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     fname = f'shot_{ts}.png'
     thumb = f'shot_{ts}_th.png'
     os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
@@ -335,7 +335,7 @@ def site2zip_route():
         zip_bytes, shot_bytes = app.capture_site(url, agent, spoof)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
-    ts = int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)
+    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
     thumb_name = f'site_{ts}_th.png'
