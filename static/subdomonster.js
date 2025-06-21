@@ -248,7 +248,11 @@ function initSubdomonster(){
 
   function render(){
     const filtered = searchText ?
-      tableData.filter(r => r.subdomain.toLowerCase().includes(searchText) || (r.tags||'').toLowerCase().includes(searchText)) :
+      tableData.filter(r =>
+        r.subdomain.toLowerCase().includes(searchText) ||
+        r.domain.toLowerCase().includes(searchText) ||
+        (r.tags || '').toLowerCase().includes(searchText)
+      ) :
       tableData;
     const sorted = filtered.slice().sort((a,b)=>{
       const av = (a[sortField] || '').toString().toLowerCase();

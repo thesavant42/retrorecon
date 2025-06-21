@@ -131,6 +131,11 @@ def test_export_filter(tmp_path, monkeypatch):
         assert 'a.example.com' in text
         assert 'b.example.com' not in text
 
+        resp = client.get('/export_subdomains?domain=example.com&format=csv&q=example.com')
+        text = resp.data.decode()
+        assert 'a.example.com' in text
+        assert 'b.example.com' in text
+
 
 
 def test_scrape_subdomains(tmp_path, monkeypatch):
