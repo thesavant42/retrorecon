@@ -145,3 +145,39 @@ def delete_subdomain_route():
         return ('', 400)
     app.delete_subdomain(domain, subdomain)
     return ('', 204)
+
+
+@bp.route('/subdomain_action', methods=['POST'])
+def subdomain_action():
+    """Bulk modify or delete subdomains."""
+    if not app._db_loaded():
+        return ('', 400)
+    action = request.form.get('action', '')
+    tag = request.form.get('tag', '').strip()
+    pairs = request.form.getlist('selected')
+    select_all_matching = request.form.get('select_all_matching', 'false').lower() == 'true'
+    if select_all_matching:
+        q = request.form.get('q', '').strip()
+        domain = request.form.get('domain', '').strip().lower() or None
+        rows = subdomain_utils.search_subdomains(q, domain) if q else (
+            subdomain_utils.list_subdomains(domain) if domain else subdomain_utils.list_all_subdomains()
+        )
+        pairs = [f"{r['domain']}|{r['subdomain']}" for r in rows]
+    count = 0
+    for pair in pairs:
+        if '|' not in pair:
+            continue
+        root_domain, sub = pair.split('|', 1)
+        if action == 'delete':
+            app.delete_subdomain(root_domain, sub)
+            count += 1
+        elif action == 'add_tag' and tag:
+            subdomain_utils.add_tag(root_domain, sub, tag)
+            count += 1
+        elif action == 'remove_tag' and tag:
+            subdomain_utils.remove_tag(root_domain, sub, tag)
+            count += 1
+        elif action == 'clear_tags':
+            subdomain_utils.clear_tags(root_domain, sub)
+            count += 1
+    return jsonify({'updated': count})
