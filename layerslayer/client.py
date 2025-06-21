@@ -190,10 +190,23 @@ async def list_layer_files(
         h = dict(headers)
         h["Range"] = f"bytes={start}-{start + range_size - 1}"
         async with c.session.get(url, headers=h) as resp:
-            if resp.status == 416:
-                break
-            resp.raise_for_status()
-            chunk = await resp.read()
+            if resp.status == 401:
+                token = await c._fetch_token(user, repo)
+                if token:
+                    h["Authorization"] = f"Bearer {token}"
+                    async with c.session.get(url, headers=h) as resp2:
+                        if resp2.status == 416:
+                            break
+                        resp2.raise_for_status()
+                        chunk = await resp2.read()
+                else:
+                    resp.raise_for_status()
+                    chunk = await resp.read()
+            else:
+                if resp.status == 416:
+                    break
+                resp.raise_for_status()
+                chunk = await resp.read()
             if not chunk:
                 break
             data.extend(chunk)

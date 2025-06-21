@@ -147,3 +147,60 @@ def test_list_layer_files_fallback(monkeypatch):
     assert files and files[0].endswith('hello.txt')
 
 
+def test_list_layer_files_refresh_token(monkeypatch):
+    import retrorecon.docker_layers as dl
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode='w:gz') as tar:
+        info = tarfile.TarInfo('hello.txt')
+        data = b'hello'
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    tar_bytes = buf.getvalue()
+
+    async def fake_auth_headers(self, user, repo):
+        return {"Authorization": "Bearer old"}
+
+    async def fake_fetch_token(self, user, repo):
+        return "new"
+
+    class FakeResp:
+        def __init__(self, status):
+            self.status = status
+            self._data = tar_bytes if status == 200 else b''
+            self.headers = {}
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            pass
+
+        async def read(self):
+            return self._data
+
+        def raise_for_status(self):
+            if self.status >= 400 and self.status != 416:
+                raise Exception('error')
+
+    class FakeSession:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, url, headers=None):
+            self.calls += 1
+            if self.calls == 1:
+                return FakeResp(401)
+            return FakeResp(200)
+
+    monkeypatch.setattr(dl.DockerRegistryClient, '_auth_headers', fake_auth_headers)
+    monkeypatch.setattr(dl.DockerRegistryClient, '_fetch_token', fake_fetch_token)
+
+    async def run():
+        client = dl.DockerRegistryClient()
+        client.session = FakeSession()
+        return await dl.list_layer_files('user/repo:tag', 'sha256:x', client=client)
+
+    files = asyncio.run(run())
+    assert files and files[0].endswith('hello.txt')
+
+
