@@ -466,6 +466,16 @@ Full-page subdomain overlay.
 curl http://localhost:5000/tools/subdomonster
 ```
 
+### `GET /subdomains`
+List subdomains from the database.
+
+Parameters (optional):
+- `domain` – limit results to a root domain.
+
+```
+curl "http://localhost:5000/subdomains?domain=example.com"
+```
+
 ### `POST /subdomains`
 Fetch subdomains from crt.sh or VirusTotal.
 

@@ -141,6 +141,20 @@ def test_scrape_subdomains(tmp_path, monkeypatch):
         subs = [r['subdomain'] for r in rows]
         assert 'a.example.com' in subs
 
+def test_list_all_subdomains_route(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.create_new_db('listall')
+        from retrorecon import subdomain_utils
+        subdomain_utils.insert_records('example.com', ['a.example.com'], 'scrape')
+        subdomain_utils.insert_records('test.org', ['b.test.org'], 'scrape')
+    with app.app.test_client() as client:
+        resp = client.get('/subdomains')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        subs = {r['subdomain'] for r in data}
+        assert subs == {'a.example.com', 'b.test.org'}
+
 def test_delete_subdomain(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.app_context():

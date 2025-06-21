@@ -172,7 +172,15 @@ function initSubdomonster(){
     if(domain) body.append('domain', domain);
     const resp = await fetch('/scrape_subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
     if(resp.ok){
-      fetchBtn.click();
+      const q = domain ? ('?domain=' + encodeURIComponent(domain)) : '';
+      const r = await fetch('/subdomains' + q);
+      if(r.ok){
+        const data = await r.json();
+        tableData = Array.isArray(data) ? data : [];
+        render();
+      } else {
+        fetchBtn.click();
+      }
     } else {
       alert('Scrape failed');
     }
