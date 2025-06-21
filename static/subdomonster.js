@@ -9,7 +9,10 @@ function initSubdomonster(){
   const closeBtn = document.getElementById('subdomonster-close-btn');
   const statusSpan = document.getElementById('subdomonster-status');
   const exportFormatsSel = document.getElementById('subdom-export-formats');
-  const exportBtn = document.getElementById('subdom-export-btn');
+  const exportForm = document.getElementById('subdom-export-form');
+  const exportDomainInp = document.getElementById('subdom-export-domain');
+  const exportFormatInp = document.getElementById('subdom-export-format');
+  const exportQInp = document.getElementById('subdom-export-q');
   const searchInput = document.getElementById('subdomonster-search');
   const sourceRadios = document.getElementsByName('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
@@ -417,17 +420,17 @@ function initSubdomonster(){
   });
 
 
-  if(exportBtn){
-    exportBtn.addEventListener('click', () => {
+  if(exportFormatsSel && exportForm){
+    exportFormatsSel.addEventListener('change', () => {
+      const fmt = exportFormatsSel.value;
+      if(!fmt) return;
       const domain = domainInput.value.trim();
-      if(!domain) return;
-      const q = searchInput ? searchInput.value.trim() : '';
-      const formats = Array.from(exportFormatsSel ? exportFormatsSel.selectedOptions : []).map(o=>o.value);
-      formats.forEach(fmt => {
-        let requestUrl = '/export_subdomains?format=' + fmt + '&domain=' + encodeURIComponent(domain);
-        if(q) requestUrl += '&q=' + encodeURIComponent(q);
-        window.open(requestUrl, '_blank');
-      });
+      if(!domain) { exportFormatsSel.value = ''; return; }
+      if(exportDomainInp) exportDomainInp.value = domain;
+      if(exportFormatInp) exportFormatInp.value = fmt;
+      if(exportQInp) exportQInp.value = searchInput ? searchInput.value.trim() : '';
+      exportForm.submit();
+      exportFormatsSel.value = '';
     });
   }
 

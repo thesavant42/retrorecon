@@ -8,11 +8,17 @@
     <input type="text" id="subdomonster-api-key" class="form-input mr-05 hidden" placeholder="API key" />
     <button type="button" class="btn" id="subdomonster-fetch-btn">Fetch</button>
     <input type="text" id="subdomonster-search" class="form-input mr-05" placeholder="search" />
-    <select id="subdom-export-formats" class="form-select mr-05" multiple>
-      <option value="csv">CSV</option>
+    <select id="subdom-export-formats" class="form-select mr-05">
+      <option value="" selected>Export as...</option>
       <option value="md">Markdown</option>
+      <option value="csv">CSV</option>
+      <option value="json">JSON</option>
     </select>
-    <button type="button" class="btn" id="subdom-export-btn">Export</button>
+    <form id="subdom-export-form" class="hidden" action="/export_subdomains" method="GET" target="_blank">
+      <input type="hidden" name="domain" id="subdom-export-domain" />
+      <input type="hidden" name="format" id="subdom-export-format" />
+      <input type="hidden" name="q" id="subdom-export-q" />
+    </form>
     <button type="button" class="btn" id="subdomonster-close-btn">Close</button>
     <span id="subdomonster-status" class="ml-05"></span>
   </div>
