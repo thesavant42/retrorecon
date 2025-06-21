@@ -668,6 +668,9 @@
       .catch(() => { updateImportStatus({status:'idle'}); });
 
     function quickSearch(term){
+      if(term.startsWith('#')){
+        term = '"' + term.slice(1) + '"';
+      }
       const box = document.getElementById('searchbox');
       let current = box.value.trim();
       if(current){
