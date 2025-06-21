@@ -1,18 +1,36 @@
 name: CI
 on: [push, pull_request]
+
 jobs:
-  build:
+  python-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
       - name: Install Python deps
         run: pip install -r requirements.txt
       - name: Run unit tests
         run: pytest -q
-      - name: Install Node deps
-        run: npm --prefix frontend install
+
+  frontend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+      - uses: ./.github/actions/setup-node
       - name: Lint CSS
         run: npm --prefix frontend run lint
