@@ -6,6 +6,7 @@ import tarfile
 from pathlib import Path
 from typing import Any, Dict, List
 from datetime import datetime
+import mimetypes
 import stat
 
 from flask import Blueprint, render_template, request, send_file, current_app
@@ -221,6 +222,17 @@ def _hexdump(data: bytes) -> str:
         text = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
         hex_lines.append(f"{i:08x}: {hex_bytes:<47} {text}")
     return "\n".join(hex_lines)
+
+
+def _is_text(data: bytes) -> bool:
+    """Return ``True`` if ``data`` appears to be text."""
+    if not data:
+        return True
+    if b"\x00" in data:
+        return False
+    sample = data[:1024]
+    text_chars = bytes(range(32, 127)) + b"\n\r\t"
+    return all(c in text_chars for c in sample)
 
 
 @bp.route("/size/<path:repo>@<digest>", methods=["GET"])
@@ -447,6 +459,10 @@ def fs_view(repo: str, digest: str, subpath: str):
         return render_template(
             "oci_elf.html", info=json.dumps(info, indent=2), path=subpath
         )
+    if render_mode is None:
+        mt, _ = mimetypes.guess_type(subpath)
+        if not (mt and mt.startswith("text/")) and not _is_text(data):
+            return render_template("oci_hex.html", data=_hexdump(data), path=subpath)
     return send_file(
         io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False
     )
