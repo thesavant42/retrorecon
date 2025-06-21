@@ -23,6 +23,14 @@ def test_text_tools_route(tmp_path, monkeypatch):
         assert b'id="text-tools-overlay"' in resp.data
 
 
+def test_text_tools_full_page(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/tools/text_tools')
+        assert resp.status_code == 200
+        assert b'openTool = "text"' in resp.data
+
+
 def test_url_encode_decode_roundtrip(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     with app.app.test_client() as client:

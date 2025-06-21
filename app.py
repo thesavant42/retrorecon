@@ -291,6 +291,8 @@ def index() -> str:
         tool = 'screenshot'
     elif request.path == '/tools/subdomonster':
         tool = 'subdomonster'
+    elif request.path == '/tools/text_tools':
+        tool = 'text'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
