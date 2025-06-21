@@ -60,3 +60,21 @@ def test_fs_binary_hex(tmp_path, monkeypatch):
         assert resp.status_code == 200
         assert b'00000000:' in resp.data
 
+
+def test_fs_text_file_no_ext(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    from retrorecon.routes import oci
+
+    tar_bytes = make_tar_with_file('.wh..wh..opq', b'')
+
+    async def fake_read(repo, digest):
+        return tar_bytes
+
+    monkeypatch.setattr(oci, '_read_layer', fake_read)
+
+    with app.app.test_client() as client:
+        resp = client.get('/fs/repo@sha256:x/.wh..wh..opq')
+        assert resp.status_code == 200
+        assert resp.data == b''
+        assert resp.headers['Content-Type'].startswith('text/plain')
+

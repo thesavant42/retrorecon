@@ -474,12 +474,18 @@ def fs_view(repo: str, digest: str, subpath: str):
         return render_template(
             "oci_elf.html", info=json.dumps(info, indent=2), path=subpath
         )
+    mimetype = None
     if render_mode is None:
         mt, _ = mimetypes.guess_type(subpath)
-        if not (mt and mt.startswith("text/")) and not _is_text(data):
+        is_text = (mt and mt.startswith("text/")) or _is_text(data)
+        if not is_text:
             return render_template("oci_hex.html", data=_hexdump(data), path=subpath)
+        mimetype = mt or "text/plain"
     return send_file(
-        io.BytesIO(data), download_name=Path(subpath).name, as_attachment=False
+        io.BytesIO(data),
+        download_name=Path(subpath).name,
+        as_attachment=False,
+        mimetype=mimetype,
     )
 
 
