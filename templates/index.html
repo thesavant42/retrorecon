@@ -1041,9 +1041,13 @@
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
-          const script = document.createElement('script');
-          script.src = '/static/subdomonster.js';
-          document.body.appendChild(script);
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/subdomonster.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
           subLoaded = true;
         }
         document.getElementById('subdomonster-overlay').classList.remove('hidden');
