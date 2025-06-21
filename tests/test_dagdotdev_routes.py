@@ -1,5 +1,6 @@
 import io
 import tarfile
+import zipfile
 from pathlib import Path
 import sys
 
@@ -15,6 +16,15 @@ def setup_tmp(monkeypatch, tmp_path):
     orig = Path(__file__).resolve().parents[1]
     monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
+
+
+def make_tar_with_file(name: str, data: bytes) -> bytes:
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        info = tarfile.TarInfo(name)
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    return buf.getvalue()
 
 
 def test_r_repo_route(tmp_path, monkeypatch):
@@ -63,6 +73,7 @@ def test_fs_alias_route(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.dagdotdev as dd
     import retrorecon.routes.dag as dag
+    import retrorecon.routes.oci as oci
 
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w") as tar:
@@ -72,15 +83,37 @@ def test_fs_alias_route(tmp_path, monkeypatch):
         tar.addfile(info, io.BytesIO(data))
     tar_bytes = buf.getvalue()
 
-    async def fake_fetch_bytes(self, url, user, repo):
+    async def fake_read(repo, digest):
         return tar_bytes
 
-    monkeypatch.setattr(dag.DockerRegistryClient, "fetch_bytes", fake_fetch_bytes)
+    monkeypatch.setattr(oci, "_read_layer", fake_read)
 
     with app.app.test_client() as client:
         resp = client.get("/fs/sha256:x/a.txt?image=user/repo:tag")
         assert resp.status_code == 200
         assert resp.data == b"hello"
+
+
+def test_fs_alias_hex(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.dagdotdev as dd
+    import retrorecon.routes.dag as dag
+    import retrorecon.routes.oci as oci
+
+    zip_buf = io.BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("b.txt", "hi")
+    tar_bytes = make_tar_with_file("dist.zip", zip_buf.getvalue())
+
+    async def fake_read(repo, digest):
+        return tar_bytes
+
+    monkeypatch.setattr(oci, "_read_layer", fake_read)
+
+    with app.app.test_client() as client:
+        resp = client.get("/fs/sha256:x/dist.zip?image=user/repo:tag")
+        assert resp.status_code == 200
+        assert b"00000000:" in resp.data
 
 
 def test_layer_alias_route(tmp_path, monkeypatch):
