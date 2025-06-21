@@ -96,7 +96,12 @@ def export_subdomains():
     rows = subdomain_utils.list_subdomains(domain)
     q = request.args.get('q', '').strip().lower()
     if q:
-        rows = [r for r in rows if q in r['subdomain'].lower()]
+        rows = [
+            r for r in rows
+            if q in r['subdomain'].lower()
+            or q in r['domain'].lower()
+            or q in (r['tags'] or '').lower()
+        ]
     fmt = request.args.get('format', 'json')
     if fmt == 'csv':
         output = io.StringIO()
