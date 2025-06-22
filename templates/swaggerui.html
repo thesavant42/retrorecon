@@ -11,6 +11,13 @@
   {% if current_theme %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
+  <style>
+    .retrorecon-root {
+      --color-base: #1b1b1b;
+      --bg-color: #1b1b1b;
+      --bg-rgb: 27 27 27;
+    }
+  </style>
   {% set current_background = session.get('background') %}
   {% if current_background %}
   <style>
