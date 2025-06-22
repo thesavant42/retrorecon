@@ -219,6 +219,49 @@ def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, An
     return jwt_utils.export_cookie_data(ids)
 
 
+def export_url_data(ids: Optional[List[int]] = None, query: str = '') -> List[Dict[str, Any]]:
+    """Return URL records filtered by ids or search query."""
+    where = []
+    params: List[Any] = []
+    if ids:
+        placeholders = ','.join('?' for _ in ids)
+        where.append(f'id IN ({placeholders})')
+        params.extend(ids)
+    if query:
+        try:
+            search_sql, search_params = search_utils.build_search_sql(query)
+            where.append(search_sql)
+            params.extend(search_params)
+        except Exception:
+            where.append(
+                '('
+                'url LIKE ? OR tags LIKE ? OR '
+                'CAST(timestamp AS TEXT) LIKE ? OR '
+                'CAST(status_code AS TEXT) LIKE ? OR '
+                'mime_type LIKE ?'
+                ')'
+            )
+            params.extend([f'%{query}%'] * 5)
+    where_sql = 'WHERE ' + ' AND '.join(where) if where else ''
+    rows = query_db(
+        f"SELECT id, url, timestamp, status_code, mime_type, tags FROM urls {where_sql} ORDER BY id",
+        params,
+    )
+    result = []
+    for r in rows:
+        result.append(
+            {
+                'id': r['id'],
+                'url': r['url'],
+                'timestamp': r['timestamp'],
+                'status_code': r['status_code'],
+                'mime_type': r['mime_type'],
+                'tags': r['tags'],
+            }
+        )
+    return result
+
+
 SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
 SITEZIP_DIR = os.path.join(app.root_path, 'static', 'sitezips')
 executablePath: Optional[str] = None
@@ -740,6 +783,7 @@ from retrorecon.routes import (
     dag_bp,
     oci_bp,
     dagdotdev_bp,
+    urls_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -751,6 +795,7 @@ app.register_blueprint(registry_bp)
 app.register_blueprint(dag_bp)
 app.register_blueprint(oci_bp)
 app.register_blueprint(dagdotdev_bp)
+app.register_blueprint(urls_bp)
 
 
 @app.after_request
