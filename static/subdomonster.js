@@ -289,25 +289,25 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="checkbox-col"/><col class="subdomain-col"/><col class="domain-col"/><col class="source-col"/><col class="cdxed-col"/><col class="send-col actions-col"/><col class="tag-col"/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col class="send-col"/><col class="tag-col"/>'+
       '</colgroup><thead><tr>'+
-      '<th class="checkbox-col"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
-      '<th class="sortable subdomain-col" data-field="subdomain">Subdomain</th>'+
-      '<th class="sortable domain-col" data-field="domain">Domain</th>'+
-      '<th class="sortable source-col" data-field="source">Source</th>'+
-      '<th class="sortable cdxed-col" data-field="cdx_indexed">CDXed</th>'+
+      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
+      '<th class="sortable" data-field="subdomain">Subdomain</th>'+
+      '<th class="sortable" data-field="domain">Domain</th>'+
+      '<th class="sortable" data-field="source">Source</th>'+
+      '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
       '<th class="no-resize actions-col">Actions:</th>'+
       '<th class="sortable" data-field="tags">Tags</th>'+
-      '</tr></thead><tbody>'; 
+      '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
       const checked = selectAll || selectedSubs.has(r.subdomain) ? ' checked' : '';
       html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
         `<td class="text-center"><input type="checkbox" class="row-checkbox" data-sub="${r.subdomain}" data-domain="${r.domain}" value="${r.domain}|${r.subdomain}"${checked} /></td>`+
-        `<td><span class="ml-5px">${r.subdomain}</span></td>`+
-        `<td>${r.domain}</td>`+
-        `<td>${r.source}</td>`+
-        `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
+        `<td><div class="cell-content">${r.subdomain}</div></td>`+
+        `<td><div class="cell-content">${r.domain}</div></td>`+
+        `<td><div class="cell-content">${r.source}</div></td>`+
+        `<td><div class="cell-content">${r.cdx_indexed? 'yes':'no'}</div></td>`+
         `<td class="actions-col">`+
           `<div class="url-tools-row nowrap">`+
             `<div class="dropdown d-inline-block">`+
