@@ -5,6 +5,38 @@
   },
   "item": [
     {
+      "name": "GET /favicon.ico",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/favicon.ico",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "favicon.ico"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /favicon.svg",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/favicon.svg",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "favicon.svg"
+          ]
+        }
+      }
+    },
+    {
       "name": "GET /",
       "request": {
         "method": "GET",
@@ -254,6 +286,23 @@
             "{{base_url}}"
           ],
           "path": [
+            "text_tools"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/text_tools",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/text_tools",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
             "text_tools"
           ]
         }
@@ -574,6 +623,39 @@
       }
     },
     {
+      "name": "GET /layerpeek",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layerpeek",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "layerpeek"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/layerpeek",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/layerpeek",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "layerpeek"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /tools/site2zip",
       "request": {
         "method": "POST",
@@ -721,42 +803,10 @@
       }
     },
     {
-      "name": "GET /list_dbs",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/list_dbs?pattern=demo",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "list_dbs"
-          ],
-          "query": [
-            {
-              "key": "pattern",
-              "value": "demo"
-            }
-          ]
-        }
-      }
-    },
-    {
       "name": "POST /load_saved_db",
       "request": {
         "method": "POST",
         "header": [],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "db_file",
-              "value": "example.db",
-              "type": "text"
-            }
-          ]
-        },
         "url": {
           "raw": "{{base_url}}/load_saved_db",
           "host": [
@@ -882,6 +932,22 @@
       }
     },
     {
+      "name": "GET /subdomains",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/subdomains",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "subdomains"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /subdomains",
       "request": {
         "method": "POST",
@@ -893,6 +959,566 @@
           ],
           "path": [
             "subdomains"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /export_subdomains",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/export_subdomains",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "export_subdomains"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /mark_subdomain_cdx",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/mark_subdomain_cdx",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "mark_subdomain_cdx"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /scrape_subdomains",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/scrape_subdomains",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "scrape_subdomains"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /delete_subdomain",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/delete_subdomain",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "delete_subdomain"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /subdomain_action",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/subdomain_action",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "subdomain_action"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /docker_layers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/docker_layers",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "docker_layers"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /download_layer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/download_layer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "download_layer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /registry_viewer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/registry_viewer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "registry_viewer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/registry_viewer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/registry_viewer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "registry_viewer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /registry_explorer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/registry_explorer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "registry_explorer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /dag_explorer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/dag_explorer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "dag_explorer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/dag_explorer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/dag_explorer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "dag_explorer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /dag/repo/<path:repo>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/dag/repo/<path:repo>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "dag",
+            "repo",
+            "<path:repo>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /dag/image/<path:image>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/dag/image/<path:image>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "dag",
+            "image",
+            "<path:image>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /dag/fs/<path:image>@<digest>/<path:path>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/dag/fs/<path:image>@<digest>/<path:path>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "dag",
+            "fs",
+            "<path:image>@<digest>",
+            "<path:path>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /dag/layer/<path:image>@<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/dag/layer/<path:image>@<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "dag",
+            "layer",
+            "<path:image>@<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/registry_explorer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/registry_explorer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "registry_explorer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /repo/<path:repo>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/repo/<path:repo>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "repo",
+            "<path:repo>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /image/<path:image>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/image/<path:image>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "image",
+            "<path:image>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /image/<path:repo>@<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/image/<path:repo>@<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "image",
+            "<path:repo>@<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /size/<path:repo>@<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/size/<path:repo>@<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "size",
+            "<path:repo>@<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /fs/<path:repo>@<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/fs/<path:repo>@<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fs",
+            "<path:repo>@<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /fs/<path:repo>@<digest>/<path:subpath>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/fs/<path:repo>@<digest>/<path:subpath>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fs",
+            "<path:repo>@<digest>",
+            "<path:subpath>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /layers/<path:image>/<path:subpath>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layers/<path:image>/<path:subpath>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "layers",
+            "<path:image>",
+            "<path:subpath>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /layers/<path:image>@<digest>/",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layers/<path:image>@<digest>/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "layers",
+            "<path:image>@<digest>",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /layers/<path:image>@<digest>/<path:subpath>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layers/<path:image>@<digest>/<path:subpath>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "layers",
+            "<path:image>@<digest>",
+            "<path:subpath>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /r/<path:ref>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/r/<path:ref>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "r",
+            "<path:ref>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /fs/<digest>/<path:path>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/fs/<digest>/<path:path>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fs",
+            "<digest>",
+            "<path:path>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /layer/<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layer/<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "layer",
+            "<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /size/<digest>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/size/<digest>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "size",
+            "<digest>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /export_urls",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/export_urls",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "export_urls"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /swagger/<path:path>",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/swagger/<path:path>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "swagger",
+            "<path:path>"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /swagger/",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/swagger/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "swagger",
+            ""
           ]
         }
       }

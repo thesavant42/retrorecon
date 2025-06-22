@@ -69,6 +69,9 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Save favorite tag searches for quick reuse
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
+- View the database ER diagram in `docs/database_erd.md`.
+- Follow the OCI Explorer workflow in `docs/oic_explorer_user_journey.md`.
+- Browse the API via Swagger at `/swagger` using the OpenAPI file `static/openapi.yaml`.
 
 ## Installation
 ```bash
@@ -292,6 +295,12 @@ curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
 curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
 curl http://localhost:5000/export_subdomains?domain=example.com
 ```
+
+## API Documentation
+
+An OpenAPI 3.0 document is generated from the running Flask application.
+Browse the interactive Swagger UI at `http://localhost:5000/swagger` or
+download the specification directly from `static/openapi.yaml`.
 
 
 ## License

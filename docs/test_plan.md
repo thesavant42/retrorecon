@@ -148,3 +148,9 @@ This ensures database workflow tests are executed along with the existing suite 
 
 5. **Delete Capture**
    - POST `/delete_sitezips` with the capture ID and confirm it is removed from `/sitezips`.
+
+## API Spec Tests
+
+1. **OpenAPI Generation**
+   - Run `python scripts/generate_openapi_yaml.py`.
+   - Load `/swagger` and verify the UI shows all application routes.
