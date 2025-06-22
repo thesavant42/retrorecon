@@ -308,6 +308,16 @@ body.bg-hidden {
   padding: 2px 6px;
 }
 
+.retrorecon-root #download-url-input {
+  width: 250px;
+  max-width: 100%;
+  border: 1px solid var(--fg-color);
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  padding: 2px 6px;
+}
+
 /* Standardize dropdown menu styling */
 .retrorecon-root .dropdown-content {
   background-color: var(--color-base);

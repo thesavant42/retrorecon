@@ -35,6 +35,7 @@ ELEMENTS = {
     'json import input': '.retrorecon-root .form-file',
     'db import input': '.retrorecon-root .form-file',
     'map url input': '.retrorecon-root #map-url-input',
+    'download url input': '.retrorecon-root #download-url-input',
 }
 
 def parse_css(files: List[str]) -> Dict[str, Dict[str, str]]:
