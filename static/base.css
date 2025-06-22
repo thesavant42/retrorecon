@@ -868,6 +868,9 @@ body {
 .retrorecon-root .tool-select {
   font-size: 0.9em;
 }
+.retrorecon-root .send-select {
+  font-size: 0.9em;
+}
 .retrorecon-root .url-tools-row input[type="text"] {
   font-size: 0.9em;
   padding: 2px 6px;
