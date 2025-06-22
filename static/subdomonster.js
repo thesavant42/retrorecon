@@ -289,16 +289,16 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col class="send-col"/><col class="tag-col"/>'+
+      '<col class="checkbox-col"/><col/><col/><col/><col class="cdxed-col"/><col class="send-col actions-col"/><col class="tag-col"/>'+
       '</colgroup><thead><tr>'+
-      '<th class="w-2em"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
+      '<th class="checkbox-col"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
-      '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
-      '<th class="no-resize">Actions:</th>'+
+      '<th class="sortable cdxed-col" data-field="cdx_indexed">CDXed</th>'+
+      '<th class="no-resize actions-col">Actions:</th>'+
       '<th class="sortable" data-field="tags">Tags</th>'+
-      '</tr></thead><tbody>';
+      '</tr></thead><tbody>'; 
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
       const checked = selectAll || selectedSubs.has(r.subdomain) ? ' checked' : '';
@@ -308,7 +308,7 @@ function initSubdomonster(){
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
         `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
-        `<td>`+
+        `<td class="actions-col">`+
           `<div class="url-tools-row nowrap">`+
             `<div class="dropdown d-inline-block">`+
               `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+

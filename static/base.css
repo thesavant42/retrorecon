@@ -743,7 +743,7 @@ body {
   border-bottom: 2px solid var(--fg-color);
   text-align: left;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .retrorecon-root .url-table th.sortable {
@@ -755,7 +755,7 @@ body {
   right: 0;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 8px;
   cursor: col-resize;
   background: rgba(255, 255, 255, 0.3);
   transition: background-color 0.2s, box-shadow 0.2s;
@@ -1105,7 +1105,7 @@ body {
 
 /* Misc: checkboxes for row selection */
 .retrorecon-root .row-checkbox {
-  margin-right: 4px;
+  margin: 5px;
 }
 
 /* Optional: Add hover effect to entire rows for better UX */
