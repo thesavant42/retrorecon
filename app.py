@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from retrorecon import theme
 
 import requests
-import jwt
+from retrorecon import jwt_service
 import urllib.parse
 from flask import (
     Flask,
@@ -50,7 +50,6 @@ from retrorecon import (
     saved_tags as saved_tags_mod,
     notes_utils,
     text_notes_utils,
-    jwt_utils,
     search_utils,
     screenshot_service,
     sitezip_utils,
@@ -86,7 +85,6 @@ log_level_name = app.config.get('LOG_LEVEL', 'WARNING').upper()
 numeric_level = getattr(logging, log_level_name, logging.WARNING)
 logging.basicConfig(level=numeric_level, format='%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
-app.jwt = jwt
 env_db = app.config.get('DB_ENV')
 if env_db:
     app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(get_db_folder(), env_db)
@@ -186,30 +184,11 @@ def get_text_notes() -> List[sqlite3.Row]:
 def add_text_note(content: str) -> int:
     return text_notes_utils.add_text_note(content)
 
-
 def update_text_note(note_id: int, content: str) -> None:
     text_notes_utils.update_text_note(note_id, content)
 
-
 def delete_text_note_entry(note_id: int) -> None:
     text_notes_utils.delete_text_note(note_id)
-
-
-def log_jwt_entry(token: str, header: Dict[str, Any], payload: Dict[str, Any], notes: str) -> None:
-    jwt_utils.log_entry(token, header, payload, notes)
-
-
-def delete_jwt_cookies(ids: List[int]) -> None:
-    jwt_utils.delete_cookies(ids)
-
-
-def update_jwt_cookie(jid: int, notes: str) -> None:
-    jwt_utils.update_cookie(jid, notes)
-
-
-def export_jwt_cookie_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    return jwt_utils.export_cookie_data(ids)
-
 
 def export_url_data(ids: Optional[List[int]] = None, query: str = '') -> List[Dict[str, Any]]:
     """Return URL records filtered by ids or search query."""
