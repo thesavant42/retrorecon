@@ -588,7 +588,7 @@ body {
 .retrorecon-root .results-grid {
   display: grid;
   grid-template-columns: 1fr;
-  margin: 5px 10px 10px;
+  margin: 5px 10px;
   gap: 1em;
 }
 .retrorecon-root .results-frame {
@@ -602,6 +602,13 @@ body {
   /* Maintain visible frame even when no URLs are listed */
   min-height: 600px;
   overflow-y: auto;
+}
+
+.retrorecon-root .table-container {
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  border-radius: 8px;
+  box-shadow: 0 1px 6px var(--fg-color);
+  padding: 0.5em;
 }
 
 /* Styling for the "no results" message */
