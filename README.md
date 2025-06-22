@@ -45,6 +45,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Search and filter by text and tags, including Boolean tag expressions like `#blue AND #tag1`
 - Inline and bulk tag management
 - Bulk actions with "select all visible" or "select all matching"
+- Export URL results as JSON, CSV, Markdown or plain text
 - Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
 - Download, create or switch between databases from the menu, including naming
   new ones
