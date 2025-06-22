@@ -289,26 +289,28 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col class="send-col"/><col class="tag-col"/>'+
+      '<col class="w-2em checkbox-col"/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
-      '<th class="no-resize actions-col">Actions:</th>'+
-      '<th class="sortable" data-field="tags">Tags</th>'+
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
       const checked = selectAll || selectedSubs.has(r.subdomain) ? ' checked' : '';
-      html += `<tr data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
+      const tagsHtml = (r.tags || '').split(',').filter(t=>t).map(t=>`<span class="tag-pill">${t}</span>`).join(' ');
+      html += `<tr class="url-row-main url-result" data-cdx="${r.cdx_indexed?1:0}" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
         `<td class="text-center"><input type="checkbox" class="row-checkbox" data-sub="${r.subdomain}" data-domain="${r.domain}" value="${r.domain}|${r.subdomain}"${checked} /></td>`+
         `<td><div class="cell-content">${r.subdomain}</div></td>`+
         `<td><div class="cell-content">${r.domain}</div></td>`+
         `<td><div class="cell-content">${r.source}</div></td>`+
-        `<td><div class="cell-content">${r.cdx_indexed? 'yes':'no'}</div></td>`+
-        `<td class="actions-col">`+
+        `<td><div class="cell-content">${r.cdx_indexed ? 'yes' : 'no'}</div></td>`+
+      `</tr>`+
+      `<tr class="url-row-buttons" data-sub="${r.subdomain}" data-domain="${r.domain}">`+
+        `<td></td>`+
+        `<td colspan="4">`+
           `<div class="url-tools-row nowrap">`+
             `<div class="dropdown d-inline-block">`+
               `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+
@@ -326,9 +328,9 @@ function initSubdomonster(){
             `<button type="button" class="btn ml-05 notes-btn" data-sub="${encoded}">📝 Notes</button>`+
             `<input type="text" class="form-input ml-05 row-tag-input" placeholder="Tag" size="8" />`+
             `<button type="button" class="btn add-tag-btn" title="Add tag">+</button>`+
+            tagsHtml +
           `</div>`+
         `</td>`+
-        `<td>${(r.tags||'').split(',').filter(t=>t).map(t=>`<span class="tag-pill">${t}</span>`).join(' ')}</td>`+
       `</tr>`;
     }
     html += '</tbody></table>';
@@ -444,9 +446,11 @@ function initSubdomonster(){
         const sub = decodeURIComponent(link.dataset.sub);
         openCdxImport(sub);
         const row = link.closest('tr');
-        if(row){
-          row.dataset.cdx = '1';
-          const cell = row.querySelector('td:nth-child(5)');
+        const main = row ? row.previousElementSibling : null;
+        const target = main || row;
+        if(target){
+          target.dataset.cdx = '1';
+          const cell = target.querySelector('td:nth-child(5)');
           if(cell) cell.textContent = 'yes';
           const item = tableData.find(r => r.subdomain === sub);
           if(item) item.cdx_indexed = true;
