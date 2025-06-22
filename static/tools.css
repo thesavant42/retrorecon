@@ -102,6 +102,12 @@
   table-layout: fixed;
   font-size: 0.875em;
 }
+.retrorecon-root #subdomonster-table col.checkbox-col {
+  width: calc(1em + 10px);
+}
+.retrorecon-root #subdomonster-table col.cdxed-col {
+  width: 5.5ch;
+}
 .retrorecon-root #subdomonster-table col.send-col {
   width: 280px;
 }
@@ -119,4 +125,13 @@
 .retrorecon-root #subdomonster-table td {
   padding: 0.3em 0.6em;
   word-break: break-all;
+}
+.retrorecon-root #subdomonster-table td.actions-col {
+  white-space: nowrap;
+}
+.retrorecon-root #subdomonster-table td.actions-col .url-tools-row {
+  flex-wrap: nowrap;
+}
+.retrorecon-root #subdomonster-table th {
+  overflow: visible;
 }
