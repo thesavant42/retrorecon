@@ -604,7 +604,7 @@ body {
 .retrorecon-root .results-frame {
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 1px 6px var(--fg-color);
+  box-shadow: none;
   padding: 0.5em;
   flex: 1 1 auto;
   display: flex;
@@ -617,7 +617,7 @@ body {
 .retrorecon-root .table-container {
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 1px 6px var(--fg-color);
+  box-shadow: none;
   padding: 0.5em;
 }
 
