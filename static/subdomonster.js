@@ -171,13 +171,17 @@ function initSubdomonster(){
     try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
     ths.forEach((th, idx) => {
       const id = idx;
-      if(widths[id]){
-        th.style.width = widths[id];
-        if(cols[id]) cols[id].style.width = widths[id];
+      let w = widths[id];
+      if(!w){
+        const ow = th.offsetWidth;
+        if(ow > 0){
+          w = ow + 'px';
+        }
       }
-      const initial = th.style.width || th.offsetWidth + 'px';
-      th.style.width = initial;
-      if(cols[id]) cols[id].style.width = initial;
+      if(w){
+        th.style.width = w;
+        if(cols[id]) cols[id].style.width = w;
+      }
       if(th.classList.contains('no-resize')) return;
       const res = document.createElement('div');
       res.className = 'col-resizer';
