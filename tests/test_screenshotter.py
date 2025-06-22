@@ -4,6 +4,7 @@ import sys
 import types
 import logging
 import app
+from retrorecon import screenshot_service
 
 
 def setup_tmp(monkeypatch, tmp_path):
@@ -32,7 +33,7 @@ def test_screenshot_workflow(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         def fake_shot(url, agent, spoof):
             return b'\x89PNG\r\n\x1a\n'
-        monkeypatch.setattr(app, 'take_screenshot', fake_shot)
+        monkeypatch.setattr(screenshot_service, 'take_screenshot', fake_shot)
         resp = client.post('/tools/screenshot', data={'url': 'http://example.com'})
         assert resp.status_code == 200
         data = resp.get_json()
@@ -92,7 +93,7 @@ def test_take_screenshot_env_path_passed(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, 'playwright', types.SimpleNamespace(sync_api=dummy_mod))
     monkeypatch.setenv('PLAYWRIGHT_CHROMIUM_PATH', '/chrome/bin')
 
-    data = app.take_screenshot('http://example.com', user_agent='ua', spoof_referrer=True)
+    data = screenshot_service.take_screenshot('http://example.com', user_agent='ua', spoof_referrer=True)
     assert data == b'PNGDATA'
     assert called['opts'].get('executable_path') == '/chrome/bin'
 
@@ -141,12 +142,12 @@ def test_take_screenshot_variable_path(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, 'playwright.sync_api', dummy_mod)
     monkeypatch.setitem(sys.modules, 'playwright', types.SimpleNamespace(sync_api=dummy_mod))
     monkeypatch.delenv('PLAYWRIGHT_CHROMIUM_PATH', raising=False)
-    app.executablePath = '/alt/chrome'
+    screenshot_service.executable_path = '/alt/chrome'
 
-    data = app.take_screenshot('http://example.com')
+    data = screenshot_service.take_screenshot('http://example.com')
     assert data == b'PNGDATA'
     assert called['opts'].get('executable_path') == '/alt/chrome'
-    app.executablePath = None
+    screenshot_service.executable_path = None
 
 
 def test_take_screenshot_logs_failure(monkeypatch, tmp_path, caplog):
@@ -172,7 +173,7 @@ def test_take_screenshot_logs_failure(monkeypatch, tmp_path, caplog):
     monkeypatch.setenv('PLAYWRIGHT_CHROMIUM_PATH', '/bad/path')
 
     caplog.set_level(logging.DEBUG)
-    data = app.take_screenshot('http://example.com')
+    data = screenshot_service.take_screenshot('http://example.com')
     assert data.startswith(b'\x89PNG')
     assert any('launch failed' in rec.message or 'screenshot capture failed' in rec.message for rec in caplog.records)
 

@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
+from retrorecon import screenshot_service
 from flask import (
     Blueprint,
     request,
@@ -258,17 +259,17 @@ def screenshot_route():
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        img_bytes = app.take_screenshot(url, agent, spoof)
+        img_bytes = screenshot_service.take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     fname = f'shot_{ts}.png'
     thumb = f'shot_{ts}_th.png'
-    os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
-    full_path = os.path.join(app.SCREENSHOT_DIR, fname)
+    os.makedirs(screenshot_service.get_screenshot_dir(), exist_ok=True)
+    full_path = os.path.join(screenshot_service.get_screenshot_dir(), fname)
     with open(full_path, 'wb') as f:
         f.write(img_bytes)
-    thumb_path = os.path.join(app.SCREENSHOT_DIR, thumb)
+    thumb_path = os.path.join(screenshot_service.get_screenshot_dir(), thumb)
     try:
         from PIL import Image
         img = Image.open(io.BytesIO(img_bytes))
@@ -278,7 +279,7 @@ def screenshot_route():
         app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(img_bytes)
-    sid = app.save_screenshot_record(url, fname, thumb, 'GET')
+    sid = screenshot_service.save_screenshot_record(url, fname, thumb, 'GET')
     return jsonify({'id': sid})
 
 
@@ -286,7 +287,7 @@ def screenshot_route():
 def screenshots_route():
     if not app._db_loaded():
         return jsonify([])
-    rows = app.list_screenshot_data()
+    rows = screenshot_service.list_screenshot_data()
     for r in rows:
         r['file'] = url_for('static', filename='screenshots/' + r['screenshot_path'])
         r['preview'] = url_for('static', filename='screenshots/' + r['thumbnail_path'])
@@ -300,7 +301,7 @@ def delete_screenshots_route():
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    app.delete_screenshots(ids)
+    screenshot_service.delete_screenshots(ids)
     return ('', 204)
 
 
