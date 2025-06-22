@@ -108,6 +108,15 @@
 .retrorecon-root #subdomonster-table col.cdxed-col {
   width: 5.5ch;
 }
+.retrorecon-root #subdomonster-table col.subdomain-col {
+  width: 28ch;
+}
+.retrorecon-root #subdomonster-table col.domain-col {
+  width: 22ch;
+}
+.retrorecon-root #subdomonster-table col.source-col {
+  width: 9ch;
+}
 .retrorecon-root #subdomonster-table col.send-col {
   width: 280px;
 }
