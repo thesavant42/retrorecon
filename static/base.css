@@ -174,7 +174,8 @@ body {
 /* --- Updated CSS to emulate Fandom Map Room style --- */
 
 .retrorecon-root {
-  background: var(--bg-color);
+  background: var(--bg-color) url("/static/img/background.jpg") no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   font-family: var(--font-main);
@@ -185,38 +186,6 @@ body {
   overflow: hidden;
   color: #ffffff;
   line-height: 1.5;
-}
-
-.retrorecon-root.neon-bg::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-      45deg,
-      #ff00aa,
-      #ff00aa 10%,
-      #00ffff 10%,
-      #00ffff 20%
-    );
-  background-size: 200% 200%;
-  opacity: 0.4;
-  animation: neon-swirl 20s linear infinite;
-  z-index: -1;
-}
-
-@keyframes neon-swirl {
-  from {
-    transform: rotate(0deg);
-    background-position: 0 0;
-  }
-  to {
-    transform: rotate(360deg);
-    background-position: 200% 0;
-  }
-}
-
-body.bg-hidden .retrorecon-root.neon-bg::before {
-  display: none;
 }
 
 /* Force all text to white 14px */
