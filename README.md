@@ -147,15 +147,17 @@ To push a new image without cutting a release, trigger the **Dev Docker Deploy**
 workflow from the Actions tab. Provide the desired tag (defaults to `edge`) and
 GitHub will build and push the Docker image.
 
-To run the helper script locally on Windows with Docker Desktop:
+To push from a Windows machine without relying on Python, use the batch script:
 
 ```cmd
 set DOCKERHUB_USERNAME=yourname
 set DOCKERHUB_PAT=yourtoken
-python scripts/deploy_docker.py
+scripts\deploy_docker.bat
 ```
 
-`IMAGE_TAG` defaults to `edge`; set it to another value to push a custom tag.
+`IMAGE_TAG` defaults to `edge`; set it to another value to push a custom tag. The
+cross‑platform `scripts/deploy_docker.py` remains available for Unix-like
+systems.
 
 ## Usage
 1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
