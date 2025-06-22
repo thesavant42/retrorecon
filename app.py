@@ -51,7 +51,6 @@ from retrorecon import (
     notes_service,
     search_utils,
     screenshot_service,
-    sitezip_utils,
     subdomain_utils,
     status as status_mod,
 )
@@ -196,27 +195,6 @@ def export_url_data(ids: Optional[List[int]] = None, query: str = '') -> List[Di
     return result
 
 
-SITEZIP_DIR = os.path.join(app.root_path, 'static', 'sitezips')
-
-
-def save_sitezip_record(
-    url: str, zip_name: str, screenshot_name: str, thumb_name: str, method: str = 'GET'
-) -> int:
-    return sitezip_utils.save_record(
-        SITEZIP_DIR, url, zip_name, screenshot_name, thumb_name, method
-    )
-
-
-def list_sitezip_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    return sitezip_utils.list_data(ids)
-
-
-def delete_sitezips(ids: List[int]) -> None:
-    sitezip_utils.delete_records(SITEZIP_DIR, ids)
-
-
-def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -> Tuple[bytes, bytes]:
-    return sitezip_utils.capture_site(url, user_agent, spoof_referrer, screenshot_service.executable_path)
 
 
 def delete_subdomain(root_domain: str, subdomain: str) -> None:

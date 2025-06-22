@@ -1,6 +1,6 @@
 from pathlib import Path
-import os
 import app
+from retrorecon import sitezip_service
 
 
 def setup_tmp(monkeypatch, tmp_path):
@@ -29,7 +29,7 @@ def test_site2zip_workflow(tmp_path, monkeypatch):
     with app.app.test_client() as client:
         def fake_capture(url, agent, spoof):
             return b'ZIPDATA', b'PNGDATA'
-        monkeypatch.setattr(app, 'capture_site', fake_capture)
+        monkeypatch.setattr(sitezip_service, 'capture_site', fake_capture)
         resp = client.post('/tools/site2zip', data={'url': 'http://example.com'})
         assert resp.status_code == 200
         data = resp.get_json()
