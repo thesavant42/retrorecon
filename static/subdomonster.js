@@ -321,6 +321,7 @@ function initSubdomonster(){
               `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
               `<div class="menu-row"><a class="menu-btn" href="/tools/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
+              `<div class="menu-row"><a class="menu-btn subdom-search-link" href="#" data-sub="${encoded}">Search</a></div>`+
               `<div class="menu-row"><a class="menu-btn cdx-import-link" href="#" data-sub="${encoded}">Wayback Import</a></div>`+
             `</div>`+
           `</div>`+
@@ -393,6 +394,15 @@ function initSubdomonster(){
           const item = tableData.find(r => r.subdomain === sub);
           if(item) item.cdx_indexed = true;
         }
+      });
+    });
+    table.querySelectorAll('.subdom-search-link').forEach(link => {
+      link.addEventListener('click', ev => {
+        ev.preventDefault();
+        const sub = decodeURIComponent(link.dataset.sub);
+        const box = document.getElementById('searchbox');
+        if(box) box.value = sub;
+        history.back();
       });
     });
 
