@@ -20,6 +20,11 @@ def load_secrets_file(path: str = "secrets.json") -> None:
     try:
         with open(secrets_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
+    except UnicodeDecodeError:
+        # Some editors on Windows may save JSON as UTF-16 with a BOM.
+        # Fallback to UTF-16 if UTF-8 decoding fails.
+        with open(secrets_path, "r", encoding="utf-16") as fh:
+            data = json.load(fh)
     except Exception as exc:  # pragma: no cover - log only
         raise RuntimeError(f"Failed to load secrets file: {exc}") from exc
 
