@@ -311,19 +311,25 @@ function initSubdomonster(){
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
         `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
-        `<td>${r.tags || ''}</td>`+
+        `<td>${(r.tags||'').split(',').filter(t=>t).map(t=>`<span class="tag-pill">${t}</span>`).join(' ')}</td>`+
         `<td>`+
-          `<button type="button" class="btn btn--small delete-btn">x</button> `+
-          `<div class="dropdown d-inline-block ml-4px">`+
-            `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+
-            `<div class="dropdown-content">`+
-              `<div class="menu-row"><a class="menu-btn" href="/tools/screenshotter?url=${encoded}" target="_blank">Screen Shotter</a></div>`+
-              `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
-              `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
-              `<div class="menu-row"><a class="menu-btn" href="/tools/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
-              `<div class="menu-row"><a class="menu-btn subdom-search-link" href="#" data-sub="${encoded}">Search</a></div>`+
-              `<div class="menu-row"><a class="menu-btn cdx-import-link" href="#" data-sub="${encoded}">Wayback Import</a></div>`+
+          `<div class="url-tools-row nowrap">`+
+            `<div class="dropdown d-inline-block">`+
+              `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+
+              `<div class="dropdown-content">`+
+                `<div class="menu-row"><a class="menu-btn" href="/tools/screenshotter?url=${encoded}" target="_blank">Screen Shotter</a></div>`+
+                `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
+                `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
+                `<div class="menu-row"><a class="menu-btn" href="/tools/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
+                `<div class="menu-row"><a class="menu-btn subdom-search-link" href="#" data-sub="${encoded}">Search</a></div>`+
+                `<div class="menu-row"><a class="menu-btn cdx-import-link" href="#" data-sub="${encoded}">Wayback Import</a></div>`+
+              `</div>`+
             `</div>`+
+            `<button type="button" class="btn explode-btn copy-btn" data-sub="${encoded}" title="Copy">📋 Copy</button>`+
+            `<button type="button" class="btn delete-btn" title="Delete">🗑️ Delete</button>`+
+            `<button type="button" class="btn ml-05 notes-btn" data-sub="${encoded}">📝 Notes</button>`+
+            `<input type="text" class="form-input ml-05 row-tag-input" placeholder="Tag" size="8" />`+
+            `<button type="button" class="btn add-tag-btn" title="Add tag">+</button>`+
           `</div>`+
         `</td>`+
       `</tr>`;
@@ -364,6 +370,26 @@ function initSubdomonster(){
       });
     });
     makeResizable(table, 'subdomonster-col-widths');
+    table.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sub = decodeURIComponent(btn.dataset.sub);
+        try {
+          await navigator.clipboard.writeText(sub);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = '📋 Copy'; }, 1000);
+        } catch {
+          const t = document.createElement('textarea');
+          t.value = sub;
+          document.body.appendChild(t);
+          t.select();
+          document.execCommand('copy');
+          document.body.removeChild(t);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = '📋 Copy'; }, 1000);
+        }
+      });
+    });
+
     table.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         ev.stopPropagation();
@@ -379,6 +405,40 @@ function initSubdomonster(){
             alert('Delete failed');
           }
         }
+      });
+    });
+
+    table.querySelectorAll('.add-tag-btn').forEach(btn => {
+      btn.addEventListener('click', async ev => {
+        ev.stopPropagation();
+        const tr = btn.closest('tr');
+        if(!tr) return;
+        const input = tr.querySelector('.row-tag-input');
+        const tag = input ? input.value.trim() : '';
+        if(!tag) return;
+        const sub = tr.dataset.sub;
+        const domain = tr.dataset.domain;
+        const params = new URLSearchParams({action:'add_tag', tag, selected:`${domain}|${sub}`});
+        const resp = await fetch('/subdomain_action', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params});
+        if(resp.ok){
+          input.value = '';
+          const data = await resp.json();
+          if(data.updated){
+            const item = tableData.find(r => r.subdomain===sub);
+            if(item){
+              item.tags = item.tags ? item.tags + ',' + tag : tag;
+            }
+            render();
+          }
+        } else {
+          alert('Tag add failed');
+        }
+      });
+    });
+
+    table.querySelectorAll('.notes-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('Notes feature not implemented yet');
       });
     });
     table.querySelectorAll('.cdx-import-link').forEach(link => {
