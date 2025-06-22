@@ -292,15 +292,15 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/><col/><col class="send-col"/>'+
+      '<col/><col/><col/><col/><col/><col class="send-col"/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
       '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
-      '<th>Tags</th>'+
       '<th class="no-resize">Actions:</th>'+
+      '<th class="sortable" data-field="tags">Tags</th>'+
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);
@@ -311,7 +311,6 @@ function initSubdomonster(){
         `<td>${r.domain}</td>`+
         `<td>${r.source}</td>`+
         `<td>${r.cdx_indexed? 'yes':'no'}</td>`+
-        `<td>${(r.tags||'').split(',').filter(t=>t).map(t=>`<span class="tag-pill">${t}</span>`).join(' ')}</td>`+
         `<td>`+
           `<div class="url-tools-row nowrap">`+
             `<div class="dropdown d-inline-block">`+
@@ -332,6 +331,7 @@ function initSubdomonster(){
             `<button type="button" class="btn add-tag-btn" title="Add tag">+</button>`+
           `</div>`+
         `</td>`+
+        `<td>${(r.tags||'').split(',').filter(t=>t).map(t=>`<span class="tag-pill">${t}</span>`).join(' ')}</td>`+
       `</tr>`;
     }
     html += '</tbody></table>';
