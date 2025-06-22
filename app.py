@@ -63,7 +63,7 @@ app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
 
 
-@app.route('/favicon.ico')
+@app.route('/favicon.ico', endpoint='core.favicon_ico')
 def favicon_ico() -> Response:
     """Serve the favicon.ico from the application root."""
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
