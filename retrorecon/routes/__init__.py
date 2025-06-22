@@ -10,5 +10,6 @@ from .oci import bp as oci_bp
 from .dagdotdev import bp as dagdotdev_bp
 from .urls import bp as urls_bp
 from .swagger import bp as swagger_bp
+from .overview import bp as overview_bp
 
-__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp', 'swagger_bp']
+__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp', 'swagger_bp', 'overview_bp']

@@ -149,6 +149,15 @@ This ensures database workflow tests are executed along with the existing suite 
 5. **Delete Capture**
    - POST `/delete_sitezips` with the capture ID and confirm it is removed from `/sitezips`.
 
+## Project Overview Tests
+
+1. **Overview Page Loads**
+   - Create a database with URLs and subdomains.
+   - GET `/overview` should return status 200 and list the domain name.
+
+2. **JSON Data**
+   - GET `/overview.json` should return counts for `urls` and `domains` reflecting the inserted records.
+
 ## API Spec Tests
 
 1. **OpenAPI Generation**
