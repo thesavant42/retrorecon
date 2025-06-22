@@ -50,7 +50,7 @@ from retrorecon import (
     text_notes_utils,
     jwt_utils,
     search_utils,
-    screenshot_utils,
+    screenshot_service,
     sitezip_utils,
     subdomain_utils,
     status as status_mod,
@@ -279,25 +279,7 @@ def export_url_data(ids: Optional[List[int]] = None, query: str = '') -> List[Di
     return result
 
 
-SCREENSHOT_DIR = os.path.join(app.root_path, 'static', 'screenshots')
 SITEZIP_DIR = os.path.join(app.root_path, 'static', 'sitezips')
-executablePath: Optional[str] = None
-
-
-def save_screenshot_record(url: str, path: str, thumb: str, method: str = 'GET') -> int:
-    return screenshot_utils.save_record(SCREENSHOT_DIR, url, path, thumb, method)
-
-
-def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    return screenshot_utils.list_data(ids)
-
-
-def delete_screenshots(ids: List[int]) -> None:
-    screenshot_utils.delete_records(SCREENSHOT_DIR, ids)
-
-
-def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
-    return screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executablePath)
 
 
 def save_sitezip_record(
@@ -317,7 +299,7 @@ def delete_sitezips(ids: List[int]) -> None:
 
 
 def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -> Tuple[bytes, bytes]:
-    return sitezip_utils.capture_site(url, user_agent, spoof_referrer, executablePath)
+    return sitezip_utils.capture_site(url, user_agent, spoof_referrer, screenshot_service.executable_path)
 
 
 def delete_subdomain(root_domain: str, subdomain: str) -> None:

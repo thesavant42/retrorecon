@@ -100,8 +100,9 @@ If screenshot capture shows a placeholder image, Playwright may not have the Chr
 Run `python -m playwright install` to download the browsers. If you previously
 set the `PLAYWRIGHT_BROWSERS_PATH` environment variable, remove it so Playwright
 can use its default location. Alternatively set `PLAYWRIGHT_CHROMIUM_PATH` to an
-existing Chrome executable. You can also assign a path to `app.executablePath`
-before calling screenshot functions to override the Chromium binary.
+existing Chrome executable. You can also assign a path to
+`retrorecon.screenshot_service.executable_path` before calling screenshot
+functions to override the Chromium binary.
 
 ### Secrets File
 Create a `secrets.json` file alongside `app.py` to store sensitive values like
