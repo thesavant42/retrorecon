@@ -37,6 +37,15 @@ document.addEventListener('DOMContentLoaded', function(){
     exportSel.addEventListener('change', () => {
       const fmt = exportSel.value;
       if(!fmt) return;
+      if(fmt === 'db'){
+        exportSel.value = '';
+        const nm = prompt('Enter database name:', 'waybax');
+        if(nm){
+          const enc = encodeURIComponent(nm.trim());
+          window.location = '/save_db?name=' + enc;
+        }
+        return;
+      }
       exportFmt.value = fmt;
       if(exportQ){
         const box = document.getElementById('searchbox');
