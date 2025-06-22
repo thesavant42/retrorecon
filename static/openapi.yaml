@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Retrorecon API
+  version: "1.0"
+paths:
+  /import_progress:
+    get:
+      summary: Get import progress status
+      responses:
+        '200':
+          description: JSON progress data
+          content:
+            application/json:
+              schema:
+                type: object
+  /fetch_cdx:
+    post:
+      summary: Fetch CDX records
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+      responses:
+        '302':
+          description: Redirect to index with flash message
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    customHeaderAuth:
+      type: apiKey
+      in: header
+      name: X-Custom-Auth
