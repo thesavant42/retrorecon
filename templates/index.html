@@ -297,6 +297,10 @@
                         <option value="crtsh">Crt.sh</option>
                         <option value="explode" {% if '.js.map' not in url.url %}disabled{% endif %}>Webpack Exploder</option>
                       </select>
+                      <select class="form-select send-select menu-btn" data-url="{{ url.url }}">
+                        <option value="">Send to…</option>
+                        <option value="text">Text Tools</option>
+                      </select>
                       <button class="btn explode-btn copy-btn" type="button" data-url="{{ url.url }}" title="Copy">📋 Copy</button>
                       <form method="POST" action="/bulk_action" class="d-inline mr-03">
                         <input type="hidden" name="action" value="delete" />
@@ -882,7 +886,7 @@
       const textToolsLink = document.getElementById('text-tools-link');
       let textToolsLoaded = false;
 
-      async function showTextTools(skipPush){
+      async function showTextTools(skipPush, text){
         if(!textToolsLoaded){
           const resp = await fetch('/text_tools');
           const html = await resp.text();
@@ -893,7 +897,12 @@
           document.body.appendChild(script);
           textToolsLoaded = true;
         }
-        document.getElementById('text-tools-overlay').classList.remove('hidden');
+        const ov = document.getElementById('text-tools-overlay');
+        if(text !== undefined){
+          const input = document.getElementById('text-tool-input');
+          if(input) input.value = text;
+        }
+        if(ov) ov.classList.remove('hidden');
         if(!skipPush){
           history.pushState({tool:'text'}, '', '/tools/text_tools');
         }
@@ -907,7 +916,7 @@
       if (textToolsLink) {
         textToolsLink.addEventListener('click', async (e) => {
           e.preventDefault();
-          showTextTools();
+          showTextTools(false);
         });
       }
 

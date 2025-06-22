@@ -27,6 +27,19 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     });
   });
+  document.querySelectorAll('select.send-select[data-url]').forEach(sel => {
+    sel.addEventListener('change', function(){
+      const raw = this.getAttribute('data-url');
+      const val = sel.value;
+      sel.selectedIndex = 0;
+      if(!val) return;
+      if(val === 'text'){
+        if(typeof showTextTools === 'function'){
+          showTextTools(false, raw);
+        }
+      }
+    });
+  });
 
   const exportSel = document.getElementById('url-export-formats');
   const exportForm = document.getElementById('url-export-form');
