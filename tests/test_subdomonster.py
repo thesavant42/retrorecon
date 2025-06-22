@@ -30,6 +30,7 @@ def test_subdomonster_route(tmp_path, monkeypatch):
         resp = client.get('/subdomonster')
         assert resp.status_code == 200
         assert b'id="subdomonster-overlay"' in resp.data
+        assert b'id="subdomonster-source"' in resp.data
         assert b'id="subdom-select-mode"' in resp.data
 
 
