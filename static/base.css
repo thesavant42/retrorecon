@@ -1225,3 +1225,16 @@ body.bg-hidden {
   max-height: 80vh;
   overflow-y: auto;
 }
+
+/* Swagger UI overrides */
+.retrorecon-root #swagger-ui .scheme-container {
+  background: var(--bg-color);
+  color: var(--fg-color);
+  border: 1px solid var(--color-contrast);
+}
+
+/* Generic close button for standalone pages */
+.retrorecon-root .close-btn {
+  float: right;
+  margin-left: 1em;
+}
