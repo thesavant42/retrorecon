@@ -12,7 +12,7 @@ DOCKERHUB_PAT = os.environ.get("DOCKERHUB_PAT")
 def run(cmd, **kwargs):
     """Run a command, raising an exception if it fails."""
     print("$", " ".join(cmd))
-    subprocess.check_call(cmd, **kwargs)
+    subprocess.run(cmd, check=True, **kwargs)
 
 
 def docker_login():
