@@ -237,7 +237,7 @@ body {
   align-items: flex-start;
   gap: 0.5em;
   color: var(--fg-color);
-  margin: 10px;
+  margin: 10px 10px 0.25em;
 }
 
 /* Layout for form inside search bar */
@@ -610,7 +610,7 @@ body {
   display: flex;
   flex-direction: column;
   /* Maintain visible frame even when no URLs are listed */
-  min-height: 600px;
+  min-height: 650px;
   overflow-y: auto;
 }
 
@@ -980,7 +980,7 @@ body {
 
 /* Pagination styling */
 .retrorecon-root .pagination {
-    margin: 0.2em 0.5em;
+    margin: 0.1em 0.3em;
     border-radius: 4px;
     transition: background 0.2s;
     /* border: 1px solid var(--color-contrast); */
@@ -992,13 +992,13 @@ body {
     align-items: center;
     text-align: center;
     font-size: 1.2em;
-    gap: 0.6em;
+    gap: 0.4em;
 }
 .retrorecon-root .pagination a,
 .retrorecon-root .pagination strong,
 .retrorecon-root .pagination span,
 .retrorecon-root .pagination form {
-  margin: 0 0.2em;
+  margin: 0 0.1em;
 }
 .retrorecon-root .pagination a:hover {
   background: var(--bg-color);
@@ -1010,7 +1010,7 @@ body {
   font-weight: bold;
 }
 .retrorecon-root .pagination .page-info {
-  margin-right: 1em;
+  margin-right: 0.6em;
 }
 .retrorecon-root .pagination input[type="text"] {
   width: 60px;
@@ -1023,7 +1023,7 @@ body {
   color: var(--fg-color);
 }
 .retrorecon-root .pagination button {
-  margin-left: 0.5em;
+  margin-left: 0.3em;
 }
 
 .retrorecon-root .pagination-arrow {
@@ -1153,6 +1153,14 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Reduce spacing around pagination and results sections */
+.retrorecon-root #layout-c {
+  margin-top: 0.25em;
+}
+.retrorecon-root #layout-d {
+  margin-top: 0.25em;
 }
 
 /* --- End of update --- */
