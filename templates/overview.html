@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Project Overview - {{ db_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
+  {% if current_theme %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
+  {% endif %}
+</head>
+<body class="retrorecon-root">
+  <h1>Project Overview - {{ db_name }}</h1>
+  <p class="mb-05">URLs: {{ counts['urls'] }} | Domains: {{ counts['domains'] }} | Screenshots: {{ counts['screenshots'] }} | SiteZips: {{ counts['sitezips'] }} | JWTs: {{ counts['jwt_cookies'] }} | Notes: {{ counts['notes'] }}</p>
+  {% for dom in domains %}
+  <h2>{{ dom.root_domain }} ({{ dom.count }})</h2>
+  <table class="url-table">
+    <thead>
+      <tr>
+        <th>Subdomain</th>
+        <th>Tags</th>
+        <th class="text-center">CDX</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sub in dom.subdomains %}
+      <tr>
+        <td>{{ sub['subdomain'] }}</td>
+        <td>{{ sub['tags'] or '' }}</td>
+        <td class="text-center">{% if sub['cdx_indexed'] %}✓{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+  <script src="{{ url_for('static', filename='index_page.js') }}"></script>
+</body>
+</html>

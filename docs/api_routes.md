@@ -662,3 +662,17 @@ Return the uncompressed size of a layer.
 curl http://localhost:5000/size/library/ubuntu@sha256:abcd
 ```
 
+### `GET /overview`
+Render the project overview page summarizing domains and module counts.
+
+```
+curl http://localhost:5000/overview
+```
+
+### `GET /overview.json`
+Return the same overview data as JSON.
+
+```
+curl http://localhost:5000/overview.json
+```
+
