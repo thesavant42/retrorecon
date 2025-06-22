@@ -7,7 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
-from retrorecon import screenshot_service, jwt_service
+from retrorecon import screenshot_service, jwt_service, sitezip_service
 from flask import (
     Blueprint,
     request,
@@ -333,20 +333,20 @@ def site2zip_route():
     agent = request.form.get('agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        zip_bytes, shot_bytes = app.capture_site(url, agent, spoof)
+        zip_bytes, shot_bytes = sitezip_service.capture_site(url, agent, spoof)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
     thumb_name = f'site_{ts}_th.png'
-    os.makedirs(app.SITEZIP_DIR, exist_ok=True)
-    with open(os.path.join(app.SITEZIP_DIR, zip_name), 'wb') as f:
+    os.makedirs(sitezip_service.get_sitezip_dir(), exist_ok=True)
+    with open(os.path.join(sitezip_service.get_sitezip_dir(), zip_name), 'wb') as f:
         f.write(zip_bytes)
-    shot_path = os.path.join(app.SITEZIP_DIR, shot_name)
+    shot_path = os.path.join(sitezip_service.get_sitezip_dir(), shot_name)
     with open(shot_path, 'wb') as f:
         f.write(shot_bytes)
-    thumb_path = os.path.join(app.SITEZIP_DIR, thumb_name)
+    thumb_path = os.path.join(sitezip_service.get_sitezip_dir(), thumb_name)
     try:
         from PIL import Image
         img = Image.open(io.BytesIO(shot_bytes))
@@ -356,7 +356,7 @@ def site2zip_route():
         current_app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(shot_bytes)
-    sid = app.save_sitezip_record(url, zip_name, shot_name, thumb_name, 'GET')
+    sid = sitezip_service.save_sitezip_record(url, zip_name, shot_name, thumb_name, 'GET')
     return jsonify({'id': sid})
 
 
@@ -364,7 +364,7 @@ def site2zip_route():
 def sitezips_route():
     if not app._db_loaded():
         return jsonify([])
-    rows = app.list_sitezip_data()
+    rows = sitezip_service.list_sitezip_data()
     for r in rows:
         r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
         r['preview'] = url_for('static', filename='sitezips/' + r['thumbnail_path'])
@@ -375,10 +375,10 @@ def sitezips_route():
 def download_sitezip_route(sid: int):
     if not app._db_loaded():
         return ('', 400)
-    rows = app.list_sitezip_data([sid])
+    rows = sitezip_service.list_sitezip_data([sid])
     if not rows:
         return ('Not found', 404)
-    zip_path = os.path.join(app.SITEZIP_DIR, rows[0]['zip_path'])
+    zip_path = os.path.join(sitezip_service.get_sitezip_dir(), rows[0]['zip_path'])
     return send_file(zip_path, mimetype='application/zip', as_attachment=True, download_name=rows[0]['zip_path'])
 
 
@@ -389,7 +389,7 @@ def delete_sitezips_route():
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    app.delete_sitezips(ids)
+    sitezip_service.delete_sitezips(ids)
     return ('', 204)
 
 
