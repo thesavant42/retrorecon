@@ -17,5 +17,10 @@
       "styled": 5
     }
   },
-  "unscoped_selectors": {}
+  "unscoped_selectors": {
+    "static/base.css": [
+      "from",
+      "to"
+    ]
+  }
 }
