@@ -1292,25 +1292,6 @@
       });
     }
 
-    // Apply theme colors on the URL results table
-    document.querySelectorAll('.url-table tr').forEach(tr => {
-      if(tr.classList.contains('url-row-buttons')){
-        tr.style.backgroundColor = 'rgb(var(--bg-rgb)/var(--panel-opacity))';
-      } else {
-        tr.style.backgroundColor = 'rgb(var(--bg-rgb))';
-      }
-    });
-    document.querySelectorAll('.url-table tbody tr').forEach(tr => {
-      const cells = tr.querySelectorAll('td');
-      if (cells.length >= 5) {
-        cells[0].style.textAlign = 'center';
-        cells[2].style.textAlign = 'center';
-        cells[3].style.textAlign = 'center';
-        cells[4].style.textAlign = 'center';
-        cells[1].style.textAlign = 'left';
-        cells[1].style.fontWeight = 'bold';
-      }
-    });
 
     function toggleBackground(cb){
       if(cb.checked){

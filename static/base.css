@@ -188,12 +188,6 @@ body {
   line-height: 1.5;
 }
 
-/* Force all text to white 14px */
-.retrorecon-root * {
-  color: #ffffff !important;
-  font-size: 14px !important;
-}
-
 /* Main header style */
 .retrorecon-root h1{
   margin: 1.4em 0;
