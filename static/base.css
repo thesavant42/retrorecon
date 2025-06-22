@@ -602,7 +602,7 @@ body {
   gap: 1em;
 }
 .retrorecon-root .results-frame {
-  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  background: var(--bg-color);
   border-radius: 8px;
   box-shadow: 0 1px 6px var(--fg-color);
   padding: 0.5em;
@@ -615,7 +615,7 @@ body {
 }
 
 .retrorecon-root .table-container {
-  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  background: var(--bg-color);
   border-radius: 8px;
   box-shadow: 0 1px 6px var(--fg-color);
   padding: 0.5em;
@@ -724,7 +724,7 @@ body {
 .retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: rgb(var(--bg-rgb)/0.36);
+  background: var(--bg-color);
   margin-bottom: 0.4em;
   box-shadow: 0 1px 6px var(--fg-color);
   border-radius: 8px;
@@ -832,7 +832,7 @@ body {
 
 /* URL row button cells */
 .retrorecon-root .url-row-buttons {
-  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  background: var(--bg-color);
   transition: background-color 0.2s;
 }
 .retrorecon-root .url-row-buttons td {
@@ -853,7 +853,7 @@ body {
 }
 .retrorecon-root .url-row-buttons:nth-child(4n + 1),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  background: var(--bg-color);
 }
 
 /* Main row: cursor pointer for entire row */
