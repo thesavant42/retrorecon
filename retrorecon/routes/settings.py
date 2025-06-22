@@ -13,7 +13,7 @@ def set_theme():
         flash(f"Theme changed to '{theme.replace('theme-', '').replace('.css', '').capitalize()}'", "success")
     else:
         flash("Invalid theme selection.", "error")
-    return redirect(url_for('index'))
+    return redirect(url_for('core.index'))
 
 
 @bp.route('/set_background', methods=['POST'])
@@ -86,4 +86,4 @@ def set_items_per_page():
     if count not in app.ITEMS_PER_PAGE_OPTIONS:
         return ('Invalid value', 400)
     session['items_per_page'] = count
-    return redirect(url_for('index'))
+    return redirect(url_for('core.index'))

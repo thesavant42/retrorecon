@@ -1,3 +1,4 @@
+from .core import bp as core_bp
 from .notes import bp as notes_bp
 from .tools import bp as tools_bp
 from .db import bp as db_bp
@@ -10,4 +11,4 @@ from .oci import bp as oci_bp
 from .dagdotdev import bp as dagdotdev_bp
 from .urls import bp as urls_bp
 
-__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp']
+__all__ = ['core_bp', 'notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp']

@@ -30,7 +30,7 @@ def text_tools_page():
 @bp.route('/tools/text_tools', methods=['GET'])
 def text_tools_full_page():
     """Serve the full page with Text Tools overlay loaded."""
-    return app.index()
+    return current_app.view_functions['core.index']()
 
 
 def _get_text_param():
@@ -90,7 +90,7 @@ def jwt_tools_page():
 
 @bp.route('/tools/jwt', methods=['GET'])
 def jwt_tools_full_page():
-    return app.index()
+    return current_app.view_functions['core.index']()
 
 
 @bp.route('/tools/jwt_decode', methods=['POST'])
@@ -98,7 +98,7 @@ def jwt_decode_route():
     token = request.form.get('token', '')
     if len(token.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify({'error': 'no_db'}), 400
     try:
         header = app.jwt.get_unverified_header(token)
@@ -200,7 +200,7 @@ def jwt_encode_route():
 
 @bp.route('/jwt_cookies', methods=['GET'])
 def jwt_cookies_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify([])
     rows = app.export_jwt_cookie_data()[:50]
     return jsonify(rows)
@@ -208,7 +208,7 @@ def jwt_cookies_route():
 
 @bp.route('/delete_jwt_cookies', methods=['POST'])
 def delete_jwt_cookies_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
@@ -219,7 +219,7 @@ def delete_jwt_cookies_route():
 
 @bp.route('/update_jwt_cookie', methods=['POST'])
 def update_jwt_cookie_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return ('', 400)
     jid = request.form.get('id', type=int)
     notes = request.form.get('notes', '').strip()
@@ -231,7 +231,7 @@ def update_jwt_cookie_route():
 
 @bp.route('/export_jwt_cookies', methods=['GET'])
 def export_jwt_cookies_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify([])
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
     rows = app.export_jwt_cookie_data(ids if ids else None)
@@ -245,12 +245,12 @@ def screenshotter_page():
 
 @bp.route('/tools/screenshotter', methods=['GET'])
 def screenshotter_full_page():
-    return app.index()
+    return current_app.view_functions['core.index']()
 
 
 @bp.route('/tools/screenshot', methods=['POST'])
 def screenshot_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
     if not url:
@@ -284,7 +284,7 @@ def screenshot_route():
 
 @bp.route('/screenshots', methods=['GET'])
 def screenshots_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify([])
     rows = app.list_screenshot_data()
     for r in rows:
@@ -295,7 +295,7 @@ def screenshots_route():
 
 @bp.route('/delete_screenshots', methods=['POST'])
 def delete_screenshots_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
@@ -311,7 +311,7 @@ def site2zip_page():
 
 @bp.route('/tools/site2zip', methods=['GET'])
 def site2zip_full_page():
-    return app.index()
+    return current_app.view_functions['core.index']()
 
 @bp.route('/layerpeek', methods=['GET'])
 def layerpeek_page():
@@ -319,12 +319,12 @@ def layerpeek_page():
 
 @bp.route('/tools/layerpeek', methods=['GET'])
 def layerpeek_full_page():
-    return app.index()
+    return current_app.view_functions['core.index']()
 
 
 @bp.route('/tools/site2zip', methods=['POST'])
 def site2zip_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
     if not url:
@@ -361,7 +361,7 @@ def site2zip_route():
 
 @bp.route('/sitezips', methods=['GET'])
 def sitezips_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return jsonify([])
     rows = app.list_sitezip_data()
     for r in rows:
@@ -372,7 +372,7 @@ def sitezips_route():
 
 @bp.route('/download_sitezip/<int:sid>', methods=['GET'])
 def download_sitezip_route(sid: int):
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return ('', 400)
     rows = app.list_sitezip_data([sid])
     if not rows:
@@ -383,7 +383,7 @@ def download_sitezip_route(sid: int):
 
 @bp.route('/delete_sitezips', methods=['POST'])
 def delete_sitezips_route():
-    if not app._db_loaded():
+    if not db_service.db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
@@ -397,7 +397,7 @@ def webpack_zip():
     map_url = request.form.get('map_url', '').strip()
     if not map_url:
         flash("No .js.map URL provided.", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('core.index'))
     try:
         resp = requests.get(map_url, timeout=15)
         resp.raise_for_status()
@@ -430,10 +430,10 @@ def webpack_zip():
         )
     except requests.exceptions.RequestException as e:
         flash(f"Error fetching .js.map: {e}", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('core.index'))
     except (json.JSONDecodeError, KeyError) as e:
         flash(f"Error parsing .js.map JSON: {e}", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('core.index'))
     except Exception as e:
         flash(f"Unexpected server error: {e}", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('core.index'))
