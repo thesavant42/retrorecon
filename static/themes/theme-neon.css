@@ -183,22 +183,22 @@ body.bg-hidden {
 .retrorecon-root .search-history .tag-pill {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  background: var(--bg-color);
-  opacity: 1;
-  border-radius: 999px;
-  border: 1px solid var(--color-contrast);
-  margin-right: 4px;
-  font-size: 0.65em;
+  padding: 2px 6px;
+  font-size: 0.55em;
   font-weight: 600;
+  margin-right: 4px;
   margin-bottom: 4px;
   color: var(--fg-color);
+  border: 1px solid var(--color-contrast);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff2caf, #6a4cff);
+  box-shadow: 0 0 4px rgb(255 44 175 / 0.6);
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 .retrorecon-root .tag-pill:hover,
 .retrorecon-root .search-history .tag-pill:hover {
-  opacity: 0.8;
-  box-shadow: 0 0 6px var(--fg-color);
+  opacity: 0.9;
 }
 
 
