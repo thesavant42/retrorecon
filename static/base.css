@@ -47,6 +47,7 @@ body {
 .retrorecon-root .w-95 { width: 95%; }
 .retrorecon-root .w-2em { width: 2em; }
 .retrorecon-root .w-6em { width: 6em; }
+.retrorecon-root .table { width: 100%; box-sizing: border-box; }
 .retrorecon-root .text-left { text-align: left; }
 .retrorecon-root .text-center { text-align: center; }
 .retrorecon-root .text-right { text-align: right; }
@@ -1211,3 +1212,9 @@ body.bg-hidden {
 .retrorecon-root .crane { height: 1em; width: 1em; }
 .retrorecon-root .link { position: relative; bottom: .125em; }
 .retrorecon-root .top { color: inherit; text-decoration: inherit; }
+
+.retrorecon-root #screenshot-table,
+.retrorecon-root #layerslayer-table {
+  max-height: 80vh;
+  overflow-y: auto;
+}
