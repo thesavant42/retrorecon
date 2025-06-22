@@ -7,7 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
-from retrorecon import screenshot_service
+from retrorecon import screenshot_service, jwt_service
 from flask import (
     Blueprint,
     request,
@@ -102,8 +102,8 @@ def jwt_decode_route():
     if not app._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     try:
-        header = app.jwt.get_unverified_header(token)
-        payload = app.jwt.decode(token, options={'verify_signature': False})
+        header = jwt_service.jwt.get_unverified_header(token)
+        payload = jwt_service.jwt.decode(token, options={'verify_signature': False})
     except Exception as e:
         return (f'Invalid JWT: {e}', 400)
 
@@ -131,7 +131,7 @@ def jwt_decode_route():
     known_keys = ["secret", "secret123", "changeme", "password"]
     for k in known_keys:
         try:
-            app.jwt.decode(
+            jwt_service.jwt.decode(
                 token,
                 k,
                 algorithms=[header.get("alg", "")],
@@ -139,7 +139,7 @@ def jwt_decode_route():
             )
             key_warning = True
             break
-        except app.jwt.InvalidSignatureError:
+        except jwt_service.jwt.InvalidSignatureError:
             continue
         except Exception:
             continue
@@ -156,7 +156,7 @@ def jwt_decode_route():
             note += " expired"
         notes.append(note)
     try:
-        app.log_jwt_entry(token, header, payload, "; ".join(notes))
+        jwt_service.log_jwt_entry(token, header, payload, "; ".join(notes))
     except Exception:
         pass
 
@@ -191,9 +191,9 @@ def jwt_encode_route():
     if payload is None:
         payload = {}
     if secret:
-        token = app.jwt.encode(payload, secret, algorithm='HS256')
+        token = jwt_service.jwt.encode(payload, secret, algorithm='HS256')
     else:
-        token = app.jwt.encode(payload, '', algorithm='none')
+        token = jwt_service.jwt.encode(payload, '', algorithm='none')
     if isinstance(token, bytes):
         token = token.decode('ascii')
     return Response(token, mimetype='text/plain')
@@ -203,7 +203,7 @@ def jwt_encode_route():
 def jwt_cookies_route():
     if not app._db_loaded():
         return jsonify([])
-    rows = app.export_jwt_cookie_data()[:50]
+    rows = jwt_service.export_jwt_cookie_data()[:50]
     return jsonify(rows)
 
 
@@ -214,7 +214,7 @@ def delete_jwt_cookies_route():
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    app.delete_jwt_cookies(ids)
+    jwt_service.delete_jwt_cookies(ids)
     return ('', 204)
 
 
@@ -226,7 +226,7 @@ def update_jwt_cookie_route():
     notes = request.form.get('notes', '').strip()
     if not jid:
         return ('', 400)
-    app.update_jwt_cookie(jid, notes)
+    jwt_service.update_jwt_cookie(jid, notes)
     return ('', 204)
 
 
@@ -235,7 +235,7 @@ def export_jwt_cookies_route():
     if not app._db_loaded():
         return jsonify([])
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
-    rows = app.export_jwt_cookie_data(ids if ids else None)
+    rows = jwt_service.export_jwt_cookie_data(ids if ids else None)
     return jsonify(rows)
 
 
