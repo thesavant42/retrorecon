@@ -2,6 +2,10 @@
 
 This document describes the HTTP endpoints exposed by the Flask application. All examples assume the server is running locally on `http://localhost:5000` and the `base_url` variable used by the Postman collection refers to that address.
 
+The complete route map can also be browsed via the built-in Swagger UI at
+`/swagger`. The underlying OpenAPI document is served as
+`/static/openapi.yaml`.
+
 ## General Notes
 
 - POST endpoints expect form data unless otherwise indicated.

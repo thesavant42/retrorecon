@@ -1,46 +1,561 @@
 openapi: 3.0.0
 info:
   title: Retrorecon API
-  version: "1.0"
+  version: '1.1'
 paths:
-  /import_progress:
+  /favicon.ico:
     get:
-      summary: Get import progress status
+      summary: GET /favicon.ico
       responses:
         '200':
-          description: JSON progress data
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Successful response
+  /favicon.svg:
+    get:
+      summary: GET /favicon.svg
+      responses:
+        '200':
+          description: Successful response
+  /:
+    get:
+      summary: GET /
+      responses:
+        '200':
+          description: Successful response
   /fetch_cdx:
     post:
-      summary: Fetch CDX records
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                domain:
-                  type: string
+      summary: POST /fetch_cdx
       responses:
-        '302':
-          description: Redirect to index with flash message
-components:
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-    bearerAuth:
-      type: http
-      scheme: bearer
-    jwtAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-    customHeaderAuth:
-      type: apiKey
-      in: header
-      name: X-Custom-Auth
+        '200':
+          description: Successful response
+  /import_json:
+    post:
+      summary: POST /import_json
+      responses:
+        '200':
+          description: Successful response
+  /import_file:
+    post:
+      summary: POST /import_file
+      responses:
+        '200':
+          description: Successful response
+  /import_progress:
+    get:
+      summary: GET /import_progress
+      responses:
+        '200':
+          description: Successful response
+  /status:
+    get:
+      summary: GET /status
+      responses:
+        '200':
+          description: Successful response
+  /add_tag:
+    post:
+      summary: POST /add_tag
+      responses:
+        '200':
+          description: Successful response
+  /bulk_action:
+    post:
+      summary: POST /bulk_action
+      responses:
+        '200':
+          description: Successful response
+  /saved_tags:
+    get:
+      summary: GET /saved_tags
+      responses:
+        '200':
+          description: Successful response
+    post:
+      summary: POST /saved_tags
+      responses:
+        '200':
+          description: Successful response
+  /delete_saved_tag:
+    post:
+      summary: POST /delete_saved_tag
+      responses:
+        '200':
+          description: Successful response
+  /notes/{url_id}:
+    get:
+      summary: GET /notes/<int:url_id>
+      responses:
+        '200':
+          description: Successful response
+  /notes:
+    post:
+      summary: POST /notes
+      responses:
+        '200':
+          description: Successful response
+  /delete_note:
+    post:
+      summary: POST /delete_note
+      responses:
+        '200':
+          description: Successful response
+  /export_notes:
+    get:
+      summary: GET /export_notes
+      responses:
+        '200':
+          description: Successful response
+  /text_tools:
+    get:
+      summary: GET /text_tools
+      responses:
+        '200':
+          description: Successful response
+  /tools/text_tools:
+    get:
+      summary: GET /tools/text_tools
+      responses:
+        '200':
+          description: Successful response
+  /tools/base64_decode:
+    post:
+      summary: POST /tools/base64_decode
+      responses:
+        '200':
+          description: Successful response
+  /tools/base64_encode:
+    post:
+      summary: POST /tools/base64_encode
+      responses:
+        '200':
+          description: Successful response
+  /tools/url_decode:
+    post:
+      summary: POST /tools/url_decode
+      responses:
+        '200':
+          description: Successful response
+  /tools/url_encode:
+    post:
+      summary: POST /tools/url_encode
+      responses:
+        '200':
+          description: Successful response
+  /jwt_tools:
+    get:
+      summary: GET /jwt_tools
+      responses:
+        '200':
+          description: Successful response
+  /tools/jwt:
+    get:
+      summary: GET /tools/jwt
+      responses:
+        '200':
+          description: Successful response
+  /tools/jwt_decode:
+    post:
+      summary: POST /tools/jwt_decode
+      responses:
+        '200':
+          description: Successful response
+  /tools/jwt_encode:
+    post:
+      summary: POST /tools/jwt_encode
+      responses:
+        '200':
+          description: Successful response
+  /jwt_cookies:
+    get:
+      summary: GET /jwt_cookies
+      responses:
+        '200':
+          description: Successful response
+  /delete_jwt_cookies:
+    post:
+      summary: POST /delete_jwt_cookies
+      responses:
+        '200':
+          description: Successful response
+  /update_jwt_cookie:
+    post:
+      summary: POST /update_jwt_cookie
+      responses:
+        '200':
+          description: Successful response
+  /export_jwt_cookies:
+    get:
+      summary: GET /export_jwt_cookies
+      responses:
+        '200':
+          description: Successful response
+  /screenshotter:
+    get:
+      summary: GET /screenshotter
+      responses:
+        '200':
+          description: Successful response
+  /tools/screenshotter:
+    get:
+      summary: GET /tools/screenshotter
+      responses:
+        '200':
+          description: Successful response
+  /tools/screenshot:
+    post:
+      summary: POST /tools/screenshot
+      responses:
+        '200':
+          description: Successful response
+  /screenshots:
+    get:
+      summary: GET /screenshots
+      responses:
+        '200':
+          description: Successful response
+  /delete_screenshots:
+    post:
+      summary: POST /delete_screenshots
+      responses:
+        '200':
+          description: Successful response
+  /site2zip:
+    get:
+      summary: GET /site2zip
+      responses:
+        '200':
+          description: Successful response
+  /tools/site2zip:
+    post:
+      summary: POST /tools/site2zip
+      responses:
+        '200':
+          description: Successful response
+  /layerpeek:
+    get:
+      summary: GET /layerpeek
+      responses:
+        '200':
+          description: Successful response
+  /tools/layerpeek:
+    get:
+      summary: GET /tools/layerpeek
+      responses:
+        '200':
+          description: Successful response
+  /sitezips:
+    get:
+      summary: GET /sitezips
+      responses:
+        '200':
+          description: Successful response
+  /download_sitezip/{sid}:
+    get:
+      summary: GET /download_sitezip/<int:sid>
+      responses:
+        '200':
+          description: Successful response
+  /delete_sitezips:
+    post:
+      summary: POST /delete_sitezips
+      responses:
+        '200':
+          description: Successful response
+  /tools/webpack-zip:
+    post:
+      summary: POST /tools/webpack-zip
+      responses:
+        '200':
+          description: Successful response
+  /new_db:
+    post:
+      summary: POST /new_db
+      responses:
+        '200':
+          description: Successful response
+  /load_db:
+    post:
+      summary: POST /load_db
+      responses:
+        '200':
+          description: Successful response
+  /save_db:
+    get:
+      summary: GET /save_db
+      responses:
+        '200':
+          description: Successful response
+  /rename_db:
+    post:
+      summary: POST /rename_db
+      responses:
+        '200':
+          description: Successful response
+  /load_saved_db:
+    post:
+      summary: POST /load_saved_db
+      responses:
+        '200':
+          description: Successful response
+  /set_theme:
+    post:
+      summary: POST /set_theme
+      responses:
+        '200':
+          description: Successful response
+  /set_background:
+    post:
+      summary: POST /set_background
+      responses:
+        '200':
+          description: Successful response
+  /set_panel_opacity:
+    post:
+      summary: POST /set_panel_opacity
+      responses:
+        '200':
+          description: Successful response
+  /set_font_size:
+    post:
+      summary: POST /set_font_size
+      responses:
+        '200':
+          description: Successful response
+  /set_items_per_page:
+    post:
+      summary: POST /set_items_per_page
+      responses:
+        '200':
+          description: Successful response
+  /subdomonster:
+    get:
+      summary: GET /subdomonster
+      responses:
+        '200':
+          description: Successful response
+  /tools/subdomonster:
+    get:
+      summary: GET /tools/subdomonster
+      responses:
+        '200':
+          description: Successful response
+  /subdomains:
+    get:
+      summary: GET /subdomains
+      responses:
+        '200':
+          description: Successful response
+    post:
+      summary: POST /subdomains
+      responses:
+        '200':
+          description: Successful response
+  /export_subdomains:
+    get:
+      summary: GET /export_subdomains
+      responses:
+        '200':
+          description: Successful response
+  /mark_subdomain_cdx:
+    post:
+      summary: POST /mark_subdomain_cdx
+      responses:
+        '200':
+          description: Successful response
+  /scrape_subdomains:
+    post:
+      summary: POST /scrape_subdomains
+      responses:
+        '200':
+          description: Successful response
+  /delete_subdomain:
+    post:
+      summary: POST /delete_subdomain
+      responses:
+        '200':
+          description: Successful response
+  /subdomain_action:
+    post:
+      summary: POST /subdomain_action
+      responses:
+        '200':
+          description: Successful response
+  /docker_layers:
+    get:
+      summary: GET /docker_layers
+      responses:
+        '200':
+          description: Successful response
+  /download_layer:
+    get:
+      summary: GET /download_layer
+      responses:
+        '200':
+          description: Successful response
+  /registry_viewer:
+    get:
+      summary: GET /registry_viewer
+      responses:
+        '200':
+          description: Successful response
+  /tools/registry_viewer:
+    get:
+      summary: GET /tools/registry_viewer
+      responses:
+        '200':
+          description: Successful response
+  /registry_explorer:
+    get:
+      summary: GET /registry_explorer
+      responses:
+        '200':
+          description: Successful response
+  /dag_explorer:
+    get:
+      summary: GET /dag_explorer
+      responses:
+        '200':
+          description: Successful response
+  /tools/dag_explorer:
+    get:
+      summary: GET /tools/dag_explorer
+      responses:
+        '200':
+          description: Successful response
+  /dag/repo/{repo}:
+    get:
+      summary: GET /dag/repo/<path:repo>
+      responses:
+        '200':
+          description: Successful response
+  /dag/image/{image}:
+    get:
+      summary: GET /dag/image/<path:image>
+      responses:
+        '200':
+          description: Successful response
+  /dag/fs/{image}@{digest}/{path}:
+    get:
+      summary: GET /dag/fs/<path:image>@<digest>/<path:path>
+      responses:
+        '200':
+          description: Successful response
+  /dag/layer/{image}@{digest}:
+    get:
+      summary: GET /dag/layer/<path:image>@<digest>
+      responses:
+        '200':
+          description: Successful response
+  /tools/registry_explorer:
+    get:
+      summary: GET /tools/registry_explorer
+      responses:
+        '200':
+          description: Successful response
+  /repo/{repo}:
+    get:
+      summary: GET /repo/<path:repo>
+      responses:
+        '200':
+          description: Successful response
+  /image/{image}:
+    get:
+      summary: GET /image/<path:image>
+      responses:
+        '200':
+          description: Successful response
+  /image/{repo}@{digest}:
+    get:
+      summary: GET /image/<path:repo>@<digest>
+      responses:
+        '200':
+          description: Successful response
+  /size/{repo}@{digest}:
+    get:
+      summary: GET /size/<path:repo>@<digest>
+      responses:
+        '200':
+          description: Successful response
+  /fs/{repo}@{digest}:
+    get:
+      summary: GET /fs/<path:repo>@<digest>
+      responses:
+        '200':
+          description: Successful response
+  /fs/{repo}@{digest}/{subpath}:
+    get:
+      summary: GET /fs/<path:repo>@<digest>/<path:subpath>
+      responses:
+        '200':
+          description: Successful response
+  /layers/{image}/{subpath}:
+    get:
+      summary: GET /layers/<path:image>/<path:subpath>
+      responses:
+        '200':
+          description: Successful response
+  /layers/{image}@{digest}/:
+    get:
+      summary: GET /layers/<path:image>@<digest>/
+      responses:
+        '200':
+          description: Successful response
+  /layers/{image}@{digest}/{subpath}:
+    get:
+      summary: GET /layers/<path:image>@<digest>/<path:subpath>
+      responses:
+        '200':
+          description: Successful response
+  /r/{ref}:
+    get:
+      summary: GET /r/<path:ref>
+      responses:
+        '200':
+          description: Successful response
+  /fs/{digest}/{path}:
+    get:
+      summary: GET /fs/<digest>/<path:path>
+      responses:
+        '200':
+          description: Successful response
+  /layer/{digest}:
+    get:
+      summary: GET /layer/<digest>
+      responses:
+        '200':
+          description: Successful response
+  /size/{digest}:
+    get:
+      summary: GET /size/<digest>
+      responses:
+        '200':
+          description: Successful response
+  /export_urls:
+    get:
+      summary: GET /export_urls
+      responses:
+        '200':
+          description: Successful response
+  /swagger/{path}:
+    get:
+      summary: GET /swagger/<path:path>
+      responses:
+        '200':
+          description: Successful response
+  /swagger/:
+    get:
+      summary: GET /swagger/
+      responses:
+        '200':
+          description: Successful response
+  /manual_packet:
+    post:
+      summary: Craft a manual packet (stub)
+      responses:
+        '200':
+          description: OK
+  /manual_packet/{id}:
+    get:
+      summary: Retrieve manual packet (stub)
+      responses:
+        '200':
+          description: OK
