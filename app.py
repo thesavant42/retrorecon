@@ -52,6 +52,7 @@ from retrorecon import (
     search_utils,
     screenshot_service,
     subdomain_utils,
+    tag_utils,
     status as status_mod,
 )
 from retrorecon.filters import manifest_links, oci_obj
@@ -579,24 +580,17 @@ def add_tag() -> Response:
     if not _db_loaded():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
-    entry_id = request.form.get('entry_id')
+    entry_id = request.form.get('entry_id', type=int)
     new_tag = request.form.get('new_tag', '').strip()
     if not entry_id or not new_tag:
         flash("Missing URL ID or tag for adding.", "error")
         return redirect(url_for('index'))
 
-    row = query_db("SELECT tags FROM urls WHERE id = ?", [entry_id], one=True)
-    if not row:
+    if not tag_utils.entry_exists(entry_id):
         flash("URL not found.", "error")
         return redirect(url_for('index'))
 
-    old_tags = row['tags'] or ""
-    tag_list = [t.strip() for t in old_tags.split(',') if t.strip()]
-    if new_tag not in tag_list:
-        tag_list.append(new_tag)
-    updated_tags = ','.join(tag_list)
-
-    execute_db("UPDATE urls SET tags = ? WHERE id = ?", [updated_tags, entry_id])
+    tag_utils.add_tag(entry_id, new_tag)
     flash(f"Added tag '{new_tag}' to entry {entry_id}.", "success")
     return redirect(url_for('index'))
 
@@ -642,41 +636,18 @@ def bulk_action() -> Response:
         if not tag:
             flash("No tag provided for bulk add.", "error")
             return redirect(url_for('index'))
-        count = 0
-        for sid in selected_ids:
-            row = query_db("SELECT tags FROM urls WHERE id = ?", [sid], one=True)
-            if not row:
-                continue
-            old_tags = row['tags'] or ""
-            tag_list = [t.strip() for t in old_tags.split(',') if t.strip()]
-            if tag not in tag_list:
-                tag_list.append(tag)
-                updated_tags = ','.join(tag_list)
-                execute_db("UPDATE urls SET tags = ? WHERE id = ?", [updated_tags, sid])
-                count += 1
+        count = tag_utils.bulk_add_tag([int(s) for s in selected_ids], tag)
         flash(f"Added tag '{tag}' to {count} entries.", "success")
 
     elif action == 'remove_tag':
         if not tag:
             flash("No tag provided for removal.", "error")
             return redirect(url_for('index'))
-        count = 0
-        for sid in selected_ids:
-            row = query_db("SELECT tags FROM urls WHERE id = ?", [sid], one=True)
-            if not row:
-                continue
-            old_tags = row['tags'] or ""
-            tag_list = [t.strip() for t in old_tags.split(',') if t.strip() and t.strip() != tag]
-            updated_tags = ','.join(tag_list)
-            execute_db("UPDATE urls SET tags = ? WHERE id = ?", [updated_tags, sid])
-            count += 1
+        count = tag_utils.bulk_remove_tag([int(s) for s in selected_ids], tag)
         flash(f"Removed tag '{tag}' from {count} entries.", "success")
 
     elif action == 'clear_tags':
-        count = 0
-        for sid in selected_ids:
-            execute_db("UPDATE urls SET tags = '' WHERE id = ?", [sid])
-            count += 1
+        count = tag_utils.bulk_clear_tags([int(s) for s in selected_ids])
         flash(f"Cleared tags from {count} entries.", "success")
 
     elif action == 'delete':
