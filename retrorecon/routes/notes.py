@@ -1,22 +1,23 @@
 import app
 from flask import Blueprint, request, jsonify
 from retrorecon import notes_service
+from .tags import load_saved_tags, save_saved_tags
 
 bp = Blueprint('notes', __name__)
 
 @bp.route('/saved_tags', methods=['GET', 'POST'])
 def saved_tags_route():
     if request.method == 'GET':
-        return jsonify({'tags': app.load_saved_tags()})
+        return jsonify({'tags': load_saved_tags()})
     tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
     if not tag.startswith('#'):
         tag = '#' + tag
-    tags = app.load_saved_tags()
+    tags = load_saved_tags()
     if tag not in tags:
         tags.append(tag)
-        app.save_saved_tags(tags)
+        save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/delete_saved_tag', methods=['POST'])
@@ -26,10 +27,10 @@ def delete_saved_tag():
         return ('', 400)
     if not tag.startswith('#'):
         tag = '#' + tag
-    tags = app.load_saved_tags()
+    tags = load_saved_tags()
     if tag in tags:
         tags.remove(tag)
-        app.save_saved_tags(tags)
+        save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])
