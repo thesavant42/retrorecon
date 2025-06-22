@@ -11,6 +11,8 @@ import logging
 import sys
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from retrorecon import theme
+
 import requests
 import jwt
 import urllib.parse
@@ -96,40 +98,13 @@ ITEMS_PER_PAGE = 10  # default results per page
 ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 25]
 TEXT_TOOLS_LIMIT = 64 * 1024  # 64 KB limit for text transformations
 
-THEMES_DIR = os.path.join(app.root_path, 'static', 'themes')
-if os.path.isdir(THEMES_DIR):
-    AVAILABLE_THEMES = sorted([f for f in os.listdir(THEMES_DIR) if f.endswith('.css')])
-else:
-    AVAILABLE_THEMES = []
-
-def _parse_theme_colors(filename: str) -> Tuple[str, str]:
-    """Return ``(bg, fg)`` colors parsed from the given theme file."""
-
-    bg = '#000000'
-    fg = '#ffffff'
-    try:
-        with open(os.path.join(THEMES_DIR, filename)) as fh:
-            for line in fh:
-                if '--bg-color' in line:
-                    bg = line.split(':')[1].strip().rstrip(';')
-                elif '--fg-color' in line:
-                    fg = line.split(':')[1].strip().rstrip(';')
-                if 'font-family' in line:
-                    break
-    except OSError:
-        pass
-    return bg, fg
-
-THEME_SWATCHES = {t: _parse_theme_colors(t) for t in AVAILABLE_THEMES}
-
-BACKGROUNDS_DIR = os.path.join(app.root_path, 'static', 'img')
-if os.path.isdir(BACKGROUNDS_DIR):
-    AVAILABLE_BACKGROUNDS = sorted([
-        f for f in os.listdir(BACKGROUNDS_DIR)
-        if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-    ])
-else:
-    AVAILABLE_BACKGROUNDS = []
+(
+    THEMES_DIR,
+    AVAILABLE_THEMES,
+    THEME_SWATCHES,
+    BACKGROUNDS_DIR,
+    AVAILABLE_BACKGROUNDS,
+) = theme.load_theme_data(app.root_path)
 
 IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'data', 'import_progress.json')
 DEMO_DATA_FILE = os.path.join(app.root_path, 'data', 'demo_data.json')
