@@ -155,7 +155,10 @@ This ensures database workflow tests are executed along with the existing suite 
    - Create a database with URLs and subdomains.
    - GET `/overview` should return status 200 and list the domain name.
 
-2. **JSON Data**
+2. **Dashboard Root Loads**
+   - GET `/` with no parameters should return status 200 and show the domain name.
+
+3. **JSON Data**
    - GET `/overview.json` should return counts for `urls` and `domains` reflecting the inserted records.
 
 ## API Spec Tests

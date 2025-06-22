@@ -15,7 +15,9 @@ The complete route map can also be browsed via the built-in Swagger UI at
 ## Routes
 
 ### `GET /`
-Render the main search page.
+Render the Project Dashboard summarizing domains and module counts when no
+search parameters are provided. Supplying `q` or other search options shows the
+traditional results page.
 
 ```
 curl http://localhost:5000/
