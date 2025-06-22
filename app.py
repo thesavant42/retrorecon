@@ -47,6 +47,7 @@ from retrorecon import (
     progress as progress_mod,
     saved_tags as saved_tags_mod,
     notes_utils,
+    text_notes_utils,
     jwt_utils,
     search_utils,
     screenshot_utils,
@@ -201,6 +202,22 @@ def delete_all_notes(url_id: int) -> None:
 
 def export_notes_data() -> List[Dict[str, Any]]:
     return notes_utils.export_notes_data()
+
+
+def get_text_notes() -> List[sqlite3.Row]:
+    return text_notes_utils.get_text_notes()
+
+
+def add_text_note(content: str) -> int:
+    return text_notes_utils.add_text_note(content)
+
+
+def update_text_note(note_id: int, content: str) -> None:
+    text_notes_utils.update_text_note(note_id, content)
+
+
+def delete_text_note_entry(note_id: int) -> None:
+    text_notes_utils.delete_text_note(note_id)
 
 
 def log_jwt_entry(token: str, header: Dict[str, Any], payload: Dict[str, Any], notes: str) -> None:

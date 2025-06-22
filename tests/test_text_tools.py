@@ -53,3 +53,24 @@ def test_base64_roundtrip(tmp_path, monkeypatch):
         resp = client.post('/tools/base64_decode', data={'text': b64})
         assert resp.status_code == 200
         assert resp.get_data(as_text=True) == text
+
+
+def test_text_notes_crud(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        client.post('/new_db', data={'db_name': 'notes'})
+        resp = client.post('/text_notes', data={'content': 'demo'})
+        assert resp.status_code == 204
+        resp = client.get('/text_notes')
+        data = resp.get_json()
+        assert data and data[0]['content'] == 'demo'
+        note_id = data[0]['id']
+        resp = client.post('/text_notes', data={'note_id': note_id, 'content': 'upd'})
+        assert resp.status_code == 204
+        resp = client.get('/text_notes')
+        data = resp.get_json()
+        assert data[0]['content'] == 'upd'
+        resp = client.post('/delete_text_note', data={'note_id': note_id})
+        assert resp.status_code == 204
+        resp = client.get('/text_notes')
+        assert resp.get_json() == []

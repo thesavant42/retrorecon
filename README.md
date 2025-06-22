@@ -56,7 +56,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Browser-side search history for quick queries
 - Pagination with jump-to-page and total counts
 - Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
-- **Text Tools** full-screen editor for Base64 and URL encoding/decoding with Save As
+- **Text Tools** full-screen editor for Base64/URL transforms with Save As and project-wide note storage
 - **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
 -  with a persistent JWT cookie jar
 - **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)

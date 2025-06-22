@@ -311,6 +311,31 @@ Download all notes as structured JSON.
 curl http://localhost:5000/export_notes
 ```
 
+### `GET /text_notes`
+Return all project-wide text notes.
+
+```
+curl http://localhost:5000/text_notes
+```
+
+### `POST /text_notes`
+Create or update a text note.
+
+Parameters:
+- `content` – note text.
+- `note_id` – existing note ID when editing (optional).
+
+```
+curl -X POST -d "content=demo" http://localhost:5000/text_notes
+```
+
+### `POST /delete_text_note`
+Delete a text note by ID.
+
+```
+curl -X POST -d "note_id=1" http://localhost:5000/delete_text_note
+```
+
 ### `GET /export_urls`
 Export URL records in various formats.
 
