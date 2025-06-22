@@ -307,6 +307,19 @@ Download all notes as structured JSON.
 curl http://localhost:5000/export_notes
 ```
 
+### `GET /export_urls`
+Export URL records in various formats.
+
+Parameters:
+- `format` – one of `txt`, `csv`, `md` or `json`.
+- `q` – optional search query.
+- `id` – repeatable ID filter when not using `select_all_matching`.
+- `select_all_matching` – set to `true` to export all results for the query.
+
+```
+curl -L "http://localhost:5000/export_urls?format=csv&id=1&id=2"
+```
+
 ## Generating a Postman Collection
 Run the helper script to generate a Postman collection from the application's route map:
 
