@@ -70,7 +70,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
 - Adjustable panel opacity and font size
 - Add notes to each URL result via a full-screen editor
 - View the database ER diagram in `docs/database_erd.md`.
-- Follow the OCI Explorer workflow in `docs/oic_explorer_user_journey.md`.
+- Follow the OCI Explorer workflow in `docs/oci_explorer_user_journey.md`.
 - Browse the API via Swagger at `/swagger` using the OpenAPI file `static/openapi.yaml`.
 
 ## Installation
