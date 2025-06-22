@@ -14,7 +14,7 @@ function initSubdomonster(){
   const exportFormatInp = document.getElementById('subdom-export-format');
   const exportQInp = document.getElementById('subdom-export-q');
   const searchInput = document.getElementById('subdomonster-search');
-  const sourceRadios = document.getElementsByName('subdomonster-source');
+  const sourceSel = document.getElementById('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   const selectModeSel = document.getElementById('subdom-select-mode');
   const bulkTag = document.getElementById('subdom-bulk-tag');
@@ -257,21 +257,14 @@ function initSubdomonster(){
     });
   }
 
-  for(const rb of sourceRadios){
-    rb.addEventListener('change', () => {
-      const val = rb.value;
-      if(rb.checked){
-        apiInput.classList.toggle('hidden', val !== 'virustotal');
-      }
+  if(sourceSel){
+    sourceSel.addEventListener('change', () => {
+      const val = sourceSel.value;
+      apiInput.classList.toggle('hidden', val !== 'virustotal');
     });
+    // initialize visibility
+    apiInput.classList.toggle('hidden', sourceSel.value !== 'virustotal');
   }
-  // initialize visibility
-  (function(){
-    let active = Array.from(sourceRadios).find(r=>r.checked);
-    if(active){
-      apiInput.classList.toggle('hidden', active.value !== 'virustotal');
-    }
-  })();
 
   function render(){
     const filtered = searchText ?
@@ -487,8 +480,7 @@ function initSubdomonster(){
 
   fetchBtn.addEventListener('click', async () => {
     const domain = domainInput.value.trim();
-    let source = 'crtsh';
-    for(const rb of sourceRadios){ if(rb.checked){ source = rb.value; break; } }
+    const source = sourceSel ? sourceSel.value : 'crtsh';
     const params = new URLSearchParams();
     if(domain) params.append('domain', domain);
     params.append('source', source);
