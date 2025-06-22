@@ -1,6 +1,15 @@
 import os
+import io
+import json
+import sqlite3
+import zipfile
+import threading
+import re
+import datetime
+import base64
 import logging
 import sys
+import urllib.parse
 from typing import Optional
 
 import requests
@@ -106,11 +115,15 @@ if os.path.isdir(BACKGROUNDS_DIR):
 else:
     AVAILABLE_BACKGROUNDS = []
 
-app.config['IMPORT_PROGRESS_FILE'] = os.path.join(app.root_path, 'data', 'import_progress.json')
-app.config['DEMO_DATA_FILE'] = os.path.join(app.root_path, 'data', 'demo_data.json')
-app.config['SAVED_TAGS_FILE'] = os.path.join(app.root_path, 'data', 'saved_tags.json')
+IMPORT_PROGRESS_FILE = os.path.join(app.root_path, 'data', 'import_progress.json')
+DEMO_DATA_FILE = os.path.join(app.root_path, 'data', 'demo_data.json')
+SAVED_TAGS_FILE = os.path.join(app.root_path, 'data', 'saved_tags.json')
 
-progress_mod.clear_progress(app.config['IMPORT_PROGRESS_FILE'])
+app.config['IMPORT_PROGRESS_FILE'] = IMPORT_PROGRESS_FILE
+app.config['DEMO_DATA_FILE'] = DEMO_DATA_FILE
+app.config['SAVED_TAGS_FILE'] = SAVED_TAGS_FILE
+
+progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
 
 TEMP_DB_NAME = db_service.TEMP_DB_NAME
 TEMP_DISPLAY_NAME = db_service.TEMP_DISPLAY_NAME

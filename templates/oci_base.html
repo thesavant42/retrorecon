@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>{{ title or 'Registry Explorer' }}</title>
-  <link rel="icon" href="{{ url_for('favicon_svg') }}">
+  <link rel="icon" href="{{ url_for('core.favicon_svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
   {% set current_theme = session.get('theme') %}
   {% if current_theme %}

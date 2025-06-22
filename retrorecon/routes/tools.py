@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
+from ..services import db_service
 from flask import (
     Blueprint,
     request,

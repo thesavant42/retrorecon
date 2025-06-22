@@ -1,23 +1,44 @@
 import json
 import sqlite3
 import threading
+import sys
 from typing import Any, Dict, List
 
 from flask import current_app
+
+
+def _progress_file() -> str:
+    try:
+        if current_app and 'IMPORT_PROGRESS_FILE' in current_app.config:
+            return current_app.config['IMPORT_PROGRESS_FILE']
+    except Exception:
+        pass
+    app_mod = sys.modules.get('app')
+    return getattr(app_mod, 'IMPORT_PROGRESS_FILE', 'data/import_progress.json')
+
+
+def _db_path() -> str:
+    try:
+        if current_app and 'DATABASE' in current_app.config:
+            return current_app.config['DATABASE']
+    except Exception:
+        pass
+    app_mod = sys.modules.get('app')
+    return app_mod.app.config.get('DATABASE') if app_mod else ''
 
 from retrorecon import progress as progress_mod, status as status_mod, search_utils
 
 
 def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
-    progress_mod.set_progress(current_app.config['IMPORT_PROGRESS_FILE'], status, message, current, total)
+    progress_mod.set_progress(_progress_file(), status, message, current, total)
 
 
 def get_import_progress() -> Dict[str, Any]:
-    return progress_mod.get_progress(current_app.config['IMPORT_PROGRESS_FILE'])
+    return progress_mod.get_progress(_progress_file())
 
 
 def clear_import_progress() -> None:
-    progress_mod.clear_progress(current_app.config['IMPORT_PROGRESS_FILE'])
+    progress_mod.clear_progress(_progress_file())
 
 
 def _background_import(file_content: bytes) -> None:
@@ -60,7 +81,7 @@ def _background_import(file_content: bytes) -> None:
                     continue
         total = len(records)
         set_import_progress('in_progress', '', 0, total)
-        db = sqlite3.connect(current_app.config['DATABASE'])
+        db = sqlite3.connect(_db_path())
         c = db.cursor()
         inserted = 0
         for idx, rec in enumerate(records):
