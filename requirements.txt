@@ -9,3 +9,4 @@ Pillow
 playwright
 pyelftools
 tldextract
+flask-swagger-ui
