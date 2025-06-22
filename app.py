@@ -45,13 +45,10 @@ from database import (
 )
 from retrorecon import (
     saved_tags as saved_tags_mod,
-    notes_service,
     search_utils,
-    screenshot_service,
-    subdomain_utils,
-    tag_utils,
     import_utils,
     status as status_mod,
+    app_utils,
 )
 from retrorecon.filters import manifest_links, oci_obj
 
@@ -75,16 +72,15 @@ def favicon_svg() -> Response:
 
 def get_db_folder() -> str:
     """Return the folder where database files are stored."""
-    folder = os.path.join(app.root_path, 'db')
-    os.makedirs(folder, exist_ok=True)
-    return folder
+    return app_utils.get_db_folder(app.root_path)
+
 log_level_name = app.config.get('LOG_LEVEL', 'WARNING').upper()
 numeric_level = getattr(logging, log_level_name, logging.WARNING)
 logging.basicConfig(level=numeric_level, format='%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger(__name__)
 env_db = app.config.get('DB_ENV')
 if env_db:
-    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(get_db_folder(), env_db)
+    app.config['DATABASE'] = env_db if os.path.isabs(env_db) else os.path.join(app_utils.get_db_folder(app.root_path), env_db)
 else:
     app.config['DATABASE'] = None
 app.secret_key = app.config.get('SECRET_KEY', 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY')
@@ -109,13 +105,13 @@ SAVED_TAGS_FILE = os.path.join(app.root_path, 'data', 'saved_tags.json')
 import_utils.clear_import_progress(IMPORT_PROGRESS_FILE)
 
 # Temporary database handling
-TEMP_DB_NAME = 'temp.db'
-TEMP_DISPLAY_NAME = 'UNSAVED'
+TEMP_DB_NAME = app_utils.TEMP_DB_NAME
+TEMP_DISPLAY_NAME = app_utils.TEMP_DISPLAY_NAME
 
 
 def _create_temp_db() -> None:
     """Create a fresh temporary database for this session."""
-    app.config['DATABASE'] = os.path.join(get_db_folder(), TEMP_DB_NAME)
+    app.config['DATABASE'] = os.path.join(app_utils.get_db_folder(), TEMP_DB_NAME)
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
@@ -128,69 +124,31 @@ if not env_db:
 def _db_loaded() -> bool:
     """Return True if a database file is currently configured and exists."""
 
-    return bool(app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']))
+    return app_utils._db_loaded()
 
 def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
-    import_utils.set_import_progress(IMPORT_PROGRESS_FILE, status, message, current, total)
+    app_utils.set_import_progress(IMPORT_PROGRESS_FILE, status, message, current, total)
 
 
 def get_import_progress() -> Dict[str, Any]:
-    return import_utils.get_import_progress(IMPORT_PROGRESS_FILE)
+    return app_utils.get_import_progress(IMPORT_PROGRESS_FILE)
 
 
 def clear_import_progress() -> None:
-    import_utils.clear_import_progress(IMPORT_PROGRESS_FILE)
+    app_utils.clear_import_progress(IMPORT_PROGRESS_FILE)
 
 
 
 def export_url_data(ids: Optional[List[int]] = None, query: str = '') -> List[Dict[str, Any]]:
     """Return URL records filtered by ids or search query."""
-    where = []
-    params: List[Any] = []
-    if ids:
-        placeholders = ','.join('?' for _ in ids)
-        where.append(f'id IN ({placeholders})')
-        params.extend(ids)
-    if query:
-        try:
-            search_sql, search_params = search_utils.build_search_sql(query)
-            where.append(search_sql)
-            params.extend(search_params)
-        except Exception:
-            where.append(
-                '('
-                'url LIKE ? OR tags LIKE ? OR '
-                'CAST(timestamp AS TEXT) LIKE ? OR '
-                'CAST(status_code AS TEXT) LIKE ? OR '
-                'mime_type LIKE ?'
-                ')'
-            )
-            params.extend([f'%{query}%'] * 5)
-    where_sql = 'WHERE ' + ' AND '.join(where) if where else ''
-    rows = query_db(
-        f"SELECT id, url, timestamp, status_code, mime_type, tags FROM urls {where_sql} ORDER BY id",
-        params,
-    )
-    result = []
-    for r in rows:
-        result.append(
-            {
-                'id': r['id'],
-                'url': r['url'],
-                'timestamp': r['timestamp'],
-                'status_code': r['status_code'],
-                'mime_type': r['mime_type'],
-                'tags': r['tags'],
-            }
-        )
-    return result
+    return app_utils.export_url_data(ids=ids, query=query)
 
 
 
 
 def delete_subdomain(root_domain: str, subdomain: str) -> None:
     """Remove a subdomain entry from the database."""
-    subdomain_utils.delete_record(root_domain, subdomain)
+    app_utils.delete_subdomain(root_domain, subdomain)
 
 
 @app.route('/', methods=['GET'])
@@ -329,8 +287,8 @@ def index() -> str:
 
     try:
         saved_dbs = sorted([
-            f for f in os.listdir(get_db_folder())
-            if f.endswith('.db') and os.path.isfile(os.path.join(get_db_folder(), f))
+            f for f in os.listdir(app_utils.get_db_folder())
+            if f.endswith('.db') and os.path.isfile(os.path.join(app_utils.get_db_folder(), f))
         ])
     except OSError:
         saved_dbs = []
@@ -436,7 +394,7 @@ def fetch_cdx() -> Response:
 
 def _background_import(file_content: bytes) -> None:
     """Background thread handler for JSON/line-delimited imports."""
-    import_utils.background_import(file_content, app.config['DATABASE'], IMPORT_PROGRESS_FILE)
+    app_utils._background_import(file_content, app.config['DATABASE'], IMPORT_PROGRESS_FILE)
 
 @app.route('/import_file', methods=['POST'])
 @app.route('/import_json', methods=['POST'])
