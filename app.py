@@ -1,7 +1,5 @@
 import os
 import io
-import json
-import sqlite3
 import zipfile
 import threading
 import re
@@ -46,13 +44,13 @@ from database import (
     _sanitize_export_name,
 )
 from retrorecon import (
-    progress as progress_mod,
     saved_tags as saved_tags_mod,
     notes_service,
     search_utils,
     screenshot_service,
     subdomain_utils,
     tag_utils,
+    import_utils,
     status as status_mod,
 )
 from retrorecon.filters import manifest_links, oci_obj
@@ -108,7 +106,7 @@ DEMO_DATA_FILE = os.path.join(app.root_path, 'data', 'demo_data.json')
 SAVED_TAGS_FILE = os.path.join(app.root_path, 'data', 'saved_tags.json')
 
 # Clear any stale import progress from previous runs
-progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
+import_utils.clear_import_progress(IMPORT_PROGRESS_FILE)
 
 # Temporary database handling
 TEMP_DB_NAME = 'temp.db'
@@ -133,15 +131,15 @@ def _db_loaded() -> bool:
     return bool(app.config.get('DATABASE') and os.path.exists(app.config['DATABASE']))
 
 def set_import_progress(status: str, message: str = '', current: int = 0, total: int = 0) -> None:
-    progress_mod.set_progress(IMPORT_PROGRESS_FILE, status, message, current, total)
+    import_utils.set_import_progress(IMPORT_PROGRESS_FILE, status, message, current, total)
 
 
 def get_import_progress() -> Dict[str, Any]:
-    return progress_mod.get_progress(IMPORT_PROGRESS_FILE)
+    return import_utils.get_import_progress(IMPORT_PROGRESS_FILE)
 
 
 def clear_import_progress() -> None:
-    progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
+    import_utils.clear_import_progress(IMPORT_PROGRESS_FILE)
 
 
 def load_saved_tags() -> List[str]:
@@ -446,73 +444,7 @@ def fetch_cdx() -> Response:
 
 def _background_import(file_content: bytes) -> None:
     """Background thread handler for JSON/line-delimited imports."""
-    try:
-        content = file_content.decode('utf-8').strip()
-        records = []
-
-        # Try JSON array first
-        try:
-            data = json.loads(content)
-            if isinstance(data, list) and all(isinstance(item, str) for item in data):
-                records = [{"url": url, "tags": ""} for url in data]
-            elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
-                records = [
-                    {
-                        "url": rec.get('url', '').strip(),
-                        "timestamp": rec.get('timestamp'),
-                        "status_code": rec.get('status_code'),
-                        "mime_type": rec.get('mime_type'),
-                        "tags": rec.get('tags', '').strip()
-                    }
-                    for rec in data if rec.get('url', '').strip()
-                ]
-        except Exception:
-            for line in content.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    rec = json.loads(line)
-                    url = rec.get('url', '').strip()
-                    if url:
-                        records.append({
-                            "url": url,
-                            "timestamp": rec.get('timestamp'),
-                            "status_code": rec.get('status_code'),
-                            "mime_type": rec.get('mime_type'),
-                            "tags": rec.get('tags', '').strip()
-                        })
-                except Exception:
-                    continue
-
-        total = len(records)
-        set_import_progress('in_progress', '', 0, total)
-        db = sqlite3.connect(app.config['DATABASE'])
-        c = db.cursor()
-        inserted = 0
-        for idx, rec in enumerate(records):
-            try:
-                c.execute(
-                    "INSERT OR IGNORE INTO urls (url, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?)",
-                    (
-                        rec['url'],
-                        rec.get('timestamp'),
-                        rec.get('status_code'),
-                        rec.get('mime_type'),
-                        rec['tags']
-                    )
-                )
-            except Exception:
-                continue
-            inserted += 1
-            # Update progress every 10 or on last
-            if idx % 10 == 0 or idx + 1 == total:
-                set_import_progress('in_progress', '', idx + 1, total)
-        db.commit()
-        db.close()
-        set_import_progress('done', f"Imported {inserted} of {total} records.", inserted, total)
-    except Exception as e:
-        set_import_progress('failed', str(e), 0, 0)
+    import_utils.background_import(file_content, app.config['DATABASE'], IMPORT_PROGRESS_FILE)
 
 @app.route('/import_file', methods=['POST'])
 @app.route('/import_json', methods=['POST'])
