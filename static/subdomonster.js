@@ -292,7 +292,7 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col/><col/><col/><col/><col/><col class="send-col"/><col/>'+
+      '<col/><col/><col/><col/><col/><col class="send-col"/><col class="tag-col"/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
