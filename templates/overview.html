@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <title>Project Overview - {{ db_name }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
+  {% set current_theme = current_theme or session.get('theme') %}
   {% if current_theme %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
 </head>
 <body class="retrorecon-root">
-  <h1>Project Overview - {{ db_name }}</h1>
+  <div class="navbar__title mb-05">
+    <span class="glow" id="db-display">[ {{ db_name }} ]</span>
+  </div>
+  <h1>Project Overview</h1>
   <p class="mb-05">URLs: {{ counts['urls'] }} | Domains: {{ counts['domains'] }} | Screenshots: {{ counts['screenshots'] }} | SiteZips: {{ counts['sitezips'] }} | JWTs: {{ counts['jwt_cookies'] }} | Notes: {{ counts['notes'] }}</p>
   {% for dom in domains %}
   <h2>{{ dom.root_domain }} ({{ dom.count }})</h2>

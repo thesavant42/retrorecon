@@ -338,6 +338,33 @@ def index() -> str:
         return image_view(image_param)
 
     q = request.args.get('q', '').strip()
+    is_tool_route = request.path in [
+        '/tools/jwt',
+        '/tools/screenshotter',
+        '/tools/subdomonster',
+        '/tools/text_tools'
+    ]
+    if not any([q, repo_param, image_param, request.args.get('tool'), is_tool_route]):
+        from retrorecon.routes.overview import _collect_counts, _collect_domains
+        if _db_loaded():
+            actual_name = os.path.basename(app.config['DATABASE'])
+            if actual_name == TEMP_DB_NAME:
+                actual_name = TEMP_DISPLAY_NAME
+        else:
+            actual_name = '(none)'
+        if session.get('db_display_name') != actual_name:
+            session['db_display_name'] = actual_name
+        db_name = session['db_display_name']
+        default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
+        current_theme = session.get('theme', default_theme)
+        data = {
+            'db_name': db_name,
+            'counts': _collect_counts(),
+            'domains': _collect_domains(),
+            'current_theme': current_theme,
+        }
+        return render_template('overview.html', **data)
+
     select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
     try:
         page = int(request.args.get('page', 1))

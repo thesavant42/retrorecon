@@ -21,7 +21,7 @@ def test_no_inline_url_js(tmp_path, monkeypatch):
         app.create_new_db("test")
         app.execute_db("INSERT INTO urls (url, tags) VALUES (?, ?)", ["http://a.com", ""])
     with app.app.test_client() as client:
-        resp = client.get("/")
+        resp = client.get("/", query_string={'q': 'a.com'})
         assert resp.status_code == 200
         html = resp.get_data(as_text=True)
         assert 'onclick="window.open' not in html

@@ -51,7 +51,7 @@ The CDX API is powerful but not particularly robust and not the fastest, and a s
   new ones
 - Rename the current database without leaving the application
 - Remembers and reloads the most recently used database on launch
-- **Project Overview** page summarizing domains and module counts
+- **Project Dashboard** landing page summarizing domains and module counts
 - Theme switching via Menu dropdown with optional background image toggle
 - Optional theming via CSS files in `static/themes/`, including a dark OpenAI-inspired style and hundreds of Midnight City combinations (generated via `scripts/generate_midnight_themes.py`)
 - Browser-side search history for quick queries

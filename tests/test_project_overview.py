@@ -38,3 +38,11 @@ def test_overview_json(tmp_path, monkeypatch):
         data = client.get('/overview.json').get_json()
         assert data['counts']['urls'] == 1
         assert data['counts']['domains'] == 1
+
+
+def test_dashboard_root(tmp_path, monkeypatch):
+    init_sample(monkeypatch, tmp_path)
+    with app.app.test_client() as client:
+        resp = client.get('/')
+        assert resp.status_code == 200
+        assert b'example.com' in resp.data

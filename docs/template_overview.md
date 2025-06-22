@@ -8,7 +8,7 @@ This document catalogs the HTML templates currently present in the repository an
 | `dag_explorer.html` | Overlay for browsing OCI image manifests and layer contents. Provides example links and fetches tags or manifests on demand. |
 | `fetching.html` | Simple progress page polling the server while CDX data is imported from the Wayback Machine. Redirects back to `/` when finished. |
 | `index.html` | Main interface listing URLs. Includes search, pagination, menus and the Notes overlay. Loads other overlays like Text Tools and Screenshotter. |
-| `overview.html` | Presents project-level counts and lists subdomains grouped by domain. |
+| `overview.html` | Project Dashboard landing page with counts and subdomains grouped by domain. |
 | `jwt_tools.html` | Overlay providing encode/decode operations for JWTs and a cookie jar for storing tokens. |
 | `layerslayer.html` | Overlay that fetches a Docker image and lists each layer with filesystem stats using the layerslayer backend. |
 | `oci_base.html` | Base layout for all OCI Explorer pages. Handles theming and provides the `.retrorecon-root` wrapper. |
