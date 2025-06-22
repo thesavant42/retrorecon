@@ -81,3 +81,40 @@ def export_notes():
         return jsonify([])
     data = app.export_notes_data()
     return jsonify(data)
+
+
+@bp.route('/text_notes', methods=['GET', 'POST'])
+def text_notes_route():
+    if request.method == 'GET':
+        if not app._db_loaded():
+            return jsonify([])
+        rows = app.get_text_notes()
+        return jsonify([
+            {
+                'id': r['id'],
+                'content': r['content'],
+                'created_at': r['created_at'],
+                'updated_at': r['updated_at'],
+            }
+            for r in rows
+        ])
+    if not app._db_loaded():
+        return ('', 400)
+    content = request.form.get('content', '').strip()
+    if not content:
+        return ('', 400)
+    note_id = request.form.get('note_id', type=int)
+    if note_id:
+        app.update_text_note(note_id, content)
+    else:
+        app.add_text_note(content)
+    return ('', 204)
+
+
+@bp.route('/delete_text_note', methods=['POST'])
+def delete_text_note():
+    note_id = request.form.get('note_id', type=int)
+    if not note_id:
+        return ('', 400)
+    app.delete_text_note_entry(note_id)
+    return ('', 204)

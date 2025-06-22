@@ -104,6 +104,23 @@ paths:
       responses:
         '200':
           description: Successful response
+  /text_notes:
+    get:
+      summary: GET /text_notes
+      responses:
+        '200':
+          description: Successful response
+    post:
+      summary: POST /text_notes
+      responses:
+        '200':
+          description: Successful response
+  /delete_text_note:
+    post:
+      summary: POST /delete_text_note
+      responses:
+        '200':
+          description: Successful response
   /text_tools:
     get:
       summary: GET /text_tools

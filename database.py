@@ -57,6 +57,16 @@ def ensure_schema() -> None:
                 conn.execute("ALTER TABLE domains ADD COLUMN cdx_indexed INTEGER DEFAULT 0")
             if 'tags' not in cols:
                 conn.execute("ALTER TABLE domains ADD COLUMN tags TEXT DEFAULT ''")
+            cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='text_notes'")
+            if not cur.fetchone():
+                conn.execute(
+                    """CREATE TABLE IF NOT EXISTS text_notes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        content TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP
+                    )"""
+                )
             conn.commit()
         finally:
             conn.close()
