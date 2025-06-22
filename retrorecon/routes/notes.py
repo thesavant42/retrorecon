@@ -1,5 +1,6 @@
 import app
 from flask import Blueprint, request, jsonify
+from retrorecon import notes_service
 
 bp = Blueprint('notes', __name__)
 
@@ -35,7 +36,7 @@ def delete_saved_tag():
 def notes_get(url_id: int):
     if not app._db_loaded():
         return jsonify([])
-    rows = app.get_notes(url_id)
+    rows = notes_service.get_notes(url_id)
     return jsonify([
         {
             'id': r['id'],
@@ -57,9 +58,9 @@ def notes_post():
         return ('', 400)
     note_id = request.form.get('note_id', type=int)
     if note_id:
-        app.update_note(note_id, content)
+        notes_service.update_note(note_id, content)
     else:
-        app.add_note(url_id, content)
+        notes_service.add_note(url_id, content)
     return ('', 204)
 
 @bp.route('/delete_note', methods=['POST'])
@@ -68,9 +69,9 @@ def delete_note_route():
     url_id = request.form.get('url_id', type=int)
     delete_all = request.form.get('all', '0') == '1'
     if note_id:
-        app.delete_note_entry(note_id)
+        notes_service.delete_note_entry(note_id)
     elif url_id and delete_all:
-        app.delete_all_notes(url_id)
+        notes_service.delete_all_notes(url_id)
     else:
         return ('', 400)
     return ('', 204)
@@ -79,7 +80,7 @@ def delete_note_route():
 def export_notes():
     if not app._db_loaded():
         return jsonify([])
-    data = app.export_notes_data()
+    data = notes_service.export_notes_data()
     return jsonify(data)
 
 
@@ -88,7 +89,7 @@ def text_notes_route():
     if request.method == 'GET':
         if not app._db_loaded():
             return jsonify([])
-        rows = app.get_text_notes()
+        rows = notes_service.get_text_notes()
         return jsonify([
             {
                 'id': r['id'],
@@ -105,9 +106,9 @@ def text_notes_route():
         return ('', 400)
     note_id = request.form.get('note_id', type=int)
     if note_id:
-        app.update_text_note(note_id, content)
+        notes_service.update_text_note(note_id, content)
     else:
-        app.add_text_note(content)
+        notes_service.add_text_note(content)
     return ('', 204)
 
 
@@ -116,5 +117,5 @@ def delete_text_note():
     note_id = request.form.get('note_id', type=int)
     if not note_id:
         return ('', 400)
-    app.delete_text_note_entry(note_id)
+    notes_service.delete_text_note_entry(note_id)
     return ('', 204)
