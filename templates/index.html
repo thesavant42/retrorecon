@@ -110,14 +110,12 @@
             <option value="md">Markdown</option>
             <option value="csv">CSV</option>
             <option value="json">JSON</option>
+            <option value="db">SQLite (.db)</option>
           </select>
           <form id="url-export-form" class="hidden" action="/export_urls" method="GET" target="_blank">
             <input type="hidden" name="format" id="url-export-format" />
             <input type="hidden" name="q" id="url-export-q" value="{{ q }}" />
             <input type="hidden" name="select_all_matching" id="url-export-sam" value="{{ 'true' if select_all_matching else 'false' }}" />
-          </form>
-          <form method="GET" action="/save_db" id="save-db-form" class="menu-row">
-            <button type="submit" class="menu-btn">Export SQLite (.db)</button>
           </form>
       </div>
     </div>
