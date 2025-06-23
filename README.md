@@ -1,5 +1,6 @@
-# retrorecon
+# 🕶️⌛ RetroRecon
 ![Screenshot](docs/01-rr-text-logo.png)
+
 
 A Flask web application for exploring Wayback Machine data. It fetches CDX records, stores them in SQLite, and provides a UI to search, tag and manage the results.
 
@@ -7,342 +8,100 @@ A Flask web application for exploring Wayback Machine data. It fetches CDX recor
 ![Screenshot](docs/Screenshot-001.png)
 
 
-## Project Home
-<https://github.com/thesavant42/retrorecon>
+**Timeline Analysis. OSINT Archeology.**  
+RetroRecon digs through the internet’s attic to find forgotten, buried, or quietly updated web assets using the [Wayback Machine](https://archive.org/web/) and other archival data sources. It's built to help hackers, researchers, and digital historians reconstruct timelines, compare file changes, and extract secrets from the past.
 
-## GitHub Releases & Topics
+---
 
-Versioned releases are tracked using annotated Git tags prefixed with `v` (for example `v1.1.0`).
-Run the `Release` workflow or manually create a new tag to publish a release.
+## 🔦 What It Does (At a Glance)
 
-On GitHub, apply the topics `flask`, `wayback-machine`, `sqlite` and `python` to help others discover this project.
+- 🔍 **Crawls archived URLs** from the Wayback Machine (via CDX API)
+- 🕶️ **Groups and filters results** by file type, timestamp, tags, or path
+- 🧾 **Extracts & analyzes source maps** and JavaScript files for secrets
+- 📁 **Saves everything locally** for offline inspection and auditing
+- 🔍 **Flags suspicious patterns**, such as leaked API keys, environment files, and exposed `.map` files
 
-## Background
+---
 
-Time spent on reconaissance pays off in silence on the wire when it counts. In terms of packet economy, nothing beats free. And the Internet Archive's Wayback Machine is free (as in beer) as can be, so let's utilize it.
+## 🕵️ Use Cases
 
-The Wayback Machine crawls all sorts of sites, but their primary search interface doesn't allow for wildcard matches left-of-domain; if you don't know the subdomain already, you're out of luck. You could brute force it (noisy) or guess (sad/lucky), or you could ask someone who already knows.
+- **Security Research** – Discover forgotten `.env` files, exposed sourcemaps, or previously public endpoints
+- **OSINT Investigations** – Build a historical snapshot of a domain or identify deleted content
+- **Digital Forensics** – Trace changes in a site’s frontend or backend over time
+- **Web Development Post-Mortems** – Compare JavaScript bundles, audit version regressions, and timeline UI changes
 
-The Wayback Machine CDX API allows us to search for `*.example.com` and will return results for `www.example.com/123` but also `dev.example.com/abc` and `old.internal.corp.example.com`; DNS subdomain enumeration for free.
+---
 
-But savant, you ask, so what? Who gives a hoot about old data? 
+## 🔍 Features
 
-Great question. Subdomains don't change as often as IP addresses do, so they're likely to still be relevant or at least historically interesting. Exploit Genealogy. Also, by learning from the mistakes of the past, we can hope to avoid them in the future. But really, we can more probably predict them, or find where they still are.
+| Feature                        | Description                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| Wayback Archive Indexing      | Pulls structured snapshots via CDX API                                     |
+| Local Source Map Extraction   | Finds and restores `.map` files for easier JS debugging                     |
+| Suspicious Pattern Detection  | Scans downloaded files for API keys, JWTs, secrets, etc.                   |
+| Filtering & Grouping          | Smart filters by type (e.g., `.js`, `.env`, `.php`, `.map`, etc.)          |
+| HTML Report Output (WIP)      | Generate browsable summaries with tagged snapshots and visual comparisons  |
 
-System names and subdomains, internal hostnames, etc, can reveal their function, or design intention. ZIP files containing internal tooling and meant for internal distribution but unintentionally indexed. IDOR vulnerabilities, JWTs and application tokens revealed in GET request strings... For free. Why wouldn't you want to at least take a look?
+---
 
-## Problem Statement
+## ⏱️ Quickstart
 
-The CDX API is powerful but not particularly robust and not the fastest, and a single query often returns multiple-hundred megabyte responses. This can slow down research, but it also creates unecessary strain on the CDX API servers.
-
-## Solution?
-
- `retrorecon` attempts to ease that pain by enabling offline storage of the CDX records in a local sqlite database, to allow for tagging, sorting, and searching of Wayback CDX records.
-
-## Features
-- **CDX import** from the Wayback Machine API
-- **JSON import** of URL lists or records
-- Background import with progress indicator
-- Search and filter by text and tags, including Boolean tag expressions like `#blue AND #tag1`
-- Inline and bulk tag management
-- Bulk actions with "select all visible" or "select all matching"
-- Export URL results as JSON, CSV, Markdown or plain text
-- Quick OSINT links for each URL (Wayback, Shodan, VirusTotal, Google, GitHub, crt.sh)
-- Download, create or switch between databases from the menu, including naming
-  new ones
-- Rename the current database without leaving the application
-- Remembers and reloads the most recently used database on launch
-- **Project Overview** page summarizing domains and module counts
-- Theme switching via Menu dropdown with optional background image toggle
-- Optional theming via CSS files in `static/themes/`, including a dark OpenAI-inspired style and hundreds of Midnight City combinations (generated via `scripts/generate_midnight_themes.py`)
-- Browser-side search history for quick queries
-- Pagination with jump-to-page and total counts
-- Webpack Exploder: input a `.js.map` URL and download a ZIP of the sources
-- **Text Tools** full-screen editor for Base64/URL transforms with Save As and project-wide note storage
-- **JWT Tools** decode, edit and sign JSON Web Tokens inside a full-screen editor
--  with a persistent JWT cookie jar
-- **ScreenShotter** capture website screenshots in a headless browser (requires `playwright`; falls back to a Pillow placeholder)
-- **Site2Zip** crawl a URL, generate a sitemap and download all assets as a ZIP
-- **LayerPeek** inspect Docker image layers from Docker Hub
-- **Subdomonster** enumerate subdomains via crt.sh or VirusTotal with search,
-  pagination and bulk send-to-tools
-- **Registry Explorer** query image manifests from multiple backends
-- **Dag Explorer** list repository tags and view manifests via a simple browser; works with public registries like [ghcr.io](https://ghcr.io). Example: [oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz](https://oci.dag.dev/?image=ghcr.io/stargz-containers/node:13.13.0-esgz)
-- Save favorite tag searches for quick reuse
-- Adjustable panel opacity and font size
-- Add notes to each URL result via a full-screen editor
-- View the database ER diagram in `docs/database_erd.md`.
-- Follow the OCI Explorer workflow in `docs/oci_explorer_user_journey.md`.
-- Browse the API via Swagger at `/swagger` using the OpenAPI file `static/openapi.yaml`.
-
-## Installation
 ```bash
+git clone https://github.com/thesavant42/retrorecon.git
+cd retrorecon
 pip install -r requirements.txt
-# Recommended: install Playwright browsers
-# python -m playwright install
-python scripts/init_db.py  # initialize wabax.db
-python app.py
-# Optionally set RETRORECON_DB to open a specific database on launch
-# RETRORECON_DB=dsprings.db python app.py
-# Enable verbose logging by setting RETRORECON_LOG_LEVEL
-# RETRORECON_LOG_LEVEL=DEBUG python app.py
-# See docs/debugging_style_guide.md for logging conventions
-```
-On Windows you can run `launch_app.bat` to automatically update the repository,
-set up a `venv` and start the server:
 
-```cmd
-launch_app.bat
-```
-Then open <http://127.0.0.1:5000> in your browser.
-### Playwright on Windows
-If screenshot capture shows a placeholder image, Playwright may not have the Chromium browser installed.
-
-Run `python -m playwright install` to download the browsers. If you previously
-set the `PLAYWRIGHT_BROWSERS_PATH` environment variable, remove it so Playwright
-can use its default location. Alternatively set `PLAYWRIGHT_CHROMIUM_PATH` to an
-existing Chrome executable. You can also assign a path to `app.executablePath`
-before calling screenshot functions to override the Chromium binary.
-
-### Secrets File
-Create a `secrets.json` file alongside `app.py` to store sensitive values like
-API tokens. The application loads this file on startup and sets any variables
-found inside if they are not already defined in the environment. A different
-path can be specified via the `RETRORECON_SECRETS_FILE` environment variable.
-
-Example `secrets.json`:
-
-```json
-{
-  "RETRORECON_SECRET": "change_me",
-  "DOCKERHUB_API": "",
-  "VIRUSTOTAL_API": ""
-}
+# Start crawling a domain
+python retrorecon.py --domain example.com
 ```
 
-### Docker Quick Start
+Use `--help` to view available options for filtering, exporting, and source map analysis.
 
-Build the container image:
+---
 
-```bash
-docker build -t retrorecon .
+## 🕶️ Philosophy
+
+RetroRecon isn’t just about scraping old URLs. It’s about **investigating time** — tracing the evolution of a site’s public footprint and finding what was exposed *when*. Think of it as a tool to:
+> _"Reconstruct the past to understand the present. And maybe… exploit the future."_
+
+---
+
+## 🗃️ Project Layout
+
+```
+retrorecon/
+├── retrorecon.py         # Main CLI interface
+├── cdx.py                # Wayback CDX API logic
+├── extract.py            # Source map and secrets extraction
+├── utils/                # Helpers and formatters
+├── static/               # CSS and JS for reports
+└── templates/            # Jinja2 templates for report generation
 ```
 
-Run it with shared folders so imports and exports persist on the host:
+---
 
-```bash
-docker run -p 5000:5000 \
-  -v "$PWD/db:/app/db" \
-  -v "$PWD/data:/app/data" \
-  -v "$PWD/static/screenshots:/app/static/screenshots" \
-  retrorecon
-```
+## 🔍 Sample Output
 
-The mounted volumes store databases, uploaded files and screenshots outside
-the container.
+Coming soon – screenshots of the report interface and extraction logs.
 
-### Docker Dev Deploy
+---
 
-To push a new image without cutting a release, trigger the **Dev Docker Deploy**
-workflow from the Actions tab. Provide the desired tag (defaults to `edge`) and
-GitHub will build and push the Docker image.
+## ⏱️ Roadmap
 
-To run the helper script locally on Windows with Docker Desktop:
+- [ ] Full HTML reporting interface (Wayback snapshot explorer)
+- [ ] Timeline diff view between asset versions
+- [ ] Plugin system for custom extractors (e.g., Postman collections, GraphQL introspection)
+- [ ] Integration with `jodskeys` and `darkwing_dox`
 
-```cmd
-set DOCKERHUB_USERNAME=yourname
-set DOCKERHUB_PAT=yourtoken
-python scripts/deploy_docker.py
-```
+---
 
-`IMAGE_TAG` defaults to `edge`; set it to another value to push a custom tag.
+## 🕶️ Author
 
-## Usage
-1. **Import from CDX**: enter a domain to fetch URLs from the Wayback API.
-2. **Import from JSON**: upload a JSON file containing URLs or full CDX records.
-3. Use the search box and tag filters to narrow results.
-4. Add or remove tags individually or use the bulk actions.
-5. Save the current database, load another or start a new one (and give it a
-   name) using the menu. You can also rename the active database from the same
-   dropdown.
-6. When you relaunch the app, it automatically reloads the last database you used.
-7. Save frequent tag searches with the **Save Tag** button or via the `/saved_tags` API.
-8. Adjust panel opacity and text size from the **Edit** menu or using the `/set_panel_opacity` and `/set_font_size` endpoints.
+**savant42** – Veteran red teamer. Builder of weird tools.  
+Reach me through [GitHub Discussions](https://github.com/thesavant42/retrorecon/discussions) or post an Issue.
 
-### Loading Saved Databases
+---
 
-The File menu now includes a **Load Saved DB** dropdown. It lists every `.db`
-file located in the configured `db` directory (which defaults to `db/` under the
-application root). Selecting one of these entries instantly switches the active
-database to the chosen file.
+## 📜 License
 
-### Boolean Tag Searches
-
-Prefix tags with `#` and combine them using `AND`, `OR` and `NOT` in the search box. Quotes allow tags with spaces.
-
-Example queries:
-
-```bash
-curl -G --data-urlencode "q=#tag1 AND #red" http://localhost:5000/
-curl -G --data-urlencode "q=#blue OR #red" http://localhost:5000/
-curl -G --data-urlencode "q=#\"tag 2\" AND NOT #tag4" http://localhost:5000/
-```
-
-### Advanced Search Operators
-
-Use field prefixes to filter on specific attributes and combine them with
-boolean logic:
-
-- `url:` – match against the URL
-- `timestamp:` – match the archived timestamp
-- `http:` – match the HTTP status code
-- `mime:` – match the MIME type
-
-Example queries:
-
-```bash
-curl -G --data-urlencode "q=url:example.com AND http:200" http://localhost:5000/
-curl -G --data-urlencode "q=NOT http:404" http://localhost:5000/
-```
-
-### Managing Saved Tags
-
-```bash
-# List saved tags
-curl http://localhost:5000/saved_tags
-# Add a tag query (the leading # is optional)
-curl -X POST -d "tag=foo" http://localhost:5000/saved_tags
-# Remove a tag query
-curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
-```
-
-### Adjusting Font Size
-
-```bash
-curl -X POST -d "theme=nostalgia.css" -d "size=16" \
-  http://localhost:5000/set_font_size
-```
-
-### JWT Tools API
-
-```bash
-# Decode a JWT
-curl -X POST -d "token=eyJhbGciOi..." http://localhost:5000/tools/jwt_decode
-# Returns JSON with header and payload plus `exp_readable`, `expired`,
-# `alg_warning` and `key_warning` flags.
-
-# Encode and sign a payload
-curl -X POST -d "payload={\"sub\":1}" -d "secret=mykey" \
-  http://localhost:5000/tools/jwt_encode
-```
-
-```bash
-# View logged JWT decodes
-curl http://localhost:5000/jwt_cookies
-```
-
-### Docker LayerPeek API
-
-```bash
-curl -G --data-urlencode "image=ubuntu:latest" \
-  http://localhost:5000/docker_layers
-```
-The response includes layer digests and file lists. If the registry
-is unreachable or a timeout occurs, the JSON `error` field describes the
-problem.
-
-Set `LAYERPEEK_RANGE` to control how many bytes are fetched at a time when
-listing layer contents. The default is 2&nbsp;MB which keeps bandwidth usage
-low while still decoding most archives.
-
-### Using the `layerslayer` Library
-
-The Docker layer inspection logic is available as an importable library.
-
-```python
-from layerslayer.client import gather_layers_info
-
-data = asyncio.run(gather_layers_info("ubuntu:latest"))
-print(data[0]["layers"][0]["digest"])
-```
-
-### Layer Slayer CLI
-
-Run the command-line tool under `tools/` to peek at or log individual layers.
-
-```bash
-python tools/layer_slayer.py -t ubuntu:latest --peek-layer 2
-python tools/layer_slayer.py -t ubuntu:latest --peek-all --log-file layers.log --log-layer 0
-```
-
-`--peek-layer` displays a single layer's contents while `--log-layer` records
-messages for that layer in a separate file like `layers.log.layer0.log`.
-
-### Registry Explorer API
-
-Query Docker Hub manifests using different backends. Provide a single
-`method` or a comma-separated list via `methods` to compare results.
-
-```bash
-curl -G --data-urlencode "image=ubuntu:latest" \
-  'http://localhost:5000/registry_explorer?method=extension'
-
-curl -G --data-urlencode "image=ubuntu:latest" \
-  'http://localhost:5000/registry_explorer?methods=extension,layerslayer'
-```
-### Subdomain API
-
-```bash
-curl -X POST -d "domain=example.com" http://localhost:5000/subdomains
-curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
-curl http://localhost:5000/export_subdomains?domain=example.com
-```
-
-## API Documentation
-
-An OpenAPI 3.0 document is generated from the running Flask application.
-Browse the interactive Swagger UI at `http://localhost:5000/swagger` or
-download the specification directly from `static/openapi.yaml`.
-
-
-## License
-MIT
-
-## Attribution
-- [Wayback Machine API](https://archive.org/help/wayback_api.php)
-- [Webpack Exploder](https://spaceraccoon.github.io/webpack-exploder/)
-- [Map Room conceptual inspiration](https://indianajones.fandom.com/wiki/Map_Room)
-
-## Wiki Sync
-Markdown files in this repository are automatically mirrored to the
-[project wiki](https://github.com/thesavant42/retrorecon/wiki) via the
-`update_wiki.py` script. On each push that modifies `.md` files, a GitHub
-Actions workflow clones the wiki repository, copies the updated files and
-pushes the changes. The workflow expects a repository secret named
-`WIKI_PAT` with permissions to push to the wiki repository.
-The commit author defaults to `retrorecon-bot <actions@github.com>` but can be
-overridden using the `GIT_USER_NAME` and `GIT_USER_EMAIL` environment
-variables.
-
-## APPSEC
-
-**THIS CODE IS NOT MEANT TO BE RUN AS A SERVICE OR ON PUBLIC NETWORKS.**
-
-The project is intended for local, offline research only. A recent security
-review highlighted several areas that need hardening before any kind of
-production deployment. Below is the outstanding task list to improve the
-application's security posture.
-
-```markdown
-- [x] Load `app.secret_key` from an environment variable and document the requirement.
-- [ ] Implement CSRF protection across all POST forms (consider Flask-WTF).
-- [x] Refactor `templates/index.html` to avoid placing `{{ url.url }}` inside JavaScript strings.
-  - Use `data-url` attributes and event listeners defined in JS.
-  - Sanitize URLs before opening (e.g., verify `http/https`).
-- [ ] Validate `map_url` in `/tools/webpack-zip`:
-  - Accept only `http`/`https`.
-  - Optionally restrict to specific domains or apply a URL whitelist.
-- [ ] Validate `domain` input in `/fetch_cdx` using a regex for valid hostnames.
-- [ ] Add unit tests ensuring malicious values do not lead to XSS or SSRF.
-- [ ] Update deployment configuration to set `SESSION_COOKIE_SECURE` when using HTTPS.
-```
+MIT License. Use it. Abuse it. Just don’t sell it back to me.
