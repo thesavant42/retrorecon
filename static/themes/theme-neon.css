@@ -34,7 +34,6 @@ body.bg-hidden {
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: 7px;
-  box-shadow: 0 0 12px 2px rgb(139 233 253 / 0%);
 }
 
 .retrorecon-root .url-table th,
@@ -70,19 +69,17 @@ body.bg-hidden {
   border-color: var(--color-contrast);
 }
 
+
 .retrorecon-root a,
 .retrorecon-root .accent,
 .retrorecon-root .button {
   color: var(--font-accent);
-  text-shadow: 0 0 8px var(--font-accent);
 }
 
 .retrorecon-root h1,
 .retrorecon-root h2,
-.retrorecon-root h3,
-.retrorecon-root .glow {
+.retrorecon-root h3 {
   color: var(--font-accent);
-  text-shadow: 0 0 12px var(--font-accent), 0 0 24px var(--color-base);
 }
 
 /*--- Overrides migrated from base.css to give the theme priority ---*/
@@ -179,7 +176,6 @@ body.bg-hidden {
   transition: opacity 0.2s;
 }
 .retrorecon-root .tag-pill button:hover {
-  box-shadow: none;
   opacity: 0.8;
 }
 
@@ -195,7 +191,6 @@ body.bg-hidden {
   border: 1px solid var(--color-contrast);
   border-radius: 999px;
   background: linear-gradient(135deg, #ff2caf, #6a4cff);
-  box-shadow: 0 0 4px rgb(255 44 175 / 0.6);
   cursor: pointer;
   transition: opacity 0.2s;
 }
@@ -215,7 +210,6 @@ body.bg-hidden {
   transition: opacity 0.2s;
 }
 .retrorecon-root .search-history .tag-pill button:hover {
-  box-shadow: none;
   opacity: 0.8;
 }
 
@@ -239,7 +233,6 @@ body.bg-hidden {
   border-collapse: collapse;
   background: rgba(0, 0, 0, 0.36);
   margin-bottom: 0.7em;
-  box-shadow: 0 1px 8px var(--fg-color);
 }
 
 .retrorecon-root .explode-btn,
