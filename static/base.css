@@ -27,7 +27,6 @@ body {
 .retrorecon-root h1,
 .retrorecon-root h2 {
   margin: 1em 0;
-  text-align: center;
   font-weight: bold;
 }
 
@@ -1183,6 +1182,7 @@ body.bg-hidden {
   background: rgba(var(--bg-rgb) / 0.95);
   color: var(--fg-color);
   z-index: 1000;
+  box-sizing: border-box;
   padding: 1em;
   display: flex;
   flex-direction: column;
@@ -1263,4 +1263,11 @@ body.bg-hidden {
 .retrorecon-root .close-btn {
   float: right;
   margin-left: 1em;
+}
+
+.retrorecon-root .overlay-close-btn {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  float: none;
 }
