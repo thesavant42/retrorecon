@@ -145,14 +145,12 @@ body {
   padding: 2px 11px;
   cursor: pointer;
   position: relative;
-  transition: box-shadow 0.3s, opacity 0.2s;
+  transition: opacity 0.2s;
 }
 .retrorecon-root button:hover {
-  box-shadow: 0 0 6px var(--fg-color);
   opacity: 0.9;
 }
 .retrorecon-root button:active {
-  box-shadow: 0 0 10px var(--fg-color);
   opacity: 0.8;
 }
 /* Generic theming for inputs and selects */
@@ -232,7 +230,6 @@ body {
   padding: 0.7em;
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 1px 6px var(--fg-color);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -311,7 +308,6 @@ body {
   padding: 0.7em;
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 1px 6px var(--fg-color);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -397,14 +393,12 @@ body {
 .retrorecon-root .dropbtn:hover,
 .retrorecon-root .dropbtn:focus {
   opacity: 0.8;
-  box-shadow: none;
 }
 .retrorecon-root .dropdown-content {
   display: none;
   position: absolute;
   background-color: var(--select-bg-color);
   min-width: 260px;
-  box-shadow: 0 8px 20px rgba(var(--bg-rgb) / 0.2);
   z-index: 100;
   padding: 8px 12px;
   border-radius: 5px;
@@ -605,7 +599,6 @@ body {
 .retrorecon-root .results-frame {
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: none;
   padding: 0.5em;
   flex: 1 1 auto;
   display: flex;
@@ -618,7 +611,6 @@ body {
 .retrorecon-root .table-container {
   background: var(--bg-color);
   border-radius: 8px;
-  box-shadow: none;
   padding: 0.5em;
 }
 
@@ -627,7 +619,6 @@ body {
   background: var(--bg-color);
   color: var(--color-contrast);
   font-weight: bold;
-  text-shadow: 0 0 6px var(--accent-color);
   padding: 1em;
 }
 
@@ -641,7 +632,6 @@ body {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-color);
-  box-shadow: 0 1px 6px var(--fg-color);
 }
 
 .retrorecon-root .search-history th,
@@ -727,7 +717,6 @@ body {
   border-collapse: collapse;
   background: var(--bg-color);
   margin-bottom: 0.4em;
-  box-shadow: 0 1px 6px var(--fg-color);
   border-radius: 8px;
 }
 .retrorecon-root .fs-table {
@@ -784,7 +773,7 @@ body {
   width: 8px;
   cursor: col-resize;
   background: rgba(255, 255, 255, 0.3);
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.2s;
 }
 
 .retrorecon-root .checkbox-col {
@@ -803,7 +792,6 @@ body {
 
 .retrorecon-root .col-resizer:hover {
   background: var(--accent-color);
-  box-shadow: 0 0 4px var(--accent-color);
 }
 
 /* Allow center alignment on specific header cells */
@@ -931,7 +919,6 @@ body {
   border: 1px solid var(--color-contrast);
   border-radius: 999px;
   background: linear-gradient(135deg, #ff2caf, #6a4cff);
-  box-shadow: 0 0 4px rgb(255 44 175 / 0.6);
   cursor: pointer;
   transition: opacity 0.2s;
 }
@@ -990,10 +977,6 @@ body {
 
 
 
-@keyframes pulse { 0% { box-shadow: 0 0 0 var(--fg-color); } 50% { box-shadow: 0 0 8px var(--fg-color); } 100% { box-shadow: 0 0 0 var(--fg-color); } }
-.retrorecon-root .pulse {
-  animation: pulse 1.5s infinite;
-}
 
 /* Pagination styling */
 .retrorecon-root .pagination {
@@ -1078,11 +1061,9 @@ body {
   opacity: 0.85;
 }
 .retrorecon-root .tag-pill button:hover {
-  box-shadow: none;
   opacity: 0.8;
 }
 .retrorecon-root .search-history .tag-pill button:hover {
-  box-shadow: none;
   opacity: 0.8;
 }
 .retrorecon-root .total-count {
