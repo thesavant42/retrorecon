@@ -7,6 +7,7 @@
   font-family: monospace;
   padding: 12px;
   position: relative;
+  display: block; /* avoid flex layout from base.css so tab labels align */
 }
 .retrorecon-root pre { white-space: pre; }
 .retrorecon-root .manifest-json {
