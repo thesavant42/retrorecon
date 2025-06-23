@@ -191,9 +191,10 @@ body {
   font-family: var(--font-main);
   font-size: 14px;
   margin: 0;
-  height: calc(100vh - 10px);
+  min-height: calc(100vh - 10px);
   padding: 0 0 10px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   color: #ffffff;
   line-height: 1.5;
 }
@@ -1155,7 +1156,7 @@ body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 /* Reduce spacing around pagination and results sections */
