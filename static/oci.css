@@ -8,7 +8,10 @@
   padding: 12px;
 }
 .retrorecon-root pre { white-space: pre; }
-.retrorecon-root .manifest-json { white-space: pre; }
+.retrorecon-root .manifest-json {
+  white-space: pre;
+  overflow-x: auto;
+}
 .retrorecon-root .indent { margin-left: 2em; }
 .retrorecon-root .mt { color: inherit; text-decoration: inherit; }
 .retrorecon-root .mt:hover { text-decoration: underline; }
@@ -44,4 +47,8 @@
 .retrorecon-root #tab1:checked ~ .tab.content1,
 .retrorecon-root #tab2:checked ~ .tab.content2 { display: block; }
 .retrorecon-root input:checked + label { opacity: 100%; }
-.retrorecon-root .close-btn { float: right; margin-left: 1em; }
+.retrorecon-root .close-btn {
+  float: right;
+  margin-left: 1em;
+  clear: both;
+}
