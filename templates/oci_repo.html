@@ -3,7 +3,7 @@
 {% block body %}
 <h1><a class="top" href="/"><img class="crane" src="{{ url_for('favicon_svg') }}"/> <span class="link">Registry Explorer</span></a></h1>
 <h2>{{ repo }}</h2>
-<h4><span style="padding:0;" class="noselect">$ </span>curl -sL "{{ data_url }}" | jq .</h4>
+<h4><span class="noselect noselect--tight">$ </span>curl -sL "{{ data_url }}" | jq .</h4>
 
 <div>{
 <div class="indent">
