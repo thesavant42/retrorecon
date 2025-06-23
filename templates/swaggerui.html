@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   {% set current_theme = session.get('theme') %}
   {% if current_theme %}
+  {% if current_theme == 'terminal-sans-dark.css' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/terminal.min.css') }}" />
+  {% endif %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
   <style>

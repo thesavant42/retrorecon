@@ -8,6 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   {% if current_theme %}
+  {% if current_theme == 'terminal-sans-dark.css' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/terminal.min.css') }}" />
+  {% endif %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
   {% if current_background %}
