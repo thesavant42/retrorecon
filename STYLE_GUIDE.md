@@ -14,6 +14,11 @@ Every Retrorecon page should wrap its content in a container element with the cl
 
 All selectors in custom styles should start with `.retrorecon-root` to avoid conflicts when embedding Retrorecon into other sites or when applying multiple themes. Scoping rules this way keeps project styles self-contained.
 
+Page-specific styles may override the `.retrorecon-root` layout when needed. For
+example, the OCI Explorer disables the flex layout defined in `base.css` so that
+tab labels render side by side. When adjusting the container's `display`
+property, ensure that descendant selectors remain scoped under `.retrorecon-root`.
+
 ## 2. Selector Naming Conventions
 
 Use a BEM‑style convention for class names. Base components have simple names (e.g. `.btn`, `.input`). Modifiers use a `--` suffix:
