@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <title>Project Overview - {{ db_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   {% set current_theme = current_theme or session.get('theme') %}
   {% if current_theme %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
+  {% endif %}
+  {% set current_background = current_background or session.get('background') %}
+  {% if current_background %}
+  <style>
+    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
+  </style>
   {% endif %}
 </head>
 <body class="retrorecon-root">
