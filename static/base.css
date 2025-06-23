@@ -10,6 +10,7 @@
   --fg-color: var(--color-contrast);
   --accent-color: var(--color-accent);
   --panel-opacity: 0.25;
+  --radius: 8px;
   --select-bg-color: var(--color-base);
   --select-border-color: var(--color-contrast);
 }
@@ -762,6 +763,14 @@ body {
   position: relative;
   overflow: visible;
 }
+.retrorecon-root .url-table th:first-child {
+  border-top-left-radius: var(--radius);
+  overflow: hidden;
+}
+.retrorecon-root .url-table th:last-child {
+  border-top-right-radius: var(--radius);
+  overflow: hidden;
+}
 
 .retrorecon-root .url-table th.sortable {
   cursor: pointer;
@@ -843,6 +852,14 @@ body {
   font-size: 1.2em;
   font-weight: bold;
   color: var(--accent-color);
+}
+.retrorecon-root .url-table tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius);
+  overflow: hidden;
+}
+.retrorecon-root .url-table tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius);
+  overflow: hidden;
 }
 .retrorecon-root .url-row-main input[type="checkbox"] {
   cursor: pointer;
