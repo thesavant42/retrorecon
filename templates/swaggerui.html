@@ -11,10 +11,13 @@
   <link rel="stylesheet" type="text/css" href="{{ base_url }}/swagger-ui.css" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-16x16.png" sizes="16x16" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='themes/swagger-dark.css') }}" />
 </head>
 <body>
-<button type="button" onclick="history.back();">Close</button>
-<div id="swagger-ui"></div>
+<div class="retrorecon-root">
+  <button type="button" class="close-btn" onclick="history.back();">Close</button>
+  <div id="swagger-ui"></div>
+</div>
 <script src="{{ base_url }}/swagger-ui-bundle.js"></script>
 <script src="{{ base_url }}/swagger-ui-standalone-preset.js"></script>
 <script>
