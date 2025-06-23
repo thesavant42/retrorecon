@@ -25,11 +25,6 @@ body {
   font-weight: bold;
 }
 
-/* Force all text to white 14px */
-.retrorecon-root * {
-  color: #ffffff !important;
-  font-size: 14px !important;
-}
 
 .retrorecon-root .hidden { display: none; }
 
