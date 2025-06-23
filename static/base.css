@@ -1160,7 +1160,11 @@ body {
 
 /* Reduce spacing around pagination and results sections */
 .retrorecon-root #layout-c {
-  margin-top: 0.25em;
+  margin-top: 0.15em;
+}
+.retrorecon-root #layout-c .pagination {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .retrorecon-root #layout-d {
   margin-top: 0.25em;
