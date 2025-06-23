@@ -9,6 +9,7 @@
   <!-- Deliberately omit Retrorecon base and theme styles to keep Swagger UI legible -->
   <link rel="stylesheet" type="text/css" href="{{ base_url }}/index.css" />
   <link rel="stylesheet" type="text/css" href="{{ base_url }}/swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="{{ base_url }}/swagger-dark.css" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-16x16.png" sizes="16x16" />
   <style>
@@ -23,7 +24,7 @@
   </style>
 </head>
 <body>
-<button id="swagger-close-btn" type="button" onclick="window.close();history.back();">Close</button>
+<button id="swagger-close-btn" type="button" onclick="window.location.href='/'">Close</button>
 <div id="swagger-ui"></div>
 <script src="{{ base_url }}/swagger-ui-bundle.js"></script>
 <script src="{{ base_url }}/swagger-ui-standalone-preset.js"></script>
