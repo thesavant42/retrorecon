@@ -46,12 +46,12 @@
     padding-right: 0;
   }
   /* simple tab styling used by registry explorer pages */
-  input + label { display: inline-block; }
-  input { display: none; }
-  input ~ .tab { display: none; }
-  #tab1:checked ~ .tab.content1,
-  #tab2:checked ~ .tab.content2 { display: block; }
-  input + label {
+  .retrorecon-root input + label { display: inline-block; }
+  .retrorecon-root input { display: none; }
+  .retrorecon-root input ~ .tab { display: none; }
+  .retrorecon-root #tab1:checked ~ .tab.content1,
+  .retrorecon-root #tab2:checked ~ .tab.content2 { display: block; }
+  .retrorecon-root input + label {
     border: 1px solid #999;
     padding: 4px 12px;
     border-radius: 4px 4px 0 0;
@@ -59,8 +59,8 @@
     top: 1px;
     opacity: 50%;
   }
-  input:checked + label { opacity: 100%; }
-  input ~ .tab { border-top: 1px solid #999; padding-top: 0.5em; }
+  .retrorecon-root input:checked + label { opacity: 100%; }
+  .retrorecon-root input ~ .tab { border-top: 1px solid #999; padding-top: 0.5em; }
   .retrorecon-root .close-btn { float: right; margin-left: 1em; }
   </style>
 </head>
