@@ -65,7 +65,7 @@ def favicon_ico() -> Response:
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/favicon.svg')
+@app.route('/favicon.svg', endpoint='core.favicon_svg')
 def favicon_svg() -> Response:
     """Serve the favicon.svg from the application root."""
     return send_from_directory(app.root_path, 'favicon.svg', mimetype='image/svg+xml')

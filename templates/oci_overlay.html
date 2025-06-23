@@ -1,6 +1,6 @@
 {% extends 'oci_base.html' %}
 {% block body %}
-<h1><a class="top" href="/"><img class="crane" src="{{ url_for('favicon_svg') }}"/> <span class="link">Registry Explorer</span></a></h1>
+<h1><a class="top" href="/"><img class="crane" src="{{ url_for('core.favicon_svg') }}"/> <span class="link">Registry Explorer</span></a></h1>
 <h2><a class="mt" href="/?repo={{ repo }}">{{ repo }}</a>@<a class="mt" href="/?image={{ image }}&mt={{ headers['Content-Type']|urlencode }}">{{ digest }}</a></h2>
 <input type="radio" name="tabs" id="tab1" checked>
 <label for="tab1">HTTP</label>
