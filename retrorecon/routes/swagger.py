@@ -2,7 +2,7 @@
 
 import json
 import os
-from flask import Blueprint, render_template, request, send_from_directory
+from flask import Blueprint, current_app, render_template, request, send_from_directory
 import flask_swagger_ui
 
 SWAGGER_URL = '/swagger'
@@ -11,6 +11,12 @@ API_URL = '/static/openapi.yaml'
 DIST_DIR = os.path.join(os.path.dirname(flask_swagger_ui.__file__), "dist")
 
 bp = Blueprint("swagger_ui", __name__, url_prefix=SWAGGER_URL)
+
+
+@bp.route("/swagger-dark.css")
+def swagger_dark_css():
+    """Serve the custom Swagger UI dark theme."""
+    return current_app.send_static_file("swagger-dark.css")
 
 _config = {
     "app_name": "Retrorecon Swagger",
