@@ -6,37 +6,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
-  {% set current_theme = session.get('theme') %}
-  {% if current_theme %}
-  {% if current_theme == 'terminal-sans-dark.css' %}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/terminal.css@latest" />
-  {% endif %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
-  {% endif %}
-  <style>
-    .retrorecon-root {
-      --color-base: #1b1b1b;
-      --bg-color: #1b1b1b;
-      --bg-rgb: 27 27 27;
-    }
-  </style>
-  {% set current_background = session.get('background') %}
-  {% if current_background %}
-  <style>
-    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
-  </style>
-  {% endif %}
+  <!-- Deliberately omit Retrorecon base and theme styles to keep Swagger UI legible -->
   <link rel="stylesheet" type="text/css" href="{{ base_url }}/index.css" />
   <link rel="stylesheet" type="text/css" href="{{ base_url }}/swagger-ui.css" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="{{ base_url }}/favicon-16x16.png" sizes="16x16" />
 </head>
-<body class="app">
-<div class="retrorecon-root">
-  <button type="button" class="btn btn--small close-btn" onclick="history.back();">Close</button>
-  <div id="swagger-ui"></div>
-</div>
+<body>
+<button type="button" onclick="history.back();">Close</button>
+<div id="swagger-ui"></div>
 <script src="{{ base_url }}/swagger-ui-bundle.js"></script>
 <script src="{{ base_url }}/swagger-ui-standalone-preset.js"></script>
 <script>
