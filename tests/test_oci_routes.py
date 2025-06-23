@@ -348,3 +348,66 @@ def test_layers_overlay_listing(tmp_path, monkeypatch):
         assert resp.status_code == 200
         assert resp.data == b"A"
 
+
+def test_layers_overlay_alt_manifest(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_manifest(image, client=None, specific_digest=None):
+        if specific_digest == "sha256:m1":
+            return {"layers": [{"digest": "sha256:a"}]}
+        if specific_digest == "sha256:m2":
+            return {"layers": [{"digest": "sha256:b"}]}
+        return {"manifests": [{"digest": "sha256:m1"}, {"digest": "sha256:m2"}]}
+
+    monkeypatch.setattr(oci, "get_manifest", fake_manifest)
+
+    async def fake_digest(image, client=None):
+        return "sha256:index"
+
+    monkeypatch.setattr(oci, "get_manifest_digest", fake_digest)
+
+    async def fake_resolve(image):
+        return {"manifests": [{"digest": "sha256:m1"}, {"digest": "sha256:m2"}]}
+
+    monkeypatch.setattr(oci, "_resolve_manifest", fake_resolve)
+
+    async def fake_list(image_ref, digest, client=None):
+        if digest == "sha256:a":
+            return ["-rw-r--r-- 0/0 0 2024-01-01 00:00 foo.txt"]
+        return ["-rw-r--r-- 0/0 0 2024-01-01 00:00 bar.txt"]
+
+    monkeypatch.setattr(oci, "list_layer_files", fake_list)
+
+    buf_a = io.BytesIO()
+    with tarfile.open(fileobj=buf_a, mode="w") as tar:
+        info = tarfile.TarInfo("foo.txt")
+        data = b"A"
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    data_a = buf_a.getvalue()
+
+    buf_b = io.BytesIO()
+    with tarfile.open(fileobj=buf_b, mode="w") as tar:
+        info = tarfile.TarInfo("bar.txt")
+        data = b"B"
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    data_b = buf_b.getvalue()
+
+    async def fake_fetch_token(repo):
+        return "t"
+
+    async def fake_fetch_blob(repo, digest, token, session=None):
+        return data_a if digest == "sha256:a" else data_b
+
+    monkeypatch.setattr(oci, "fetch_token", fake_fetch_token)
+    monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
+
+    with app.app.test_client() as client:
+        resp = client.get("/layers/user/repo:tag@sha256:m2/")
+        assert resp.status_code == 200
+        html = resp.data.decode()
+        assert "bar.txt" in html
+        assert "/fs/user/repo@sha256:b" in html
+

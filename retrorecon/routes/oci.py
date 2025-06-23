@@ -498,12 +498,14 @@ def _parse_ls_line(line: str) -> tuple[str, bool, str, str, str, str]:
     return name, is_dir, perms, owner, size, f"{date} {time}"
 
 
-async def _build_overlay(image: str) -> dict[str, tuple[str, bool, str, str, str, str]]:
+async def _build_overlay(image: str, manifest_digest: str | None = None) -> dict[str, tuple[str, bool, str, str, str, str]]:
     async with DockerRegistryClient() as client:
         manifest = await get_manifest(image, client=client)
         if manifest.get("manifests"):
-            digest = manifest["manifests"][0]["digest"]
+            digest = manifest_digest or manifest["manifests"][0]["digest"]
             manifest = await get_manifest(image, specific_digest=digest, client=client)
+        elif manifest_digest:
+            manifest = await get_manifest(image, specific_digest=manifest_digest, client=client)
         mapping: dict[str, tuple[str, bool, str, str, str, str]] = {}
         for layer in manifest.get("layers", []):
             files = await list_layer_files(image, layer["digest"], client=client)
@@ -515,12 +517,12 @@ async def _build_overlay(image: str) -> dict[str, tuple[str, bool, str, str, str
 
 
 def _overlay_view(image: str, digest: str, subpath: str):
-    overlay = asyncio.run(_build_overlay(image))
-    data = asyncio.run(_image_data(image))
-    descriptor = data["descriptor"]
-    desc_size_hr = human_readable_size(descriptor["size"])
+    overlay = asyncio.run(_build_overlay(image, digest))
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
+    data = asyncio.run(_image_data_digest(repo_full, digest))
+    descriptor = data["descriptor"]
+    desc_size_hr = human_readable_size(descriptor["size"])
     entry = overlay.get(subpath)
     if entry and not entry[1]:
         return fs_view(repo_full, entry[0], subpath)
@@ -607,6 +609,13 @@ def layer_digest_dir(image: str, digest: str, subpath: str):
         manifest_digest = ""
     if digest == manifest_digest:
         return _overlay_view(image, digest, subpath)
+    try:
+        manifest = asyncio.run(_resolve_manifest(image))
+        if manifest.get("manifests"):
+            if any(digest == m.get("digest") for m in manifest["manifests"]):
+                return _overlay_view(image, digest, subpath)
+    except Exception:
+        pass
 
     user, repo, _ = parse_image_ref(image)
     repo_full = f"{user}/{repo}"
