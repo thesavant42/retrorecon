@@ -2,6 +2,7 @@ from typing import List
 
 import app
 from flask import Blueprint, request, redirect, url_for, flash
+from retrorecon import app_utils
 from database import query_db, execute_db
 from retrorecon import tag_utils, search_utils
 
@@ -21,7 +22,7 @@ def save_saved_tags(tags: List[str]) -> None:
 @bp.route('/add_tag', methods=['POST'])
 def add_tag() -> "redirect":  # type: ignore[return-type]
     """Append a tag to the selected URL entry."""
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     entry_id = request.form.get('entry_id', type=int)
@@ -42,7 +43,7 @@ def add_tag() -> "redirect":  # type: ignore[return-type]
 @bp.route('/bulk_action', methods=['POST'])
 def bulk_action() -> "redirect":  # type: ignore[return-type]
     """Apply a bulk action (tag or delete) to selected URLs."""
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     action = request.form.get('action', '')

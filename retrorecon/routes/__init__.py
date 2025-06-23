@@ -12,5 +12,13 @@ from .urls import bp as urls_bp
 from .swagger import bp as swagger_bp
 from .overview import bp as overview_bp
 from .tags import bp as tags_bp
+from .assets import bp as assets_bp
+from .import_routes import bp as import_bp
+from .status import bp as status_bp
 
-__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp', 'swagger_bp', 'overview_bp', 'tags_bp']
+__all__ = [
+    'notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp',
+    'docker_bp', 'registry_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp',
+    'urls_bp', 'swagger_bp', 'overview_bp', 'tags_bp',
+    'assets_bp', 'import_bp', 'status_bp'
+]

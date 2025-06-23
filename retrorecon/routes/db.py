@@ -1,6 +1,7 @@
 import os
 import app
 from flask import Blueprint, request, redirect, url_for, flash, send_file, session
+from retrorecon import app_utils
 
 bp = Blueprint('db', __name__)
 
@@ -12,7 +13,7 @@ def new_db():
         flash('Invalid database name.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
+    temp_path = os.path.join(app_utils.get_db_folder(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:
@@ -34,9 +35,9 @@ def load_db_route():
     if not filename:
         flash('Invalid database file.', 'error')
         return redirect(url_for('index'))
-    db_path = os.path.join(app.get_db_folder(), filename)
+    db_path = os.path.join(app_utils.get_db_folder(), filename)
     app.close_connection(None)
-    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
+    temp_path = os.path.join(app_utils.get_db_folder(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:
@@ -52,7 +53,7 @@ def load_db_route():
 
 @bp.route('/save_db', methods=['GET'])
 def save_db():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     name = request.args.get("name", "").strip()
@@ -74,11 +75,11 @@ def rename_db():
     if not safe:
         flash('Invalid database name.', 'error')
         return redirect(url_for('index'))
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         flash('No database loaded.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    new_path = os.path.join(app.get_db_folder(), safe)
+    new_path = os.path.join(app_utils.get_db_folder(), safe)
     try:
         os.rename(app.app.config['DATABASE'], new_path)
     except OSError as e:
@@ -99,12 +100,12 @@ def load_saved_db():
     if not safe:
         flash('Invalid database selection.', 'error')
         return redirect(url_for('index'))
-    path = os.path.join(app.get_db_folder(), safe)
+    path = os.path.join(app_utils.get_db_folder(), safe)
     if not os.path.isfile(path):
         flash('Database not found.', 'error')
         return redirect(url_for('index'))
     app.close_connection(None)
-    temp_path = os.path.join(app.get_db_folder(), app.TEMP_DB_NAME)
+    temp_path = os.path.join(app_utils.get_db_folder(), app.TEMP_DB_NAME)
     if app.app.config.get('DATABASE') == temp_path and os.path.exists(temp_path):
         os.remove(temp_path)
     try:

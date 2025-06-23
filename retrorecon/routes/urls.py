@@ -3,6 +3,7 @@ import csv
 from typing import List, Optional
 
 import app
+from retrorecon import app_utils
 from flask import Blueprint, request, Response, jsonify
 
 bp = Blueprint('urls', __name__)
@@ -10,7 +11,7 @@ bp = Blueprint('urls', __name__)
 @bp.route('/export_urls', methods=['GET'])
 def export_urls():
     """Export URL records in various formats."""
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
 
     fmt = request.args.get('format', 'json').lower()
@@ -19,7 +20,7 @@ def export_urls():
     ids: Optional[List[int]] = None
     if not select_all:
         ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
-    rows = app.export_url_data(ids=ids, query=q)
+    rows = app_utils.export_url_data(ids=ids, query=q)
 
     if fmt == 'txt':
         text = '\n'.join(r['url'] for r in rows)

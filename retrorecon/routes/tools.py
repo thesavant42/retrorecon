@@ -7,7 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
-from retrorecon import screenshot_service, jwt_service, sitezip_service
+from retrorecon import screenshot_service, jwt_service, sitezip_service, app_utils
 from flask import (
     Blueprint,
     request,
@@ -99,7 +99,7 @@ def jwt_decode_route():
     token = request.form.get('token', '')
     if len(token.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
         return ('Request too large', 400)
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     try:
         header = jwt_service.jwt.get_unverified_header(token)
@@ -201,7 +201,7 @@ def jwt_encode_route():
 
 @bp.route('/jwt_cookies', methods=['GET'])
 def jwt_cookies_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     rows = jwt_service.export_jwt_cookie_data()[:50]
     return jsonify(rows)
@@ -209,7 +209,7 @@ def jwt_cookies_route():
 
 @bp.route('/delete_jwt_cookies', methods=['POST'])
 def delete_jwt_cookies_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
@@ -220,7 +220,7 @@ def delete_jwt_cookies_route():
 
 @bp.route('/update_jwt_cookie', methods=['POST'])
 def update_jwt_cookie_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     jid = request.form.get('id', type=int)
     notes = request.form.get('notes', '').strip()
@@ -232,7 +232,7 @@ def update_jwt_cookie_route():
 
 @bp.route('/export_jwt_cookies', methods=['GET'])
 def export_jwt_cookies_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     ids = [int(i) for i in request.args.getlist('id') if i.isdigit()]
     rows = jwt_service.export_jwt_cookie_data(ids if ids else None)
@@ -251,7 +251,7 @@ def screenshotter_full_page():
 
 @bp.route('/tools/screenshot', methods=['POST'])
 def screenshot_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
     if not url:
@@ -285,7 +285,7 @@ def screenshot_route():
 
 @bp.route('/screenshots', methods=['GET'])
 def screenshots_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     rows = screenshot_service.list_screenshot_data()
     for r in rows:
@@ -296,7 +296,7 @@ def screenshots_route():
 
 @bp.route('/delete_screenshots', methods=['POST'])
 def delete_screenshots_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
@@ -325,7 +325,7 @@ def layerpeek_full_page():
 
 @bp.route('/tools/site2zip', methods=['POST'])
 def site2zip_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
     if not url:
@@ -362,7 +362,7 @@ def site2zip_route():
 
 @bp.route('/sitezips', methods=['GET'])
 def sitezips_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     rows = sitezip_service.list_sitezip_data()
     for r in rows:
@@ -373,7 +373,7 @@ def sitezips_route():
 
 @bp.route('/download_sitezip/<int:sid>', methods=['GET'])
 def download_sitezip_route(sid: int):
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     rows = sitezip_service.list_sitezip_data([sid])
     if not rows:
@@ -384,7 +384,7 @@ def download_sitezip_route(sid: int):
 
 @bp.route('/delete_sitezips', methods=['POST'])
 def delete_sitezips_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:

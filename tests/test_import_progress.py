@@ -5,6 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
+from retrorecon import app_utils
 
 
 def test_import_progress(tmp_path, monkeypatch):
@@ -14,11 +15,11 @@ def test_import_progress(tmp_path, monkeypatch):
     # Ensure progress file starts absent
     assert not progress_file.exists()
 
-    app.set_import_progress("running", "importing", 5, 10)
-    data = app.get_import_progress()
+    app_utils.set_import_progress(str(progress_file), "running", "importing", 5, 10)
+    data = app_utils.get_import_progress(str(progress_file))
     assert data == {"status": "running", "message": "importing", "current": 5, "total": 10}
 
-    app.clear_import_progress()
+    app_utils.clear_import_progress(str(progress_file))
     assert not progress_file.exists()
 
 
@@ -27,5 +28,5 @@ def test_get_progress_bad_json(tmp_path, monkeypatch):
     progress_file.write_text("nonsense")
     monkeypatch.setattr(app, "IMPORT_PROGRESS_FILE", str(progress_file))
 
-    data = app.get_import_progress()
+    data = app_utils.get_import_progress(str(progress_file))
     assert data == {"status": "idle", "message": "", "current": 0, "total": 0}

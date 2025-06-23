@@ -3,7 +3,7 @@ import csv
 import re
 from flask import Blueprint, request, jsonify, render_template, Response
 import app
-from retrorecon import subdomain_utils, status as status_mod
+from retrorecon import subdomain_utils, status as status_mod, app_utils
 
 bp = Blueprint('domains', __name__)
 
@@ -11,7 +11,7 @@ bp = Blueprint('domains', __name__)
 @bp.route('/subdomonster', methods=['GET'])
 def subdomonster_page():
     data = []
-    if app._db_loaded():
+    if app_utils._db_loaded():
         data = subdomain_utils.list_all_subdomains()
     return render_template('subdomonster.html', initial_data=data)
 
@@ -23,7 +23,7 @@ def subdomonster_full_page():
 
 @bp.route('/subdomains', methods=['GET', 'POST'])
 def subdomains_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify({'error': 'no_db'}), 400
 
     if request.method == 'GET':
@@ -88,7 +88,7 @@ def subdomains_route():
 
 @bp.route('/export_subdomains', methods=['GET'])
 def export_subdomains():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     domain = request.args.get('domain', '').strip().lower()
     if not domain:
@@ -120,7 +120,7 @@ def export_subdomains():
 
 @bp.route('/mark_subdomain_cdx', methods=['POST'])
 def mark_subdomain_cdx():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     subdomain = request.form.get('subdomain', '').strip().lower()
     if not subdomain:
@@ -133,7 +133,7 @@ def mark_subdomain_cdx():
 @bp.route('/scrape_subdomains', methods=['POST'])
 def scrape_subdomains():
     """Scrape existing URL records and insert any discovered subdomains."""
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     domain = request.form.get('domain', '').strip().lower()
     if domain and not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
@@ -145,20 +145,20 @@ def scrape_subdomains():
 
 @bp.route('/delete_subdomain', methods=['POST'])
 def delete_subdomain_route():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     domain = request.form.get('domain', '').strip().lower()
     subdomain = request.form.get('subdomain', '').strip().lower()
     if not domain or not subdomain:
         return ('', 400)
-    app.delete_subdomain(domain, subdomain)
+    app_utils.delete_subdomain(domain, subdomain)
     return ('', 204)
 
 
 @bp.route('/subdomain_action', methods=['POST'])
 def subdomain_action():
     """Bulk modify or delete subdomains."""
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     action = request.form.get('action', '')
     tag = request.form.get('tag', '').strip()
@@ -177,7 +177,7 @@ def subdomain_action():
             continue
         root_domain, sub = pair.split('|', 1)
         if action == 'delete':
-            app.delete_subdomain(root_domain, sub)
+            app_utils.delete_subdomain(root_domain, sub)
             count += 1
         elif action == 'add_tag' and tag:
             subdomain_utils.add_tag(root_domain, sub, tag)

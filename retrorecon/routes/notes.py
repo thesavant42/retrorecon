@@ -1,5 +1,6 @@
 import app
 from flask import Blueprint, request, jsonify
+from retrorecon import app_utils
 from retrorecon import notes_service
 from .tags import load_saved_tags, save_saved_tags
 
@@ -35,7 +36,7 @@ def delete_saved_tag():
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])
 def notes_get(url_id: int):
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     rows = notes_service.get_notes(url_id)
     return jsonify([
@@ -51,7 +52,7 @@ def notes_get(url_id: int):
 
 @bp.route('/notes', methods=['POST'])
 def notes_post():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     url_id = request.form.get('url_id', type=int)
     content = request.form.get('content', '').strip()
@@ -79,7 +80,7 @@ def delete_note_route():
 
 @bp.route('/export_notes', methods=['GET'])
 def export_notes():
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return jsonify([])
     data = notes_service.export_notes_data()
     return jsonify(data)
@@ -88,7 +89,7 @@ def export_notes():
 @bp.route('/text_notes', methods=['GET', 'POST'])
 def text_notes_route():
     if request.method == 'GET':
-        if not app._db_loaded():
+        if not app_utils._db_loaded():
             return jsonify([])
         rows = notes_service.get_text_notes()
         return jsonify([
@@ -100,7 +101,7 @@ def text_notes_route():
             }
             for r in rows
         ])
-    if not app._db_loaded():
+    if not app_utils._db_loaded():
         return ('', 400)
     content = request.form.get('content', '').strip()
     if not content:
