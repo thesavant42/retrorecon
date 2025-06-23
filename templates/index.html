@@ -140,7 +140,6 @@
       <div class="dropdown-content" id="prefs-menu">
           <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
             <input type="hidden" name="theme" id="set-theme-input" />
-            <input type="hidden" name="domain" id="set-theme-domain" />
           </form>
           <form id="set-bg-form" method="POST" action="/set_background" class="d-none">
             <input type="hidden" name="background" id="set-bg-input" />
@@ -1281,15 +1280,10 @@
     const themeSelect = document.getElementById('theme-select');
     const themeForm = document.getElementById('set-theme-form');
     const themeInput = document.getElementById('set-theme-input');
-    const themeDomain = document.getElementById('set-theme-domain');
-    if (themeSelect && themeForm && themeInput && themeDomain) {
+    if (themeSelect && themeForm && themeInput) {
       themeSelect.addEventListener('change', () => {
-        const domain = prompt('Enter domain for theme:');
-        if (domain) {
-          themeInput.value = themeSelect.value;
-          themeDomain.value = domain;
-          themeForm.submit();
-        }
+        themeInput.value = themeSelect.value;
+        themeForm.submit();
       });
     }
 
