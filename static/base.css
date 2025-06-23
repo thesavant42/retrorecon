@@ -187,6 +187,7 @@ body {
   background-size: cover;
   display: flex;
   flex-direction: column;
+  position: relative;
   font-family: var(--font-main);
   font-size: 14px;
   margin: 0;
@@ -1261,8 +1262,11 @@ body.bg-hidden {
 
 /* Generic close button for standalone pages */
 .retrorecon-root .close-btn {
-  float: right;
-  margin-left: 1em;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border-radius: 999px;
+  padding: 2px 12px;
 }
 
 .retrorecon-root .overlay-close-btn {

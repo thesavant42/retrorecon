@@ -6,6 +6,7 @@
 .retrorecon-root {
   font-family: monospace;
   padding: 12px;
+  position: relative;
 }
 .retrorecon-root pre { white-space: pre; }
 .retrorecon-root .manifest-json {
@@ -48,7 +49,9 @@
 .retrorecon-root #tab2:checked ~ .tab.content2 { display: block; }
 .retrorecon-root input:checked + label { opacity: 100%; }
 .retrorecon-root .close-btn {
-  float: right;
-  margin-left: 1em;
-  clear: both;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border-radius: 999px;
+  padding: 2px 12px;
 }

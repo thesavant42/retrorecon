@@ -15,7 +15,21 @@ Docker-Content-Digest: <a class="mt" href="/?image={{ repo }}@{{ digest }}&mt={{
 <pre class="manifest-json">{{ descriptor|tojson(indent=2) }}</pre>
 </div>
 <h4><span class="noselect noselect--tight">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_export.md">export</a> {{ image }} | tar -tv{% if path %} {{ path }}{% endif %}</h4>
-<pre>{%- for it in items %}
-<a href="/fs/{{ repo }}@{{ it.digest }}">{{ it.digest[:8] }}</a> {{ it.perms }} {{ it.owner }} <span title="{{ it.size_hr }}">{{ '%12s'|format(it.size) }}</span> {{ it.ts }} <a href="/fs/{{ repo }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a>{% if not loop.last %}\n{% endif %}
-{%- endfor %}</pre>
+<table class="fs-table">
+  <thead>
+    <tr><th>Layer</th><th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th>Name</th></tr>
+  </thead>
+  <tbody>
+  {% for it in items %}
+    <tr>
+      <td><a href="/fs/{{ repo }}@{{ it.digest }}">{{ it.digest[:8] }}</a></td>
+      <td class="text-mono">{{ it.perms }}</td>
+      <td class="text-mono">{{ it.owner }}</td>
+      <td class="text-right" title="{{ it.size_hr }}">{{ it.size }}</td>
+      <td>{{ it.ts }}</td>
+      <td><a href="/fs/{{ repo }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
