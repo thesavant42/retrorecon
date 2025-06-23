@@ -268,6 +268,27 @@ def test_fs_route_invalid_tar(tmp_path, monkeypatch, caplog):
         assert any("invalid tar for user/repo@sha256:x" in rec.message for rec in caplog.records)
 
 
+def test_size_route_invalid_tar(tmp_path, monkeypatch, caplog):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    async def fake_fetch_token(repo):
+        return "t"
+
+    async def fake_fetch_blob(repo, digest, token, session=None):
+        return b"not a tar"
+
+    monkeypatch.setattr(oci, "fetch_token", fake_fetch_token)
+    monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
+
+    with app.app.test_client() as client:
+        caplog.set_level(logging.WARNING)
+        resp = client.get("/size/user/repo@sha256:x")
+        assert resp.status_code == 415
+        assert b"invalid tar" in resp.data
+        assert any("invalid tar for user/repo@sha256:x" in rec.message for rec in caplog.records)
+
+
 def test_size_route_unsupported_media(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci
