@@ -12,7 +12,7 @@ node_modules/
 frontend/package-lock.json
 package-lock.json
 __pycache__/
-!reports/report.json
+reports/
 last_db.txt
 static/screenshots/
 static/sitezips/
