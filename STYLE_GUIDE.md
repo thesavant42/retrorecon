@@ -48,3 +48,14 @@ Key element defaults derived from `static/base.css`:
 Inputs, dropdowns, and other controls follow the same naming pattern (`.input`, `.dropdown`, `.dropdown--open`). Ensure every rule is scoped under `.retrorecon-root`.
 
 Adhering to these conventions keeps Retrorecon styles clear, maintainable, and easy to extend with additional themes.
+
+## 4. Visual Defaults
+
+New templates should present a clean look by default. Avoid using glow effects
+such as `box-shadow` or heavy `text-shadow` unless a design specifically
+requires it. Common interface elements &mdash; including buttons, inputs and
+table containers &mdash; should have slightly rounded corners using a
+`border-radius` of around `4px` to `6px`.
+
+Following these defaults ensures consistency between pages and keeps the
+interface simple to theme.
