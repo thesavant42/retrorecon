@@ -1,6 +1,7 @@
 <!-- File: templates/dag_explorer.html -->
 <div id="dag-explorer-overlay" class="notes-overlay hidden">
-  <h1>
+  <button type="button" class="btn overlay-close-btn" id="dag-close-btn">Close</button>
+  <h1 class="text-center">
     <a class="top" href="/">
       <img class="crane" src="{{ url_for('favicon_svg') }}"/>
       <span class="link">Registry Explorer</span>
@@ -37,7 +38,6 @@
     <input type="text" id="dag-image" class="form-input mr-05 w-20em" placeholder="user/repo:tag" />
     <button type="button" class="btn" id="dag-fetch-btn">Fetch Manifest</button>
     <button type="button" class="btn" id="dag-tags-btn">List Tags</button>
-    <button type="button" class="btn close-btn" id="dag-close-btn">Close</button>
   </div>
   <div id="dag-manifest" class="mb-05"></div>
   <div id="dag-path" class="mb-05"></div>
