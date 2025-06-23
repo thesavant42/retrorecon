@@ -178,17 +178,17 @@ body {
 /* --- Updated CSS to emulate Fandom Map Room style --- */
 
 .retrorecon-root {
-  background: var(--bg-color) url("/static/img/background.jpg") no-repeat center center fixed;
+  background: var(--bg-color, #000) url("/static/img/background.jpg") no-repeat center center fixed;
   background-size: cover;
   display: flex;
   flex-direction: column;
-  font-family: var(--font-main);
+  font-family: var(--font-main, 'Share Tech Mono', 'Consolas', monospace);
   font-size: 14px;
   margin: 0;
   height: calc(100vh - 10px);
   padding: 0 0 10px;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--fg-color, #ffffff);
   line-height: 1.5;
 }
 
