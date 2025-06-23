@@ -13,6 +13,11 @@
   --radius: 8px;
   --select-bg-color: var(--color-base);
   --select-border-color: var(--color-contrast);
+
+  /* Terminal.css compatibility */
+  --background-color: var(--color-base);
+  --font-color: var(--color-contrast);
+  --primary-color: var(--color-accent);
 }
 
 body {
