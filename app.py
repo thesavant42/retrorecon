@@ -542,8 +542,11 @@ def fetch_cdx() -> Response:
         )
         inserted += 1
 
-    flash(f"Fetched CDX for {domain}: inserted {inserted} new URLs.", "success")
+    message = f"Fetched CDX for {domain}: inserted {inserted} new URLs."
     status_mod.push_status('cdx_import_complete', str(inserted))
+    if request.form.get('ajax') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({"inserted": inserted, "message": message})
+    flash(message, "success")
     return redirect(url_for('index'))
 
 def _background_import(file_content: bytes) -> None:

@@ -123,3 +123,27 @@ def test_fetch_cdx_uses_limit_param(tmp_path, monkeypatch):
     client.post('/fetch_cdx', data={'domain': 'limit.com'})
 
     assert 'limit=1000' in captured
+
+
+def test_fetch_cdx_ajax_json(tmp_path, monkeypatch):
+    db_path = tmp_path / "ajax.db"
+    orig = Path(__file__).resolve().parents[1]
+    monkeypatch.setattr(app.app, "root_path", str(tmp_path))
+    monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
+    monkeypatch.setitem(app.app.config, "DATABASE", str(db_path))
+    (tmp_path / "db").mkdir()
+    (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
+    with app.app.app_context():
+        app.init_db()
+
+    sample = [
+        ["orig", "t", "200", "text/plain"],
+        ["http://x.example.com/", "202501", "200", "text"]
+    ]
+    monkeypatch.setattr(app.requests, 'get', lambda *a, **k: FakeResponse(sample))
+
+    client = app.app.test_client()
+    resp = client.post('/fetch_cdx', data={'domain': 'example.com', 'ajax': '1'})
+    assert resp.is_json
+    data = resp.get_json()
+    assert data['inserted'] == 1
