@@ -1,16 +1,16 @@
 {
   "coverage": {
     "button": {
-      "total": 71,
-      "styled": 70
+      "total": 72,
+      "styled": 71
     },
     "input": {
       "total": 41,
       "styled": 20
     },
     "select": {
-      "total": 12,
-      "styled": 12
+      "total": 13,
+      "styled": 13
     },
     "checkbox": {
       "total": 8,
@@ -18,10 +18,6 @@
     }
   },
   "unscoped_selectors": {
-    "static/base.css": [
-      "from",
-      "to"
-    ],
     "static/swagger-dark.css": [
       "a",
       "::-webkit-scrollbar-track-piece",
@@ -338,6 +334,10 @@
       "::-webkit-scrollbar-button:vertical:end:increment",
       "::-webkit-scrollbar-button:horizontal:end:increment",
       "::-webkit-scrollbar-button:horizontal:start:decrement"
+    ],
+    "static/base.css": [
+      "from",
+      "to"
     ]
   }
 }

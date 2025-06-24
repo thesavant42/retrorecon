@@ -10,10 +10,10 @@ function initDemo(){
     view.innerHTML = '';
     if(!name) return;
     let url = '';
-    if(name === 'index'){ url = '/'; }
-    else if(name === 'subdomonster'){ url = '/subdomonster'; }
-    else if(name === 'screenshotter'){ url = '/screenshotter'; }
-    else if(name === 'about'){ url = '/help/about'; }
+    if(name === 'index'){ url = '/dynamic/demo/index'; }
+    else if(name === 'subdomonster'){ url = '/dynamic/demo/subdomonster'; }
+    else if(name === 'screenshotter'){ url = '/dynamic/demo/screenshotter'; }
+    else if(name === 'about'){ url = '/dynamic/demo/about'; }
     if(!url) return;
     const resp = await fetch(url);
     const html = await resp.text();

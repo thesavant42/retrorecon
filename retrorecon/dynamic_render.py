@@ -55,15 +55,29 @@ class HTMLGenerator:
         root = soup.new_tag("div", **{"class": "retrorecon-root"})
         soup.append(root)
 
-        for node in schema.get("content", []):
-            tag = node.get("tag")
-            if not tag:
-                continue
-            el = soup.new_tag(tag)
-            text_key = node.get("text")
-            if text_key:
-                el.string = str(data.get(text_key, ""))
-            root.append(el)
+        def add_nodes(parent, nodes):
+            for node in nodes:
+                if "html_field" in node:
+                    html_val = data.get(node["html_field"], "")
+                    frag = BeautifulSoup(html_val, "html.parser")
+                    for child in frag.contents:
+                        parent.append(child)
+                    continue
+                tag = node.get("tag")
+                if not tag:
+                    continue
+                el = soup.new_tag(tag)
+                attrs = node.get("attrs", {})
+                for k, v in attrs.items():
+                    el.attrs[k] = v
+                text_key = node.get("text")
+                if text_key:
+                    el.string = str(data.get(text_key, ""))
+                if node.get("children"):
+                    add_nodes(el, node["children"])
+                parent.append(el)
+
+        add_nodes(root, schema.get("content", []))
 
         assets = self.asset_registry.for_render()
         for css in assets["css"]:
