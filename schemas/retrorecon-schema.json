@@ -1,27 +1,27 @@
 {
-  "pageType": "string", // e.g., "dashboard", "exam", "series", "reconstruction", "log", "settings"
-  "title": "string", // Main page title
-  "description": "string", // Short description of the page's purpose
+  "pageType": "string",
+  "title": "string",
+  "description": "string",
   "navigation": {
-    "breadcrumbs": ["string"], // List of navigation steps to current page
+    "breadcrumbs": ["string"],
     "menuItems": [
       {
-        "label": "string", // Menu item label
-        "link": "string", // URL or route
-        "icon": "string" // Optional icon name
+        "label": "string",
+        "link": "string",
+        "icon": "string"
       }
     ]
   },
   "content": {
     "sections": [
       {
-        "header": "string", // Section title
-        "body": "string", // Main content or Markdown/HTML
+        "header": "string",
+        "body": "string",
         "widgets": [
           {
-            "type": "string", // e.g., "table", "chart", "form", "status", "log"
-            "data": {}, // Widget-specific data structure
-            "options": {} // Widget-specific options/settings
+            "type": "string",
+            "data": {},
+            "options": {}
           }
         ]
       }
@@ -29,27 +29,27 @@
   },
   "actions": [
     {
-      "label": "string", // Action button label
-      "action": "string", // Action identifier, e.g., "submit", "edit", "delete"
-      "icon": "string", // Optional icon
-      "confirmation": "string" // Optional confirmation message
+      "label": "string",
+      "action": "string",
+      "icon": "string",
+      "confirmation": "string"
     }
   ],
   "status": {
     "messages": [
       {
-        "type": "string", // e.g., "info", "warning", "error", "success"
+        "type": "string",
         "message": "string"
       }
     ],
     "progress": {
-      "current": "number", // Current progress value
-      "total": "number" // Total value for progress
+      "current": "number",
+      "total": "number"
     }
   },
   "metadata": {
-    "createdBy": "string", // User or system that created the page
-    "createdAt": "string", // ISO date-time
-    "updatedAt": "string" // ISO date-time
+    "createdBy": "string",
+    "createdAt": "string",
+    "updatedAt": "string"
   }
 }
