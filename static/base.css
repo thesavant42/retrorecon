@@ -729,6 +729,8 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5em;
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  border-radius: var(--radius);
 }
 .retrorecon-root .fs-table th,
 .retrorecon-root .fs-table td {
