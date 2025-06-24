@@ -49,11 +49,17 @@ function initDagExplorer(){
   function saveBookmarks(arr){
     localStorage.setItem('ociBookmarks', JSON.stringify(arr));
   }
+  function normalizeAddr(addr){
+    if(!/^(?:\/|https?:)/.test(addr)){
+      return '/image/' + addr;
+    }
+    return addr;
+  }
   function renderBookmarks(){
     if(!bkTableBody) return;
     const bks = loadBookmarks();
     bkTableBody.innerHTML = bks.map((b,i)=>
-      `<tr data-idx="${i}"><td><a class="mt" href="${b.addr}">${escapeHtml(b.addr)}</a></td>`+
+      `<tr data-idx="${i}"><td><a class="mt" href="${normalizeAddr(b.addr)}">${escapeHtml(b.addr)}</a></td>`+
       `<td>${escapeHtml(b.note||'')}</td>`+
       `<td class="bookmark-actions"><button type="button" class="btn btn--small edit-btn">Edit</button>`+
       `<button type="button" class="btn btn--small delete-btn">X</button></td></tr>`
