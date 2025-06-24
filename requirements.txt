@@ -10,3 +10,4 @@ playwright
 pyelftools
 tldextract
 flask-swagger-ui
+markdown

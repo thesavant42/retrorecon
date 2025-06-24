@@ -96,6 +96,7 @@ app.teardown_appcontext(close_connection)
 ITEMS_PER_PAGE = 10  # default results per page
 ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 25]
 TEXT_TOOLS_LIMIT = 64 * 1024  # 64 KB limit for text transformations
+APP_VERSION = '1.5.0'
 
 THEMES_DIR = os.path.join(app.root_path, 'static', 'themes')
 if os.path.isdir(THEMES_DIR):
@@ -354,6 +355,10 @@ def index() -> str:
         tool = 'subdomonster'
     elif request.path == '/tools/text_tools':
         tool = 'text'
+    elif request.path == '/tools/readme':
+        tool = 'readme'
+    elif request.path == '/tools/about':
+        tool = 'about'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
@@ -476,7 +481,8 @@ def index() -> str:
         current_sort=sort,
         current_dir=direction,
         open_tool=tool,
-        select_all_matching=select_all_matching
+        select_all_matching=select_all_matching,
+        app_version=APP_VERSION
     )
 
 @app.route('/fetch_cdx', methods=['POST'])
@@ -804,6 +810,7 @@ from retrorecon.routes import (
     urls_bp,
     swagger_bp,
     overview_bp,
+    help_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -818,6 +825,7 @@ app.register_blueprint(dagdotdev_bp)
 app.register_blueprint(urls_bp)
 app.register_blueprint(swagger_bp)
 app.register_blueprint(overview_bp)
+app.register_blueprint(help_bp)
 
 
 @app.after_request
