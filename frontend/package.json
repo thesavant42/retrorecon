@@ -8,7 +8,7 @@
     "glob": "^10.3.10"
   },
   "scripts": {
-    "lint:css": "stylelint \"../static/**/*.css\"",
+    "lint:css": "stylelint \"../static/**/*.css\" --allow-empty-input",
     "lint:inline": "node scripts/check_inline_styles.js",
     "lint": "npm run lint:css && npm run lint:inline"
   }

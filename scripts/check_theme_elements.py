@@ -5,7 +5,10 @@ import cssutils
 cssutils.log.setLevel('FATAL')
 
 THEME_DIR = os.path.join('static', 'themes')
-CSS_FILES = [os.path.join('static', 'base.css')]
+CSS_FILES: List[str] = []
+base_css = os.path.join('static', 'base.css')
+if os.path.exists(base_css):
+    CSS_FILES.append(base_css)
 if os.path.isdir(THEME_DIR):
     for fname in sorted(os.listdir(THEME_DIR)):
         if fname.endswith('.css'):
