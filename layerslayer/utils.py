@@ -46,6 +46,33 @@ def registry_base_url(user: str, repo: str) -> str:
         return f"https://{user}/v2/{repo}"
     return f"https://registry-1.docker.io/v2/{user}/{repo}"
 
+
+def guess_manifest_media_type(image_ref_or_host: str) -> str:
+    """Return expected manifest media type for ``image_ref_or_host``.
+
+    The logic mirrors the registry-aware parser described in issue #607.
+    ``image_ref_or_host`` may be an image reference like ``gcr.io/foo/bar`` or a
+    bare hostname such as ``docker.io``.
+    """
+    host = image_ref_or_host
+    if "/" in image_ref_or_host:
+        first = image_ref_or_host.split("/", 1)[0]
+        if "." in first or ":" in first or first == "localhost":
+            host = first
+        else:
+            host = "docker.io"
+    elif "." not in host and ":" not in host and host != "localhost":
+        # bare repository name like "ubuntu" implies Docker Hub
+        host = "docker.io"
+    if host in {"docker.io", "index.docker.io"}:
+        return "application/vnd.docker.distribution.manifest.v2+json"
+    if host.endswith("gcr.io") or host.endswith("pkg.dev") or host.endswith("registry.k8s.io"):
+        return "application/vnd.oci.image.manifest.v1+json"
+    if host.endswith("ecr.aws") or host.endswith("quay.io"):
+        return "application/vnd.docker.distribution.manifest.v2+json"
+    # fallback for unknown registries
+    return "application/vnd.oci.image.manifest.v1+json"
+
 def auth_headers(token=None):
     headers = {"Accept": "application/vnd.docker.distribution.manifest.v2+json"}
     if token:

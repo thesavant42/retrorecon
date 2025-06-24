@@ -182,3 +182,80 @@ def oci_obj(obj: Any, repo: str, *, link_size: bool = True) -> Markup:
     html = _render_obj(obj, repo, link_size=link_size)
     return Markup(html)
 
+
+def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
+    """Return HTML tables summarizing ``manifest``.
+
+    The config and layer digests are linked to download routes so users can
+    easily fetch individual blobs. If ``manifest`` is a manifest list, each
+    entry links to the corresponding image view instead.
+    """
+
+    user, repo, _ = parse_image_ref(image)
+    repo_full = f"{user}/{repo}"
+
+    def _link_digest(digest: str, download: bool = True) -> str:
+        href = (
+            f"/download_layer?image={image}&digest={digest}"
+            if download
+            else f"/image/{repo_full}@{digest}"
+        )
+        return f'<a class="mt" href="{href}">{escape(digest)}</a>'
+
+    parts: list[str] = []
+
+    # Config overview table
+    cfg = manifest.get("config", {})
+    cfg_rows = [
+        ("schemaVersion", manifest.get("schemaVersion")),
+        ("mediaType", manifest.get("mediaType")),
+        ("config.mediaType", cfg.get("mediaType")),
+        ("config.size", cfg.get("size")),
+        ("config.digest", cfg.get("digest")),
+    ]
+    parts.append(
+        '<table class="fs-table"><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>'
+    )
+    for key, val in cfg_rows:
+        if key.endswith("digest") and val:
+            val_html = _link_digest(str(val))
+        else:
+            val_html = escape(str(val)) if val is not None else ""
+        parts.append(
+            f'<tr><td class="text-mono">{escape(key)}</td><td class="text-mono">{val_html}</td></tr>'
+        )
+    parts.append("</tbody></table>")
+
+    layers = manifest.get("layers")
+    if layers:
+        parts.append(
+            '<table class="fs-table"><thead><tr><th>#</th><th>Size</th><th>Digest</th><th>Media Type</th></tr></thead><tbody>'
+        )
+        for idx, layer in enumerate(layers, 1):
+            d = str(layer.get("digest", ""))
+            size = layer.get("size", 0)
+            mt = str(layer.get("mediaType", ""))
+            parts.append(
+                f'<tr><td>{idx}</td><td>{size}</td><td>{_link_digest(d)}</td><td>{escape(mt)}</td></tr>'
+            )
+        parts.append("</tbody></table>")
+    elif manifest.get("manifests"):
+        parts.append(
+            '<table class="fs-table"><thead><tr><th>#</th><th>Size</th><th>Digest</th><th>Media Type</th><th>Platform</th></tr></thead><tbody>'
+        )
+        for idx, entry in enumerate(manifest["manifests"], 1):
+            d = str(entry.get("digest", ""))
+            size = entry.get("size", 0)
+            mt = str(entry.get("mediaType", ""))
+            plat = ""
+            if entry.get("platform"):
+                os_ = entry["platform"].get("os", "")
+                arch = entry["platform"].get("architecture", "")
+                plat = f"{os_}/{arch}".strip("/")
+            parts.append(
+                f'<tr><td>{idx}</td><td>{size}</td><td>{_link_digest(d, False)}</td><td>{escape(mt)}</td><td>{escape(plat)}</td></tr>'
+            )
+        parts.append("</tbody></table>")
+
+    return Markup("".join(parts))
+

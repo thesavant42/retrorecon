@@ -50,9 +50,10 @@ class DockerRegistryClient:
         token = self.token_cache.get(f"{user}/{repo}")
         if not token:
             token = await self._fetch_token(user, repo)
-        headers = {
-            "Accept": "application/vnd.docker.distribution.manifest.v2+json"
-        }
+        from .utils import guess_manifest_media_type
+
+        accept = guess_manifest_media_type(user)
+        headers = {"Accept": accept}
         if token:
             headers["Authorization"] = f"Bearer {token}"
         return headers
