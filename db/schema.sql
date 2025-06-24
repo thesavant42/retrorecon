@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS sitezips (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS assets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    path TEXT NOT NULL,
+    asset_type TEXT NOT NULL,
+    content_type_affinity TEXT DEFAULT '',
+    load_order INTEGER DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS domains (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     root_domain TEXT NOT NULL,
@@ -84,3 +92,4 @@ CREATE TABLE IF NOT EXISTS domains (
 CREATE INDEX IF NOT EXISTS idx_urls_domain ON urls(domain);
 CREATE INDEX IF NOT EXISTS idx_domains_root ON domains(root_domain);
 CREATE INDEX IF NOT EXISTS idx_domains_subdomain ON domains(subdomain);
+CREATE INDEX IF NOT EXISTS idx_assets_type ON assets(asset_type);

@@ -10,17 +10,34 @@ class AssetRegistry:
 
     def __init__(self) -> None:
         self._assets: List[Dict[str, object]] = []
+        self.loaded = False
 
     def register(self, path: str, asset_type: str, order: int = 0) -> None:
         if asset_type not in {"css", "js"}:
             raise ValueError("asset_type must be 'css' or 'js'")
-        self._assets.append({"path": path, "type": asset_type, "order": order})
+        for asset in self._assets:
+            if asset["path"] == path and asset["type"] == asset_type:
+                asset["order"] = order
+                break
+        else:
+            self._assets.append({"path": path, "type": asset_type, "order": order})
         self._assets.sort(key=lambda a: a["order"])
+
+    def load_from_records(self, records: List[Dict[str, object]]) -> None:
+        """Load assets from database records."""
+        self._assets = []
+        for r in records:
+            self.register(r["path"], r.get("asset_type", r.get("type", "")), r.get("load_order", r.get("order", 0)))
+        self.loaded = True
 
     def for_render(self) -> Dict[str, List[str]]:
         css = [a["path"] for a in self._assets if a["type"] == "css"]
         js = [a["path"] for a in self._assets if a["type"] == "js"]
         return {"css": css, "js": js}
+
+    @property
+    def assets(self) -> List[Dict[str, object]]:
+        return list(self._assets)
 
 
 class SchemaRegistry:

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template
 from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, render_from_payload
 from ..dynamic_schemas import register_demo_schemas
+from ..asset_utils import list_assets
 import app
 
 bp = Blueprint('dynamic', __name__, url_prefix='/dynamic')
@@ -9,6 +10,16 @@ asset_registry = AssetRegistry()
 schema_registry = SchemaRegistry()
 html_generator = HTMLGenerator(asset_registry)
 register_demo_schemas(schema_registry)
+
+
+@bp.before_app_request
+def _load_assets() -> None:
+    if not asset_registry.loaded and app.app.config.get('DATABASE'):
+        try:
+            records = list_assets()
+            asset_registry.load_from_records(records)
+        except Exception:
+            pass
 
 
 @bp.route('/api/render', methods=['POST'])
