@@ -5,6 +5,8 @@
 <h2>{{ repo }}</h2>
 <h4><span class="noselect noselect--tight">$ </span>curl -sL "{{ data_url }}" | jq .</h4>
 
+<details class="meta-details">
+<summary>JSON</summary>
 <div>{
 <div class="indent">
   <div>"name": &#34;{{ data.name }}&#34;,</div>
@@ -25,4 +27,5 @@
   <div>"manifest": {{ data.manifest|oci_obj(repo) }}</div>
 </div>
 }</div>
+</details>
 {% endblock %}
