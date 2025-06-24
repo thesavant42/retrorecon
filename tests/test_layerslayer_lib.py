@@ -1,4 +1,9 @@
-from layerslayer import parse_image_ref, registry_base_url, human_readable_size
+from layerslayer import (
+    parse_image_ref,
+    registry_base_url,
+    human_readable_size,
+)
+from layerslayer.utils import guess_manifest_media_type
 
 
 def test_parse_image_ref():
@@ -30,4 +35,23 @@ def test_registry_base_url_custom():
     assert (
         registry_base_url("library", "ubuntu")
         == "https://registry-1.docker.io/v2/library/ubuntu"
+    )
+
+
+def test_guess_manifest_media_type():
+    assert (
+        guess_manifest_media_type("ubuntu")
+        == "application/vnd.docker.distribution.manifest.v2+json"
+    )
+    assert (
+        guess_manifest_media_type("gcr.io/project/app")
+        == "application/vnd.oci.image.manifest.v1+json"
+    )
+    assert (
+        guess_manifest_media_type("public.ecr.aws/repo")
+        == "application/vnd.docker.distribution.manifest.v2+json"
+    )
+    assert (
+        guess_manifest_media_type("registry.k8s.io/my/app")
+        == "application/vnd.oci.image.manifest.v1+json"
     )
