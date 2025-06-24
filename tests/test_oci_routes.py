@@ -211,6 +211,35 @@ def test_fs_route(tmp_path, monkeypatch):
         assert resp.data == b"hi"
 
 
+def test_fs_route_download(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.oci as oci
+
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        info = tarfile.TarInfo("a.txt")
+        data = b"hi"
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    tar_bytes = buf.getvalue()
+
+    async def fake_fetch_token(repo):
+        return "t"
+
+    async def fake_fetch_blob(repo, digest, token, session=None):
+        return tar_bytes
+
+    monkeypatch.setattr(oci, "fetch_token", fake_fetch_token)
+    monkeypatch.setattr(oci, "fetch_blob", fake_fetch_blob)
+
+    with app.app.test_client() as client:
+        resp = client.get("/fs/user/repo@sha256:x/a.txt?download=1")
+        assert resp.status_code == 200
+        assert resp.data == b"hi"
+        cd = resp.headers.get("Content-Disposition", "")
+        assert "attachment" in cd
+
+
 def test_fs_root_listing(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.oci as oci

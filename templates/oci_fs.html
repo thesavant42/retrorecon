@@ -25,7 +25,7 @@
 </details>
 <table class="fs-table">
   <thead>
-    <tr><th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th>Name</th></tr>
+    <tr><th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th class="text-center">💾</th><th class="text-center">🔍</th><th>Name</th></tr>
   </thead>
   <tbody>
   {% for item in items %}
@@ -34,6 +34,12 @@
       <td class="text-mono">{{ item.owner }}</td>
       <td class="text-right" title="{{ item.size_hr }}">{{ item.size }}</td>
       <td>{{ item.ts }}</td>
+      <td class="text-center">
+        {% if not item.is_dir %}
+        <a href="/fs/{{ repo }}@{{ digest }}{{ item.path }}?download=1" title="Download">💾</a>
+        {% endif %}
+      </td>
+      <td class="text-center"><a href="/fs/{{ repo }}@{{ digest }}{{ item.path }}" title="View">🔍</a></td>
       <td><a href="/fs/{{ repo }}@{{ digest }}{{ item.path }}">{{ item.name }}{% if item.is_dir %}/{% endif %}</a></td>
     </tr>
   {% endfor %}
