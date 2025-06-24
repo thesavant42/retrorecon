@@ -25,7 +25,7 @@ def test_api_render(tmp_path, monkeypatch):
         # register schema manually
         from retrorecon.routes.dynamic import schema_registry
         schema_registry.register("simple", {"required": ["title"], "content": [{"tag": "h1", "text": "title"}]})
-        resp = client.post("/api/render", json=payload)
+        resp = client.post("/dynamic/api/render", json=payload)
         assert resp.status_code == 200
         assert "<h1>Demo</h1>" in resp.get_data(as_text=True)
 

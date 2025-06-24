@@ -3,7 +3,7 @@ from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, rende
 from ..dynamic_schemas import register_demo_schemas
 import app
 
-bp = Blueprint('dynamic', __name__)
+bp = Blueprint('dynamic', __name__, url_prefix='/dynamic')
 
 asset_registry = AssetRegistry()
 schema_registry = SchemaRegistry()
