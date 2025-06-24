@@ -3,7 +3,7 @@
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
 <h2>{{ repo }}@{{ digest }}: {{ path }}</h2>
-<form method="get" class="mb-05">
+<form id="filter-form" method="get">
   <input type="text" name="q" value="{{ q }}" placeholder="Filter" class="form-input mr-05" />
   <button type="submit" class="btn">Apply</button>
 </form>

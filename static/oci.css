@@ -56,3 +56,11 @@
   border-radius: 999px;
   padding: 2px 12px;
 }
+
+.retrorecon-root #filter-form {
+  position: absolute;
+  top: 0.5em;
+  right: 6em;
+  display: flex;
+  gap: 0.5em;
+}
