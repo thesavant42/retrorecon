@@ -1,6 +1,7 @@
 from typing import Dict, Any
 import os
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, jsonify
+from .dynamic import dynamic_template
 import app
 
 bp = Blueprint('overview', __name__)
@@ -51,7 +52,7 @@ def overview_page():
         'counts': _collect_counts(),
         'domains': _collect_domains(),
     }
-    return render_template('overview.html', **data)
+    return dynamic_template('overview.html', **data)
 
 
 @bp.route('/overview.json', methods=['GET'])
