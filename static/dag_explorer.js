@@ -194,7 +194,7 @@ function initDagExplorer(){
   }
 
   async function fetchManifest(){
-    const img = imgInput.value.trim();
+    const img = imgInput ? imgInput.value.trim() : '';
     if(!img) return;
     const resp = await fetch('/dag/image/' + encodeURIComponent(img));
     if(resp.ok){
@@ -206,21 +206,21 @@ function initDagExplorer(){
   }
 
   async function fetchTags(){
-    const img = imgInput.value.trim();
+    const img = imgInput ? imgInput.value.trim() : '';
     if(!img) return;
     const repo = img.split(':')[0];
     const resp = await fetch('/dag/repo/' + encodeURIComponent(repo));
     output.textContent = await resp.text();
   }
 
-  fetchBtn.addEventListener('click', fetchManifest);
-  tagsBtn.addEventListener('click', fetchTags);
+  if(fetchBtn) fetchBtn.addEventListener('click', fetchManifest);
+  if(tagsBtn) tagsBtn.addEventListener('click', fetchTags);
   manifestDiv.addEventListener('click', async ev => {
     const link = ev.target.closest('.layer-link');
     if(!link) return;
     ev.preventDefault();
     const digest = link.dataset.digest;
-    const img = imgInput.value.trim();
+    const img = imgInput ? imgInput.value.trim() : '';
     if(!digest || !img) return;
     const resp = await fetch(`/dag/layer/${encodeURIComponent(img)}@${encodeURIComponent(digest)}`);
     if(resp.ok){
