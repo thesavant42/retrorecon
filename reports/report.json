@@ -18,6 +18,10 @@
     }
   },
   "unscoped_selectors": {
+    "static/base.css": [
+      "from",
+      "to"
+    ],
     "static/swagger-dark.css": [
       "a",
       "::-webkit-scrollbar-track-piece",
@@ -334,10 +338,6 @@
       "::-webkit-scrollbar-button:vertical:end:increment",
       "::-webkit-scrollbar-button:horizontal:end:increment",
       "::-webkit-scrollbar-button:horizontal:start:decrement"
-    ],
-    "static/base.css": [
-      "from",
-      "to"
     ]
   }
 }

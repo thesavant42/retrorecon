@@ -1,6 +1,6 @@
 # Neon Theme CSS Inventory
 
-This document categorizes the rules in `theme-neon.css` and its parent `base.css` as described in [issue #639](https://github.com/thesavant42/retrorecon/issues/639). Each section lists representative selectors and the color roles they use. The goal is to understand how the current styles map to layout, typography and other atomic groups before refactoring.
+This document categorizes the rules in `theme-neon.css` and its parent `base.css` as described in [issue #639](https://github.com/thesavant42/retrorecon/issues/639). Each section lists representative selectors and the color roles they use. The goal is to understand how the current styles map to layout, typography and other atomic groups before refactoring. See [Theme Style Guide](theme_style_guide.md) for the broader conventions used across all themes.
 
 ## Atomic Categories
 
