@@ -27,7 +27,7 @@ Docker-Content-Digest: <a class="mt" href="/?image={{ repo }}@{{ digest }}&mt={{
       <td class="text-mono">{{ it.owner }}</td>
       <td class="text-right" title="{{ it.size_hr }}">{{ it.size }}</td>
       <td>{{ it.ts }}</td>
-      <td><a href="/fs/{{ repo }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a></td>
+      <td><a href="/layers/{{ image }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a></td>
     </tr>
   {% endfor %}
   </tbody>
