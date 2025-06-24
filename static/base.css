@@ -1233,7 +1233,7 @@ body.bg-hidden {
 
 /* Ensure preformatted output boxes match the theme */
 .retrorecon-root pre {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   color: var(--fg-color);
   padding: 0.5em;
   overflow-x: auto;
