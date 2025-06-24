@@ -64,3 +64,6 @@
   display: flex;
   gap: 0.5em;
 }
+.retrorecon-root details.meta-details {
+  margin-top: 1em;
+}

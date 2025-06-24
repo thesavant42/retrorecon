@@ -3,18 +3,21 @@
 {% block body %}
 <h1><a class="mt" href="/">Registry Explorer</a></h1>
 <h2><a class="mt" href="/repo/{{ repo }}">{{ repo }}</a>@<a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ media_type }}&size={{ size }}">{{ digest }}</a></h2>
-<input type="radio" name="tabs" id="tab1" checked>
-<label for="tab1">HTTP</label>
-<input type="radio" name="tabs" id="tab2">
-<label for="tab2">OCI</label>
-<div class="tab content1">
-Content-Type: <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/layer.md">{{ media_type }}</a><br>
-Docker-Content-Digest: <a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ media_type }}&size={{ size }}">{{ digest }}</a><br>
-<span title="{{ size_hr }}">Content-Length: {{ size }}</span><br>
-</div>
-<div class="tab content2">
-<pre class="manifest-json">{{ {'mediaType': media_type, 'digest': digest, 'size': size}|tojson(indent=2) }}</pre>
-</div>
-<h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_blob.md">blob</a> {{ repo }}@{{ digest }} | tar -tvz | sort -n -r -k3</h4>
+<details class="meta-details">
+  <summary>Details</summary>
+  <input type="radio" name="tabs" id="tab1" checked>
+  <label for="tab1">HTTP</label>
+  <input type="radio" name="tabs" id="tab2">
+  <label for="tab2">OCI</label>
+  <div class="tab content1">
+  Content-Type: <a class="mt" href="https://github.com/opencontainers/image-spec/blob/main/layer.md">{{ media_type }}</a><br>
+  Docker-Content-Digest: <a class="mt" href="/fs/{{ repo }}@{{ digest }}?mt={{ media_type }}&size={{ size }}">{{ digest }}</a><br>
+  <span title="{{ size_hr }}">Content-Length: {{ size }}</span><br>
+  </div>
+  <div class="tab content2">
+  <pre class="manifest-json">{{ {'mediaType': media_type, 'digest': digest, 'size': size}|tojson(indent=2) }}</pre>
+  </div>
+  <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_blob.md">blob</a> {{ repo }}@{{ digest }} | tar -tvz | sort -n -r -k3</h4>
+</details>
 <pre>{{ lines|join('\n') }}</pre>
 {% endblock %}
