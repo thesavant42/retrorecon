@@ -58,6 +58,18 @@ python retrorecon.py --domain example.com
 
 Use `--help` to view available options for filtering, exporting, and source map analysis.
 
+## 🖥️ Running the Web Interface
+
+Launch the Flask UI with the provided scripts. The optional `-l` flag sets the listening address (default `127.0.0.1`).
+
+```bash
+./launch_app.sh -l 0.0.0.0   # Linux/macOS
+.\launch_app.bat -l 0.0.0.0  # Windows
+```
+
+These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
+**Never expose the app publicly without proper hardening.**
+
 ---
 
 ## 🕶️ Philosophy
