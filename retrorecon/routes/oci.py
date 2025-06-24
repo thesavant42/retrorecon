@@ -9,7 +9,8 @@ from datetime import datetime
 import mimetypes
 import stat
 
-from flask import Blueprint, render_template, request, send_file, current_app
+from flask import Blueprint, request, send_file, current_app
+from .dynamic import dynamic_template
 from aiohttp import ClientError
 import aiohttp
 import asyncio
@@ -30,7 +31,7 @@ bp = Blueprint("oci", __name__)
 
 @bp.route("/tools/registry_explorer", methods=["GET"])
 def oci_index():
-    return render_template("oci_index.html")
+    return dynamic_template("oci_index.html")
 
 
 async def _repo_data(repo: str) -> Dict[str, Any]:
@@ -81,22 +82,22 @@ def repo_view(repo: str):
         data = asyncio.run(_repo_data(repo))
     except asyncio.TimeoutError:
         return (
-            render_template("oci_error.html", repo=repo, message="timeout"),
+            dynamic_template("oci_error.html", repo=repo, message="timeout"),
             504,
         )
     except ClientError as exc:
         return (
-            render_template("oci_error.html", repo=repo, message=str(exc)),
+            dynamic_template("oci_error.html", repo=repo, message=str(exc)),
             502,
         )
     except Exception:
         return (
-            render_template("oci_error.html", repo=repo, message="server error"),
+            dynamic_template("oci_error.html", repo=repo, message="server error"),
             500,
         )
     user, repo_name = parse_image_ref(f"{repo}:latest")[:2]
     data_url = f"{registry_base_url(user, repo_name).rstrip('/')}/tags/list"
-    return render_template(
+    return dynamic_template(
         "oci_repo.html",
         repo=repo,
         data=data,
@@ -164,20 +165,20 @@ def image_view(image: str):
         data = asyncio.run(_image_data(image))
     except asyncio.TimeoutError:
         return (
-            render_template("oci_error.html", image=image, message="timeout"),
+            dynamic_template("oci_error.html", image=image, message="timeout"),
             504,
         )
     except ClientError as exc:
         return (
-            render_template("oci_error.html", image=image, message=str(exc)),
+            dynamic_template("oci_error.html", image=image, message=str(exc)),
             502,
         )
     except Exception:
         return (
-            render_template("oci_error.html", image=image, message="server error"),
+            dynamic_template("oci_error.html", image=image, message="server error"),
             500,
         )
-    return render_template("oci_image.html", image=image, data=data, title=image)
+    return dynamic_template("oci_image.html", image=image, data=data, title=image)
 
 
 @bp.route("/image/<path:repo>@<digest>", methods=["GET"])
@@ -187,20 +188,20 @@ def image_digest_view(repo: str, digest: str):
         data = asyncio.run(_image_data_digest(repo, digest))
     except asyncio.TimeoutError:
         return (
-            render_template("oci_error.html", image=display, message="timeout"),
+            dynamic_template("oci_error.html", image=display, message="timeout"),
             504,
         )
     except ClientError as exc:
         return (
-            render_template("oci_error.html", image=display, message=str(exc)),
+            dynamic_template("oci_error.html", image=display, message=str(exc)),
             502,
         )
     except Exception:
         return (
-            render_template("oci_error.html", image=display, message="server error"),
+            dynamic_template("oci_error.html", image=display, message="server error"),
             500,
         )
-    return render_template(
+    return dynamic_template(
         "oci_image.html",
         image=repo,
         display_image=display,
@@ -245,7 +246,7 @@ def layer_size_view(repo: str, digest: str):
     ):
         current_app.logger.warning("unsupported media type %s for %s@%s", mt, repo, digest)
         return (
-            render_template(
+            dynamic_template(
                 "oci_error.html",
                 repo=repo,
                 digest=digest,
@@ -258,17 +259,17 @@ def layer_size_view(repo: str, digest: str):
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
         return (
-            render_template("oci_error.html", repo=repo, message="timeout"),
+            dynamic_template("oci_error.html", repo=repo, message="timeout"),
             504,
         )
     except ClientError as exc:
         return (
-            render_template("oci_error.html", repo=repo, message=str(exc)),
+            dynamic_template("oci_error.html", repo=repo, message=str(exc)),
             502,
         )
     except Exception:
         return (
-            render_template("oci_error.html", repo=repo, message="server error"),
+            dynamic_template("oci_error.html", repo=repo, message="server error"),
             500,
         )
 
@@ -291,7 +292,7 @@ def layer_size_view(repo: str, digest: str):
     except tarfile.TarError:
         current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
-            render_template(
+            dynamic_template(
                 "oci_error.html", repo=repo, digest=digest, message="invalid tar"
             ),
             415,
@@ -304,7 +305,7 @@ def layer_size_view(repo: str, digest: str):
     blob_size = int(size_param) if size_param else len(blob)
     size_hr = human_readable_size(blob_size)
 
-    return render_template(
+    return dynamic_template(
         "oci_layer.html",
         repo=repo,
         digest=digest,
@@ -387,17 +388,17 @@ def fs_view(repo: str, digest: str, subpath: str):
         blob = asyncio.run(_read_layer(repo, digest))
     except asyncio.TimeoutError:
         return (
-            render_template("oci_error.html", repo=repo, message="timeout"),
+            dynamic_template("oci_error.html", repo=repo, message="timeout"),
             504,
         )
     except ClientError as exc:
         return (
-            render_template("oci_error.html", repo=repo, message=str(exc)),
+            dynamic_template("oci_error.html", repo=repo, message=str(exc)),
             502,
         )
     except Exception:
         return (
-            render_template("oci_error.html", repo=repo, message="server error"),
+            dynamic_template("oci_error.html", repo=repo, message="server error"),
             500,
         )
     try:
@@ -414,7 +415,7 @@ def fs_view(repo: str, digest: str, subpath: str):
                 if q:
                     items = [it for it in items if q_lower in it["name"].lower()]
                 disp = "/" + subpath.rstrip("/") if subpath else "/"
-                return render_template(
+                return dynamic_template(
                     "oci_fs.html",
                     repo=repo,
                     digest=digest,
@@ -434,7 +435,7 @@ def fs_view(repo: str, digest: str, subpath: str):
                 items = _list_children(tar, subpath)
                 if q:
                     items = [it for it in items if q_lower in it["name"].lower()]
-                return render_template(
+                return dynamic_template(
                     "oci_fs.html",
                     repo=repo,
                     digest=digest,
@@ -453,13 +454,13 @@ def fs_view(repo: str, digest: str, subpath: str):
     except tarfile.TarError:
         current_app.logger.warning("invalid tar for %s@%s", repo, digest)
         return (
-            render_template(
+            dynamic_template(
                 "oci_error.html", repo=repo, digest=digest, message="invalid tar"
             ),
             415,
         )
     if render_mode == "hex":
-        return render_template("oci_hex.html", data=_hexdump(data), path=subpath)
+        return dynamic_template("oci_hex.html", data=_hexdump(data), path=subpath)
     if render_mode == "elf":
         try:
             from elftools.elf.elffile import ELFFile
@@ -471,7 +472,7 @@ def fs_view(repo: str, digest: str, subpath: str):
             info = {"class": elf.elfclass, "entry": elf.header["e_entry"]}
         except Exception:
             info = {"error": "invalid elf"}
-        return render_template(
+        return dynamic_template(
             "oci_elf.html", info=json.dumps(info, indent=2), path=subpath
         )
     mimetype = None
@@ -479,7 +480,7 @@ def fs_view(repo: str, digest: str, subpath: str):
         mt, _ = mimetypes.guess_type(subpath)
         is_text = (mt and mt.startswith("text/")) or _is_text(data)
         if not is_text:
-            return render_template("oci_hex.html", data=_hexdump(data), path=subpath)
+            return dynamic_template("oci_hex.html", data=_hexdump(data), path=subpath)
         mimetype = mt or "text/plain"
     return send_file(
         io.BytesIO(data),
@@ -564,7 +565,7 @@ def _overlay_view(image: str, digest: str, subpath: str):
                 "ts": ts,
             }
         )
-    return render_template(
+    return dynamic_template(
         "oci_overlay.html",
         repo=repo_full,
         image=image,
@@ -584,13 +585,13 @@ def layer_dir(image: str, subpath: str):
         manifest = asyncio.run(_resolve_manifest(image))
     except Exception:
         return (
-            render_template("oci_error.html", image=image, message="error"),
+            dynamic_template("oci_error.html", image=image, message="error"),
             500,
         )
     layers = manifest.get("layers", [])
     if not layers:
         return (
-            render_template("oci_error.html", image=image, message="no layers"),
+            dynamic_template("oci_error.html", image=image, message="no layers"),
             404,
         )
     digest = layers[0]["digest"]

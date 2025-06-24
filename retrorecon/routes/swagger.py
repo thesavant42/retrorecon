@@ -2,7 +2,8 @@
 
 import json
 import os
-from flask import Blueprint, current_app, render_template, request, send_from_directory
+from flask import Blueprint, current_app, request, send_from_directory
+from .dynamic import dynamic_template
 import flask_swagger_ui
 
 SWAGGER_URL = '/swagger'
@@ -41,5 +42,5 @@ def show(path: str | None = None):
             "app_name": _config.get("app_name", "Swagger UI"),
             "config_json": json.dumps({k: v for k, v in _config.items() if k != "app_name"}),
         }
-        return render_template("swaggerui.html", **fields)
+        return dynamic_template("swaggerui.html", **fields)
     return send_from_directory(DIST_DIR, path)

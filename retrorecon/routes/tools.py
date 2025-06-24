@@ -252,14 +252,6 @@ def screenshotter_full_page():
     return app.index()
 
 
-@bp.route('/demo', methods=['GET'])
-def demo_page():
-    return dynamic_template('demo.html')
-
-
-@bp.route('/tools/demo', methods=['GET'])
-def demo_full_page():
-    return app.index()
 
 
 @bp.route('/tools/screenshot', methods=['POST'])

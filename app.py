@@ -463,7 +463,9 @@ def index() -> str:
         search_history.insert(0, q)
         session['search_history'] = search_history[:10]
 
-    return render_template(
+    from retrorecon.routes.dynamic import dynamic_template
+
+    return dynamic_template(
         'index.html',
         urls=rows,
         page=page,
@@ -487,16 +489,6 @@ def index() -> str:
         app_version=APP_VERSION
     )
 
-
-@app.route('/newindex', methods=['GET'])
-def newindex() -> str:
-    """Render the index page using the dynamic renderer."""
-    from retrorecon.routes.dynamic import schema_registry, html_generator
-    from retrorecon.dynamic_render import render_from_payload
-
-    html = index()
-    payload = {'schema': 'static_html', 'data': {'html': html}}
-    return render_from_payload(payload, schema_registry, html_generator)
 
 @app.route('/fetch_cdx', methods=['POST'])
 def fetch_cdx() -> Response:
