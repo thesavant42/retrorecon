@@ -53,46 +53,4 @@ def api_render():
     return html
 
 
-@bp.route('/demo/<name>', methods=['GET'])
-def demo_dynamic(name: str):
-    """Return dynamic HTML for demo pages."""
-    if name == 'index':
-        html = app.index()
-        payload = {'schema': 'static_html', 'data': {'html': html}}
-        return render_from_payload(payload, schema_registry, html_generator)
-
-    if name == 'subdomonster':
-        data = []
-        if app._db_loaded():
-            data = subdomain_utils.list_all_subdomains()
-        init_script = (
-            '<script type="application/json" id="subdomonster-init">'
-            + json.dumps(data)
-            + '</script>'
-        )
-        payload = {'schema': 'subdomonster_page', 'data': {'init_script': init_script}}
-        return render_from_payload(payload, schema_registry, html_generator)
-
-    if name == 'screenshotter':
-        payload = {'schema': 'screenshotter_page', 'data': {}}
-        return render_from_payload(payload, schema_registry, html_generator)
-
-    if name == 'about':
-        credits = [
-            'the folks referenced in the README',
-            'dagdotdev / original registry explorer project',
-            'the shupandhack Discord',
-        ]
-        credits_html = '<ul>' + ''.join(f'<li>{escape(c)}</li>' for c in credits) + '</ul>'
-        payload = {
-            'schema': 'help_about_page',
-            'data': {
-                'title': 'About RetroRecon',
-                'version': app.APP_VERSION,
-                'credits_html': credits_html,
-            },
-        }
-        return render_from_payload(payload, schema_registry, html_generator)
-
-    return ('', 404)
 

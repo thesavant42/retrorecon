@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify
+from .dynamic import dynamic_template
 import app
 import asyncio
 from aiohttp import ClientError
@@ -12,7 +13,7 @@ bp = Blueprint('registry', __name__)
 
 @bp.route('/registry_viewer', methods=['GET'])
 def registry_viewer_page():
-    return render_template('registry_explorer.html')
+    return dynamic_template('registry_explorer.html')
 
 
 @bp.route('/tools/registry_viewer', methods=['GET'])

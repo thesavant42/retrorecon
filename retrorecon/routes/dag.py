@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any, Dict
 
 from aiohttp import ClientError
-from flask import Blueprint, jsonify, render_template, request, send_file
+from flask import Blueprint, jsonify, request, send_file
+from .dynamic import dynamic_template
 
 import app
 from layerslayer.client import DockerRegistryClient, get_manifest, list_layer_files
@@ -24,7 +25,7 @@ def _split_repo(name: str) -> tuple[str, str]:
 
 @bp.route("/dag_explorer", methods=["GET"])
 def dag_explorer_page():
-    return render_template("dag_explorer.html")
+    return dynamic_template("dag_explorer.html")
 
 
 @bp.route("/tools/dag_explorer", methods=["GET"])
