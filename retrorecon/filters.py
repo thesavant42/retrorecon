@@ -232,15 +232,20 @@ def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
     layers = manifest.get("layers")
     if layers:
         parts.append(
-            '<table class="fs-table"><thead><tr><th>#</th><th>Size</th><th>Digest</th><th>Media Type</th></tr></thead><tbody>'
+            '<table class="fs-table"><thead><tr><th>#</th><th>Size</th><th>Digest</th><th>Media Type</th><th class="text-center">💾</th><th class="text-center">🔍</th></tr></thead><tbody>'
         )
         for idx, layer in enumerate(layers, 1):
             d = str(layer.get("digest", ""))
             size = layer.get("size", 0)
             mt = str(layer.get("mediaType", ""))
             size_hr = human_readable_size(int(size) if str(size).isdigit() else 0)
+            download_link = f'/download_layer?image={image}&digest={d}'
+            browse_link = f'/fs/{repo_full}@{d}'
             parts.append(
-                f'<tr><td>{idx}</td><td>{size} <span class="text-muted">({size_hr})</span></td><td>{_link_digest(d)}</td><td>{escape(mt)}</td></tr>'
+                f'<tr><td>{idx}</td><td>{size} <span class="text-muted">({size_hr})</span></td>'
+                f'<td>{_link_digest(d, False)}</td><td>{escape(mt)}</td>'
+                f'<td class="text-center"><a href="{download_link}" title="Download">💾</a></td>'
+                f'<td class="text-center"><a href="{browse_link}" title="Browse">🔍</a></td></tr>'
             )
         parts.append("</tbody></table>")
     elif manifest.get("manifests"):

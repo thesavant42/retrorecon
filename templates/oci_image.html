@@ -19,7 +19,10 @@
   </div>
 </details>
 <h4><span class="noselect">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_manifest.md">manifest</a> {{ display_image or image }} | jq .</h4>
-<pre class="manifest-json">{{ data.manifest|manifest_links(image, data.descriptor.digest, link_size=False) }}</pre>
+<details class="meta-details">
+  <summary>JSON</summary>
+  <pre class="manifest-json">{{ data.manifest|manifest_links(image, data.descriptor.digest, link_size=False) }}</pre>
+</details>
 <div class="mt-05">
   {{ data.manifest|manifest_table(image) }}
 </div>
