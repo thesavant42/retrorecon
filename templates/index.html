@@ -15,7 +15,10 @@
   {% endif %}
   {% if current_background %}
   <style>
-    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
+    body {
+      background: url('{{ url_for('static', filename='img/' + current_background) }}') no-repeat center center fixed;
+      background-size: cover;
+    }
   </style>
   {% endif %}
   <style>
@@ -1304,7 +1307,8 @@
         const bg = bgSelect.value;
         bgInput.value = bg;
         bgForm.submit();
-        document.body.style.backgroundImage = "url('/static/img/" + bg + "')";
+        document.body.style.background = "url('/static/img/" + bg + "') no-repeat center center fixed";
+        document.body.style.backgroundSize = 'cover';
       });
     }
 
