@@ -217,6 +217,18 @@ paths:
       responses:
         '200':
           description: Successful response
+  /demo:
+    get:
+      summary: GET /demo
+      responses:
+        '200':
+          description: Successful response
+  /tools/demo:
+    get:
+      summary: GET /tools/demo
+      responses:
+        '200':
+          description: Successful response
   /tools/screenshot:
     post:
       summary: POST /tools/screenshot

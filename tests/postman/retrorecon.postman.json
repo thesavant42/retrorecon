@@ -541,6 +541,39 @@
       }
     },
     {
+      "name": "GET /demo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/demo",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "demo"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /tools/demo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tools/demo",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tools",
+            "demo"
+          ]
+        }
+      }
+    },
+    {
       "name": "POST /tools/screenshot",
       "request": {
         "method": "POST",
