@@ -41,6 +41,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | Suspicious Pattern Detection  | Scans downloaded files for API keys, JWTs, secrets, etc.                   |
 | Filtering & Grouping          | Smart filters by type (e.g., `.js`, `.env`, `.php`, `.map`, etc.)          |
 | HTML Report Output (WIP)      | Generate browsable summaries with tagged snapshots and visual comparisons  |
+| OCI Registry Table Explorer   | Browse container images as tables with direct download links |
 
 ---
 
