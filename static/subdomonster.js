@@ -93,19 +93,41 @@ function initSubdomonster(){
   }
 
   function openCdxImport(sub){
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/fetch_cdx';
-    form.target = '_blank';
-    const inp = document.createElement('input');
-    inp.type = 'hidden';
-    inp.name = 'domain';
-    inp.value = sub;
-    form.appendChild(inp);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
+    enqueueCdxImport([sub]);
+  }
+
+  const cdxQueue = [];
+  let cdxProcessing = false;
+
+  function sanitizeDomain(d){
+    return d.replace(/[^A-Za-z0-9_.-]/g, '');
+  }
+
+  async function processCdxQueue(){
+    if(cdxProcessing) return;
+    cdxProcessing = true;
+    while(cdxQueue.length){
+      const sub = cdxQueue.shift();
+      console.debug('cdx import', sub);
+      const params = new URLSearchParams({domain: sub, ajax:'1'});
+      try{
+        await fetch('/fetch_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+        await fetch('/mark_subdomain_cdx', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({subdomain: sub})});
+      }catch(err){
+        console.error('cdx queue error', err);
+      }
+      await new Promise(r=>setTimeout(r,1000));
+    }
+    cdxProcessing = false;
+    if(fetchBtn) fetchBtn.click();
+  }
+
+  function enqueueCdxImport(list){
+    for(const d of list){
+      const clean = sanitizeDomain(d);
+      if(clean) cdxQueue.push(clean);
+    }
+    processCdxQueue();
   }
 
   function pollStatus(){
@@ -444,7 +466,12 @@ function initSubdomonster(){
       link.addEventListener('click', (ev) => {
         ev.preventDefault();
         const sub = decodeURIComponent(link.dataset.sub);
-        openCdxImport(sub);
+        const selected = Array.from(document.querySelectorAll('#subdomonster-table .row-checkbox:checked')).map(c=>c.dataset.sub);
+        if(selected.length > 1){
+          enqueueCdxImport(selected);
+        }else{
+          enqueueCdxImport([sub]);
+        }
         const row = link.closest('tr');
         const main = row ? row.previousElementSibling : null;
         const target = main || row;
