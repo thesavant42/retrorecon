@@ -17,7 +17,7 @@ Docker-Content-Digest: <a class="mt" href="/?image={{ repo }}@{{ digest }}&mt={{
 <h4><span class="noselect noselect--tight">$ </span><a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md">crane</a> <a class="mt" href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane_export.md">export</a> {{ image }} | tar -tv{% if path %} {{ path }}{% endif %}</h4>
 <table class="fs-table">
   <thead>
-    <tr><th>Layer</th><th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th>Name</th></tr>
+    <tr><th>Layer</th><th>Perms</th><th>Owner</th><th>Size</th><th>Modified</th><th class="text-center">💾</th><th class="text-center">🔍</th><th>Name</th></tr>
   </thead>
   <tbody>
   {% for it in items %}
@@ -27,6 +27,12 @@ Docker-Content-Digest: <a class="mt" href="/?image={{ repo }}@{{ digest }}&mt={{
       <td class="text-mono">{{ it.owner }}</td>
       <td class="text-right" title="{{ it.size_hr }}">{{ it.size }}</td>
       <td>{{ it.ts }}</td>
+      <td class="text-center">
+        {% if not it.is_dir %}
+        <a href="/layers/{{ image }}@{{ digest }}{{ it.path }}?download=1" title="Download">💾</a>
+        {% endif %}
+      </td>
+      <td class="text-center"><a href="/layers/{{ image }}@{{ digest }}{{ it.path }}" title="View">🔍</a></td>
       <td><a href="/layers/{{ image }}@{{ digest }}{{ it.path }}">{{ it.name }}{% if it.is_dir %}/{% endif %}</a></td>
     </tr>
   {% endfor %}

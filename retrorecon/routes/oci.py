@@ -484,7 +484,7 @@ def fs_view(repo: str, digest: str, subpath: str):
     return send_file(
         io.BytesIO(data),
         download_name=Path(subpath).name,
-        as_attachment=False,
+        as_attachment=request.args.get("download") == "1",
         mimetype=mimetype,
     )
 
