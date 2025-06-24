@@ -11,4 +11,10 @@
   --select-bg-color: #3f3f44;
   --select-border-color: var(--color-contrast);
   --panel-opacity: 0.9;
+
+  /* Generic variable names for dynamic theming */
+  --color-bg: var(--bg-color);
+  --color-text: var(--fg-color);
+  --color-border: var(--select-border-color);
+  --font-family-base: var(--font-main);
 }

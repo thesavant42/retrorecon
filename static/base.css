@@ -14,6 +14,12 @@
   --select-bg-color: var(--color-base);
   --select-border-color: var(--color-contrast);
 
+  /* Generic variable names for dynamic theming */
+  --color-bg: var(--bg-color);
+  --color-text: var(--fg-color);
+  --color-border: var(--select-border-color);
+  --font-family-base: var(--font-main);
+
   /* Terminal.css compatibility */
   --background-color: var(--color-base);
   --font-color: var(--color-contrast);

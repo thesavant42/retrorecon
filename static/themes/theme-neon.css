@@ -14,6 +14,13 @@
   --panel-opacity: 0.92;
   --fg-color: var(--font-main);
   --accent-color: var(--font-accent);
+
+  /* Generic variable names for dynamic theming */
+  --color-bg: var(--bg-color);
+  --color-text: var(--fg-color);
+  --color-accent: var(--font-accent);
+  --color-border: var(--border-color);
+  --font-family-base: var(--font-main);
 }
 
 .retrorecon-root {
