@@ -467,7 +467,6 @@ function initSubdomonster(){
       });
     });
 
-    renderPagination(totalPages, sorted.length);
     const shade = document.getElementById('dropdown-shade');
     table.querySelectorAll('.dropbtn').forEach(btn => {
       btn.addEventListener('click', e => {
@@ -483,7 +482,7 @@ function initSubdomonster(){
         }
       });
     });
-    renderPagination(totalPages);
+    renderPagination(totalPages, sorted.length);
   }
 
   fetchBtn.addEventListener('click', async () => {
