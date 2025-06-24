@@ -359,6 +359,8 @@ def index() -> str:
         tool = 'readme'
     elif request.path == '/tools/about':
         tool = 'about'
+    elif request.path == '/tools/demo':
+        tool = 'demo'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()

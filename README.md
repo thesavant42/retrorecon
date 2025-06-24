@@ -71,6 +71,9 @@ Launch the Flask UI with the provided scripts. The optional `-l` flag sets the l
 These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 **Never expose the app publicly without proper hardening.**
 
+For a quick walkthrough of the common workflow see
+[docs/new_user_guide.md](docs/new_user_guide.md).
+
 ---
 
 ## 🕶️ Philosophy

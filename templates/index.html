@@ -194,6 +194,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="demo-link">Demo</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="dag-explorer-link">OCI Explorer</a></div>
           <div class="menu-row"><a href="/swagger" class="menu-btn" id="swagger-ui-link" target="_blank">Swagger UI</a></div>
       </div>
@@ -1194,6 +1195,50 @@
 
       if(location.pathname === '/tools/screenshotter' || openTool === 'screenshot'){
         showScreenshot(true);
+      }
+
+      const demoLink = document.getElementById('demo-link');
+      let demoLoaded = false;
+
+      async function showDemo(skipPush){
+        if(!demoLoaded){
+          const resp = await fetch('/demo');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/demo.js';
+          document.body.appendChild(script);
+          demoLoaded = true;
+        }
+        document.getElementById('demo-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'demo'}, '', '/tools/demo');
+        }
+      }
+
+      function hideDemo(){
+        const ov = document.getElementById('demo-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+
+      if(demoLink){
+        demoLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showDemo();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/demo'){
+          showDemo(true);
+        } else {
+          hideDemo();
+        }
+      });
+
+      if(location.pathname === '/tools/demo' || openTool === 'demo'){
+        showDemo(true);
       }
 
       const registryLink = document.getElementById('registry-viewer-link');

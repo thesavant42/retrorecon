@@ -248,6 +248,16 @@ def screenshotter_full_page():
     return app.index()
 
 
+@bp.route('/demo', methods=['GET'])
+def demo_page():
+    return render_template('demo.html')
+
+
+@bp.route('/tools/demo', methods=['GET'])
+def demo_full_page():
+    return app.index()
+
+
 @bp.route('/tools/screenshot', methods=['POST'])
 def screenshot_route():
     if not app._db_loaded():
