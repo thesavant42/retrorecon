@@ -4,12 +4,17 @@ import cssutils
 
 cssutils.log.setLevel('FATAL')
 
-THEME_DIR = os.path.join('static', 'themes')
-CSS_FILES = [os.path.join('static', 'base.css')]
-if os.path.isdir(THEME_DIR):
-    for fname in sorted(os.listdir(THEME_DIR)):
-        if fname.endswith('.css'):
-            CSS_FILES.append(os.path.join(THEME_DIR, fname))
+THEME_DIRS = [os.path.join('static', 'themes'),
+              os.path.join('retirementHome', 'static', 'themes')]
+CSS_FILES = []
+for base in ['static/base.css', os.path.join('retirementHome', 'static', 'base.css')]:
+    if os.path.exists(base):
+        CSS_FILES.append(base)
+for d in THEME_DIRS:
+    if os.path.isdir(d):
+        for fname in sorted(os.listdir(d)):
+            if fname.endswith('.css'):
+                CSS_FILES.append(os.path.join(d, fname))
 
 PROPS = ['color', 'background', 'background-color', 'font-size', 'opacity',
          'min-width', 'padding', 'border']
