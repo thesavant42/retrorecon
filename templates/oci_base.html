@@ -19,7 +19,10 @@
   {% set current_background = session.get('background') %}
   {% if current_background %}
   <style>
-    body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
+    body {
+      background: url('{{ url_for('static', filename='img/' + current_background) }}') no-repeat center center fixed;
+      background-size: cover;
+    }
   </style>
   {% endif %}
   {% set panel_opacity = session.get('panel_opacity', 0.75) %}
