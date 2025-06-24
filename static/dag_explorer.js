@@ -9,6 +9,10 @@ function initDagExplorer(){
   const output = document.getElementById('dag-output');
   const pathDiv = document.getElementById('dag-path');
   const manifestDiv = document.getElementById('dag-manifest');
+  const bkTableBody = document.getElementById('bookmark-table-body');
+  const bkAddr = document.getElementById('bookmark-address');
+  const bkNote = document.getElementById('bookmark-note');
+  const bkAddBtn = document.getElementById('bookmark-add-btn');
 
   const SPEC_LINKS = {
     'application/vnd.docker.distribution.manifest.v2+json':
@@ -37,6 +41,23 @@ function initDagExplorer(){
     const url = SPEC_LINKS[mt];
     const text = escapeHtml(mt);
     return url ? `<a class="mt" href="${url}">${text}</a>` : text;
+  }
+
+  function loadBookmarks(){
+    try{ return JSON.parse(localStorage.getItem('ociBookmarks')||'[]'); }catch{ return []; }
+  }
+  function saveBookmarks(arr){
+    localStorage.setItem('ociBookmarks', JSON.stringify(arr));
+  }
+  function renderBookmarks(){
+    if(!bkTableBody) return;
+    const bks = loadBookmarks();
+    bkTableBody.innerHTML = bks.map((b,i)=>
+      `<tr data-idx="${i}"><td><a class="mt" href="${b.addr}">${escapeHtml(b.addr)}</a></td>`+
+      `<td>${escapeHtml(b.note||'')}</td>`+
+      `<td class="bookmark-actions"><button type="button" class="btn btn--small edit-btn">Edit</button>`+
+      `<button type="button" class="btn btn--small delete-btn">X</button></td></tr>`
+    ).join('');
   }
 
   function renderLayer(layer, repo){
@@ -234,6 +255,41 @@ function initDagExplorer(){
       renderTable(allFiles, currentPath, currentImage, currentDigest);
     }
   });
+
+  if(bkAddBtn){
+    bkAddBtn.addEventListener('click', () => {
+      const addr = bkAddr.value.trim();
+      if(!addr) return;
+      const note = bkNote.value.trim();
+      const bks = loadBookmarks();
+      bks.push({addr, note});
+      saveBookmarks(bks);
+      bkAddr.value = '';
+      bkNote.value = '';
+      renderBookmarks();
+    });
+  }
+  if(bkTableBody){
+    bkTableBody.addEventListener('click', ev => {
+      const row = ev.target.closest('tr');
+      if(!row) return;
+      const idx = Number(row.dataset.idx);
+      const bks = loadBookmarks();
+      if(ev.target.classList.contains('edit-btn')){
+        const note = prompt('Edit note', bks[idx].note||'');
+        if(note===null) return;
+        bks[idx].note = note;
+        saveBookmarks(bks);
+        renderBookmarks();
+      }else if(ev.target.classList.contains('delete-btn')){
+        bks.splice(idx,1);
+        saveBookmarks(bks);
+        renderBookmarks();
+      }
+    });
+  }
+
+  renderBookmarks();
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
     if(location.pathname === '/tools/dag_explorer'){ history.pushState({}, '', '/'); }
