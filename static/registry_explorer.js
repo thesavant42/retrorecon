@@ -4,6 +4,7 @@ function initRegistryExplorer(){
   if(!overlay) return;
   const imageInput = document.getElementById('registry-image');
   const methodChecks = overlay.querySelectorAll('input[name="registry-method"]');
+  const insecureCheck = document.getElementById('registry-insecure');
   const fetchBtn = document.getElementById('registry-fetch-btn');
   const closeBtn = document.getElementById('registry-close-btn');
   const tableDiv = document.getElementById('registry-table');
@@ -143,7 +144,8 @@ function initRegistryExplorer(){
     infoDiv.innerHTML = `Owner: <a href="${ownerUrl}" target="_blank">${data.owner}</a> | `+
                         `Image: <a href="${repoUrl}" target="_blank">${data.repo}</a> | `+
                         `Tag: <a href="${repoUrl}" target="_blank">${data.tag}</a> | `+
-                        `Manifest: <a href="${manifestUrl}" target="_blank">${data.manifest}</a>`;
+                        `Manifest: <a href="${manifestUrl}" target="_blank">${data.manifest}</a>`+
+                        (data.insecure ? ' (insecure)' : '');
     let html = '';
     const imgRef = `${data.owner}/${data.repo}:${data.tag}`;
     if(data.results){
@@ -209,6 +211,9 @@ function initRegistryExplorer(){
       url += '&method=' + encodeURIComponent(methods[0]);
     }else if(methods.length > 1){
       url += '&methods=' + methods.map(encodeURIComponent).join(',');
+    }
+    if(insecureCheck && insecureCheck.checked){
+      url += '&insecure=1';
     }
     fetchBtn.disabled = true;
     const oldText = fetchBtn.textContent;

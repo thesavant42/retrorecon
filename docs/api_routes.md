@@ -613,12 +613,15 @@ Query manifest information for an image.
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_explorer
 ```
 
+Pass `insecure=1` to disable TLS validation or when connecting to self-signed registries.
+
 ### `GET /registry_table`
 Return manifest details as a hierarchical table structure.
 
 ```
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_table
 ```
+Add `insecure=1` to fetch manifests from registries with self-signed certificates.
 
 ### `GET /dag_explorer`
 Serve the Dag Explorer overlay.

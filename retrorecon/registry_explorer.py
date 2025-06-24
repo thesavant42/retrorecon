@@ -10,6 +10,7 @@ import stat
 from typing import Any, Dict, List, Optional
 
 import aiohttp
+from aiohttp import ClientConnectorCertificateError
 
 from layerslayer.utils import parse_image_ref
 
@@ -18,6 +19,16 @@ LEGACY_DEFAULT_DOMAIN = "index.docker.io"
 OFFICIAL_REPO_NAME = "library"
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=120)
+
+
+def _new_session(insecure: bool = False) -> aiohttp.ClientSession:
+    """Return a new :class:`aiohttp.ClientSession` respecting ``insecure``."""
+    if insecure:
+        connector = aiohttp.TCPConnector(ssl=False)
+        return aiohttp.ClientSession(
+            timeout=DEFAULT_TIMEOUT, connector=connector, trust_env=True
+        )
+    return aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
 
 
 def split_docker_domain(name: str) -> tuple[str, str]:
@@ -37,7 +48,12 @@ def split_docker_domain(name: str) -> tuple[str, str]:
     return domain, remainder
 
 
-async def fetch_token(repo: str, session: Optional[aiohttp.ClientSession] = None) -> str:
+async def fetch_token(
+    repo: str,
+    session: Optional[aiohttp.ClientSession] = None,
+    *,
+    insecure: bool = False,
+) -> str:
     """Fetch an anonymous pull token for the given repository."""
     domain, remainder = split_docker_domain(repo)
 
@@ -62,7 +78,7 @@ async def fetch_token(repo: str, session: Optional[aiohttp.ClientSession] = None
 
     if session is not None:
         return await _do(session)
-    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+    async with _new_session(insecure) as sess:
         return await _do(sess)
 
 
@@ -79,6 +95,8 @@ async def fetch_index_or_manifest(
     digest_or_tag: str,
     token: str,
     session: Optional[aiohttp.ClientSession] = None,
+    *,
+    insecure: bool = False,
 ) -> Dict[str, Any]:
     domain, remainder = split_docker_domain(repo)
     url = f"https://{domain}/v2/{remainder}/manifests/{digest_or_tag}"
@@ -97,7 +115,7 @@ async def fetch_index_or_manifest(
 
     if session is not None:
         return await _do(session)
-    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+    async with _new_session(insecure) as sess:
         return await _do(sess)
 
 
@@ -106,6 +124,8 @@ async def fetch_blob(
     digest: str,
     token: str,
     session: Optional[aiohttp.ClientSession] = None,
+    *,
+    insecure: bool = False,
 ) -> bytes:
     domain, remainder = split_docker_domain(repo)
     url = f"https://{domain}/v2/{remainder}/blobs/{digest}"
@@ -118,7 +138,7 @@ async def fetch_blob(
 
     if session is not None:
         return await _do(session)
-    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+    async with _new_session(insecure) as sess:
         return await _do(sess)
 
 
@@ -127,9 +147,11 @@ async def list_layer_files(
     digest: str,
     token: str,
     session: Optional[aiohttp.ClientSession] = None,
+    *,
+    insecure: bool = False,
 ) -> List[str]:
     """Return formatted file listing for the layer blob."""
-    data = await fetch_blob(repo, digest, token, session)
+    data = await fetch_blob(repo, digest, token, session, insecure=insecure)
     tar_bytes = io.BytesIO(data)
 
     def _format(ti: tarfile.TarInfo) -> str:
@@ -155,10 +177,12 @@ async def get_manifest_digest(
     image_ref: str,
     token: Optional[str] = None,
     session: Optional[aiohttp.ClientSession] = None,
+    *,
+    insecure: bool = False,
 ) -> Optional[str]:
     user, repo, tag = parse_image_ref(image_ref)
     repo_full = f"{user}/{repo}"
-    token = token or await fetch_token(repo_full, session)
+    token = token or await fetch_token(repo_full, session, insecure=insecure)
     domain, remainder = split_docker_domain(repo_full)
     url = f"https://{domain}/v2/{remainder}/manifests/{tag}"
     headers = {
@@ -172,7 +196,7 @@ async def get_manifest_digest(
 
     if session is not None:
         return await _do(session)
-    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as sess:
+    async with _new_session(insecure) as sess:
         return await _do(sess)
 
 
@@ -182,6 +206,8 @@ async def _layers_details(
     token: str,
     session: aiohttp.ClientSession,
     fetch_files: bool = True,
+    *,
+    insecure: bool = False,
 ) -> List[Dict[str, Any]]:
     """Return layer metadata and optionally file lists."""
     layers = manifest.get("layers", [])
@@ -189,7 +215,9 @@ async def _layers_details(
     for layer in layers:
         files: List[str] = []
         if fetch_files:
-            files = await list_layer_files(repo, layer["digest"], token, session)
+            files = await list_layer_files(
+                repo, layer["digest"], token, session, insecure=insecure
+            )
         details.append(
             {
                 "digest": layer["digest"],
@@ -200,26 +228,45 @@ async def _layers_details(
     return details
 
 
-async def gather_image_info(image_ref: str, fetch_files: bool = True) -> List[Dict[str, Any]]:
+async def gather_image_info(
+    image_ref: str,
+    fetch_files: bool = True,
+    *,
+    insecure: bool = False,
+) -> List[Dict[str, Any]]:
     """Gather layer details for an image using direct registry calls."""
     user, repo, tag = parse_image_ref(image_ref)
     repo_full = f"{user}/{repo}"
-    async with aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True) as session:
-        token = await fetch_token(repo_full, session)
-        root = await fetch_index_or_manifest(repo_full, tag, token, session)
+    async with _new_session(insecure) as session:
+        token = await fetch_token(repo_full, session, insecure=insecure)
+        root = await fetch_index_or_manifest(
+            repo_full, tag, token, session, insecure=insecure
+        )
         result: List[Dict[str, Any]] = []
         if root.get("manifests"):
             for m in root["manifests"]:
                 plat = m.get("platform", {})
                 digest = m["digest"]
-                manifest = await fetch_index_or_manifest(repo_full, digest, token, session)
+                manifest = await fetch_index_or_manifest(
+                    repo_full, digest, token, session, insecure=insecure
+                )
                 layers = await _layers_details(
-                    repo_full, manifest, token, session, fetch_files=fetch_files
+                    repo_full,
+                    manifest,
+                    token,
+                    session,
+                    fetch_files=fetch_files,
+                    insecure=insecure,
                 )
                 result.append({"os": plat.get("os"), "architecture": plat.get("architecture"), "layers": layers})
         else:
             layers = await _layers_details(
-                repo_full, root, token, session, fetch_files=fetch_files
+                repo_full,
+                root,
+                token,
+                session,
+                fetch_files=fetch_files,
+                insecure=insecure,
             )
             result.append({"os": root.get("os"), "architecture": root.get("architecture"), "layers": layers})
         return result
@@ -231,6 +278,7 @@ async def gather_image_info_with_backend(
     method: str = "layerslayer",
     *,
     fetch_files: bool = True,
+    insecure: bool = False,
 ) -> List[Dict[str, Any]]:
     """Return layer info using the selected backend."""
     if method == "layerslayer":
@@ -238,9 +286,9 @@ async def gather_image_info_with_backend(
         if fetch_files:
             return await gl(image_ref)
         # Fall back to direct registry calls without files
-        return await gather_image_info(image_ref, fetch_files=False)
+        return await gather_image_info(image_ref, fetch_files=False, insecure=insecure)
     if method in {"layertools", "extension"}:
-        return await gather_image_info(image_ref, fetch_files=fetch_files)
+        return await gather_image_info(image_ref, fetch_files=fetch_files, insecure=insecure)
     raise ValueError(f"unknown method: {method}")
 
 
@@ -249,11 +297,14 @@ async def gather_image_info_multi(
     methods: List[str],
     *,
     fetch_files: bool = True,
+    insecure: bool = False,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Run :func:`gather_image_info_with_backend` for all ``methods`` in parallel."""
     tasks = {
         m: asyncio.create_task(
-            gather_image_info_with_backend(image_ref, m, fetch_files=fetch_files)
+            gather_image_info_with_backend(
+                image_ref, m, fetch_files=fetch_files, insecure=insecure
+            )
         )
         for m in methods
     }

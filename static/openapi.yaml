@@ -423,6 +423,12 @@ paths:
   /registry_explorer:
     get:
       summary: GET /registry_explorer
+      parameters:
+        - in: query
+          name: insecure
+          schema:
+            type: boolean
+          description: Disable TLS verification
       responses:
         '200':
           description: Successful response
