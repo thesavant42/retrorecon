@@ -9,30 +9,13 @@
     </h1>
     <button type="button" class="btn overlay-close-btn" id="dag-close-btn">Close</button>
   </div>
-  <p>This beautiful tool allows you to <em>explore</em> the contents of a registry interactively.</p>
-  <p>You can even drill down into layers to explore an image's filesystem.</p>
   <div class="dag-explorer-cols">
     <div class="col left-col">
-      <p>Enter a <strong>public</strong> image, e.g. <tt>"ubuntu:latest"</tt>:</p>
-      <form action="/" method="GET" autocomplete="off" spellcheck="false">
-        <input size="100" type="text" name="image" value="ubuntu:latest"/>
-        <input type="submit" />
-      </form>
-      <p class="mt-05">Enter a <strong>public</strong> repository, e.g. <tt>"ubuntu"</tt>:</p>
-      <form action="/" method="GET" autocomplete="off" spellcheck="false">
-        <input size="100" type="text" name="repo" value="ubuntu"/>
-        <input type="submit" />
-      </form>
       <h4 class="mt-05">Bookmarks</h4>
       <table id="bookmark-table" class="bookmark-table">
         <thead><tr><th>Address</th><th>Notes</th><th></th></tr></thead>
         <tbody id="bookmark-table-body"></tbody>
       </table>
-      <div class="mt-05">
-        <input type="text" id="bookmark-address" class="form-input mr-05 w-20em" placeholder="address" />
-        <input type="text" id="bookmark-note" class="form-input mr-05 w-20em" placeholder="note" />
-        <button type="button" class="btn" id="bookmark-add-btn">Add</button>
-      </div>
     </div>
     <div class="col right-col">
       <h4>Interesting examples</h4>
@@ -54,6 +37,7 @@
     <input type="text" id="dag-image" class="form-input mr-05 w-20em" placeholder="user/repo:tag" />
     <button type="button" class="btn" id="dag-fetch-btn">Fetch Manifest</button>
     <button type="button" class="btn" id="dag-tags-btn">List Tags</button>
+    <button type="button" class="btn" id="bookmark-add-btn">Bookmark</button>
   </div>
   <div id="dag-manifest" class="mb-05"></div>
   <div id="dag-path" class="mb-05"></div>

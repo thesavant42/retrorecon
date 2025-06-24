@@ -9,9 +9,7 @@ function initRegistryExplorer(){
   const tableDiv = document.getElementById('registry-table');
   const infoDiv = document.getElementById('registry-info');
   const bkTableBody = document.getElementById('registry-bookmark-table-body');
-  const bkAddr = document.getElementById('registry-bookmark-address');
-  const bkNote = document.getElementById('registry-bookmark-note');
-  const bkAddBtn = document.getElementById('registry-bookmark-add-btn');
+  const bkAddCurrentBtn = document.getElementById('registry-add-bookmark-btn');
 
   function escapeHtml(str){
     return str.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
@@ -168,17 +166,16 @@ function initRegistryExplorer(){
     }
   });
 
-  if(bkAddBtn){
-    bkAddBtn.addEventListener('click', () => {
-      const addr = bkAddr.value.trim();
+  if(bkAddCurrentBtn){
+    bkAddCurrentBtn.addEventListener('click', () => {
+      const addr = imageInput.value.trim();
       if(!addr) return;
-      const note = bkNote.value.trim();
       const bks = loadBookmarks();
-      bks.push({addr, note});
-      saveBookmarks(bks);
-      bkAddr.value = '';
-      bkNote.value = '';
-      renderBookmarks();
+      if(!bks.find(b => b.addr === addr)){
+        bks.push({addr, note: ''});
+        saveBookmarks(bks);
+        renderBookmarks();
+      }
     });
   }
   if(bkTableBody){

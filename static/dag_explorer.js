@@ -10,9 +10,7 @@ function initDagExplorer(){
   const pathDiv = document.getElementById('dag-path');
   const manifestDiv = document.getElementById('dag-manifest');
   const bkTableBody = document.getElementById('bookmark-table-body');
-  const bkAddr = document.getElementById('bookmark-address');
-  const bkNote = document.getElementById('bookmark-note');
-  const bkAddBtn = document.getElementById('bookmark-add-btn');
+  const bkAddCurrentBtn = document.getElementById('bookmark-add-btn');
 
   const SPEC_LINKS = {
     'application/vnd.docker.distribution.manifest.v2+json':
@@ -256,17 +254,16 @@ function initDagExplorer(){
     }
   });
 
-  if(bkAddBtn){
-    bkAddBtn.addEventListener('click', () => {
-      const addr = bkAddr.value.trim();
+  if(bkAddCurrentBtn){
+    bkAddCurrentBtn.addEventListener('click', () => {
+      const addr = imgInput.value.trim();
       if(!addr) return;
-      const note = bkNote.value.trim();
       const bks = loadBookmarks();
-      bks.push({addr, note});
-      saveBookmarks(bks);
-      bkAddr.value = '';
-      bkNote.value = '';
-      renderBookmarks();
+      if(!bks.find(b => b.addr === addr)){
+        bks.push({addr, note: ''});
+        saveBookmarks(bks);
+        renderBookmarks();
+      }
     });
   }
   if(bkTableBody){

@@ -1257,13 +1257,17 @@ body.bg-hidden {
 }
 .retrorecon-root .dag-explorer-cols {
   display: flex;
-  gap: 1em;
+  gap: 2em;
   flex-wrap: wrap;
+  align-items: flex-start;
   margin-top: 0.5em;
 }
 .retrorecon-root .dag-explorer-cols .col {
   flex: 1;
   min-width: 250px;
+}
+.retrorecon-root .dag-explorer-cols .right-col {
+  margin-left: auto;
 }
 .retrorecon-root .bookmark-table {
   width: 100%;
