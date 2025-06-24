@@ -1,6 +1,9 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify
+import json
+from markupsafe import escape
 from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, render_from_payload
 from ..dynamic_schemas import register_demo_schemas
+from retrorecon import subdomain_utils
 import app
 
 bp = Blueprint('dynamic', __name__, url_prefix='/dynamic')
@@ -29,23 +32,41 @@ def demo_dynamic(name: str):
     """Return dynamic HTML for demo pages."""
     if name == 'index':
         html = app.index()
-    elif name == 'subdomonster':
-        html = render_template('subdomonster.html', initial_data=[])
-    elif name == 'screenshotter':
-        html = render_template('screenshotter.html')
-    elif name == 'about':
+        payload = {'schema': 'static_html', 'data': {'html': html}}
+        return render_from_payload(payload, schema_registry, html_generator)
+
+    if name == 'subdomonster':
+        data = []
+        if app._db_loaded():
+            data = subdomain_utils.list_all_subdomains()
+        init_script = (
+            '<script type="application/json" id="subdomonster-init">'
+            + json.dumps(data)
+            + '</script>'
+        )
+        payload = {'schema': 'subdomonster_page', 'data': {'init_script': init_script}}
+        return render_from_payload(payload, schema_registry, html_generator)
+
+    if name == 'screenshotter':
+        payload = {'schema': 'screenshotter_page', 'data': {}}
+        return render_from_payload(payload, schema_registry, html_generator)
+
+    if name == 'about':
         credits = [
             'the folks referenced in the README',
             'dagdotdev / original registry explorer project',
             'the shupandhack Discord',
         ]
-        html = render_template('help_about.html', version=app.APP_VERSION, credits=credits)
-    else:
-        return ('', 404)
+        credits_html = '<ul>' + ''.join(f'<li>{escape(c)}</li>' for c in credits) + '</ul>'
+        payload = {
+            'schema': 'help_about_page',
+            'data': {
+                'title': 'About RetroRecon',
+                'version': app.APP_VERSION,
+                'credits_html': credits_html,
+            },
+        }
+        return render_from_payload(payload, schema_registry, html_generator)
 
-    payload = {
-        'schema': 'static_html',
-        'data': {'html': html},
-    }
-    return render_from_payload(payload, schema_registry, html_generator)
+    return ('', 404)
 
