@@ -19,14 +19,20 @@ function initDemo(){
     const html = await resp.text();
     view.innerHTML = html;
     if(name === 'subdomonster'){
+      const ov = view.querySelector('#subdomonster-overlay');
+      if(ov) ov.classList.remove('hidden');
       const script = document.createElement('script');
       script.src = '/static/subdomonster.js';
       document.body.appendChild(script);
     }else if(name === 'screenshotter'){
+      const ov = view.querySelector('#screenshot-overlay');
+      if(ov) ov.classList.remove('hidden');
       const script = document.createElement('script');
       script.src = '/static/screenshotter.js';
       document.body.appendChild(script);
     }else if(name === 'about'){
+      const ov = view.querySelector('#help-about-overlay');
+      if(ov) ov.classList.remove('hidden');
       const script = document.createElement('script');
       script.src = '/static/help_about.js';
       document.body.appendChild(script);
