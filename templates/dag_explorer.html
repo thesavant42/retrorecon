@@ -9,8 +9,6 @@
     </h1>
     <button type="button" class="btn overlay-close-btn" id="dag-close-btn">Close</button>
   </div>
-  <p>This beautiful tool allows you to <em>explore</em> the contents of a registry interactively.</p>
-  <p>You can even drill down into layers to explore an image's filesystem.</p>
   <div class="dag-explorer-cols">
     <div class="col left-col">
       <p>Enter a <strong>public</strong> image, e.g. <tt>"ubuntu:latest"</tt>:</p>
@@ -36,7 +34,7 @@
     </div>
     <div class="col right-col">
       <h4>Interesting examples</h4>
-      <ul>
+      <ul class="ml-05">
         <li><a href="/image/cgr.dev/chainguard/static:latest-glibc">cgr.dev/chainguard/static:latest-glibc</a></li>
         <li><a href="/image/gcr.io/distroless/static">gcr.io/distroless/static:latest</a></li>
         <li><a href="/repo/ghcr.io/homebrew/core/crane">ghcr.io/homebrew/core/crane</a></li>
@@ -50,11 +48,6 @@
     </div>
   </div>
 
-  <div class="mb-05">
-    <input type="text" id="dag-image" class="form-input mr-05 w-20em" placeholder="user/repo:tag" />
-    <button type="button" class="btn" id="dag-fetch-btn">Fetch Manifest</button>
-    <button type="button" class="btn" id="dag-tags-btn">List Tags</button>
-  </div>
   <div id="dag-manifest" class="mb-05"></div>
   <div id="dag-path" class="mb-05"></div>
   <div id="dag-output" class="mt-05"></div>

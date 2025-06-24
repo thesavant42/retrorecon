@@ -1265,6 +1265,9 @@ body.bg-hidden {
   flex: 1;
   min-width: 250px;
 }
+.retrorecon-root .dag-explorer-cols .right-col {
+  margin-left: 0.5em;
+}
 .retrorecon-root .bookmark-table {
   width: 100%;
   border-collapse: collapse;
