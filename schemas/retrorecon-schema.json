@@ -1,0 +1,55 @@
+{
+  "pageType": "string", // e.g., "dashboard", "exam", "series", "reconstruction", "log", "settings"
+  "title": "string", // Main page title
+  "description": "string", // Short description of the page's purpose
+  "navigation": {
+    "breadcrumbs": ["string"], // List of navigation steps to current page
+    "menuItems": [
+      {
+        "label": "string", // Menu item label
+        "link": "string", // URL or route
+        "icon": "string" // Optional icon name
+      }
+    ]
+  },
+  "content": {
+    "sections": [
+      {
+        "header": "string", // Section title
+        "body": "string", // Main content or Markdown/HTML
+        "widgets": [
+          {
+            "type": "string", // e.g., "table", "chart", "form", "status", "log"
+            "data": {}, // Widget-specific data structure
+            "options": {} // Widget-specific options/settings
+          }
+        ]
+      }
+    ]
+  },
+  "actions": [
+    {
+      "label": "string", // Action button label
+      "action": "string", // Action identifier, e.g., "submit", "edit", "delete"
+      "icon": "string", // Optional icon
+      "confirmation": "string" // Optional confirmation message
+    }
+  ],
+  "status": {
+    "messages": [
+      {
+        "type": "string", // e.g., "info", "warning", "error", "success"
+        "message": "string"
+      }
+    ],
+    "progress": {
+      "current": "number", // Current progress value
+      "total": "number" // Total value for progress
+    }
+  },
+  "metadata": {
+    "createdBy": "string", // User or system that created the page
+    "createdAt": "string", // ISO date-time
+    "updatedAt": "string" // ISO date-time
+  }
+}
