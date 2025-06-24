@@ -22,4 +22,6 @@ def test_manifest_table_basic():
     html = manifest_table(manifest, "user/repo:tag")
     assert "sha256:l1" in html
     assert "/download_layer?image=user/repo:tag&digest=sha256:l1" in html
+    assert "10.0 B" in html
+    assert "100.0 B" in html
     assert "<table" in html
