@@ -613,6 +613,13 @@ Query manifest information for an image.
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_explorer
 ```
 
+### `GET /registry_table`
+Return manifest details as a hierarchical table structure.
+
+```
+curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_table
+```
+
 ### `GET /dag_explorer`
 Serve the Dag Explorer overlay.
 

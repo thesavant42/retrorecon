@@ -44,3 +44,5 @@ class Config:
     LOG_LEVEL = os.environ.get('RETRORECON_LOG_LEVEL', 'WARNING')
     DOCKERHUB_API = os.environ.get('DOCKERHUB_API')
     VIRUSTOTAL_API = os.environ.get('VIRUSTOTAL_API')
+    REGISTRY_USERNAME = os.environ.get('REGISTRY_USERNAME')
+    REGISTRY_PASSWORD = os.environ.get('REGISTRY_PASSWORD')

@@ -160,3 +160,49 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
         html = build_tables(data["platforms"], "test/test:tag", data["manifest"])
         assert "dir/file1" in html
         assert "dir/file2" in html
+
+
+def test_detect_address_type():
+    from retrorecon.registry_explorer import detect_address_type
+
+    assert detect_address_type("library/ubuntu") == "repo"
+    assert detect_address_type("ubuntu:latest") == "image"
+    assert detect_address_type("ubuntu@sha256:abc") == "image"
+
+
+def test_registry_table_route(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    sample = [
+        {
+            "os": "linux",
+            "architecture": "amd64",
+            "layers": [{"digest": "sha256:a", "size": 1, "files": ["f1", "dir/f2"]}],
+        }
+    ]
+    import retrorecon.routes.registry as reg
+
+    async def fake_gather(img, method="extension", **kwargs):
+        return sample
+
+    async def fake_digest(img):
+        return "sha256:d4"
+
+    monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fake_gather)
+    monkeypatch.setattr(reg.rex, "get_manifest_digest", fake_digest)
+
+    monkeypatch.setattr(reg.rex, "manifest_to_table", lambda d: [
+        {
+            "os": "linux",
+            "architecture": "amd64",
+            "layers": [
+                {"digest": "sha256:a", "size": 1, "tree": {"dir": {"files": ["f2"]}, "files": ["f1"]}}
+            ],
+        }
+    ])
+
+    with app.app.test_client() as client:
+        resp = client.get("/registry_table?image=test/test:tag")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["manifest"] == "sha256:d4"
+        assert data["table"][0]["layers"][0]["tree"]["files"][0] == "f1"

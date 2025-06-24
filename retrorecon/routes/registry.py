@@ -31,6 +31,8 @@ def registry_explorer_route():
     if not image:
         return jsonify({'error': 'missing_image'}), 400
 
+    addr_type = rex.detect_address_type(image)
+
     async def _gather():
         if len(methods) == 1:
             return await rex.gather_image_info_with_backend(
@@ -59,6 +61,7 @@ def registry_explorer_route():
         'repo': repo,
         'tag': tag,
         'manifest': digest,
+        'addressType': addr_type,
     }
     if len(methods) == 1:
         result['method'] = methods[0]
@@ -67,3 +70,39 @@ def registry_explorer_route():
         result['methods'] = methods
         result['results'] = data
     return jsonify(result)
+
+
+@bp.route('/registry_table', methods=['GET'])
+def registry_table_route():
+    """Return manifest contents as a hierarchical table."""
+    image = request.args.get('image')
+    if not image:
+        return jsonify({'error': 'missing_image'}), 400
+    addr_type = rex.detect_address_type(image)
+
+    async def _gather():
+        return await rex.gather_image_info_with_backend(image, 'extension', fetch_files=True)
+
+    async def _digest():
+        return await rex.get_manifest_digest(image)
+
+    try:
+        data = asyncio.run(_gather())
+        digest = asyncio.run(_digest())
+    except asyncio.TimeoutError:
+        return jsonify({'error': 'timeout'}), 504
+    except ClientError as exc:
+        return jsonify({'error': 'client_error', 'details': str(exc)}), 502
+    except Exception as exc:
+        return jsonify({'error': 'server_error', 'details': str(exc)}), 500
+
+    table = rex.manifest_to_table(data)
+    owner, repo, tag = parse_image_ref(image)
+    return jsonify({
+        'owner': owner,
+        'repo': repo,
+        'tag': tag,
+        'manifest': digest,
+        'addressType': addr_type,
+        'table': table,
+    })

@@ -264,3 +264,51 @@ async def gather_image_info_multi(
         except Exception as exc:  # pragma: no cover - unexpected
             results[method] = [{"error": str(exc)}]
     return results
+
+
+def detect_address_type(address: str) -> str:
+    """Return ``'repo'`` or ``'image'`` for ``address``.
+
+    Addresses lacking a tag or digest are treated as repositories.
+    Anything with a tag (``name:tag``) or digest (``name@sha256:...``)
+    is classified as an image reference.
+    """
+
+    if "@" in address:
+        return "image"
+    if ":" in address and address.rfind(":") > address.rfind("/"):
+        return "image"
+    return "repo"
+
+
+def _add_to_tree(tree: Dict[str, Any], path: str) -> None:
+    parts = path.split("/")
+    node = tree
+    for part in parts[:-1]:
+        node = node.setdefault(part, {})
+    node.setdefault("files", []).append(parts[-1])
+
+
+def manifest_to_table(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Convert layer listings to a hierarchical tree structure."""
+
+    result: List[Dict[str, Any]] = []
+    for plat in platforms:
+        plat_entry = {
+            "os": plat.get("os"),
+            "architecture": plat.get("architecture"),
+            "layers": [],
+        }
+        for layer in plat.get("layers", []):
+            tree: Dict[str, Any] = {}
+            for file_path in layer.get("files", []):
+                _add_to_tree(tree, file_path)
+            plat_entry["layers"].append(
+                {
+                    "digest": layer.get("digest"),
+                    "size": layer.get("size"),
+                    "tree": tree,
+                }
+            )
+        result.append(plat_entry)
+    return result
