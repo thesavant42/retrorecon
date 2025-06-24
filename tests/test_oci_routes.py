@@ -363,7 +363,7 @@ def test_layers_overlay_listing(tmp_path, monkeypatch):
         assert "foo.txt" in html
         assert "bar.txt" in html
         assert '/fs/user/repo@sha256:a' in html
-        assert 'href="/fs/user/repo@sha256:m/foo.txt"' in html
+        assert 'href="/layers/user/repo:tag@sha256:m/foo.txt"' in html
 
         resp = client.get("/layers/user/repo:tag@sha256:m/foo.txt")
         assert resp.status_code == 200
