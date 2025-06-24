@@ -30,7 +30,7 @@ def test_registry_explorer_route(tmp_path, monkeypatch):
         assert method == "extension"
         return sample
 
-    async def fake_digest(img):
+    async def fake_digest(img, **kwargs):
         return "sha256:d1"
 
     monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fake_gather)
@@ -59,6 +59,35 @@ def test_registry_explorer_timeout(tmp_path, monkeypatch):
         assert resp.get_json()["error"] == "timeout"
 
 
+def test_registry_explorer_insecure_retry(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    import retrorecon.routes.registry as reg
+
+    sample = [
+        {"os": "linux", "architecture": "amd64", "layers": []}
+    ]
+    calls = []
+
+    async def fail_once(img, method="extension", **kwargs):
+        calls.append(kwargs.get("insecure"))
+        if len(calls) == 1:
+            raise reg.ClientConnectorCertificateError(None, None)
+        return sample
+
+    async def fake_digest(img, **kwargs):
+        return "sha256:zz"
+
+    monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fail_once)
+    monkeypatch.setattr(reg.rex, "get_manifest_digest", fake_digest)
+
+    with app.app.test_client() as client:
+        resp = client.get("/registry_explorer?image=test/test:tag")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["insecure"] is True
+        assert calls == [False, True]
+
+
 def test_registry_explorer_multi_methods(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     import retrorecon.routes.registry as reg
@@ -82,7 +111,7 @@ def test_registry_explorer_multi_methods(tmp_path, monkeypatch):
             ],
         }
 
-    async def fake_digest(img):
+    async def fake_digest(img, **kwargs):
         return "sha256:d2"
 
     monkeypatch.setattr(reg.rex, "gather_image_info_multi", fake_multi)
@@ -116,7 +145,7 @@ def test_registry_explorer_file_listing(tmp_path, monkeypatch):
     async def fake_gather(img, method="extension", **kwargs):
         return sample
 
-    async def fake_digest(img):
+    async def fake_digest(img, **kwargs):
         return "sha256:d3"
 
     monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fake_gather)
@@ -184,7 +213,7 @@ def test_registry_table_route(tmp_path, monkeypatch):
     async def fake_gather(img, method="extension", **kwargs):
         return sample
 
-    async def fake_digest(img):
+    async def fake_digest(img, **kwargs):
         return "sha256:d4"
 
     monkeypatch.setattr(reg.rex, "gather_image_info_with_backend", fake_gather)
