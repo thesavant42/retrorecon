@@ -180,6 +180,34 @@
             <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
             <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
           </div>
+          <hr>
+          <div class="menu-row mb-4px">
+            <label for="font-family-select" class="form-label menu-label">Font:</label>
+            <select id="font-family-select" class="form-select menu-btn">
+              <option value="monospace">monospace</option>
+              <option value="sans-serif">sans-serif</option>
+              <option value="serif">serif</option>
+            </select>
+          </div>
+          <div class="menu-row mb-4px">
+            <label for="accent-color-input" class="form-label menu-label">Accent:</label>
+            <input type="color" id="accent-color-input" class="form-input menu-btn" value="#00aaff">
+          </div>
+          <div class="menu-row mb-4px">
+            <label for="text-color-input" class="form-label menu-label">Text:</label>
+            <input type="color" id="text-color-input" class="form-input menu-btn" value="#ffffff">
+          </div>
+          <div class="menu-row mb-4px">
+            <label for="bg-color-input" class="form-label menu-label">Background:</label>
+            <input type="color" id="bg-color-input" class="form-input menu-btn" value="#000000">
+          </div>
+          <div class="menu-row mb-4px">
+            <label for="border-color-input" class="form-label menu-label">Border:</label>
+            <input type="color" id="border-color-input" class="form-input menu-btn" value="#888888">
+          </div>
+          <div class="menu-row">
+            <button type="button" id="save-theme-btn" class="menu-btn">Save Theme</button>
+          </div>
       </div>
     </div>
     <div class="dropdown">

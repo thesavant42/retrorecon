@@ -9,6 +9,30 @@ function sanitizeUrl(u){
   return null;
 }
 
+// ----- Theme Engine -----
+function applyTheme({bg, text, accent, border, fontFamily}){
+  const root = document.documentElement;
+  root.style.setProperty('--color-bg', bg || '#000');
+  root.style.setProperty('--color-text', text || '#fff');
+  root.style.setProperty('--color-accent', accent || '#0af');
+  root.style.setProperty('--color-border', border || '#888');
+  root.style.setProperty('--font-family-base', fontFamily || 'monospace');
+}
+
+function loadTheme(){
+  try{
+    const t = JSON.parse(localStorage.getItem('retroTheme') || '{}');
+    if(Object.keys(t).length){ applyTheme(t); }
+  }catch{}
+}
+
+function saveTheme(t){
+  localStorage.setItem('retroTheme', JSON.stringify(t));
+}
+
+// Apply stored theme on load
+loadTheme();
+
 document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.url-row-main[data-url]').forEach(row => {
     row.addEventListener('click', () => {
@@ -66,6 +90,21 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       exportForm.submit();
       exportSel.value = '';
+    });
+  }
+
+  const saveThemeBtn = document.getElementById('save-theme-btn');
+  if(saveThemeBtn){
+    saveThemeBtn.addEventListener('click', () => {
+      const theme = {
+        bg: document.getElementById('bg-color-input').value,
+        text: document.getElementById('text-color-input').value,
+        accent: document.getElementById('accent-color-input').value,
+        border: document.getElementById('border-color-input').value,
+        fontFamily: document.getElementById('font-family-select').value
+      };
+      applyTheme(theme);
+      saveTheme(theme);
     });
   }
 });
