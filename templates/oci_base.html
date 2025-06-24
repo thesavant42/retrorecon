@@ -22,6 +22,10 @@
     body { background-image: url('{{ url_for('static', filename='img/' + current_background) }}'); }
   </style>
   {% endif %}
+  {% set panel_opacity = session.get('panel_opacity', 0.75) %}
+  <style>
+    :root { --panel-opacity: {{ panel_opacity }}; }
+  </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='oci.css') }}">
 </head>
 <body>
