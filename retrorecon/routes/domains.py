@@ -1,7 +1,9 @@
 import io
 import csv
 import re
-from flask import Blueprint, request, jsonify, render_template, Response
+import json
+from flask import Blueprint, request, jsonify, Response
+from .dynamic import dynamic_template, render_from_payload, schema_registry, html_generator
 import app
 from retrorecon import subdomain_utils, status as status_mod
 
@@ -13,7 +15,15 @@ def subdomonster_page():
     data = []
     if app._db_loaded():
         data = subdomain_utils.list_all_subdomains()
-    return render_template('subdomonster.html', initial_data=data)
+    if request.args.get('legacy') == '1':
+        return dynamic_template('subdomonster.html', initial_data=data, use_legacy=True)
+    init_script = (
+        '<script type="application/json" id="subdomonster-init">'
+        + json.dumps(data)
+        + '</script>'
+    )
+    payload = {'schema': 'subdomonster_page', 'data': {'init_script': init_script}}
+    return render_from_payload(payload, schema_registry, html_generator)
 
 
 @bp.route('/tools/subdomonster', methods=['GET'])

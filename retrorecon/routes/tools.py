@@ -19,12 +19,13 @@ from flask import (
     send_file,
     current_app,
 )
+from .dynamic import dynamic_template, render_from_payload, schema_registry, html_generator
 
 bp = Blueprint('tools', __name__)
 
 @bp.route('/text_tools', methods=['GET'])
 def text_tools_page():
-    return render_template('text_tools.html')
+    return dynamic_template('text_tools.html')
 
 
 @bp.route('/tools/text_tools', methods=['GET'])
@@ -85,7 +86,7 @@ def url_encode_route():
 
 @bp.route('/jwt_tools', methods=['GET'])
 def jwt_tools_page():
-    return render_template('jwt_tools.html')
+    return dynamic_template('jwt_tools.html')
 
 
 @bp.route('/tools/jwt', methods=['GET'])
@@ -240,7 +241,10 @@ def export_jwt_cookies_route():
 
 @bp.route('/screenshotter', methods=['GET'])
 def screenshotter_page():
-    return render_template('screenshotter.html')
+    if request.args.get('legacy') == '1':
+        return dynamic_template('screenshotter.html', use_legacy=True)
+    payload = {'schema': 'screenshotter_page', 'data': {}}
+    return render_from_payload(payload, schema_registry, html_generator)
 
 
 @bp.route('/tools/screenshotter', methods=['GET'])
@@ -250,7 +254,7 @@ def screenshotter_full_page():
 
 @bp.route('/demo', methods=['GET'])
 def demo_page():
-    return render_template('demo.html')
+    return dynamic_template('demo.html')
 
 
 @bp.route('/tools/demo', methods=['GET'])
@@ -316,7 +320,7 @@ def delete_screenshots_route():
 
 @bp.route('/site2zip', methods=['GET'])
 def site2zip_page():
-    return render_template('site2zip.html')
+    return dynamic_template('site2zip.html')
 
 
 @bp.route('/tools/site2zip', methods=['GET'])
@@ -325,7 +329,7 @@ def site2zip_full_page():
 
 @bp.route('/layerpeek', methods=['GET'])
 def layerpeek_page():
-    return render_template('layerslayer.html')
+    return dynamic_template('layerslayer.html')
 
 @bp.route('/tools/layerpeek', methods=['GET'])
 def layerpeek_full_page():

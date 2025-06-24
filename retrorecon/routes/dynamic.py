@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 import json
 from markupsafe import escape
 from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, render_from_payload
@@ -16,6 +16,18 @@ schema_registry = SchemaRegistry()
 html_generator = HTMLGenerator(asset_registry)
 register_demo_schemas(schema_registry)
 schema_registry.load_from_dir(Path(app.app.root_path) / "schemas")
+
+
+def dynamic_template(template: str, **context) -> str:
+    """Render *template* via the dynamic renderer unless legacy mode is requested."""
+    use_legacy = context.pop("use_legacy", False)
+    if request.args.get("legacy") == "1":
+        use_legacy = True
+    html = render_template(template, **context)
+    if use_legacy:
+        return html
+    payload = {"schema": "static_html", "data": {"html": html}}
+    return render_from_payload(payload, schema_registry, html_generator)
 
 
 @bp.before_app_request
