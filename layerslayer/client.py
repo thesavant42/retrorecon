@@ -16,11 +16,27 @@ DEFAULT_TIMEOUT = aiohttp.ClientTimeout(
 
 
 class DockerRegistryClient:
-    """Async Docker registry client with simple token caching."""
+    """Async Docker registry client with simple token caching.
 
-    def __init__(self) -> None:
+    Parameters
+    ----------
+    insecure : bool, optional
+        If ``True`` disable TLS certificate validation when connecting to
+        registries.
+    """
+
+    def __init__(self, *, insecure: bool = False) -> None:
         self.session: Optional[aiohttp.ClientSession] = None
         self.token_cache: Dict[str, str] = {}
+        self.insecure = insecure
+
+    def _new_session(self) -> aiohttp.ClientSession:
+        if self.insecure:
+            connector = aiohttp.TCPConnector(ssl=False)
+            return aiohttp.ClientSession(
+                timeout=DEFAULT_TIMEOUT, connector=connector, trust_env=True
+            )
+        return aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
 
     async def __aenter__(self) -> "DockerRegistryClient":
         return self
@@ -33,10 +49,8 @@ class DockerRegistryClient:
             await self.session.close()
 
     async def _fetch_token(self, user: str, repo: str) -> Optional[str]:
-        auth_url = (
-            f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repo}:pull"
-        )
-        async with aiohttp.ClientSession(trust_env=True) as sess:
+        auth_url = f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repo}:pull"
+        async with self._new_session() as sess:
             async with sess.get(auth_url) as resp:
                 if resp.status != 200:
                     return None
@@ -61,10 +75,7 @@ class DockerRegistryClient:
     async def fetch_json(self, url: str, user: str, repo: str) -> Dict[str, Any]:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
-            self.session = aiohttp.ClientSession(
-                timeout=DEFAULT_TIMEOUT,
-                trust_env=True
-            )
+            self.session = self._new_session()
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
                 token = await self._fetch_token(user, repo)
@@ -80,10 +91,7 @@ class DockerRegistryClient:
         headers = await self._auth_headers(user, repo)
         headers["Accept"] = "*/*"
         if self.session is None:
-            self.session = aiohttp.ClientSession(
-                timeout=DEFAULT_TIMEOUT,
-                trust_env=True
-            )
+            self.session = self._new_session()
         async with self.session.get(url, headers=headers) as resp:
             if resp.status == 401:
                 token = await self._fetch_token(user, repo)
@@ -98,10 +106,7 @@ class DockerRegistryClient:
     async def fetch_digest(self, url: str, user: str, repo: str) -> Optional[str]:
         headers = await self._auth_headers(user, repo)
         if self.session is None:
-            self.session = aiohttp.ClientSession(
-                timeout=DEFAULT_TIMEOUT,
-                trust_env=True
-            )
+            self.session = self._new_session()
         async with self.session.head(url, headers=headers) as resp:
             if resp.status == 401:
                 token = await self._fetch_token(user, repo)
@@ -114,20 +119,22 @@ class DockerRegistryClient:
             return resp.headers.get("Docker-Content-Digest")
 
 
-def get_client() -> DockerRegistryClient:
-    """Return a fresh DockerRegistryClient instance."""
-    return DockerRegistryClient()
+def get_client(*, insecure: bool = False) -> DockerRegistryClient:
+    """Return a fresh :class:`DockerRegistryClient` instance."""
+    return DockerRegistryClient(insecure=insecure)
 
 
 async def get_manifest_digest(
     image_ref: str,
     client: Optional[DockerRegistryClient] = None,
+    *,
+    insecure: bool = False,
 ) -> Optional[str]:
     user, repo, tag = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/manifests/{tag}"
     if client is not None:
         return await client.fetch_digest(url, user, repo)
-    async with DockerRegistryClient() as c:
+    async with DockerRegistryClient(insecure=insecure) as c:
         return await c.fetch_digest(url, user, repo)
 
 
@@ -135,13 +142,15 @@ async def get_manifest(
     image_ref: str,
     specific_digest: Optional[str] = None,
     client: Optional[DockerRegistryClient] = None,
+    *,
+    insecure: bool = False,
 ) -> Dict[str, Any]:
     user, repo, tag = parse_image_ref(image_ref)
     ref = specific_digest or tag
     url = f"{registry_base_url(user, repo)}/manifests/{ref}"
     if client is not None:
         return await client.fetch_json(url, user, repo)
-    async with DockerRegistryClient() as c:
+    async with DockerRegistryClient(insecure=insecure) as c:
         return await c.fetch_json(url, user, repo)
 
 
@@ -149,17 +158,19 @@ async def list_layer_files(
     image_ref: str,
     digest: str,
     client: Optional[DockerRegistryClient] = None,
+    *,
+    insecure: bool = False,
 ) -> List[str]:
     """Return formatted file listing for the layer blob."""
     user, repo, _ = parse_image_ref(image_ref)
     url = f"{registry_base_url(user, repo)}/blobs/{digest}"
     own_client = client is None
-    c = client or DockerRegistryClient()
+    c = client or DockerRegistryClient(insecure=insecure)
 
     headers = await c._auth_headers(user, repo)
     headers["Accept"] = "*/*"
     if c.session is None:
-        c.session = aiohttp.ClientSession(timeout=DEFAULT_TIMEOUT, trust_env=True)
+        c.session = c._new_session()
 
     range_size = int(os.environ.get("LAYERPEEK_RANGE", "2097152"))
 
@@ -176,7 +187,7 @@ async def list_layer_files(
                 elif m.issym():
                     mode |= stat.S_IFLNK
                 perms = stat.filemode(mode)
-                ts = datetime.utcfromtimestamp(m.mtime).strftime('%Y-%m-%d %H:%M')
+                ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
                 items.append(f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}")
             return items
 
@@ -239,12 +250,16 @@ async def _layers_details(
     image_ref: str,
     manifest: Dict[str, Any],
     client: DockerRegistryClient,
+    *,
+    insecure: bool = False,
 ) -> List[Dict[str, Any]]:
     layers = manifest.get("layers", [])
     details: List[Dict[str, Any]] = []
     for layer in layers:
         try:
-            files = await list_layer_files(image_ref, layer["digest"], client)
+            files = await list_layer_files(
+                image_ref, layer["digest"], client, insecure=insecure
+            )
         except Exception:
             files = []
         details.append(
@@ -257,9 +272,13 @@ async def _layers_details(
     return details
 
 
-async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
-    async with DockerRegistryClient() as client:
-        manifest_index = await get_manifest(image_ref, client=client)
+async def gather_layers_info(
+    image_ref: str,
+    *,
+    insecure: bool = False,
+) -> List[Dict[str, Any]]:
+    async with DockerRegistryClient(insecure=insecure) as client:
+        manifest_index = await get_manifest(image_ref, client=client, insecure=insecure)
         result: List[Dict[str, Any]] = []
         if manifest_index.get("manifests"):
             platforms = manifest_index["manifests"]
@@ -267,9 +286,14 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                 plat = m.get("platform", {})
                 digest = m["digest"]
                 manifest = await get_manifest(
-                    image_ref, specific_digest=digest, client=client
+                    image_ref,
+                    specific_digest=digest,
+                    client=client,
+                    insecure=insecure,
                 )
-                layers = await _layers_details(image_ref, manifest, client)
+                layers = await _layers_details(
+                    image_ref, manifest, client, insecure=insecure
+                )
                 result.append(
                     {
                         "os": plat.get("os"),
@@ -278,12 +302,14 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                     }
                 )
         else:
-            layers = await _layers_details(image_ref, manifest_index, client)
-            result.append(
-                {
-                    "os": manifest_index.get("os"),
-                    "architecture": manifest_index.get("architecture"),
-                    "layers": layers,
-                }
+            layers = await _layers_details(
+                image_ref, manifest_index, client, insecure=insecure
             )
+        result.append(
+            {
+                "os": manifest_index.get("os"),
+                "architecture": manifest_index.get("architecture"),
+                "layers": layers,
+            }
+        )
         return result

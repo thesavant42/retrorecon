@@ -399,12 +399,24 @@ paths:
   /docker_layers:
     get:
       summary: GET /docker_layers
+      parameters:
+        - in: query
+          name: insecure
+          schema:
+            type: boolean
+          description: Disable TLS verification
       responses:
         '200':
           description: Successful response
   /download_layer:
     get:
       summary: GET /download_layer
+      parameters:
+        - in: query
+          name: insecure
+          schema:
+            type: boolean
+          description: Disable TLS verification
       responses:
         '200':
           description: Successful response

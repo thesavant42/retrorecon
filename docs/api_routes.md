@@ -584,6 +584,7 @@ Return layer and manifest details for an image as JSON.
 ```
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/docker_layers
 ```
+Pass `insecure=1` for registries with self-signed certificates.
 
 ### `GET /download_layer`
 Download a compressed layer blob.
@@ -591,6 +592,7 @@ Download a compressed layer blob.
 ```
 curl -L "http://localhost:5000/download_layer?image=ubuntu:latest&digest=sha256:1234" -o layer.tar.gz
 ```
+Include `insecure=1` when downloading from insecure registries.
 
 ### `GET /registry_viewer`
 Serve the Registry Explorer overlay.
