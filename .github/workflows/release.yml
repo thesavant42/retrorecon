@@ -38,3 +38,6 @@ jobs:
         with:
           push: true
           tags: savant42/retrorecon:${{ github.event.inputs.tag }}
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
