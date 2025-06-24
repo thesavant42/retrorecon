@@ -1,23 +1,27 @@
 {
   "coverage": {
     "button": {
-      "total": 69,
-      "styled": 68
+      "total": 71,
+      "styled": 70
     },
     "input": {
-      "total": 43,
-      "styled": 23
+      "total": 41,
+      "styled": 20
     },
     "select": {
       "total": 12,
       "styled": 12
     },
     "checkbox": {
-      "total": 7,
+      "total": 8,
       "styled": 5
     }
   },
   "unscoped_selectors": {
+    "static/base.css": [
+      "from",
+      "to"
+    ],
     "static/swagger-dark.css": [
       "a",
       "::-webkit-scrollbar-track-piece",
