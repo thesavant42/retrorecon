@@ -8,6 +8,31 @@ function initRegistryExplorer(){
   const closeBtn = document.getElementById('registry-close-btn');
   const tableDiv = document.getElementById('registry-table');
   const infoDiv = document.getElementById('registry-info');
+  const bkTableBody = document.getElementById('registry-bookmark-table-body');
+  const bkAddr = document.getElementById('registry-bookmark-address');
+  const bkNote = document.getElementById('registry-bookmark-note');
+  const bkAddBtn = document.getElementById('registry-bookmark-add-btn');
+
+  function escapeHtml(str){
+    return str.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
+  }
+
+  function loadBookmarks(){
+    try{ return JSON.parse(localStorage.getItem('ociBookmarks')||'[]'); }catch{ return []; }
+  }
+  function saveBookmarks(arr){
+    localStorage.setItem('ociBookmarks', JSON.stringify(arr));
+  }
+  function renderBookmarks(){
+    if(!bkTableBody) return;
+    const bks = loadBookmarks();
+    bkTableBody.innerHTML = bks.map((b,i)=>
+      `<tr data-idx="${i}"><td><a class="mt" href="${b.addr}">${escapeHtml(b.addr)}</a></td>`+
+      `<td>${escapeHtml(b.note||'')}</td>`+
+      `<td class="bookmark-actions"><button type="button" class="btn btn--small edit-btn">Edit</button>`+
+      `<button type="button" class="btn btn--small delete-btn">X</button></td></tr>`
+    ).join('');
+  }
 
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
@@ -142,6 +167,41 @@ function initRegistryExplorer(){
       if(row) row.remove();
     }
   });
+
+  if(bkAddBtn){
+    bkAddBtn.addEventListener('click', () => {
+      const addr = bkAddr.value.trim();
+      if(!addr) return;
+      const note = bkNote.value.trim();
+      const bks = loadBookmarks();
+      bks.push({addr, note});
+      saveBookmarks(bks);
+      bkAddr.value = '';
+      bkNote.value = '';
+      renderBookmarks();
+    });
+  }
+  if(bkTableBody){
+    bkTableBody.addEventListener('click', ev => {
+      const row = ev.target.closest('tr');
+      if(!row) return;
+      const idx = Number(row.dataset.idx);
+      const bks = loadBookmarks();
+      if(ev.target.classList.contains('edit-btn')){
+        const note = prompt('Edit note', bks[idx].note||'');
+        if(note===null) return;
+        bks[idx].note = note;
+        saveBookmarks(bks);
+        renderBookmarks();
+      }else if(ev.target.classList.contains('delete-btn')){
+        bks.splice(idx,1);
+        saveBookmarks(bks);
+        renderBookmarks();
+      }
+    });
+  }
+
+  renderBookmarks();
 
   fetchBtn.addEventListener('click', async () => {
     const img = imageInput.value.trim();
