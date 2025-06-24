@@ -3,6 +3,7 @@ import json
 from markupsafe import escape
 from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, render_from_payload
 from ..dynamic_schemas import register_demo_schemas
+from pathlib import Path
 from ..asset_utils import list_assets
 from retrorecon import subdomain_utils
 
@@ -14,6 +15,7 @@ asset_registry = AssetRegistry()
 schema_registry = SchemaRegistry()
 html_generator = HTMLGenerator(asset_registry)
 register_demo_schemas(schema_registry)
+schema_registry.load_from_dir(Path(app.app.root_path) / "schemas")
 
 
 @bp.before_app_request

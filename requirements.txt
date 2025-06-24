@@ -8,6 +8,7 @@ PyJWT
 Pillow
 playwright
 pyelftools
+jsonschema
 tldextract
 flask-swagger-ui
 markdown

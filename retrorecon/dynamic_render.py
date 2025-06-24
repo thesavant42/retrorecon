@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 from typing import Dict, List
+from pathlib import Path
+import json
 from bs4 import BeautifulSoup
+from jsonschema import validate as jsonschema_validate, ValidationError
 
 
 class AssetRegistry:
@@ -46,6 +49,21 @@ class SchemaRegistry:
     def __init__(self) -> None:
         self._schemas: Dict[str, Dict[str, object]] = {}
 
+    def register_from_file(self, path: str | Path, name: str | None = None) -> None:
+        """Load a schema from a JSON file and register it."""
+        p = Path(path)
+        with p.open("r", encoding="utf-8") as fh:
+            schema = json.load(fh)
+        self.register(name or p.stem, schema)
+
+    def load_from_dir(self, directory: str | Path) -> None:
+        """Load and register all ``.json`` schemas in a directory."""
+        d = Path(directory)
+        if not d.exists():
+            return
+        for f in d.glob("*.json"):
+            self.register_from_file(f)
+
     def register(self, name: str, schema: Dict[str, object]) -> None:
         self._schemas[name] = schema
 
@@ -56,9 +74,11 @@ class SchemaRegistry:
         schema = self._schemas.get(name)
         if not schema:
             raise KeyError(name)
-        for field in schema.get("required", []):
-            if field not in data:
-                raise ValueError(f"Missing required field: {field}")
+        validation_schema = schema.get("validation") if "validation" in schema else schema
+        try:
+            jsonschema_validate(instance=data, schema=validation_schema)
+        except ValidationError as exc:
+            raise ValueError(str(exc)) from exc
 
 
 class HTMLGenerator:

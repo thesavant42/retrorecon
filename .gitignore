@@ -19,3 +19,4 @@ static/sitezips/
 logs/
 *.log
 venv/
+!schemas/*.json

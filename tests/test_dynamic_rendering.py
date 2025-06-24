@@ -10,9 +10,14 @@ def setup_tmp(monkeypatch, tmp_path):
     monkeypatch.setitem(app.app.config, "DATABASE", None)
     (tmp_path / "db").mkdir()
     (tmp_path / "data").mkdir()
+    (tmp_path / "schemas").mkdir()
     orig = Path(__file__).resolve().parents[1]
     monkeypatch.setattr(app.app, "template_folder", str(orig / "templates"))
     (tmp_path / "db" / "schema.sql").write_text((orig / "db" / "schema.sql").read_text())
+    # copy example schema
+    example_schema = orig / "schemas" / "simple.json"
+    if example_schema.exists():
+        (tmp_path / "schemas" / "simple.json").write_text(example_schema.read_text())
 
 
 def test_api_render(tmp_path, monkeypatch):
@@ -22,9 +27,6 @@ def test_api_render(tmp_path, monkeypatch):
             "schema": "simple",
             "data": {"title": "Demo"}
         }
-        # register schema manually
-        from retrorecon.routes.dynamic import schema_registry
-        schema_registry.register("simple", {"required": ["title"], "content": [{"tag": "h1", "text": "title"}]})
         resp = client.post("/dynamic/api/render", json=payload)
         assert resp.status_code == 200
         assert "<h1>Demo</h1>" in resp.get_data(as_text=True)
