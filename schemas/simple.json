@@ -1,0 +1,12 @@
+{
+  "validation": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string"}
+    },
+    "required": ["title"]
+  },
+  "content": [
+    {"tag": "h1", "text": "title"}
+  ]
+}
