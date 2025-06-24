@@ -833,4 +833,6 @@ if __name__ == '__main__':
             create_new_db(os.path.splitext(os.path.basename(env_db))[0])
         else:
             ensure_schema()
-    app.run(debug=True)
+    host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
+    port = int(os.environ.get('RETRORECON_PORT', '5000'))
+    app.run(debug=True, host=host, port=port)
