@@ -198,6 +198,13 @@
           <div class="menu-row"><a href="/swagger" class="menu-btn" id="swagger-ui-link" target="_blank">Swagger UI</a></div>
       </div>
     </div>
+    <div class="dropdown">
+      <button class="dropbtn" data-menu="help-menu">Help ▼</button>
+      <div class="dropdown-content" id="help-menu">
+          <div class="menu-row"><a href="#" class="menu-btn" id="help-readme-link">README</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="help-about-link">About</a></div>
+      </div>
+    </div>
   </div>
   <div class="navbar__title">
       <span class="cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
@@ -342,7 +349,7 @@
     {{ render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) }}
     <div class="footer">
       <a href="https://github.com/thesavant42/retrorecon" target="_blank" class="no-underline text-muted">
-        retrorecon - v1.5.0 by @savant42 &copy; 2025
+        retrorecon - v{{ app_version }} by @savant42 &copy; 2025
       </a>
     </div>
   </div>
@@ -1278,6 +1285,82 @@
 
       if(location.pathname === '/tools/dag_explorer' || openTool === 'dag'){
         showDagExplorer(true);
+      }
+
+      const helpReadmeLink = document.getElementById('help-readme-link');
+      let helpReadmeLoaded = false;
+      async function showHelpReadme(skipPush){
+        if(!helpReadmeLoaded){
+          const resp = await fetch('/help/readme');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/help_readme.js';
+          document.body.appendChild(script);
+          helpReadmeLoaded = true;
+        }
+        document.getElementById('help-readme-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'readme'}, '', '/tools/readme');
+        }
+      }
+      function hideHelpReadme(){
+        const ov = document.getElementById('help-readme-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+      if(helpReadmeLink){
+        helpReadmeLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showHelpReadme();
+        });
+      }
+
+      const helpAboutLink = document.getElementById('help-about-link');
+      let helpAboutLoaded = false;
+      async function showHelpAbout(skipPush){
+        if(!helpAboutLoaded){
+          const resp = await fetch('/help/about');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/help_about.js';
+          document.body.appendChild(script);
+          helpAboutLoaded = true;
+        }
+        document.getElementById('help-about-overlay').classList.remove('hidden');
+        if(!skipPush){
+          history.pushState({tool:'about'}, '', '/tools/about');
+        }
+      }
+      function hideHelpAbout(){
+        const ov = document.getElementById('help-about-overlay');
+        if(ov) ov.classList.add('hidden');
+      }
+      if(helpAboutLink){
+        helpAboutLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showHelpAbout();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/readme'){
+          showHelpReadme(true);
+        } else if(location.pathname === '/tools/about'){
+          showHelpAbout(true);
+        } else {
+          hideHelpReadme();
+          hideHelpAbout();
+        }
+      });
+
+      if(location.pathname === '/tools/readme' || openTool === 'readme'){
+        showHelpReadme(true);
+      }
+      if(location.pathname === '/tools/about' || openTool === 'about'){
+        showHelpAbout(true);
       }
 
     const themeSelect = document.getElementById('theme-select');

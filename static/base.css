@@ -1309,3 +1309,32 @@ body.bg-hidden {
   right: 0.5em;
   float: none;
 }
+
+.retrorecon-root .help-overlay {
+  max-width: 95%;
+  margin: 0 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.retrorecon-root .help-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.retrorecon-root .credits-scroll {
+  overflow: hidden;
+  height: 6em;
+  position: relative;
+}
+.retrorecon-root .credits-scroll ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  animation: scroll-up 10s linear infinite;
+}
+
+@keyframes scroll-up {
+  from { top: 100%; }
+  to { top: -100%; }
+}

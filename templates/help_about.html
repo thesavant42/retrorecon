@@ -1,0 +1,16 @@
+<!-- File: templates/help_about.html -->
+<div id="help-about-overlay" class="notes-overlay hidden help-overlay">
+  <div class="d-flex flex-between mb-4px">
+    <span>About RetroRecon</span>
+    <button type="button" class="btn" id="help-about-close-btn">Close</button>
+  </div>
+  <p><a href="https://github.com/thesavant42/retrorecon" target="_blank">Project on GitHub</a></p>
+  <p>Version {{ version }}</p>
+  <div class="credits-scroll">
+    <ul>
+      {% for c in credits %}
+      <li>{{ c }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
