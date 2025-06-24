@@ -209,9 +209,9 @@ def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
     cfg_rows = [
         ("schemaVersion", manifest.get("schemaVersion")),
         ("mediaType", manifest.get("mediaType")),
-        ("config.mediaType", cfg.get("mediaType")),
-        ("config.size", cfg.get("size")),
         ("config.digest", cfg.get("digest")),
+        ("config.size", cfg.get("size")),
+        ("config.mediaType", cfg.get("mediaType")),
     ]
     parts.append(
         '<table class="fs-table"><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>'
@@ -219,6 +219,9 @@ def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
     for key, val in cfg_rows:
         if key.endswith("digest") and val:
             val_html = _link_digest(str(val))
+        elif key.endswith("size") and val is not None:
+            size_hr = human_readable_size(int(val) if str(val).isdigit() else 0)
+            val_html = f'{val} <span class="text-muted">({size_hr})</span>'
         else:
             val_html = escape(str(val)) if val is not None else ""
         parts.append(
@@ -235,8 +238,9 @@ def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
             d = str(layer.get("digest", ""))
             size = layer.get("size", 0)
             mt = str(layer.get("mediaType", ""))
+            size_hr = human_readable_size(int(size) if str(size).isdigit() else 0)
             parts.append(
-                f'<tr><td>{idx}</td><td>{size}</td><td>{_link_digest(d)}</td><td>{escape(mt)}</td></tr>'
+                f'<tr><td>{idx}</td><td>{size} <span class="text-muted">({size_hr})</span></td><td>{_link_digest(d)}</td><td>{escape(mt)}</td></tr>'
             )
         parts.append("</tbody></table>")
     elif manifest.get("manifests"):
@@ -252,8 +256,9 @@ def manifest_table(manifest: Dict[str, Any], image: str) -> Markup:
                 os_ = entry["platform"].get("os", "")
                 arch = entry["platform"].get("architecture", "")
                 plat = f"{os_}/{arch}".strip("/")
+            size_hr = human_readable_size(int(size) if str(size).isdigit() else 0)
             parts.append(
-                f'<tr><td>{idx}</td><td>{size}</td><td>{_link_digest(d, False)}</td><td>{escape(mt)}</td><td>{escape(plat)}</td></tr>'
+                f'<tr><td>{idx}</td><td>{size} <span class="text-muted">({size_hr})</span></td><td>{_link_digest(d, False)}</td><td>{escape(mt)}</td><td>{escape(plat)}</td></tr>'
             )
         parts.append("</tbody></table>")
 
