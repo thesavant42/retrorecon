@@ -1249,6 +1249,35 @@ body.bg-hidden {
 .retrorecon-root .link { position: relative; bottom: .125em; }
 .retrorecon-root .top { color: inherit; text-decoration: inherit; }
 
+/* Dag Explorer layout updates */
+.retrorecon-root .header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.retrorecon-root .dag-explorer-cols {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
+}
+.retrorecon-root .dag-explorer-cols .col {
+  flex: 1;
+  min-width: 250px;
+}
+.retrorecon-root .bookmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.25em;
+}
+/* stylelint-disable-next-line no-descending-specificity */
+.retrorecon-root .bookmark-table th,
+.retrorecon-root .bookmark-table td {
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--color-contrast);
+}
+.retrorecon-root .bookmark-actions { white-space: nowrap; }
+
 .retrorecon-root #screenshot-table,
 .retrorecon-root #layerslayer-table {
   max-height: 80vh;
