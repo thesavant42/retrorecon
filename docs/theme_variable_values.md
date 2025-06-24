@@ -40,6 +40,7 @@ This table lists CSS custom properties defined in `static/base.css` and the them
 | `--select-bg-color` | `#3f3f44` |
 | `--select-border-color` | `var(--color-contrast)` |
 
+
 ## theme-neon.css
 
 | Variable | Value |
@@ -53,5 +54,6 @@ This table lists CSS custom properties defined in `static/base.css` and the them
 | `--font-main` | `#fff` |
 | `--input-border` | `#8be9fd` |
 | `--panel-opacity` | `0.92` |
+
 
 The above table was generated with `python scripts/generate_style_report.py`. Run that script whenever theme variables change to update both this document and `reports/style_report.html`.
