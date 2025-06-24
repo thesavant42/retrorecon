@@ -25,20 +25,26 @@ async def list_layer_files(
     image_ref: str,
     digest: str,
     client: Optional[DockerRegistryClient] = None,
+    *,
+    insecure: bool = False,
 ) -> List[str]:
-    return await _list_layer_files(image_ref, digest, client)
+    return await _list_layer_files(image_ref, digest, client, insecure=insecure)
 
 
 async def _layers_details(
     image_ref: str,
     manifest: Dict[str, Any],
     client: DockerRegistryClient,
+    *,
+    insecure: bool = False,
 ) -> List[Dict[str, Any]]:
     layers = manifest.get("layers", [])
     details: List[Dict[str, Any]] = []
     for layer in layers:
         try:
-            files = await list_layer_files(image_ref, layer["digest"], client)
+            files = await list_layer_files(
+                image_ref, layer["digest"], client, insecure=insecure
+            )
         except Exception:
             files = []
         details.append(
@@ -51,21 +57,35 @@ async def _layers_details(
     return details
 
 
-async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
-    status_mod.push_status('layerpeek_start', image_ref)
-    async with DockerRegistryClient() as client:
-        status_mod.push_status('layerpeek_fetch_manifest', image_ref)
-        manifest_index = await get_manifest(image_ref, client=client)
+async def gather_layers_info(
+    image_ref: str,
+    *,
+    insecure: bool = False,
+) -> List[Dict[str, Any]]:
+    status_mod.push_status("layerpeek_start", image_ref)
+    async with DockerRegistryClient(insecure=insecure) as client:
+        status_mod.push_status("layerpeek_fetch_manifest", image_ref)
+        manifest_index = await get_manifest(image_ref, client=client, insecure=insecure)
         result: List[Dict[str, Any]] = []
         if manifest_index.get("manifests"):
             platforms = manifest_index["manifests"]
             for m in platforms:
                 plat = m.get("platform", {})
                 digest = m["digest"]
-                status_mod.push_status('layerpeek_fetch_manifest', f"{plat.get('os')}/{plat.get('architecture')}")
-                manifest = await get_manifest(image_ref, specific_digest=digest, client=client)
-                status_mod.push_status('layerpeek_fetch_layers', digest)
-                layers = await _layers_details(image_ref, manifest, client)
+                status_mod.push_status(
+                    "layerpeek_fetch_manifest",
+                    f"{plat.get('os')}/{plat.get('architecture')}",
+                )
+                manifest = await get_manifest(
+                    image_ref,
+                    specific_digest=digest,
+                    client=client,
+                    insecure=insecure,
+                )
+                status_mod.push_status("layerpeek_fetch_layers", digest)
+                layers = await _layers_details(
+                    image_ref, manifest, client, insecure=insecure
+                )
                 result.append(
                     {
                         "os": plat.get("os"),
@@ -74,8 +94,10 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                     }
                 )
         else:
-            status_mod.push_status('layerpeek_fetch_layers', image_ref)
-            layers = await _layers_details(image_ref, manifest_index, client)
+            status_mod.push_status("layerpeek_fetch_layers", image_ref)
+            layers = await _layers_details(
+                image_ref, manifest_index, client, insecure=insecure
+            )
             result.append(
                 {
                     "os": manifest_index.get("os"),
@@ -83,5 +105,5 @@ async def gather_layers_info(image_ref: str) -> List[Dict[str, Any]]:
                     "layers": layers,
                 }
             )
-        status_mod.push_status('layerpeek_done', image_ref)
+        status_mod.push_status("layerpeek_done", image_ref)
         return result
