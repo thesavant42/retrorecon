@@ -68,11 +68,13 @@ function initSite2Zip(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="sitezip-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="url">URL</th>'+
+      '<th class="sortable" data-field="status_code">Status</th>'+
+      '<th class="sortable" data-field="ip_addresses">IPs</th>'+
       '<th class="sortable" data-field="method">Method</th>'+
       '<th>ZIP</th><th>Screenshot</th>'+
       '</tr></thead><tbody>';
@@ -81,6 +83,8 @@ function initSite2Zip(){
       html += `<tr data-id="${row.id}"><td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
         `<td>${row.created_at}</td>`+
         `<td><div class="cell-content">${row.url}</div></td>`+
+        `<td>${row.status_code}</td>`+
+        `<td>${row.ip_addresses}</td>`+
         `<td>${row.method}</td>`+
         `<td><a href="${row.zip}" download>ZIP</a></td>`+
         `<td><a href="${row.preview}" target="_blank">${img}</a></td></tr>`;

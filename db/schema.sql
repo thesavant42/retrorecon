@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS screenshots (
     method TEXT,
     screenshot_path TEXT,
     thumbnail_path TEXT,
+    status_code INTEGER DEFAULT 0,
+    ip_addresses TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,6 +69,8 @@ CREATE TABLE IF NOT EXISTS sitezips (
     zip_path TEXT,
     screenshot_path TEXT,
     thumbnail_path TEXT,
+    status_code INTEGER DEFAULT 0,
+    ip_addresses TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
