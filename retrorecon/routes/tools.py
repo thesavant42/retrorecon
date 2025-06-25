@@ -264,11 +264,15 @@ def screenshot_route():
         return ('Missing URL', 400)
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
+    debug_log = request.form.get('debug', '0') == '1'
+    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
+    log_path = None
+    if debug_log:
+        log_path = os.path.join(app.SCREENSHOT_DIR, f'shot_{ts}.log')
     try:
-        img_bytes, status_code, ips = app.take_screenshot(url, agent, spoof)
+        img_bytes, status_code, ips = app.take_screenshot(url, agent, spoof, log_path)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
-    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     fname = f'shot_{ts}.png'
     thumb = f'shot_{ts}_th.png'
     os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
@@ -286,7 +290,17 @@ def screenshot_route():
         with open(thumb_path, 'wb') as f:
             f.write(img_bytes)
     sid = app.save_screenshot_record(url, fname, thumb, 'GET', status_code, ips)
-    return jsonify({'id': sid})
+    log_text = ''
+    if debug_log and log_path and os.path.exists(log_path):
+        try:
+            with open(log_path, 'r', encoding='utf-8') as fh:
+                log_text = fh.read()
+        except Exception:
+            log_text = ''
+    resp_data = {'id': sid}
+    if debug_log:
+        resp_data['log'] = log_text
+    return jsonify(resp_data)
 
 
 @bp.route('/screenshots', methods=['GET'])
@@ -338,11 +352,15 @@ def httpolaroid_route():
         return ('Missing URL', 400)
     agent = request.form.get('agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
+    debug_log = request.form.get('debug', '0') == '1'
+    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
+    log_path = None
+    if debug_log:
+        log_path = os.path.join(app.SITEZIP_DIR, f'site_{ts}.log')
     try:
-        zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof)
+        zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof, log_path)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
-    ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
     thumb_name = f'site_{ts}_th.png'
@@ -365,7 +383,17 @@ def httpolaroid_route():
     sid = app.save_httpolaroid_record(
         url, zip_name, shot_name, thumb_name, 'GET', status_code, ips
     )
-    return jsonify({'id': sid})
+    log_text = ''
+    if debug_log and log_path and os.path.exists(log_path):
+        try:
+            with open(log_path, 'r', encoding='utf-8') as fh:
+                log_text = fh.read()
+        except Exception:
+            log_text = ''
+    resp_data = {'id': sid}
+    if debug_log:
+        resp_data['log'] = log_text
+    return jsonify(resp_data)
 
 
 @bp.route('/httpolaroids', methods=['GET'])

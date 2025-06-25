@@ -9,6 +9,7 @@ function initHttpolaroid(){
   const tableDiv = document.getElementById('httpolaroid-table');
   const deleteBtn = document.getElementById('httpolaroid-delete-btn');
   const closeBtn = document.getElementById('httpolaroid-close-btn');
+  const toggleBtn = document.getElementById('httpolaroid-toggle-btn');
   let tableData = [];
   let sortField = 'created_at';
   let sortDir = 'desc';
@@ -102,6 +103,11 @@ function initHttpolaroid(){
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
+    tableDiv.querySelectorAll('.screenshot-thumb').forEach(img => {
+      img.addEventListener('click', () => {
+        img.classList.toggle('thumb-hidden');
+      });
+    });
     const selAll = document.getElementById('httpolaroid-select-all');
     if(selAll){
       selAll.addEventListener('change', () => {
@@ -150,6 +156,14 @@ function initHttpolaroid(){
     await fetch('/delete_httpolaroids', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     loadRows();
   });
+
+  if(toggleBtn){
+    toggleBtn.addEventListener('click', () => {
+      const imgs = tableDiv.querySelectorAll('.screenshot-thumb');
+      const anyVisible = Array.from(imgs).some(img => !img.classList.contains('thumb-hidden'));
+      imgs.forEach(img => img.classList.toggle('thumb-hidden', anyVisible));
+    });
+  }
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');

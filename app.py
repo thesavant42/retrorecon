@@ -317,9 +317,10 @@ def take_screenshot(
     url: str,
     user_agent: str = '',
     spoof_referrer: bool = False,
+    log_path: Optional[str] = None,
 ) -> Tuple[bytes, int, str]:
     return screenshot_utils.take_screenshot(
-        url, user_agent, spoof_referrer, executablePath
+        url, user_agent, spoof_referrer, executablePath, log_path
     )
 
 
@@ -356,9 +357,10 @@ def capture_snap(
     url: str,
     user_agent: str = '',
     spoof_referrer: bool = False,
+    log_path: Optional[str] = None,
 ) -> Tuple[bytes, bytes, int, str]:
     return httpolaroid_utils.capture_site(
-        url, user_agent, spoof_referrer, executablePath
+        url, user_agent, spoof_referrer, executablePath, log_path
     )
 
 

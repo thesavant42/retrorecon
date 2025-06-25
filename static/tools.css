@@ -96,6 +96,9 @@
   width: 80px;
   height: auto;
 }
+.retrorecon-root .screenshot-thumb.thumb-hidden {
+  display: none;
+}
 
 /* Subdomonster overlay */
 .retrorecon-root #subdomonster-table table {
