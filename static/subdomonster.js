@@ -338,7 +338,7 @@ function initSubdomonster(){
               `<button type="button" class="dropbtn send-btn">Send to ▼</button>`+
               `<div class="dropdown-content">`+
                 `<div class="menu-row"><a class="menu-btn" href="/tools/screenshotter?url=${encoded}" target="_blank">Screen Shotter</a></div>`+
-                `<div class="menu-row"><a class="menu-btn" href="/tools/site2zip?url=${encoded}" target="_blank">Site2Zip</a></div>`+
+                `<div class="menu-row"><a class="menu-btn" href="/tools/httpolaroid?url=${encoded}" target="_blank">HTTPolaroid</a></div>`+
                 `<div class="menu-row"><a class="menu-btn" href="/tools/webpack-zip?map_url=${encoded}" target="_blank">Webpack Explode...</a></div>`+
                 `<div class="menu-row"><a class="menu-btn" href="/tools/text_tools?text=${encoded}" target="_blank">Text Tools</a></div>`+
                 `<div class="menu-row"><a class="menu-btn subdom-search-link" href="#" data-sub="${encoded}">Search</a></div>`+

@@ -310,13 +310,13 @@ def delete_screenshots_route():
     return ('', 204)
 
 
-@bp.route('/site2zip', methods=['GET'])
-def site2zip_page():
-    return dynamic_template('site2zip.html')
+@bp.route('/httpolaroid', methods=['GET'])
+def httpolaroid_page():
+    return dynamic_template('httpolaroid.html')
 
 
-@bp.route('/tools/site2zip', methods=['GET'])
-def site2zip_full_page():
+@bp.route('/tools/httpolaroid', methods=['GET'])
+def httpolaroid_full_page():
     return app.index()
 
 @bp.route('/layerpeek', methods=['GET'])
@@ -328,8 +328,8 @@ def layerpeek_full_page():
     return app.index()
 
 
-@bp.route('/tools/site2zip', methods=['POST'])
-def site2zip_route():
+@bp.route('/tools/httpolaroid', methods=['POST'])
+def httpolaroid_route():
     if not app._db_loaded():
         return jsonify({'error': 'no_db'}), 400
     url = request.form.get('url', '').strip()
@@ -338,7 +338,7 @@ def site2zip_route():
     agent = request.form.get('agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        zip_bytes, shot_bytes, status_code, ips = app.capture_site(url, agent, spoof)
+        zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
@@ -361,42 +361,43 @@ def site2zip_route():
         current_app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(shot_bytes)
-    sid = app.save_sitezip_record(
+    sid = app.save_httpolaroid_record(
         url, zip_name, shot_name, thumb_name, 'GET', status_code, ips
     )
     return jsonify({'id': sid})
 
 
-@bp.route('/sitezips', methods=['GET'])
-def sitezips_route():
+@bp.route('/httpolaroids', methods=['GET'])
+def httpolaroids_route():
     if not app._db_loaded():
         return jsonify([])
-    rows = app.list_sitezip_data()
+    rows = app.list_httpolaroid_data()
     for r in rows:
         r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
         r['preview'] = url_for('static', filename='sitezips/' + r['thumbnail_path'])
+        r['image'] = url_for('static', filename='sitezips/' + r['screenshot_path'])
     return jsonify(rows)
 
 
-@bp.route('/download_sitezip/<int:sid>', methods=['GET'])
-def download_sitezip_route(sid: int):
+@bp.route('/download_httpolaroid/<int:sid>', methods=['GET'])
+def download_httpolaroid_route(sid: int):
     if not app._db_loaded():
         return ('', 400)
-    rows = app.list_sitezip_data([sid])
+    rows = app.list_httpolaroid_data([sid])
     if not rows:
         return ('Not found', 404)
     zip_path = os.path.join(app.SITEZIP_DIR, rows[0]['zip_path'])
     return send_file(zip_path, mimetype='application/zip', as_attachment=True, download_name=rows[0]['zip_path'])
 
 
-@bp.route('/delete_sitezips', methods=['POST'])
-def delete_sitezips_route():
+@bp.route('/delete_httpolaroids', methods=['POST'])
+def delete_httpolaroids_route():
     if not app._db_loaded():
         return ('', 400)
     ids = [int(i) for i in request.form.getlist('ids') if i.isdigit()]
     if not ids:
         return ('', 400)
-    app.delete_sitezips(ids)
+    app.delete_httpolaroids(ids)
     return ('', 204)
 
 

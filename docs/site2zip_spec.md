@@ -1,6 +1,6 @@
-# Site2Zip Feature Plan
+# Site2Zip Feature Plan (Deprecated)
 
-This document describes the design for a new **Site2Zip** tool. The tool crawls a URL with a headless browser, collects all assets, generates a sitemap and packages everything in a ZIP for download. It combines screenshot capture, network logging and optional webpack source extraction.
+**Note:** This document is retained for historical reference. The feature has been rebranded as **HTTPolaroid**. See `docs/httpolaroid_spec.md` for the up-to-date specification. The text below reflects the original Site2Zip design.
 
 ## Goals
 - Allow users to input a URL and retrieve a ZIP archive containing:

@@ -51,7 +51,7 @@ from retrorecon import (
     jwt_utils,
     search_utils,
     screenshot_utils,
-    sitezip_utils,
+    httpolaroid_utils,
     subdomain_utils,
     status as status_mod,
 )
@@ -323,7 +323,7 @@ def take_screenshot(
     )
 
 
-def save_sitezip_record(
+def save_httpolaroid_record(
     url: str,
     zip_name: str,
     screenshot_name: str,
@@ -332,7 +332,7 @@ def save_sitezip_record(
     status_code: int = 0,
     ip_addresses: str = '',
 ) -> int:
-    return sitezip_utils.save_record(
+    return httpolaroid_utils.save_record(
         SITEZIP_DIR,
         url,
         zip_name,
@@ -344,20 +344,20 @@ def save_sitezip_record(
     )
 
 
-def list_sitezip_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
-    return sitezip_utils.list_data(ids)
+def list_httpolaroid_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
+    return httpolaroid_utils.list_data(ids)
 
 
-def delete_sitezips(ids: List[int]) -> None:
-    sitezip_utils.delete_records(SITEZIP_DIR, ids)
+def delete_httpolaroids(ids: List[int]) -> None:
+    httpolaroid_utils.delete_records(SITEZIP_DIR, ids)
 
 
-def capture_site(
+def capture_snap(
     url: str,
     user_agent: str = '',
     spoof_referrer: bool = False,
 ) -> Tuple[bytes, bytes, int, str]:
-    return sitezip_utils.capture_site(
+    return httpolaroid_utils.capture_site(
         url, user_agent, spoof_referrer, executablePath
     )
 
