@@ -33,12 +33,11 @@ This table lists each HTML template in the project alongside the dynamic pattern
 
 ## Menu Structure
 
-The main navigation bar consists of five top‑level menus:
+The main navigation bar consists of four top‑level menus:
 
 | Menu | Submenus |
 |------|----------|
-| File | New Database, Open SQLite Database, Rename Database, Load Saved DB, Import JSON Records, Import from Wayback API, Export (Plain Text / Markdown / CSV / JSON / SQLite) |
-| Edit | Select All (page), Select All Matching, Delete Selected, Reset Tags, Add Tag |
-| Preferences | Theme selector, Background selector, Toggle background image, Font size, Panel opacity |
-| Tools | Webpack Exploder, Site2Zip, Text Tools, JWT Tools, ScreenShotter, Subdomonster, Demo, OCI Explorer, Swagger UI |
-| Help | README, About |
+| File | New Project, Save Project, Save Project As…, Open Project, Export As (JSON / CSV / MD / XML / TXT), Backup SQL |
+| Edit | Bulk Select (all matching / visible / none), Bulk Actions (delete tag / add tag / clear tags), Preferences (background selector, toggle, font options, color palette, opacity slider) |
+| Tools | OSINT (Subdomonster, Hindsight, OCI Explorer), Active Recon (Screenshotter, Site2Zip), Utilities (Text Tools, JWT Tools, Webpack Exploder) |
+| Help | GitHub Wiki, README, About |

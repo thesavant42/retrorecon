@@ -84,45 +84,34 @@
       <div class="dropdown-content" id="file-menu">
           <form method="POST" action="/new_db" class="menu-row" id="new-db-form">
             <input type="hidden" name="db_name" id="new-db-name" />
-            <button type="submit" class="menu-btn">New Database</button>
+            <button type="submit" class="menu-btn">New Project</button>
           </form>
-          <form method="POST" action="/load_db" enctype="multipart/form-data" class="menu-row" id="load-db-form">
-            <input type="file" name="db_file" accept=".db" required class="form-file d-none" id="load-db-file" />
-            <button type="button" class="menu-btn" id="load-db-btn">Open SQLite Database</button>
-          </form>
-          <form method="POST" action="/rename_db" class="menu-row" id="rename-db-form">
-            <input type="hidden" name="new_name" id="rename-db-name" />
-            <button type="submit" class="menu-btn">Rename Database</button>
+          <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Save Project</a></div>
+          <form method="GET" action="/save_db" class="menu-row" id="save-db-form">
+            <button type="submit" class="menu-btn">Save Project As...</button>
           </form>
           <form method="POST" action="/load_saved_db" class="menu-row" id="load-saved-db-form">
             <select name="db_file" id="load-saved-db-select" class="form-select menu-btn">
-              <option value="">Load Saved DB...</option>
+              <option value="">Open Project...</option>
               {% for db in saved_dbs %}
               <option value="{{ db }}">{{ db }}</option>
               {% endfor %}
             </select>
           </form>
-          <form method="POST" action="/import_file" enctype="multipart/form-data" class="menu-row" id="import-form">
-            <input type="file" name="import_file" accept=".json" required class="form-file d-none" id="import-file-input" />
-            <button type="button" class="menu-btn" id="import-file-btn">Import JSON Records</button>
-          </form>
-          <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
-            <input id="domain-input" type="hidden" name="domain" />
-            <button type="button" class="menu-btn" id="fetch-cdx-btn">Import from Wayback API</button>
-          </form>
           <select id="url-export-formats" class="form-select menu-btn">
-            <option value="" selected>Export...</option>
-            <option value="txt">Plain Text</option>
-            <option value="md">Markdown</option>
-            <option value="csv">CSV</option>
+            <option value="" selected>Export As...</option>
             <option value="json">JSON</option>
-            <option value="db">SQLite (.db)</option>
+            <option value="csv">CSV</option>
+            <option value="md">Markdown</option>
+            <option value="xml">XML</option>
+            <option value="txt">Plain Text</option>
           </select>
           <form id="url-export-form" class="hidden" action="/export_urls" method="GET" target="_blank">
             <input type="hidden" name="format" id="url-export-format" />
             <input type="hidden" name="q" id="url-export-q" value="{{ q }}" />
             <input type="hidden" name="select_all_matching" id="url-export-sam" value="{{ 'true' if select_all_matching else 'false' }}" />
           </form>
+          <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Backup SQL</a></div>
       </div>
     </div>
     <div class="dropdown">
@@ -136,11 +125,7 @@
             <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
             <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag to Selected</button>
           </div>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="prefs-menu">Preferences ▼</button>
-      <div class="dropdown-content" id="prefs-menu">
+          <div class="menu-header">Preferences</div>
           <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
             <input type="hidden" name="theme" id="set-theme-input" />
           </form>
@@ -213,18 +198,23 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
       <div class="dropdown-content" id="tools-menu">
+          <div class="menu-header">OSINT</div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
+          <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
+            <input id="domain-input" type="hidden" name="domain" />
+            <button type="button" class="menu-btn" id="fetch-cdx-btn">Hindsight (CDX API)</button>
+          </form>
+          <div class="menu-row"><a href="#" class="menu-btn" id="dag-explorer-link">OCI Explorer</a></div>
+          <div class="menu-header">Active Recon</div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">Screenshotter</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="site2zip-link">Site2Zip</a></div>
+          <div class="menu-header">Utilities</div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
           <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
             <input type="hidden" name="map_url" id="webpack-url-input" />
             <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
           </form>
-          <div class="menu-row"><a href="#" class="menu-btn" id="site2zip-link">Site2Zip</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="demo-link">Demo</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="dag-explorer-link">OCI Explorer</a></div>
-          <div class="menu-row"><a href="/swagger" class="menu-btn" id="swagger-ui-link" target="_blank">Swagger UI</a></div>
       </div>
     </div>
     <div class="dropdown">
