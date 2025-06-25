@@ -269,6 +269,7 @@ def screenshot_route():
     capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
+    os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
     if debug_log:
         log_path = os.path.join(app.SCREENSHOT_DIR, f'shot_{ts}.log')
     try:
@@ -277,7 +278,6 @@ def screenshot_route():
         return (f'Error taking screenshot: {e}', 500)
     fname = f'shot_{ts}.png'
     thumb = f'shot_{ts}_th.png'
-    os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
     full_path = os.path.join(app.SCREENSHOT_DIR, fname)
     with open(full_path, 'wb') as f:
         f.write(img_bytes)
@@ -358,6 +358,7 @@ def httpolaroid_route():
     capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
+    os.makedirs(app.SITEZIP_DIR, exist_ok=True)
     if debug_log:
         log_path = os.path.join(app.SITEZIP_DIR, f'site_{ts}.log')
     try:
@@ -367,7 +368,6 @@ def httpolaroid_route():
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
     thumb_name = f'site_{ts}_th.png'
-    os.makedirs(app.SITEZIP_DIR, exist_ok=True)
     with open(os.path.join(app.SITEZIP_DIR, zip_name), 'wb') as f:
         f.write(zip_bytes)
     shot_path = os.path.join(app.SITEZIP_DIR, shot_name)

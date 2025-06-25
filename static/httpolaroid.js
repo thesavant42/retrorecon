@@ -11,6 +11,11 @@ function initHttpolaroid(){
   const deleteBtn = document.getElementById('httpolaroid-delete-btn');
   const closeBtn = document.getElementById('httpolaroid-close-btn');
   const toggleBtn = document.getElementById('httpolaroid-toggle-btn');
+  const logBox = document.getElementById('httpolaroid-log');
+  const debugEnabled = new URLSearchParams(location.search).get('debug') === '1';
+  if(logBox && !debugEnabled){
+    logBox.style.display = 'none';
+  }
   let tableData = [];
   let sortField = 'created_at';
   let sortDir = 'desc';
@@ -145,9 +150,18 @@ function initHttpolaroid(){
   captureBtn.addEventListener('click', async () => {
     const url = urlInput.value.trim();
     if(!url) return;
+<<<<<<< codex/implement-network-activity-logging-and-har-download
     const params = new URLSearchParams({url, agent: agentSel.value, spoof_referrer: refChk.checked ? '1':'0', har: harChk.checked ? '1':'0'});
+=======
+    const params = new URLSearchParams({url, agent: agentSel.value, spoof_referrer: refChk.checked ? '1':'0'});
+    if(debugEnabled) params.set('debug', '1');
+>>>>>>> main
     const resp = await fetch('/tools/httpolaroid', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
-    if(resp.ok){ await loadRows(); } else { alert(await resp.text()); }
+    if(resp.ok){
+      const data = await resp.json();
+      if(debugEnabled && logBox) logBox.value = data.log || '';
+      await loadRows();
+    } else { alert(await resp.text()); }
   });
 
   deleteBtn.addEventListener('click', async () => {
