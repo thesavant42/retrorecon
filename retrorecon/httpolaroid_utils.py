@@ -89,6 +89,7 @@ def capture_site(
     user_agent: str = '',
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
+    log_path: Optional[str] = None,
 ) -> Tuple[bytes, bytes, int, str]:
     headers = {}
     if user_agent:
@@ -125,6 +126,7 @@ def capture_site(
         user_agent,
         spoof_referrer,
         executable_path,
+        log_path,
     )
     if not ip:
         ip = shot_ips

@@ -9,6 +9,7 @@ function initScreenshotter(){
   const tableDiv = document.getElementById('screenshot-table');
   const deleteBtn = document.getElementById('screenshot-delete-btn');
   const closeBtn = document.getElementById('screenshot-close-btn');
+  const toggleBtn = document.getElementById('screenshot-toggle-btn');
   let tableData = [];
   let sortField = 'created_at';
   let sortDir = 'desc';
@@ -90,6 +91,11 @@ function initScreenshotter(){
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
+    tableDiv.querySelectorAll('.screenshot-thumb').forEach(img => {
+      img.addEventListener('click', () => {
+        img.classList.toggle('thumb-hidden');
+      });
+    });
     const selAll = document.getElementById('shot-select-all');
     if(selAll){
       selAll.addEventListener('change', () => {
@@ -145,6 +151,14 @@ function initScreenshotter(){
       history.pushState({}, '', '/');
     }
   });
+
+  if(toggleBtn){
+    toggleBtn.addEventListener('click', () => {
+      const imgs = tableDiv.querySelectorAll('.screenshot-thumb');
+      const anyVisible = Array.from(imgs).some(img => !img.classList.contains('thumb-hidden'));
+      imgs.forEach(img => img.classList.toggle('thumb-hidden', anyVisible));
+    });
+  }
 
   loadShots();
 }

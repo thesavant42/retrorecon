@@ -95,6 +95,7 @@ def take_screenshot(
     user_agent: str = "",
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
+    log_path: Optional[str] = None,
 ) -> Tuple[bytes, int, str]:
     logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
     ips = resolve_ips(url)
@@ -103,6 +104,14 @@ def take_screenshot(
     except Exception as e:
         logger.debug("playwright not available: %s", e)
         return placeholder_image(url), 0, ips
+
+    log_handler = None
+    if log_path:
+        log_handler = logging.FileHandler(log_path, encoding="utf-8")
+        log_handler.setLevel(logging.DEBUG)
+        logging.getLogger("playwright").addHandler(log_handler)
+        logging.getLogger("playwright").setLevel(logging.DEBUG)
+        logger.addHandler(log_handler)
 
     def _cap() -> Tuple[bytes, int]:
         launch_opts = {"args": ["--no-sandbox"]}
@@ -140,6 +149,10 @@ def take_screenshot(
         return img, status, ips
     except Exception:
         return placeholder_image(url), 0, ips
+    finally:
+        if log_handler:
+            logging.getLogger("playwright").removeHandler(log_handler)
+            logger.removeHandler(log_handler)
 
 
 def placeholder_image(text: str) -> bytes:

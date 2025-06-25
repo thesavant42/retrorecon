@@ -220,6 +220,11 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                 },
                                 {
                                     "tag": "button",
+                                    "attrs": {"type": "button", "class": "btn", "id": "screenshot-toggle-btn"},
+                                    "text": "Toggle Thumbs",
+                                },
+                                {
+                                    "tag": "button",
                                     "attrs": {"type": "button", "class": "btn", "id": "screenshot-close-btn"},
                                     "text": "Close",
                                 },
