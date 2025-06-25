@@ -851,7 +851,7 @@ from retrorecon.routes import (
     settings_bp,
     domains_bp,
     docker_bp,
-    registry_bp,
+    oci_explorer_bp,
     dag_bp,
     oci_bp,
     dagdotdev_bp,
@@ -867,7 +867,7 @@ app.register_blueprint(db_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(domains_bp)
 app.register_blueprint(docker_bp)
-app.register_blueprint(registry_bp)
+app.register_blueprint(oci_explorer_bp)
 app.register_blueprint(dag_bp)
 app.register_blueprint(oci_bp)
 app.register_blueprint(dagdotdev_bp)

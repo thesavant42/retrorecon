@@ -1163,12 +1163,12 @@ body {
   color: inherit;
 }
 
-/* <<<<<<< codex/improve-dashboard-layout-and-pagination
 .retrorecon-root #layout-d {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  margin-top: 0.25em;
 }
 
 /* Reduce spacing around pagination and results sections */
@@ -1179,11 +1179,7 @@ body {
   margin-top: 0;
   margin-bottom: 0;
 }
-.retrorecon-root #layout-d {
-  margin-top: 0.25em;
-}
 
-/* --- End of update --- */
 body.bg-hidden {
   background-image: none !important;
   background-color: var(--color-base) !important;

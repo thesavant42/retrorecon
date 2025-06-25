@@ -4,13 +4,13 @@ This document breaks down the design from `docs/oci_registry_table_spec.md` (iss
 
 ## Implementation Steps for Codex
 1. **Route Enhancements**
-   - Add address type detection in `retrorecon/routes/registry.py` before invoking existing helper functions.
+   - Add address type detection in `retrorecon/routes/oci_explorer.py` before invoking existing helper functions.
    - Provide optional registry credentials via configuration for private registries.
 2. **Data Processing**
    - Extend `registry_explorer.py` with helpers that convert manifests into hierarchical table structures.
    - Expose JSON endpoints returning these structures for the frontend.
 3. **Frontend Updates**
-   - Modify `static/registry_explorer.js` and templates to display expandable tables and a toggle for raw JSON.
+   - Modify `static/oci_explorer.js` and templates to display expandable tables and a toggle for raw JSON.
    - Include indexed menus so users can quickly jump between layers and files.
 4. **Testing**
    - Expand the PyTest suite with new route and detection logic coverage.

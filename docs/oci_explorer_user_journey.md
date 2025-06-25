@@ -3,11 +3,11 @@
 This document walks through a typical workflow using the Dag/OCI Explorer in Retrorecon.
 
 1. **Open the tool**
-   - From the Retrorecon interface choose **Tools → OCI Explorer**. This opens the overlay at `/dag_explorer`.
+   - From the Retrorecon interface choose **Tools → OCI Explorer**. This opens the overlay at `/oci_explorer`.
 
 2. **Enter an image reference**
    - In the text field, provide a full image reference such as `ghcr.io/stargz-containers/node:13.13.0-esgz`.
-   - Press **Fetch**. Retrorecon sends `GET /registry_explorer?image=<ref>` to retrieve the manifest.
+   - Press **Fetch**. Retrorecon sends `GET /oci_explorer_api?image=<ref>` to retrieve the manifest.
 
 3. **View manifest and layers**
    - The manifest details are displayed including media type, config and layer digests.
