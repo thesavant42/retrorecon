@@ -18,16 +18,22 @@ def setup_tmp(monkeypatch, tmp_path):
 
 def test_httpolaroid_capture(monkeypatch, tmp_path):
     setup_tmp(monkeypatch, tmp_path)
-    monkeypatch.setattr(app, "capture_snap", lambda *a, **k: (b"ZIP", b"IMG", 200, "1.1.1.1"))
+    def fake_capture(url, agent="", spoof_referrer=False, log_path=None):
+        if log_path:
+            Path(log_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(log_path).write_text("test log")
+        return b"ZIP", b"IMG", 200, "1.1.1.1"
+    monkeypatch.setattr(app, "capture_snap", fake_capture)
     import retrorecon.routes.tools as tools_routes
     monkeypatch.setattr(tools_routes, "dynamic_template", lambda *a, **k: "")
     with app.app.test_client() as client:
         resp = client.get("/httpolaroid")
         assert resp.status_code == 200
-        resp = client.post("/tools/httpolaroid", data={"url": "http://example.com"})
+        resp = client.post("/tools/httpolaroid", data={"url": "http://example.com", "debug": "1"})
         assert resp.status_code == 200
         data = resp.get_json()
         assert isinstance(data.get("id"), int)
+        assert data.get("log") == "test log"
         resp = client.get("/httpolaroids")
         assert resp.status_code == 200
 

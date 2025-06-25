@@ -231,6 +231,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                             ],
                         },
                         {"tag": "div", "attrs": {"id": "screenshot-table", "class": "mt-05"}},
+                        {"tag": "textarea", "attrs": {"id": "screenshot-log", "class": "form-input debug-output mt-05", "rows": "6", "readonly": ""}},
                     ],
                 }
             ],
