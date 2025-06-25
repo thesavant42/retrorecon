@@ -1,14 +1,14 @@
-/* File: static/site2zip.js */
-function initSite2Zip(){
-  const overlay = document.getElementById('sitezip-overlay');
+/* File: static/httpolaroid.js */
+function initHttpolaroid(){
+  const overlay = document.getElementById('httpolaroid-overlay');
   if(!overlay) return;
-  const urlInput = document.getElementById('sitezip-url');
-  const agentSel = document.getElementById('sitezip-agent');
-  const refChk = document.getElementById('sitezip-ref');
-  const captureBtn = document.getElementById('sitezip-capture-btn');
-  const tableDiv = document.getElementById('sitezip-table');
-  const deleteBtn = document.getElementById('sitezip-delete-btn');
-  const closeBtn = document.getElementById('sitezip-close-btn');
+  const urlInput = document.getElementById('httpolaroid-url');
+  const agentSel = document.getElementById('httpolaroid-agent');
+  const refChk = document.getElementById('httpolaroid-ref');
+  const captureBtn = document.getElementById('httpolaroid-capture-btn');
+  const tableDiv = document.getElementById('httpolaroid-table');
+  const deleteBtn = document.getElementById('httpolaroid-delete-btn');
+  const closeBtn = document.getElementById('httpolaroid-close-btn');
   let tableData = [];
   let sortField = 'created_at';
   let sortDir = 'desc';
@@ -70,7 +70,7 @@ function initSite2Zip(){
     let html = '<table class="table url-table w-100"><colgroup>'+
       '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
-      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="sitezip-select-all" class="form-checkbox" /></th>'+
+      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="httpolaroid-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="url">URL</th>'+
       '<th class="sortable" data-field="status_code">Status</th>'+
@@ -87,11 +87,11 @@ function initSite2Zip(){
         `<td>${row.ip_addresses}</td>`+
         `<td>${row.method}</td>`+
         `<td><a href="${row.zip}" download>ZIP</a></td>`+
-        `<td><a href="${row.preview}" target="_blank">${img}</a></td></tr>`;
+        `<td><a href="${row.image}" target="_blank">${img}</a></td></tr>`;
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
-    const selAll = document.getElementById('sitezip-select-all');
+    const selAll = document.getElementById('httpolaroid-select-all');
     if(selAll){
       selAll.addEventListener('change', () => {
         tableDiv.querySelectorAll('.row-checkbox').forEach(c => c.checked = selAll.checked);
@@ -111,12 +111,12 @@ function initSite2Zip(){
         render();
       });
     });
-    makeResizable(table, 'sitezip-col-widths');
+    makeResizable(table, 'httpolaroid-col-widths');
   }
 
   async function loadRows(){
     try{
-      const resp = await fetch('/sitezips');
+      const resp = await fetch('/httpolaroids');
       const data = await resp.json();
       tableData = Array.isArray(data) ? data : [];
       render();
@@ -127,7 +127,7 @@ function initSite2Zip(){
     const url = urlInput.value.trim();
     if(!url) return;
     const params = new URLSearchParams({url, agent: agentSel.value, spoof_referrer: refChk.checked ? '1':'0'});
-    const resp = await fetch('/tools/site2zip', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+    const resp = await fetch('/tools/httpolaroid', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     if(resp.ok){ await loadRows(); } else { alert(await resp.text()); }
   });
 
@@ -136,13 +136,13 @@ function initSite2Zip(){
     if(!ids.length) return;
     const params = new URLSearchParams();
     ids.forEach(id => params.append('ids', id));
-    await fetch('/delete_sitezips', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+    await fetch('/delete_httpolaroids', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     loadRows();
   });
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
-    if(location.pathname === '/tools/site2zip'){
+    if(location.pathname === '/tools/httpolaroid'){
       history.pushState({}, '', '/');
     }
   });
@@ -151,7 +151,7 @@ function initSite2Zip(){
 }
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', initSite2Zip);
+  document.addEventListener('DOMContentLoaded', initHttpolaroid);
 }else{
-  initSite2Zip();
+  initHttpolaroid();
 }

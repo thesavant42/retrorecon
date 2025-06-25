@@ -26,7 +26,7 @@ This table lists each HTML template in the project alongside the dynamic pattern
 | overview.html | static_html |
 | registry_explorer.html | static_html |
 | screenshotter.html | screenshotter_page |
-| site2zip.html | static_html |
+| httpolaroid.html | static_html |
 | subdomonster.html | subdomonster_page |
 | swaggerui.html | static_html |
 | text_tools.html | static_html |

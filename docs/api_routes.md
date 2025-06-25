@@ -350,14 +350,14 @@ curl -L "http://localhost:5000/export_urls?format=csv&id=1&id=2"
 ```
 
 
-### `GET /site2zip`
-Serve the Site2Zip overlay for capturing a full page snapshot.
+### `GET /httpolaroid`
+Serve the HTTPolaroid overlay for capturing a full page snapshot.
 
 ```
-curl http://localhost:5000/site2zip
+curl http://localhost:5000/httpolaroid
 ```
 
-### `POST /tools/site2zip`
+### `POST /tools/httpolaroid`
 Launch a capture job and return JSON with the record ID.
 
 Parameters:
@@ -367,28 +367,28 @@ Parameters:
 The resulting record logs the HTTP status and resolved IPs for the initial request.
 
 ```
-curl -X POST -d "url=https://example.com" http://localhost:5000/tools/site2zip
+curl -X POST -d "url=https://example.com" http://localhost:5000/tools/httpolaroid
 ```
 
-### `GET /sitezips`
-List previous Site2Zip captures as JSON.
+### `GET /httpolaroids`
+List previous HTTPolaroid captures as JSON.
 
 ```
-curl http://localhost:5000/sitezips
+curl http://localhost:5000/httpolaroids
 ```
 
-### `GET /download_sitezip/<id>`
+### `GET /download_httpolaroid/<id>`
 Download the ZIP archive for a capture.
 
 ```
-curl -O http://localhost:5000/download_sitezip/1
+curl -O http://localhost:5000/download_httpolaroid/1
 ```
 
-### `POST /delete_sitezips`
+### `POST /delete_httpolaroids`
 Delete one or more captures by ID.
 
 ```
-curl -X POST -d "ids=1,2" http://localhost:5000/delete_sitezips
+curl -X POST -d "ids=1,2" http://localhost:5000/delete_httpolaroids
 ```
 
 ### `GET /dag/repo/<name>`

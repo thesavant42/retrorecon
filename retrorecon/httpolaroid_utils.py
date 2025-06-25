@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from database import execute_db, query_db
 from . import screenshot_utils
+from urllib.parse import urlparse, urlunparse, urljoin
+import json
 
 
 def save_record(
@@ -91,7 +93,24 @@ def capture_site(
         headers['User-Agent'] = user_agent
     if spoof_referrer:
         headers['Referer'] = url
-    resp = requests.get(url, headers=headers, timeout=15, verify=False)
+
+    auth = None
+    parsed = urlparse(url)
+    if parsed.username or parsed.password:
+        auth = (parsed.username or '', parsed.password or '')
+        netloc = parsed.hostname or ''
+        if parsed.port:
+            netloc += f":{parsed.port}"
+        url = urlunparse(parsed._replace(netloc=netloc, username=None, password=None))
+
+    resp = requests.get(
+        url,
+        headers=headers,
+        timeout=15,
+        verify=False,
+        allow_redirects=True,
+        auth=auth,
+    )
     resp.raise_for_status()
     html = resp.text
     ip = ''
@@ -100,7 +119,10 @@ def capture_site(
     except Exception:
         pass
     screenshot, status, shot_ips = screenshot_utils.take_screenshot(
-        url, user_agent, spoof_referrer, executable_path
+        resp.url,
+        user_agent,
+        spoof_referrer,
+        executable_path,
     )
     if not ip:
         ip = shot_ips
@@ -110,5 +132,30 @@ def capture_site(
     with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as z:
         z.writestr('index.html', html)
         z.writestr('screenshot.png', screenshot)
+        req_headers = '\n'.join(f"{k}: {v}" for k, v in resp.request.headers.items())
+        res_headers = '\n'.join(f"{k}: {v}" for k, v in resp.headers.items())
+        z.writestr('request_headers.txt', req_headers)
+        z.writestr('response_headers.txt', res_headers)
+        # try fetching favicon
+        try:
+            fav_url = urljoin(resp.url, '/favicon.ico')
+            fav_resp = requests.get(
+                fav_url,
+                headers=headers,
+                timeout=10,
+                verify=False,
+                allow_redirects=True,
+                auth=auth,
+            )
+            if fav_resp.status_code == 200 and fav_resp.content:
+                z.writestr('favicon.ico', fav_resp.content)
+        except Exception:
+            pass
+        meta = {
+            'final_url': resp.url,
+            'status_code': resp.status_code,
+            'ip_addresses': ip,
+        }
+        z.writestr('meta.json', json.dumps(meta, indent=2))
     buf.seek(0)
     return buf.getvalue(), screenshot, status, ip

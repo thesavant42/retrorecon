@@ -247,15 +247,15 @@ paths:
       responses:
         '200':
           description: Successful response
-  /site2zip:
+  /httpolaroid:
     get:
-      summary: GET /site2zip
+      summary: GET /httpolaroid
       responses:
         '200':
           description: Successful response
-  /tools/site2zip:
+  /tools/httpolaroid:
     post:
-      summary: POST /tools/site2zip
+      summary: POST /tools/httpolaroid
       responses:
         '200':
           description: Successful response

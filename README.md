@@ -43,6 +43,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | HTML Report Output (WIP)      | Generate browsable summaries with tagged snapshots and visual comparisons  |
 | Dynamic Rendering API         | Programmatically render pages from schemas with managed assets             |
 | OCI Registry Table Explorer   | Browse container images as tables with direct download links |
+| HTTPolaroid Snapshots         | Capture a single URL with full headers, screenshot and assets into a zip |
 
 ---
 
@@ -73,6 +74,10 @@ These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 
 For a quick walkthrough of the common workflow see
 [docs/new_user_guide.md](docs/new_user_guide.md).
+
+### Capture a Snap
+
+The **HTTPolaroid** tool can be triggered from the UI under `Tools → Active Recon`. It fetches a URL in a headless browser, follows redirects and saves the page, assets, headers and screenshot into a single zip file for download.
 
 ---
 

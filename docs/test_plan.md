@@ -132,13 +132,13 @@ This ensures database workflow tests are executed along with the existing suite 
 ## Site2Zip Tests
 
 1. **Menu Entry**
-   - Select `Tools → Active Recon → Site2Zip` from the navbar.
+   - Select `Tools → Active Recon → HTTPolaroid` from the navbar.
    - Verify the overlay only loads when triggered.
 
 2. **Capture a Page**
-   - POST `/tools/site2zip` with `url=https://example.com`.
+   - POST `/tools/httpolaroid` with `url=https://example.com`.
    - Expect a JSON response with an ID and a screenshot file.
-   - `GET /sitezips` should list the entry with a ZIP download link.
+   - `GET /httpolaroids` should list the entry with a ZIP download link.
 
 3. **User Agent Option**
    - Capture the same URL with `agent=android` and confirm the header log reflects the Android user agent.
