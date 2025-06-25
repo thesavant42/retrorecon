@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 import zipfile
 import app
+from layerslayer.utils import human_readable_size
 from flask import (
     Blueprint,
     request,
@@ -376,6 +377,13 @@ def httpolaroids_route():
         r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
         r['preview'] = url_for('static', filename='sitezips/' + r['thumbnail_path'])
         r['image'] = url_for('static', filename='sitezips/' + r['screenshot_path'])
+        zip_full = os.path.join(app.SITEZIP_DIR, r['zip_path'])
+        try:
+            size = os.path.getsize(zip_full)
+        except OSError:
+            size = 0
+        r['zip_size'] = size
+        r['zip_size_hr'] = human_readable_size(size)
     return jsonify(rows)
 
 
