@@ -17,6 +17,16 @@ function initHttpolaroid(){
   const presetUrl = initParams.get('url');
   if(presetUrl) urlInput.value = presetUrl;
 
+  function humanReadableSize(size){
+    const units = ['B','KB','MB','GB','TB'];
+    let i = 0;
+    while(size >= 1024 && i < units.length-1){
+      size /= 1024;
+      i++;
+    }
+    return size.toFixed(1) + ' ' + units[i];
+  }
+
   function makeResizable(table, key){
     table.style.tableLayout = 'fixed';
     const ths = table.querySelectorAll('th');
@@ -68,7 +78,7 @@ function initHttpolaroid(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="httpolaroid-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
@@ -76,7 +86,7 @@ function initHttpolaroid(){
       '<th class="sortable" data-field="status_code">Status</th>'+
       '<th class="sortable" data-field="ip_addresses">IPs</th>'+
       '<th class="sortable" data-field="method">Method</th>'+
-      '<th>ZIP</th><th>Screenshot</th>'+
+      '<th>ZIP</th><th class="sortable" data-field="zip_size">Size</th><th>Screenshot</th>'+
       '</tr></thead><tbody>';
     for(const row of sorted){
       const img = `<img src="${row.preview}" class="screenshot-thumb"/>`;
@@ -87,6 +97,7 @@ function initHttpolaroid(){
         `<td>${row.ip_addresses}</td>`+
         `<td>${row.method}</td>`+
         `<td><a href="${row.zip}" download>ZIP</a></td>`+
+        `<td>${humanReadableSize(row.zip_size)}</td>`+
         `<td><a href="${row.image}" target="_blank">${img}</a></td></tr>`;
     }
     html += '</tbody></table>';
