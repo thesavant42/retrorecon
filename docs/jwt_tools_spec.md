@@ -39,8 +39,7 @@ This document specifies the design for a new **JWT Tools** window within Retrore
 2. Implement the new Flask routes in `app.py` with robust error handling.
 3. Update the navigation menu text (`Text Tools` entry renamed to `JWT Tools`).
 4. Add CSS under `.retrorecon-root` in `tools.css` if additional styling is required.
-5. Regenerate the Postman collection via `scripts/generate_postman_collection.py` once routes are added.
-6. Extend documentation and unit tests as outlined below.
+5. Extend documentation and unit tests as outlined below.
 
 ## Task Checklist for Codex
 - [ ] Build the HTML, CSS and JS for the JWT Tools overlay.

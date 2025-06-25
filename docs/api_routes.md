@@ -349,14 +349,6 @@ Parameters:
 curl -L "http://localhost:5000/export_urls?format=csv&id=1&id=2"
 ```
 
-## Generating a Postman Collection
-Run the helper script to generate a Postman collection from the application's route map:
-
-```
-python scripts/generate_postman_collection.py > tests/postman/retrorecon.postman.json
-```
-
-Import the resulting `tests/postman/retrorecon.postman.json` file into Postman and set the `base_url` variable to your server address.
 
 ### `GET /site2zip`
 Serve the Site2Zip overlay for capturing a full page snapshot.
