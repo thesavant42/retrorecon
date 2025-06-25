@@ -108,8 +108,11 @@ class HTMLGenerator:
                 for k, v in attrs.items():
                     el.attrs[k] = v
                 text_key = node.get("text")
-                if text_key:
-                    el.string = str(data.get(text_key, ""))
+                if text_key is not None:
+                    # If the key exists in the provided data use that value,
+                    # otherwise treat the text attribute as a literal string.
+                    value = data.get(text_key, text_key)
+                    el.string = str(value)
                 if node.get("children"):
                     add_nodes(el, node["children"])
                 parent.append(el)
