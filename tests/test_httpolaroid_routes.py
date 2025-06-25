@@ -18,6 +18,8 @@ def setup_tmp(monkeypatch, tmp_path):
 
 def test_httpolaroid_capture(monkeypatch, tmp_path):
     setup_tmp(monkeypatch, tmp_path)
+    monkeypatch.setattr(tools_routes, "capture_snap", lambda *a, **k: (b"ZIP", b"IMG", 200, "1.1.1.1"))
+    monkeypatch.setattr(tools_routes, "capture_snap", lambda *a, **k: (b"ZIP", b"IMG", 200, "1.1.1.1"))
     def fake_capture(url, agent="", spoof_referrer=False, log_path=None):
         if log_path:
             Path(log_path).parent.mkdir(parents=True, exist_ok=True)

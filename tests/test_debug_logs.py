@@ -21,7 +21,7 @@ def setup_tmp(monkeypatch, tmp_path):
 def test_screenshot_route_debug_logs(monkeypatch, tmp_path):
     setup_tmp(monkeypatch, tmp_path)
 
-    def fake_take(url, agent='', spoof=False, log_path=None):
+    def fake_take(url, agent="", spoof=False, log_path=None):
         assert log_path is not None
         assert os.path.isdir(os.path.dirname(log_path))
         return b"IMG", 200, "1.1.1.1"
@@ -39,12 +39,15 @@ def test_screenshot_route_debug_logs(monkeypatch, tmp_path):
 def test_httpolaroid_route_debug_logs(monkeypatch, tmp_path):
     setup_tmp(monkeypatch, tmp_path)
 
-    def fake_capture(url, agent="", spoof=False, log_path=None):
+    def fake_capture(url, agent="", spoof=False, log_path=None, capture_har=False):
         assert log_path is not None
         assert os.path.isdir(os.path.dirname(log_path))
         return b"ZIP", b"IMG", 200, "1.1.1.1"
 
     monkeypatch.setattr(app, "capture_snap", fake_capture)
+    import retrorecon.routes.tools as tools_routes
+    monkeypatch.setattr(tools_routes, "capture_snap", fake_capture)
+    monkeypatch.setattr(tools_routes, "dynamic_template", lambda *a, **k: "")
 
     with app.app.test_client() as client:
         resp = client.post(
@@ -52,3 +55,4 @@ def test_httpolaroid_route_debug_logs(monkeypatch, tmp_path):
             data={"url": "http://example.com", "debug": "1"},
         )
         assert resp.status_code == 200
+

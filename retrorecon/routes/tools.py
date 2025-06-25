@@ -7,6 +7,9 @@ import urllib.parse
 import requests
 import zipfile
 import app
+
+# expose for tests
+capture_snap = app.capture_snap
 from layerslayer.utils import human_readable_size
 from flask import (
     Blueprint,
@@ -266,9 +269,9 @@ def screenshot_route():
     spoof = request.form.get('spoof_referrer', '0') == '1'
     debug_log = request.form.get('debug', '0') == '1'
     capture_har = request.form.get('har', '0') == '1'
-    capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
+    os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
     os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
     if debug_log:
         log_path = os.path.join(app.SCREENSHOT_DIR, f'shot_{ts}.log')
@@ -359,7 +362,7 @@ def httpolaroid_route():
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
     os.makedirs(app.SITEZIP_DIR, exist_ok=True)
-    if debug_log:
+        zip_bytes, shot_bytes, status_code, ips = capture_snap(url, agent, spoof, log_path, capture_har)
         log_path = os.path.join(app.SITEZIP_DIR, f'site_{ts}.log')
     try:
         zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof, log_path, capture_har)
