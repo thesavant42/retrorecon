@@ -364,6 +364,7 @@ Parameters:
 - `url` – page to fetch.
 - `agent` – optional user agent (`android`, `bot` or blank for desktop).
 - `spoof_referrer` – set to `1` to spoof the referrer header.
+The resulting record logs the HTTP status and resolved IPs for the initial request.
 
 ```
 curl -X POST -d "url=https://example.com" http://localhost:5000/tools/site2zip
@@ -466,6 +467,7 @@ Parameters:
 - `url` – target URL.
 - `user_agent` – optional agent string.
 - `spoof_referrer` – `1` to spoof the referrer header.
+The screenshot record stores the HTTP status and resolved IP addresses used for the request.
 
 ```
 curl -X POST -d "url=https://example.com" http://localhost:5000/tools/screenshot
@@ -473,6 +475,7 @@ curl -X POST -d "url=https://example.com" http://localhost:5000/tools/screenshot
 
 ### `GET /screenshots`
 List captured screenshots as JSON.
+Each object includes `status_code` and `ip_addresses` fields.
 
 ```
 curl http://localhost:5000/screenshots

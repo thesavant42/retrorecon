@@ -68,11 +68,13 @@ function initScreenshotter(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="shot-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
       '<th class="sortable" data-field="url">URL</th>'+
+      '<th class="sortable" data-field="status_code">Status</th>'+
+      '<th class="sortable" data-field="ip_addresses">IPs</th>'+
       '<th class="sortable" data-field="method">Method</th>'+
       '<th>Thumbnail</th>'+
       '</tr></thead><tbody>';
@@ -81,6 +83,8 @@ function initScreenshotter(){
       html += `<tr data-id="${row.id}"><td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="${row.id}"/></td>`+
         `<td>${row.created_at}</td>`+
         `<td><div class="cell-content">${row.url}</div></td>`+
+        `<td>${row.status_code}</td>`+
+        `<td>${row.ip_addresses}</td>`+
         `<td>${row.method}</td>`+
         `<td><a href="${row.file}" target="_blank">${img}</a></td></tr>`;
     }

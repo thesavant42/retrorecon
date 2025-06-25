@@ -89,7 +89,7 @@ This ensures database workflow tests are executed along with the existing suite 
 ## Text Tools Tests
 
 1. **Menu Entry**
-   - Click `Tools → Text Tools` from the navbar.
+   - Click `Tools → Utilities → Text Tools` from the navbar.
    - Verify the overlay opens only when triggered by this menu option.
 
 2. **URL Encode/Decode**
@@ -105,7 +105,7 @@ This ensures database workflow tests are executed along with the existing suite 
 ## JWT Tools Tests
 
 1. **Menu Entry**
-   - Select `Tools → JWT Tools` from the navbar.
+   - Select `Tools → Utilities → JWT Tools` from the navbar.
    - Ensure the overlay opens only from this menu item and not during page load.
 
 2. **Decode Demo Token**
@@ -132,7 +132,7 @@ This ensures database workflow tests are executed along with the existing suite 
 ## Site2Zip Tests
 
 1. **Menu Entry**
-   - Select `Tools → Site2Zip` from the navbar.
+   - Select `Tools → Active Recon → Site2Zip` from the navbar.
    - Verify the overlay only loads when triggered.
 
 2. **Capture a Page**

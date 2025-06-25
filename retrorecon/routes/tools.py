@@ -264,7 +264,7 @@ def screenshot_route():
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        img_bytes = app.take_screenshot(url, agent, spoof)
+        img_bytes, status_code, ips = app.take_screenshot(url, agent, spoof)
     except Exception as e:
         return (f'Error taking screenshot: {e}', 500)
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
@@ -284,7 +284,7 @@ def screenshot_route():
         app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(img_bytes)
-    sid = app.save_screenshot_record(url, fname, thumb, 'GET')
+    sid = app.save_screenshot_record(url, fname, thumb, 'GET', status_code, ips)
     return jsonify({'id': sid})
 
 
@@ -338,7 +338,7 @@ def site2zip_route():
     agent = request.form.get('agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     try:
-        zip_bytes, shot_bytes = app.capture_site(url, agent, spoof)
+        zip_bytes, shot_bytes, status_code, ips = app.capture_site(url, agent, spoof)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
@@ -361,7 +361,9 @@ def site2zip_route():
         current_app.logger.debug('thumbnail generation failed: %s', e)
         with open(thumb_path, 'wb') as f:
             f.write(shot_bytes)
-    sid = app.save_sitezip_record(url, zip_name, shot_name, thumb_name, 'GET')
+    sid = app.save_sitezip_record(
+        url, zip_name, shot_name, thumb_name, 'GET', status_code, ips
+    )
     return jsonify({'id': sid})
 
 

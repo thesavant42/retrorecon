@@ -48,6 +48,8 @@ erDiagram
         TEXT method
         TEXT screenshot_path
         TEXT thumbnail_path
+        INTEGER status_code
+        TEXT ip_addresses
         TIMESTAMP created_at
     }
     sitezips {
@@ -57,6 +59,8 @@ erDiagram
         TEXT zip_path
         TEXT screenshot_path
         TEXT thumbnail_path
+        INTEGER status_code
+        TEXT ip_addresses
         TIMESTAMP created_at
     }
     domains {
