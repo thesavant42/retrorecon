@@ -1218,6 +1218,14 @@ body.bg-hidden {
   background: var(--bg-color);
   color: var(--fg-color);
 }
+.retrorecon-root .debug-output {
+  width: 100%;
+  font-family: monospace;
+  white-space: pre-wrap;
+  background: var(--bg-color);
+  color: var(--fg-color);
+  height: 12em;
+}
 .retrorecon-root .notes-list {
   flex: 1;
   overflow-y: auto;
