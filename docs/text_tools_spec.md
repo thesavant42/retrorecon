@@ -47,8 +47,7 @@ Each route validates input, performs the transformation and returns a 200 respon
 2. Add the `/text_tools` and `/tools/*` Flask routes in `app.py`.
 3. Update the `Tools` dropdown in `templates/index.html` to open the new overlay (rename old "Base64 Tool" link).
 4. Add styles in `static/tools.css` scoped under `.retrorecon-root` if needed.
-5. Register the new routes in the Postman collection using `scripts/generate_postman_collection.py`.
-6. Write unit tests covering:
+5. Write unit tests covering:
    - Menu opens the overlay only when triggered.
    - Round‑trip URL encode/decode of `This is a sketchy string!?"`.
    - Base64 encode/decode of a multiline string with various newline characters.

@@ -161,5 +161,4 @@ This ensures database workflow tests are executed along with the existing suite 
 ## API Spec Tests
 
 1. **OpenAPI Generation**
-   - Run `python scripts/generate_openapi_yaml.py`.
    - Load `/swagger` and verify the UI shows all application routes.

@@ -163,22 +163,10 @@ python scripts/audit_css.py > reports/report.json
 **Expected Output**
 - JSON summarizing element coverage and selectors not under `.retrorecon-root`.
 
-## 12. ThemeGenerator
-**Purpose**: Generate multiple dark theme CSS files from `dark_combos.html`.
-
-**Usage**
-```bash
-python scripts/generate_midnight_themes.py
-```
-**Expected Output**
-- Creates `static/themes/theme-<code>.css` files and a markdown table of combinations.
-
----
-
 When creating new CSS, follow `STYLE_GUIDE.md` which mandates that selectors be scoped under `.retrorecon-root` using BEM-style naming. Running `npm run lint` checks for inline styles and standard Stylelint rules.
 
 
-## 13. ScreenshotAgent
+## 12. ScreenshotAgent
 **Purpose**: Capture website screenshots in a headless browser.
 
 **Input Schema**
@@ -196,7 +184,7 @@ client.post('/tools/screenshot', data={'url': 'https://example.com'})
 **Expected Output**
 - JSON like `{ "id": 1 }` representing the screenshot record.
 
-## 14. SiteZipAgent
+## 13. SiteZipAgent
 **Purpose**: Crawl a page and download all assets as a ZIP archive.
 
 **Input Schema**
@@ -214,7 +202,7 @@ client.post('/tools/site2zip', data={'url': 'https://example.com'})
 **Expected Output**
 - JSON like `{ "id": 5 }` with the capture ID.
 
-## 15. SubdomainFetcher
+## 14. SubdomainFetcher
 **Purpose**: Retrieve subdomains for a domain from crt.sh or VirusTotal.
 
 **Input Schema**
