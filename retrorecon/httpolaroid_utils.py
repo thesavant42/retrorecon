@@ -1,6 +1,8 @@
 import os
 import io
 import zipfile
+import hashlib
+from urllib.parse import urlparse, urlunparse, urljoin
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.packages.urllib3 import disable_warnings
@@ -11,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from database import execute_db, query_db
 from . import screenshot_utils
-from urllib.parse import urlparse, urlunparse, urljoin
+from bs4 import BeautifulSoup
 import json
 
 
@@ -136,6 +138,38 @@ def capture_site(
         res_headers = '\n'.join(f"{k}: {v}" for k, v in resp.headers.items())
         z.writestr('request_headers.txt', req_headers)
         z.writestr('response_headers.txt', res_headers)
+        # Parse HTML for external JavaScript files and add them under assets/js
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+            scripts = []
+            for tag in soup.find_all('script', src=True):
+                scripts.append(tag['src'])
+            for tag in soup.find_all('link', rel=lambda v: v and 'preload' in v):
+                if tag.get('as') == 'script' and tag.get('href'):
+                    scripts.append(tag['href'])
+            for idx, s in enumerate(scripts):
+                js_url = urljoin(resp.url, s)
+                try:
+                    jresp = requests.get(
+                        js_url,
+                        headers=headers,
+                        timeout=10,
+                        verify=False,
+                        allow_redirects=True,
+                        auth=auth,
+                    )
+                    if jresp.status_code == 200 and jresp.content:
+                        parsed_name = urlparse(js_url).path
+                        name = os.path.basename(parsed_name) or f'script{idx}.js'
+                        if not name.endswith('.js'):
+                            name += '.js'
+                        digest = hashlib.sha256(js_url.encode()).hexdigest()[:8]
+                        fname = f'assets/js/{digest}_{name}'
+                        z.writestr(fname, jresp.content)
+                except Exception:
+                    pass
+        except Exception:
+            pass
         # try fetching favicon
         try:
             fav_url = urljoin(resp.url, '/favicon.ico')
