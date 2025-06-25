@@ -90,6 +90,7 @@ def capture_site(
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
     log_path: Optional[str] = None,
+    capture_har: bool = False,
 ) -> Tuple[bytes, bytes, int, str]:
     headers = {}
     if user_agent:
@@ -121,12 +122,14 @@ def capture_site(
         ip = resp.raw._connection.sock.getpeername()[0]
     except Exception:
         pass
+    extra: Dict[str, Any] = {"capture_har": capture_har}
     screenshot, status, shot_ips = screenshot_utils.take_screenshot(
         resp.url,
         user_agent,
         spoof_referrer,
         executable_path,
         log_path,
+        extra,
     )
     if not ip:
         ip = shot_ips
@@ -193,5 +196,10 @@ def capture_site(
             'ip_addresses': ip,
         }
         z.writestr('meta.json', json.dumps(meta, indent=2))
+        if capture_har and 'har' in extra:
+            try:
+                z.writestr('harlog.json', json.dumps(extra['har'], indent=2))
+            except Exception:
+                pass
     buf.seek(0)
     return buf.getvalue(), screenshot, status, ip

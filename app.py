@@ -358,9 +358,10 @@ def capture_snap(
     user_agent: str = '',
     spoof_referrer: bool = False,
     log_path: Optional[str] = None,
+    capture_har: bool = False,
 ) -> Tuple[bytes, bytes, int, str]:
     return httpolaroid_utils.capture_site(
-        url, user_agent, spoof_referrer, executablePath, log_path
+        url, user_agent, spoof_referrer, executablePath, log_path, capture_har
     )
 
 

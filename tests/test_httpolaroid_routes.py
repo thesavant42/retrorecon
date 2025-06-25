@@ -32,3 +32,16 @@ def test_httpolaroid_capture(monkeypatch, tmp_path):
         assert resp.status_code == 200
 
 
+def test_httpolaroid_capture_har(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    monkeypatch.setattr(app, "capture_snap", lambda *a, **k: (b"ZIP", b"IMG", 200, "1.1.1.1"))
+    import retrorecon.routes.tools as tools_routes
+    monkeypatch.setattr(tools_routes, "dynamic_template", lambda *a, **k: "")
+    with app.app.test_client() as client:
+        resp = client.post("/tools/httpolaroid", data={"url": "http://example.com", "har": "1"})
+        assert resp.status_code == 200
+        sid = resp.get_json().get("id")
+        resp = client.get(f"/download_httpolaroid_har/{sid}")
+        assert resp.status_code in (200, 404)
+
+

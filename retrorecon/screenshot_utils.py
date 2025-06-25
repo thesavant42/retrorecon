@@ -96,6 +96,7 @@ def take_screenshot(
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
     log_path: Optional[str] = None,
+    extra: Optional[Dict[str, Any]] = None,
 ) -> Tuple[bytes, int, str]:
     logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
     ips = resolve_ips(url)
@@ -106,6 +107,10 @@ def take_screenshot(
         return placeholder_image(url), 0, ips
 
     log_handler = None
+    if extra is None:
+        extra = {}
+    capture_har = extra.get("capture_har", False)
+    har_log: List[Dict[str, Any]] = []
     if log_path:
         log_handler = logging.FileHandler(log_path, encoding="utf-8")
         log_handler.setLevel(logging.DEBUG)
@@ -131,13 +136,36 @@ def take_screenshot(
                 context = browser.new_context(**ctx_opts)
                 if spoof_referrer:
                     context.set_extra_http_headers({"Referer": url})
+                if capture_har:
+                    def log_request(req):
+                        har_log.append({
+                            "type": "request",
+                            "url": req.url,
+                            "method": req.method,
+                            "headers": req.headers,
+                        })
+
+                    def log_response(res):
+                        har_log.append({
+                            "type": "response",
+                            "url": res.url,
+                            "status": res.status,
+                            "headers": res.headers,
+                        })
+
+                    context.on("request", log_request)
+                    context.on("response", log_response)
                 page = context.new_page()
                 # Avoid long hangs by waiting only for the load event with a
                 # reasonable timeout. Some sites never reach a true
                 # "networkidle" state which caused timeouts.
                 response = page.goto(url, wait_until="load", timeout=15000)
                 status = response.status if response else 0
+                if capture_har:
+                    extra["html"] = page.content()
                 data = page.screenshot(full_page=True)
+                if capture_har:
+                    extra["har"] = har_log
                 browser.close()
                 return data, status
         except Exception as e:

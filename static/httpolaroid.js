@@ -5,6 +5,7 @@ function initHttpolaroid(){
   const urlInput = document.getElementById('httpolaroid-url');
   const agentSel = document.getElementById('httpolaroid-agent');
   const refChk = document.getElementById('httpolaroid-ref');
+  const harChk = document.getElementById('httpolaroid-har');
   const captureBtn = document.getElementById('httpolaroid-capture-btn');
   const tableDiv = document.getElementById('httpolaroid-table');
   const deleteBtn = document.getElementById('httpolaroid-delete-btn');
@@ -79,7 +80,7 @@ function initHttpolaroid(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/><col/>'+
+      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
       '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="httpolaroid-select-all" class="form-checkbox" /></th>'+
       '<th class="sortable" data-field="created_at">Time</th>'+
@@ -87,7 +88,7 @@ function initHttpolaroid(){
       '<th class="sortable" data-field="status_code">Status</th>'+
       '<th class="sortable" data-field="ip_addresses">IPs</th>'+
       '<th class="sortable" data-field="method">Method</th>'+
-      '<th>ZIP</th><th class="sortable" data-field="zip_size">Size</th><th>Screenshot</th>'+
+      '<th>ZIP</th><th class="sortable" data-field="zip_size">Size</th><th>HAR</th><th>Screenshot</th>'+
       '</tr></thead><tbody>';
     for(const row of sorted){
       const img = `<img src="${row.preview}" class="screenshot-thumb"/>`;
@@ -99,6 +100,7 @@ function initHttpolaroid(){
         `<td>${row.method}</td>`+
         `<td><a href="${row.zip}" download>ZIP</a></td>`+
         `<td>${humanReadableSize(row.zip_size)}</td>`+
+        `<td><a href="${row.har}" download>HAR</a></td>`+
         `<td><a href="${row.image}" target="_blank">${img}</a></td></tr>`;
     }
     html += '</tbody></table>';
@@ -143,7 +145,7 @@ function initHttpolaroid(){
   captureBtn.addEventListener('click', async () => {
     const url = urlInput.value.trim();
     if(!url) return;
-    const params = new URLSearchParams({url, agent: agentSel.value, spoof_referrer: refChk.checked ? '1':'0'});
+    const params = new URLSearchParams({url, agent: agentSel.value, spoof_referrer: refChk.checked ? '1':'0', har: harChk.checked ? '1':'0'});
     const resp = await fetch('/tools/httpolaroid', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     if(resp.ok){ await loadRows(); } else { alert(await resp.text()); }
   });

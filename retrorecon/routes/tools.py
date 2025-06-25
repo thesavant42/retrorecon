@@ -265,6 +265,8 @@ def screenshot_route():
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     debug_log = request.form.get('debug', '0') == '1'
+    capture_har = request.form.get('har', '0') == '1'
+    capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
     if debug_log:
@@ -353,12 +355,13 @@ def httpolaroid_route():
     agent = request.form.get('agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     debug_log = request.form.get('debug', '0') == '1'
+    capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
     if debug_log:
         log_path = os.path.join(app.SITEZIP_DIR, f'site_{ts}.log')
     try:
-        zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof, log_path)
+        zip_bytes, shot_bytes, status_code, ips = app.capture_snap(url, agent, spoof, log_path, capture_har)
     except Exception as e:
         return (f'Error capturing site: {e}', 500)
     zip_name = f'site_{ts}.zip'
@@ -405,6 +408,7 @@ def httpolaroids_route():
         r['zip'] = url_for('static', filename='sitezips/' + r['zip_path'])
         r['preview'] = url_for('static', filename='sitezips/' + r['thumbnail_path'])
         r['image'] = url_for('static', filename='sitezips/' + r['screenshot_path'])
+        r['har'] = url_for('tools.download_httpolaroid_har_route', sid=r['id'])
         zip_full = os.path.join(app.SITEZIP_DIR, r['zip_path'])
         try:
             size = os.path.getsize(zip_full)
@@ -424,6 +428,22 @@ def download_httpolaroid_route(sid: int):
         return ('Not found', 404)
     zip_path = os.path.join(app.SITEZIP_DIR, rows[0]['zip_path'])
     return send_file(zip_path, mimetype='application/zip', as_attachment=True, download_name=rows[0]['zip_path'])
+
+
+@bp.route('/download_httpolaroid_har/<int:sid>', methods=['GET'])
+def download_httpolaroid_har_route(sid: int):
+    if not app._db_loaded():
+        return ('', 400)
+    rows = app.list_httpolaroid_data([sid])
+    if not rows:
+        return ('Not found', 404)
+    zip_path = os.path.join(app.SITEZIP_DIR, rows[0]['zip_path'])
+    try:
+        with zipfile.ZipFile(zip_path) as z:
+            data = z.read('harlog.json')
+    except Exception:
+        return ('Not found', 404)
+    return send_file(io.BytesIO(data), mimetype='application/json', as_attachment=True, download_name='harlog.json')
 
 
 @bp.route('/delete_httpolaroids', methods=['POST'])
