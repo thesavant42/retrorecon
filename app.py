@@ -286,8 +286,23 @@ SITEZIP_DIR = os.path.join(app.root_path, 'static', 'sitezips')
 executablePath: Optional[str] = None
 
 
-def save_screenshot_record(url: str, path: str, thumb: str, method: str = 'GET') -> int:
-    return screenshot_utils.save_record(SCREENSHOT_DIR, url, path, thumb, method)
+def save_screenshot_record(
+    url: str,
+    path: str,
+    thumb: str,
+    method: str = 'GET',
+    status_code: int = 0,
+    ip_addresses: str = '',
+) -> int:
+    return screenshot_utils.save_record(
+        SCREENSHOT_DIR,
+        url,
+        path,
+        thumb,
+        method,
+        status_code,
+        ip_addresses,
+    )
 
 
 def list_screenshot_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
@@ -298,15 +313,34 @@ def delete_screenshots(ids: List[int]) -> None:
     screenshot_utils.delete_records(SCREENSHOT_DIR, ids)
 
 
-def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False) -> bytes:
-    return screenshot_utils.take_screenshot(url, user_agent, spoof_referrer, executablePath)
+def take_screenshot(
+    url: str,
+    user_agent: str = '',
+    spoof_referrer: bool = False,
+) -> Tuple[bytes, int, str]:
+    return screenshot_utils.take_screenshot(
+        url, user_agent, spoof_referrer, executablePath
+    )
 
 
 def save_sitezip_record(
-    url: str, zip_name: str, screenshot_name: str, thumb_name: str, method: str = 'GET'
+    url: str,
+    zip_name: str,
+    screenshot_name: str,
+    thumb_name: str,
+    method: str = 'GET',
+    status_code: int = 0,
+    ip_addresses: str = '',
 ) -> int:
     return sitezip_utils.save_record(
-        SITEZIP_DIR, url, zip_name, screenshot_name, thumb_name, method
+        SITEZIP_DIR,
+        url,
+        zip_name,
+        screenshot_name,
+        thumb_name,
+        method,
+        status_code,
+        ip_addresses,
     )
 
 
@@ -318,8 +352,14 @@ def delete_sitezips(ids: List[int]) -> None:
     sitezip_utils.delete_records(SITEZIP_DIR, ids)
 
 
-def capture_site(url: str, user_agent: str = '', spoof_referrer: bool = False) -> Tuple[bytes, bytes]:
-    return sitezip_utils.capture_site(url, user_agent, spoof_referrer, executablePath)
+def capture_site(
+    url: str,
+    user_agent: str = '',
+    spoof_referrer: bool = False,
+) -> Tuple[bytes, bytes, int, str]:
+    return sitezip_utils.capture_site(
+        url, user_agent, spoof_referrer, executablePath
+    )
 
 
 def delete_subdomain(root_domain: str, subdomain: str) -> None:

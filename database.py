@@ -47,10 +47,18 @@ def ensure_schema() -> None:
             cols = [row[1] for row in cur.fetchall()]
             if 'thumbnail_path' not in cols:
                 conn.execute("ALTER TABLE screenshots ADD COLUMN thumbnail_path TEXT")
+            if 'status_code' not in cols:
+                conn.execute("ALTER TABLE screenshots ADD COLUMN status_code INTEGER DEFAULT 0")
+            if 'ip_addresses' not in cols:
+                conn.execute("ALTER TABLE screenshots ADD COLUMN ip_addresses TEXT DEFAULT ''")
             cur = conn.execute("PRAGMA table_info(sitezips)")
             cols = [row[1] for row in cur.fetchall()]
             if 'thumbnail_path' not in cols:
                 conn.execute("ALTER TABLE sitezips ADD COLUMN thumbnail_path TEXT")
+            if 'status_code' not in cols:
+                conn.execute("ALTER TABLE sitezips ADD COLUMN status_code INTEGER DEFAULT 0")
+            if 'ip_addresses' not in cols:
+                conn.execute("ALTER TABLE sitezips ADD COLUMN ip_addresses TEXT DEFAULT ''")
             cur = conn.execute("PRAGMA table_info(domains)")
             cols = [row[1] for row in cur.fetchall()]
             if 'cdx_indexed' not in cols:

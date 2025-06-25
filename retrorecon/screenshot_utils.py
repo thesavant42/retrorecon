@@ -2,7 +2,9 @@ import os
 import io
 import base64
 import logging
-from typing import Any, Dict, List, Optional
+import socket
+from urllib.parse import urlparse
+from typing import Any, Dict, List, Optional, Tuple
 
 import sqlite3
 from database import execute_db, query_db
@@ -10,11 +12,20 @@ from database import execute_db, query_db
 logger = logging.getLogger(__name__)
 
 
-def save_record(dir_path: str, url: str, path: str, thumb: str, method: str = 'GET') -> int:
+def save_record(
+    dir_path: str,
+    url: str,
+    path: str,
+    thumb: str,
+    method: str = "GET",
+    status_code: int = 0,
+    ip_addresses: str = "",
+) -> int:
     os.makedirs(dir_path, exist_ok=True)
     return execute_db(
-        "INSERT INTO screenshots (url, method, screenshot_path, thumbnail_path) VALUES (?, ?, ?, ?)",
-        [url, method, path, thumb],
+        "INSERT INTO screenshots (url, method, screenshot_path, thumbnail_path, status_code, ip_addresses)"
+        " VALUES (?, ?, ?, ?, ?, ?)",
+        [url, method, path, thumb, status_code, ip_addresses],
     )
 
 
@@ -26,7 +37,8 @@ def list_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
         where = f"WHERE id IN ({placeholders})"
         params.extend(ids)
     rows = query_db(
-        f"SELECT id, url, method, screenshot_path, thumbnail_path, created_at FROM screenshots {where} ORDER BY id DESC",
+        f"SELECT id, url, method, screenshot_path, thumbnail_path, status_code, ip_addresses, created_at"
+        f" FROM screenshots {where} ORDER BY id DESC",
         params,
     )
     result = []
@@ -38,6 +50,8 @@ def list_data(ids: Optional[List[int]] = None) -> List[Dict[str, Any]]:
                 "method": r["method"],
                 "screenshot_path": r["screenshot_path"],
                 "thumbnail_path": r["thumbnail_path"],
+                "status_code": r["status_code"],
+                "ip_addresses": r["ip_addresses"],
                 "created_at": r["created_at"],
             }
         )
@@ -64,15 +78,33 @@ def delete_records(dir_path: str, ids: List[int]) -> None:
         execute_db("DELETE FROM screenshots WHERE id = ?", [sid])
 
 
-def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False, executable_path: Optional[str] = None) -> bytes:
+def resolve_ips(target_url: str) -> str:
+    host = urlparse(target_url).hostname or ""
+    if not host:
+        return ""
+    try:
+        infos = socket.getaddrinfo(host, None)
+        ips = {info[4][0] for info in infos}
+        return ",".join(sorted(ips))
+    except Exception:
+        return ""
+
+
+def take_screenshot(
+    url: str,
+    user_agent: str = "",
+    spoof_referrer: bool = False,
+    executable_path: Optional[str] = None,
+) -> Tuple[bytes, int, str]:
     logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
+    ips = resolve_ips(url)
     try:
         from playwright.sync_api import sync_playwright
     except Exception as e:
         logger.debug("playwright not available: %s", e)
-        return placeholder_image(url)
+        return placeholder_image(url), 0, ips
 
-    def _cap() -> bytes:
+    def _cap() -> Tuple[bytes, int]:
         launch_opts = {"args": ["--no-sandbox"]}
         exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH") or executable_path
         if exec_path:
@@ -94,18 +126,20 @@ def take_screenshot(url: str, user_agent: str = '', spoof_referrer: bool = False
                 # Avoid long hangs by waiting only for the load event with a
                 # reasonable timeout. Some sites never reach a true
                 # "networkidle" state which caused timeouts.
-                page.goto(url, wait_until="load", timeout=15000)
+                response = page.goto(url, wait_until="load", timeout=15000)
+                status = response.status if response else 0
                 data = page.screenshot(full_page=True)
                 browser.close()
-                return data
+                return data, status
         except Exception as e:
             logger.debug("screenshot capture failed: %s", e)
             raise
 
     try:
-        return _cap()
+        img, status = _cap()
+        return img, status, ips
     except Exception:
-        return placeholder_image(url)
+        return placeholder_image(url), 0, ips
 
 
 def placeholder_image(text: str) -> bytes:
