@@ -6,7 +6,6 @@ db/*.db
 !secrets.example.json
 !frontend/package.json
 !frontend/.stylelintrc.json
-!tests/postman/retrorecon.postman.json
 frontend/node_modules/
 node_modules/
 frontend/package-lock.json
