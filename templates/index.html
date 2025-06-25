@@ -223,7 +223,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">ScreenShotter</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="demo-link">Demo</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="dag-explorer-link">OCI Explorer</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="oci-explorer-link">OCI Explorer</a></div>
           <div class="menu-row"><a href="/swagger" class="menu-btn" id="swagger-ui-link" target="_blank">Swagger UI</a></div>
       </div>
     </div>
@@ -1269,23 +1269,23 @@
         showDemo(true);
       }
 
-      const registryLink = document.getElementById('registry-viewer-link');
+      const registryLink = document.getElementById('oci-explorer-link');
       let registryLoaded = false;
 
       async function showRegistryViewer(skipPush){
         if(!registryLoaded){
-          const resp = await fetch('/registry_viewer');
+          const resp = await fetch('/oci_explorer');
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
           const script = document.createElement('script');
-          script.src = '/static/registry_explorer.js';
+          script.src = '/static/oci_explorer.js';
           document.body.appendChild(script);
           registryLoaded = true;
         }
         document.getElementById('registry-explorer-overlay').classList.remove('hidden');
         if(!skipPush){
-          history.pushState({tool:'registry'}, '', '/tools/registry_viewer');
+          history.pushState({tool:'registry'}, '', '/tools/oci_explorer');
         }
       }
 
@@ -1302,14 +1302,14 @@
       }
 
       window.addEventListener('popstate', () => {
-        if(location.pathname === '/tools/registry_viewer'){
+        if(location.pathname === '/tools/oci_explorer'){
           showRegistryViewer(true);
         } else {
           hideRegistryViewer();
         }
       });
 
-      if(location.pathname === '/tools/registry_viewer' || openTool === 'registry'){
+      if(location.pathname === '/tools/oci_explorer' || openTool === 'registry'){
         showRegistryViewer(true);
       }
 
@@ -1346,7 +1346,7 @@
       }
 
       window.addEventListener('popstate', () => {
-        if(location.pathname === '/tools/registry_viewer'){
+        if(location.pathname === '/tools/oci_explorer'){
           showRegistryViewer(true);
         } else if(location.pathname === '/tools/dag_explorer'){
           showDagExplorer(true);

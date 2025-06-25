@@ -1,4 +1,4 @@
-/* File: static/registry_explorer.js */
+/* File: static/oci_explorer.js */
 function initRegistryExplorer(){
   const overlay = document.getElementById('registry-explorer-overlay');
   if(!overlay) return;
@@ -206,7 +206,7 @@ function initRegistryExplorer(){
     const img = imageInput.value.trim();
     if(!img) return;
     const methods = Array.from(methodChecks).filter(c=>c.checked).map(c=>c.value);
-    let url = '/registry_explorer?image=' + encodeURIComponent(img);
+    let url = '/oci_explorer_api?image=' + encodeURIComponent(img);
     if(methods.length === 1){
       url += '&method=' + encodeURIComponent(methods[0]);
     }else if(methods.length > 1){
@@ -232,7 +232,7 @@ function initRegistryExplorer(){
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
-    if(location.pathname === '/tools/registry_viewer'){
+    if(location.pathname === '/tools/oci_explorer'){
       history.pushState({}, '', '/');
     }
   });

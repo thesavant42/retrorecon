@@ -432,21 +432,21 @@ paths:
       responses:
         '200':
           description: Successful response
-  /registry_viewer:
+  /oci_explorer:
     get:
-      summary: GET /registry_viewer
+      summary: GET /oci_explorer
       responses:
         '200':
           description: Successful response
-  /tools/registry_viewer:
+  /tools/oci_explorer:
     get:
-      summary: GET /tools/registry_viewer
+      summary: GET /tools/oci_explorer
       responses:
         '200':
           description: Successful response
-  /registry_explorer:
+  /oci_explorer_api:
     get:
-      summary: GET /registry_explorer
+      summary: GET /oci_explorer_api
       parameters:
         - in: query
           name: insecure
@@ -492,9 +492,9 @@ paths:
       responses:
         '200':
           description: Successful response
-  /tools/registry_explorer:
+  /oci_table:
     get:
-      summary: GET /tools/registry_explorer
+      summary: GET /oci_table
       responses:
         '200':
           description: Successful response

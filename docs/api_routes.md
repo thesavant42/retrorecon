@@ -586,25 +586,25 @@ curl -L "http://localhost:5000/download_layer?image=ubuntu:latest&digest=sha256:
 ```
 Include `insecure=1` when downloading from insecure registries.
 
-### `GET /registry_viewer`
-Serve the Registry Explorer overlay.
+### `GET /oci_explorer`
+Serve the OCI Explorer overlay.
 
 ```
-curl http://localhost:5000/registry_viewer
+curl http://localhost:5000/oci_explorer
 ```
 
-### `GET /tools/registry_viewer`
-Full-page Registry Explorer.
+### `GET /tools/oci_explorer`
+Full-page OCI Explorer.
 
 ```
-curl http://localhost:5000/tools/registry_viewer
+curl http://localhost:5000/tools/oci_explorer
 ```
 
-### `GET /registry_explorer`
+### `GET /oci_explorer_api`
 Query manifest information for an image.
 
 ```
-curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_explorer
+curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/oci_explorer_api
 ```
 
 Pass `insecure=1` to disable TLS validation or when connecting to self-signed registries.

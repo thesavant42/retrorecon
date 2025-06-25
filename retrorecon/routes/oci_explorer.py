@@ -8,21 +8,23 @@ from aiohttp import ClientConnectorCertificateError
 from layerslayer.utils import parse_image_ref
 from .. import registry_explorer as rex
 
-bp = Blueprint('registry', __name__)
+bp = Blueprint('oci_explorer', __name__)
 
 
-@bp.route('/registry_viewer', methods=['GET'])
-def registry_viewer_page():
+@bp.route('/oci_explorer', methods=['GET'])
+def oci_explorer_page():
+    """Serve the OCI Explorer overlay."""
     return dynamic_template('registry_explorer.html')
 
 
-@bp.route('/tools/registry_viewer', methods=['GET'])
-def registry_viewer_full_page():
+@bp.route('/tools/oci_explorer', methods=['GET'])
+def oci_explorer_full_page():
+    """Serve the main dashboard so the overlay can open on load."""
     return app.index()
 
 
-@bp.route('/registry_explorer', methods=['GET'])
-def registry_explorer_route():
+@bp.route('/oci_explorer_api', methods=['GET'])
+def oci_explorer_route():
     image = request.args.get('image')
     files_flag = request.args.get('files', 'false').lower() in {'1', 'true', 'yes'}
     insecure_flag = request.args.get('insecure', 'false').lower() in {'1', 'true', 'yes'}
@@ -86,8 +88,8 @@ def registry_explorer_route():
     return jsonify(result)
 
 
-@bp.route('/registry_table', methods=['GET'])
-def registry_table_route():
+@bp.route('/oci_table', methods=['GET'])
+def oci_table_route():
     """Return manifest contents as a hierarchical table."""
     image = request.args.get('image')
     insecure_flag = request.args.get('insecure', 'false').lower() in {'1', 'true', 'yes'}

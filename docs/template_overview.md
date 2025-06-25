@@ -21,7 +21,7 @@ This document catalogs the HTML templates currently present in the repository an
 | `oci_layer.html` | Presents metadata for a specific layer and includes a sorted file list from `crane blob`. |
 | `oci_overlay.html` | Lists files extracted from an image using `crane export` and shows HTTP vs OCI views. |
 | `oci_repo.html` | Renders repository details including child repos and tags with links to manifests. |
-| `registry_explorer.html` | Overlay calling `/registry_explorer` to fetch image information via multiple methods (extension, layerslayer). |
+| `registry_explorer.html` | Overlay calling `/oci_explorer_api` to fetch image information via multiple methods (extension, layerslayer). |
 | `screenshotter.html` | Overlay for capturing website screenshots with optional user agent and referrer spoofing. Displays existing shots in a table. |
 | `site2zip.html` | Overlay similar to Screenshotter but crawls a URL and packages all assets into a downloadable ZIP. |
 | `subdomonster.html` | Overlay that fetches subdomains from crt.sh or VirusTotal, supports tagging and export with pagination. |

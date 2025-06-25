@@ -27,7 +27,7 @@ The current registry explorer returns raw JSON when a user fetches an image refe
    - Each entry stores digest, size, permissions and path.
    - Generate download URLs referencing `/layers/<image>@<digest>/<path>` to reuse existing layer browsing routes.
 4. **UI Rendering**
-   - Extend `registry_explorer.js` to populate a new table layout.
+   - Extend `oci_explorer.js` to populate a new table layout.
    - Show a top level table summarizing manifest info with collapsible rows for each layer.
    - Nested tables or `<details>` elements display directory contents.
    - A “Raw JSON” toggle reveals the original manifest for advanced users.
@@ -40,13 +40,13 @@ The current registry explorer returns raw JSON when a user fetches an image refe
 
 ## Implementation Steps for Codex
 1. **Route Enhancements**
-   - Add detection logic in `retrorecon/routes/registry.py` before calling the existing helper functions.
+   - Add detection logic in `retrorecon/routes/oci_explorer.py` before calling the existing helper functions.
    - Introduce optional credentials in configuration for private registries.
 2. **Data Processing**
    - Expand `registry_explorer.py` with functions to map the manifest to a hierarchical table structure.
    - Provide JSON endpoints returning this structured data.
 3. **Frontend Updates**
-   - Update `static/registry_explorer.js` and templates to render expandable tables and a JSON toggle.
+   - Update `static/oci_explorer.js` and templates to render expandable tables and a JSON toggle.
    - Include indexed menus for layer and file navigation.
 4. **Testing**
    - Extend the PyTest suite to cover new routes and detection logic.
