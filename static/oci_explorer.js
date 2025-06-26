@@ -3,8 +3,6 @@ function initRegistryExplorer(){
   const overlay = document.getElementById('registry-explorer-overlay');
   if(!overlay) return;
   const imageInput = document.getElementById('registry-image');
-  const methodChecks = overlay.querySelectorAll('input[name="registry-method"]');
-  const insecureCheck = document.getElementById('registry-insecure');
   const fetchBtn = document.getElementById('registry-fetch-btn');
   const closeBtn = document.getElementById('registry-close-btn');
   const tableDiv = document.getElementById('registry-table');
@@ -144,8 +142,7 @@ function initRegistryExplorer(){
     infoDiv.innerHTML = `Owner: <a href="${ownerUrl}" target="_blank">${data.owner}</a> | `+
                         `Image: <a href="${repoUrl}" target="_blank">${data.repo}</a> | `+
                         `Tag: <a href="${repoUrl}" target="_blank">${data.tag}</a> | `+
-                        `Manifest: <a href="${manifestUrl}" target="_blank">${data.manifest}</a>`+
-                        (data.insecure ? ' (insecure)' : '');
+                        `Manifest: <a href="${manifestUrl}" target="_blank">${data.manifest}</a>`;
     let html = '';
     const imgRef = `${data.owner}/${data.repo}:${data.tag}`;
     if(data.results){
@@ -205,16 +202,7 @@ function initRegistryExplorer(){
   fetchBtn.addEventListener('click', async () => {
     const img = imageInput.value.trim();
     if(!img) return;
-    const methods = Array.from(methodChecks).filter(c=>c.checked).map(c=>c.value);
-    let url = '/oci_explorer_api?image=' + encodeURIComponent(img);
-    if(methods.length === 1){
-      url += '&method=' + encodeURIComponent(methods[0]);
-    }else if(methods.length > 1){
-      url += '&methods=' + methods.map(encodeURIComponent).join(',');
-    }
-    if(insecureCheck && insecureCheck.checked){
-      url += '&insecure=1';
-    }
+    const url = '/oci_explorer_api?image=' + encodeURIComponent(img);
     fetchBtn.disabled = true;
     const oldText = fetchBtn.textContent;
     fetchBtn.textContent = 'Fetching...';

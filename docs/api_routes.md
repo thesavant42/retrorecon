@@ -610,8 +610,6 @@ Query manifest information for an image.
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/oci_explorer_api
 ```
 
-Pass `insecure=1` to disable TLS validation or when connecting to self-signed registries.
-
 ### `GET /registry_table`
 Return manifest details as a hierarchical table structure.
 
