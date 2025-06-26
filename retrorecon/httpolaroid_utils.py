@@ -90,6 +90,7 @@ def capture_site(
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
     log_path: Optional[str] = None,
+    har_path: Optional[str] = None,
 ) -> Tuple[bytes, bytes, int, str]:
     headers = {}
     if user_agent:
@@ -127,6 +128,7 @@ def capture_site(
         spoof_referrer,
         executable_path,
         log_path,
+        har_path,
     )
     if not ip:
         ip = shot_ips
@@ -140,6 +142,12 @@ def capture_site(
         res_headers = '\n'.join(f"{k}: {v}" for k, v in resp.headers.items())
         z.writestr('request_headers.txt', req_headers)
         z.writestr('response_headers.txt', res_headers)
+        if har_path and os.path.exists(har_path):
+            try:
+                with open(har_path, 'r', encoding='utf-8') as hf:
+                    z.writestr('harlog.json', hf.read())
+            except Exception:
+                pass
         # Parse HTML for external JavaScript files and add them under assets/js
         try:
             soup = BeautifulSoup(html, 'html.parser')
@@ -194,4 +202,9 @@ def capture_site(
         }
         z.writestr('meta.json', json.dumps(meta, indent=2))
     buf.seek(0)
+    if har_path:
+        try:
+            os.remove(har_path)
+        except OSError:
+            pass
     return buf.getvalue(), screenshot, status, ip
