@@ -256,14 +256,13 @@
   <div class="search-bar">
     <form method="GET" action="/" id="search-form">
       <div class="search-input-row">
-        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-100 form-input" />
+        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-100 form-input tag-input" />
         <div class="search-buttons">
           <button type="submit" class="btn">Search</button>
           <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
           <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
-      <div id="search-history" class="search-history"></div>
     </form>
   </div>
 
@@ -721,47 +720,8 @@
       })
       .catch(() => { updateImportStatus({status:'idle'}); });
 
-    function quickSearch(term){
-      if(term.startsWith('#')){
-        term = '"' + term.slice(1) + '"';
-      }
-      const box = document.getElementById('searchbox');
-      let current = box.value.trim();
-      if(current){
-        current += ' AND ' + term;
-      } else {
-        current = term;
-      }
-      box.value = current;
-      document.getElementById('search-form').submit();
-    }
-
-    function addHistoryButton(text){
-      const historyDiv = document.getElementById('search-history');
-      const pill = document.createElement('span');
-      pill.className = 'tag-pill';
-      pill.style.cursor = 'pointer';
-      const label = document.createElement('span');
-      label.textContent = text.replace(/#/g, '');
-      pill.appendChild(label);
-      const close = document.createElement('button');
-      close.type = 'button';
-      close.className = 'btn';
-      close.innerHTML = '&times;';
-      close.title = 'Remove tag';
-      close.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(confirm('Delete saved tag?')){
-          historyDiv.removeChild(pill);
-          fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:text})});
-        }
-      });
-      pill.appendChild(close);
-      pill.addEventListener('click', () => quickSearch(text));
-      historyDiv.appendChild(pill);
-    }
-
-    async function loadHistory(){
+    let searchTagify;
+    async function initSearchTags(){
       let saved = [];
       try {
         const resp = await fetch('/saved_tags');
@@ -770,7 +730,10 @@
           saved = Array.isArray(data.tags) ? data.tags : [];
         }
       } catch(e){}
-      saved.forEach(addHistoryButton);
+      const input = document.getElementById('searchbox');
+      if(input){
+        searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+      }
     }
 
     function saveTag(){
@@ -779,12 +742,12 @@
       if(!val.startsWith('#')){
         val = '#' + val;
       }
-      addHistoryButton(val);
-      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})})
+        .then(() => { if(searchTagify && !searchTagify.settings.whitelist.includes(val)) searchTagify.settings.whitelist.push(val); });
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
-    loadHistory();
+    initSearchTags();
 
     const saveForm = document.getElementById('save-db-form');
     if (saveForm) {

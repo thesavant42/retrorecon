@@ -14,6 +14,10 @@ function initSubdomonster(){
   const exportFormatInp = document.getElementById('subdom-export-format');
   const exportQInp = document.getElementById('subdom-export-q');
   const searchInput = document.getElementById('subdomonster-search');
+  let savedTags = [];
+  fetch('/saved_tags')
+    .then(r => r.ok ? r.json() : {tags: []})
+    .then(d => { savedTags = Array.isArray(d.tags) ? d.tags : []; if(searchInput){ new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags}); }});
   const sourceSel = document.getElementById('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let currentPage = 1;
@@ -307,7 +311,7 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
-      new Tagify(el, { maxTags: 1,
+      new Tagify(el, { maxTags: 1, whitelist: savedTags,
         originalInputValueFormat: v => v.map(t => t.value).join(',') });
     });
     const table = tableDiv.querySelector('table');
