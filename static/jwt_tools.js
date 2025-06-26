@@ -193,9 +193,13 @@ function initJWTTools(){
   });
 
   closeBtn.addEventListener('click', () => {
-    overlay.classList.add('hidden');
-    if(location.pathname === '/tools/jwt'){
-      history.pushState({}, '', '/');
+    if(typeof hideJwtTools === 'function'){
+      hideJwtTools();
+    }else{
+      overlay.classList.add('hidden');
+      if(location.pathname === '/tools/jwt'){
+        history.pushState({}, '', '/');
+      }
     }
   });
 
