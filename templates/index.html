@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
   {% if current_theme %}
   {% if current_theme == 'terminal-sans-dark.css' %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/terminal.css@latest" />
@@ -123,7 +124,7 @@
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Delete Selected</button></div>
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset tags Selected</button></div>
           <div class="menu-row bulk-controls">
-            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
+            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input tag-input" />
             <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag to Selected</button>
           </div>
           <div class="menu-header">Preferences</div>
@@ -340,7 +341,7 @@
                       <form method="POST" action="/bulk_action" class="d-inline ml-05">
                         <input type="hidden" name="action" value="add_tag" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input" />
+                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input tag-input row-tag-input" />
                         <button type="submit" title="Add tag" class="btn">+</button>
                       </form>
                       {% for tag in (url.tags or '').split(',') if tag %}
@@ -1546,6 +1547,7 @@
   if(urlTable) makeResizable(urlTable, 'url-col-widths');
   </script>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 <script src="{{ url_for('static', filename='index_page.js') }}"></script>
 </body>
 </html>

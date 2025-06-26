@@ -297,7 +297,7 @@ function initSubdomonster(){
             `<button type="button" class="btn explode-btn copy-btn" data-sub="${encoded}" title="Copy">📋 Copy</button>`+
             `<button type="button" class="btn delete-btn" title="Delete">🗑️ Delete</button>`+
             `<button type="button" class="btn ml-05 notes-btn" data-sub="${encoded}">📝 Notes</button>`+
-            `<input type="text" class="form-input ml-05 row-tag-input" placeholder="Tag" size="8" />`+
+            `<input type="text" class="form-input ml-05 row-tag-input tag-input" placeholder="Tag" size="8" />`+
             `<button type="button" class="btn add-tag-btn" title="Add tag">+</button>`+
             tagsHtml +
           `</div>`+
@@ -306,6 +306,10 @@ function initSubdomonster(){
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
+    tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
+      new Tagify(el, { maxTags: 1,
+        originalInputValueFormat: v => v.map(t => t.value).join(',') });
+    });
     const table = tableDiv.querySelector('table');
     const pageCb = document.getElementById('subdom-page-cb');
     if(pageCb){
