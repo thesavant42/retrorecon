@@ -230,7 +230,7 @@ body.bg-hidden {
   border-radius: 4px;
   transition: background 0.2s;
   color: var(--fg-color);
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
