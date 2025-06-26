@@ -175,6 +175,13 @@ async def list_layer_files(
     range_size = int(os.environ.get("LAYERPEEK_RANGE", "2097152"))
 
     def _parse(data: bytes) -> List[str]:
+        if data.startswith(b"\x28\xb5\x2f\xfd"):
+            try:
+                import zstandard as zstd  # type: ignore
+            except Exception as exc:  # pragma: no cover - optional dep missing
+                raise tarfile.ReadError(f"zstd unsupported: {exc}")
+            data = zstd.ZstdDecompressor().decompress(data)
+
         tar_bytes = io.BytesIO(data)
         with tarfile.open(fileobj=tar_bytes, mode="r:*") as tar:
             items = []
@@ -222,6 +229,9 @@ async def list_layer_files(
             if not chunk:
                 break
             data.extend(chunk)
+            if start == 0 and data.startswith(b"\x28\xb5\x2f\xfd"):
+                data = await c.fetch_bytes(url, user, repo)
+                return _parse(data)
         try:
             return _parse(data)
         except (tarfile.TarError, OSError, EOFError):

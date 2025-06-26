@@ -12,3 +12,4 @@ jsonschema
 tldextract
 flask-swagger-ui
 markdown
+zstandard
