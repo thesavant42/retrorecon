@@ -260,7 +260,7 @@
         <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-100 form-input tag-input" />
         <div class="search-buttons">
           <button type="submit" class="btn">Search</button>
-          <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
+          <button type="button" id="save-tag-btn" class="btn">+🏷️</button>
           <button type="button" id="clear-search-btn" class="btn">Clear</button>
           <button type="button" id="manage-tags-btn" class="btn">Tags…</button>
         </div>
@@ -828,16 +828,27 @@
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('searchbox');
     const clearBtn = document.getElementById('clear-search-btn');
+    if (searchInput && searchForm) {
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchForm.submit();
+        }
+      });
+    }
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
         if (searchTagify) {
           searchTagify.removeAllTags();
         }
-        const input = document.getElementById('searchbox');
-        if (input) {
-          input.value = '';
-          input.focus();
+        if (searchInput) {
+          searchInput.value = '';
+        }
+        if (searchForm) {
+          searchForm.submit();
         }
       });
     }
