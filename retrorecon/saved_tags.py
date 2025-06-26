@@ -1,12 +1,18 @@
 import json
 import os
 import threading
-from typing import List
+from typing import List, Dict
+
+DEFAULT_COLOR = "#cccccc"
 
 _TAGS_LOCK = threading.Lock()
 
-def load_tags(file_path: str) -> List[str]:
-    """Return saved search tags from ``file_path``."""
+def load_tags(file_path: str) -> List[Dict[str, str]]:
+    """Return saved tag data from ``file_path``.
+
+    The file may contain either a list of strings (legacy format) or a list of
+    objects with ``name`` and ``color`` fields.
+    """
     with _TAGS_LOCK:
         if not os.path.exists(file_path):
             return []
@@ -14,12 +20,26 @@ def load_tags(file_path: str) -> List[str]:
             with open(file_path, 'r') as f:
                 data = json.load(f)
             if isinstance(data, list):
-                return [str(t) for t in data]
+                result = []
+                for item in data:
+                    if isinstance(item, dict):
+                        name = str(item.get("name", "")).strip()
+                        color = str(item.get("color", DEFAULT_COLOR)).strip() or DEFAULT_COLOR
+                    else:
+                        name = str(item).strip()
+                        color = DEFAULT_COLOR
+                    if name:
+                        if not name.startswith("#"):
+                            name = "#" + name
+                        if not color.startswith("#"):
+                            color = "#" + color
+                        result.append({"name": name, "color": color})
+                return result
         except Exception:
             pass
         return []
 
-def save_tags(file_path: str, tags: List[str]) -> None:
+def save_tags(file_path: str, tags: List[Dict[str, str]]) -> None:
     """Persist ``tags`` to ``file_path``."""
     with _TAGS_LOCK:
         with open(file_path, 'w') as f:
