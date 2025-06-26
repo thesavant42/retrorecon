@@ -115,7 +115,8 @@
   width: 120px;
 }
 .retrorecon-root #subdomonster-overlay {
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .retrorecon-root #subdomonster-table {
   flex: 1 1 auto;
