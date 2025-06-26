@@ -1,7 +1,7 @@
 /* Neon midnight dark theme */
 :root {
   --bg-main: #00000000;
-  --bg-panel: rgb(0 0 0 / 0%);
+  --bg-panel: rgb(var(--bg-rgb)/var(--panel-opacity));
   --font-main: #ffffff;
   --font-accent: #8be9fd;
   --border-color: rgba(139, 233, 253, 0.4);
@@ -45,7 +45,7 @@ body.bg-hidden {
 
 .retrorecon-root .url-table th,
 .retrorecon-root .url-table td {
-  background: transparent;
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
   font-size: 13.333px;
