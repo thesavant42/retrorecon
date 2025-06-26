@@ -895,6 +895,7 @@
           textToolsLoaded = true;
         }
         document.getElementById('text-tools-overlay').classList.remove('hidden');
+        if(window.loadTextNotes) window.loadTextNotes();
         document.body.style.overflow = 'hidden';
         if(!skipPush){
           history.pushState({tool:'text'}, '', '/tools/text_tools');
