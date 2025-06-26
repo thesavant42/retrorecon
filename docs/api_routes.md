@@ -163,6 +163,17 @@ Parameter:
 curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
 ```
 
+### `POST /rename_saved_tag`
+Rename an existing saved tag.
+
+Parameters:
+- `old_tag` – current tag name.
+- `new_tag` – new tag value.
+
+```
+curl -X POST -d "old_tag=#foo" -d "new_tag=#bar" http://localhost:5000/rename_saved_tag
+```
+
 ### `POST /tools/webpack-zip`
 Download sources referenced in a Webpack `.js.map` file as a ZIP archive.
 

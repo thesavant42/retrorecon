@@ -260,6 +260,7 @@
         <div class="search-buttons">
           <button type="submit" class="btn">Search</button>
           <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
+          <button type="button" id="manage-tags-btn" class="btn">Tags…</button>
           <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
@@ -388,6 +389,15 @@
     <div id="notes-list" class="notes-list mt-05"></div>
   </div>
 
+  <div id="tags-overlay" class="notes-overlay hidden">
+    <input type="text" id="tag-manager-input" class="form-input tag-input" placeholder="New tag..." />
+    <div class="mt-05">
+      <button type="button" class="btn" id="tag-add-btn">Add</button>
+      <button type="button" class="btn" id="tag-close-btn">Close</button>
+    </div>
+    <div id="tags-list" class="notes-list mt-05"></div>
+  </div>
+
   <script>
     const totalResultsCount = {{ total_count }};
 
@@ -397,6 +407,11 @@
     const noteSaveBtn = document.getElementById('note-save-btn');
     const noteCloseBtn = document.getElementById('note-close-btn');
     const deleteAllBtn = document.getElementById('delete-all-notes-btn');
+    const tagsOverlay = document.getElementById('tags-overlay');
+    const tagInput = document.getElementById('tag-manager-input');
+    const tagsList = document.getElementById('tags-list');
+    const tagAddBtn = document.getElementById('tag-add-btn');
+    const tagCloseBtn = document.getElementById('tag-close-btn');
     let currentUrlId = null;
     let editingId = null;
 
@@ -466,6 +481,62 @@
     deleteAllBtn.addEventListener('click', () => {
       if(confirm('Delete all notes?')){
         fetch('/delete_note', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({url_id: currentUrlId, all:'1'})}).then(loadNotes);
+      }
+    });
+
+    function renderTags(list){
+      tagsList.innerHTML = '';
+      list.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'note-item';
+        const span = document.createElement('span');
+        span.textContent = t;
+        div.appendChild(span);
+        const actions = document.createElement('div');
+        actions.className = 'notes-actions';
+        const del = document.createElement('a');
+        del.href = '#';
+        del.className = 'notes-link ml-05';
+        del.textContent = 'Delete';
+        del.addEventListener('click', e => {
+          e.preventDefault();
+          if(confirm('Delete tag?')){
+            fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:t})}).then(loadTags);
+          }
+        });
+        actions.appendChild(del);
+        div.appendChild(actions);
+        tagsList.appendChild(div);
+      });
+      if(searchTagify) searchTagify.settings.whitelist = list;
+    }
+
+    function loadTags(){
+      fetch('/saved_tags').then(r=>r.json()).then(d=>{
+        const tags = Array.isArray(d.tags) ? d.tags : [];
+        renderTags(tags);
+      });
+    }
+
+    function openTags(){
+      tagInput.value = '';
+      loadTags();
+      tagsOverlay.classList.remove('hidden');
+    }
+
+    tagAddBtn.addEventListener('click', () => {
+      let val = tagInput.value.trim();
+      if(!val) return;
+      if(!val.startsWith('#')) val = '#' + val;
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})})
+        .then(() => { tagInput.value=''; loadTags(); });
+    });
+
+    tagCloseBtn.addEventListener('click', () => { tagsOverlay.classList.add('hidden'); });
+    document.getElementById('manage-tags-btn').addEventListener('click', openTags);
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape' && !tagsOverlay.classList.contains('hidden')){
+        tagCloseBtn.click();
       }
     });
 

@@ -31,6 +31,24 @@ def delete_saved_tag():
         app.save_saved_tags(tags)
     return ('', 204)
 
+@bp.route('/rename_saved_tag', methods=['POST'])
+def rename_saved_tag():
+    old_tag = request.form.get('old_tag', '').strip()
+    new_tag = request.form.get('new_tag', '').strip()
+    if not old_tag or not new_tag:
+        return ('', 400)
+    if not old_tag.startswith('#'):
+        old_tag = '#' + old_tag
+    if not new_tag.startswith('#'):
+        new_tag = '#' + new_tag
+    tags = app.load_saved_tags()
+    if old_tag in tags:
+        tags.remove(old_tag)
+    if new_tag not in tags:
+        tags.append(new_tag)
+    app.save_saved_tags(tags)
+    return ('', 204)
+
 @bp.route('/notes/<int:url_id>', methods=['GET'])
 def notes_get(url_id: int):
     if not app._db_loaded():

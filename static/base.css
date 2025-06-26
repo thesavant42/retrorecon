@@ -1226,6 +1226,22 @@ body.bg-hidden {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+.retrorecon-root .tags-overlay {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(var(--bg-rgb) / 0.95);
+  color: var(--fg-color);
+  z-index: 1000;
+  box-sizing: border-box;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 
 .retrorecon-root .dropdown-shade {
   position: fixed;
@@ -1238,6 +1254,9 @@ body.bg-hidden {
   display: block;
 }
 .retrorecon-root .notes-overlay.hidden {
+  display: none;
+}
+.retrorecon-root .tags-overlay.hidden {
   display: none;
 }
 .retrorecon-root .notes-textarea {
