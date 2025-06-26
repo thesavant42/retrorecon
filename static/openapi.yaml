@@ -408,6 +408,12 @@ paths:
       responses:
         '200':
           description: Successful response
+  /domain_summary:
+    get:
+      summary: GET /domain_summary
+      responses:
+        '200':
+          description: Successful response
   /docker_layers:
     get:
       summary: GET /docker_layers
