@@ -11,6 +11,7 @@
   --accent-color: var(--color-accent);
   --panel-opacity: 0.25;
   --radius: 8px;
+  --navbar-height: 3em;
   --select-bg-color: var(--color-base);
   --select-border-color: var(--color-contrast);
 
@@ -1189,7 +1190,10 @@ body.bg-hidden {
 
 .retrorecon-root .notes-overlay {
   position: fixed;
-  inset: 0;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(var(--bg-rgb) / 0.95);
   color: var(--fg-color);
   z-index: 1000;

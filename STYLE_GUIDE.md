@@ -64,3 +64,19 @@ table containers &mdash; should have slightly rounded corners using a
 
 Following these defaults ensures consistency between pages and keeps the
 interface simple to theme.
+
+## 5. Overlays
+
+Interactive tools use overlay panels such as `.notes-overlay`. These panels must
+never hide the main navigation bar or status area at the top of the page. The
+base stylesheet defines `--navbar-height` to reserve space for this menu:
+
+```css
+:root {
+  --navbar-height: 3em; /* adjust if the navbar layout changes */
+}
+```
+
+The `.notes-overlay` rule positions overlays using `top: var(--navbar-height)` so
+the menu bar remains visible. Every overlay should also include a close button to
+return to the previous view.
