@@ -366,7 +366,11 @@ def httpolaroid_route():
         zip_bytes, shot_bytes, status_code, ips = app.capture_snap(
             url, agent, spoof, log_path, har_path
         )
+    except requests.exceptions.RequestException as e:
+        current_app.logger.debug('httpolaroid request failed: %s', e)
+        return (f'Error capturing site: {e}', 500)
     except Exception as e:
+        current_app.logger.debug('httpolaroid unexpected error: %s', e)
         return (f'Error capturing site: {e}', 500)
     zip_name = f'site_{ts}.zip'
     shot_name = f'site_{ts}.png'
