@@ -194,7 +194,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  font-family: var(--font-main);
+  font-family: var(--font-family-base, var(--font-main));
   font-size: 14px;
   margin: 0;
   min-height: calc(100vh - 10px);
@@ -751,7 +751,7 @@ body {
   text-align: right;
 }
 .retrorecon-root .text-mono {
-  font-family: var(--font-main);
+  font-family: var(--font-family-base, var(--font-main));
   white-space: nowrap;
 }
 
@@ -1220,7 +1220,7 @@ body.bg-hidden {
 }
 .retrorecon-root .debug-output {
   width: 100%;
-  font-family: monospace;
+  font-family: var(--font-family-base, monospace);
   white-space: pre-wrap;
   background: var(--bg-color);
   color: var(--fg-color);

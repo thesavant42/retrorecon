@@ -44,7 +44,7 @@
 .retrorecon-root #exploder-results {
   margin-top: 1em;
   white-space: pre-wrap;
-  font-family: var(--font-main);
+  font-family: var(--font-family-base, var(--font-main));
   max-height: 400px;
   overflow-y: auto;
 }

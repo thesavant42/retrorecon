@@ -26,7 +26,7 @@
 .retrorecon-root {
   background: linear-gradient(180deg, #00000000 0%, #00000000 100%);
   color: var(--font-main);
-  font-family: 'Share Tech Mono', 'Consolas', monospace;
+  font-family: var(--font-family-base, 'Share Tech Mono', 'Consolas', monospace);
 }
 
 body.bg-hidden {
