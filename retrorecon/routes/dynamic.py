@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, abort
+from jinja2 import TemplateNotFound
 import json
 from markupsafe import escape
 from ..dynamic_render import AssetRegistry, SchemaRegistry, HTMLGenerator, render_from_payload
@@ -23,7 +24,10 @@ def dynamic_template(template: str, **context) -> str:
     use_legacy = context.pop("use_legacy", False)
     if request.args.get("legacy") == "1":
         use_legacy = True
-    html = render_template(template, **context)
+    try:
+        html = render_template(template, **context)
+    except TemplateNotFound:
+        abort(404)
     if use_legacy:
         return html
     payload = {"schema": "static_html", "data": {"html": html}}
