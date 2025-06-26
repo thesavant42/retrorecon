@@ -3,12 +3,12 @@ function initSubdomonster(){
   const overlay = document.getElementById('subdomonster-overlay');
   if(!overlay) return;
   const domainInput = document.getElementById('subdomonster-domain');
-  const fetchBtn = document.getElementById('subdomonster-fetch-btn');
+  const addBtn = document.getElementById('subdom-add-domain-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
   const statusSpan = document.getElementById('subdomonster-status');
-  const exportFormatsSel = document.getElementById('subdom-export-formats');
+  const exportBtn = document.getElementById('subdom-export-btn');
   const exportForm = document.getElementById('subdom-export-form');
   const exportDomainInp = document.getElementById('subdom-export-domain');
   const exportFormatInp = document.getElementById('subdom-export-format');
@@ -16,12 +16,6 @@ function initSubdomonster(){
   const searchInput = document.getElementById('subdomonster-search');
   const sourceSel = document.getElementById('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
-  const selectModeSel = document.getElementById('subdom-select-mode');
-  const bulkTag = document.getElementById('subdom-bulk-tag');
-  const addTagBtn = document.getElementById('subdom-add-tag-btn');
-  const removeTagBtn = document.getElementById('subdom-remove-tag-btn');
-  const clearTagsBtn = document.getElementById('subdom-clear-tags-btn');
-  const deleteBtn = document.getElementById('subdom-delete-btn');
   let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
@@ -62,35 +56,6 @@ function initSubdomonster(){
     }
   }
 
-  function toggleSelectPage(state){
-    document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => {
-      c.checked = state;
-      const sub = c.dataset.sub;
-      if(state) selectedSubs.add(sub); else selectedSubs.delete(sub);
-    });
-    selectAll = false;
-    if(selectModeSel) selectModeSel.value = state ? 'page' : '';
-    updateSelectionStatus();
-  }
-
-  function toggleSelectAllMatching(state){
-    selectAll = state;
-    if(selectModeSel) selectModeSel.value = state ? 'all' : '';
-    if(state){
-      selectedSubs.clear();
-      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => {
-        c.checked = true;
-        const sub = c.dataset.sub;
-        selectedSubs.add(sub);
-      });
-      showStatus('All matching selected');
-    } else {
-      selectedSubs.clear();
-      document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c => c.checked=false);
-      showStatus('Selection cleared');
-    }
-    updateSelectionStatus();
-  }
 
   function openCdxImport(sub){
     enqueueCdxImport([sub]);
@@ -119,7 +84,7 @@ function initSubdomonster(){
       await new Promise(r=>setTimeout(r,1000));
     }
     cdxProcessing = false;
-    if(fetchBtn) fetchBtn.click();
+    if(addBtn) addBtn.click();
   }
 
   function enqueueCdxImport(list){
@@ -158,22 +123,6 @@ function initSubdomonster(){
     }
   }
 
-  if(selectModeSel){
-    selectModeSel.addEventListener('change', () => {
-      const mode = selectModeSel.value;
-      if(mode === 'page') {
-        toggleSelectPage(true);
-      } else if(mode === 'all') {
-        toggleSelectAllMatching(true);
-      } else {
-        toggleSelectAllMatching(false);
-        toggleSelectPage(false);
-        document.querySelectorAll('#subdomonster-table .row-checkbox').forEach(c=>c.checked=false);
-        selectedSubs.clear();
-      }
-      updateSelectionStatus();
-    });
-  }
 
   if(searchInput){
     searchInput.addEventListener('input', () => {
@@ -311,9 +260,9 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em checkbox-col"/><col/><col/><col/><col/>'+
+      '<col class="w-1-6em checkbox-col"/><col/><col/><col/><col/>'+
       '</colgroup><thead><tr>'+
-      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
+      '<th class="w-1-6em checkbox-col no-resize text-center"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
       '<th class="sortable" data-field="subdomain">Subdomain</th>'+
       '<th class="sortable" data-field="domain">Domain</th>'+
       '<th class="sortable" data-field="source">Source</th>'+
@@ -512,8 +461,11 @@ function initSubdomonster(){
     renderPagination(totalPages, sorted.length);
   }
 
-  fetchBtn.addEventListener('click', async () => {
-    const domain = domainInput.value.trim();
+  addBtn.addEventListener('click', async () => {
+    const input = prompt('Domain to fetch', domainInput.value.trim());
+    const domain = (input || '').trim();
+    if(!domain) return;
+    domainInput.value = domain;
     const source = sourceSel ? sourceSel.value : 'crtsh';
     const params = new URLSearchParams();
     if(domain) params.append('domain', domain);
@@ -540,51 +492,20 @@ function initSubdomonster(){
   });
 
 
-  if(exportFormatsSel && exportForm){
-    exportFormatsSel.addEventListener('change', () => {
-      const fmt = exportFormatsSel.value;
+  if(exportBtn && exportForm){
+    exportBtn.addEventListener('click', () => {
+      const fmt = prompt('Format (md,csv,json)', 'json');
       if(!fmt) return;
       const domain = domainInput.value.trim();
-      if(!domain) { exportFormatsSel.value = ''; return; }
+      if(!domain) return;
       if(exportDomainInp) exportDomainInp.value = domain;
       if(exportFormatInp) exportFormatInp.value = fmt;
       if(exportQInp) exportQInp.value = searchInput ? searchInput.value.trim() : '';
       exportForm.submit();
-      exportFormatsSel.value = '';
     });
   }
 
-  async function bulkAction(action){
-    const selected = Array.from(document.querySelectorAll('#subdomonster-table .row-checkbox:checked')).map(c=>c.value);
-    if(!selectAll && selected.length === 0){
-      alert('No entries selected');
-      return;
-    }
-    const params = new URLSearchParams();
-    params.append('action', action);
-    if(selectAll){
-      params.append('select_all_matching','true');
-      params.append('q', searchInput ? searchInput.value.trim() : '');
-      params.append('domain', domainInput.value.trim());
-    } else {
-      for(const val of selected){ params.append('selected', val); }
-    }
-    const tag = bulkTag ? bulkTag.value.trim() : '';
-    if(tag) params.append('tag', tag);
-    const resp = await fetch('/subdomain_action', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params});
-    if(resp.ok){
-      const data = await resp.json();
-      showStatus('Updated ' + data.updated);
-      fetchBtn.click();
-    } else {
-      alert('Action failed');
-    }
-  }
 
-  if(addTagBtn){ addTagBtn.addEventListener('click', ()=>bulkAction('add_tag')); }
-  if(removeTagBtn){ removeTagBtn.addEventListener('click', ()=>bulkAction('remove_tag')); }
-  if(clearTagsBtn){ clearTagsBtn.addEventListener('click', ()=>bulkAction('clear_tags')); }
-  if(deleteBtn){ deleteBtn.addEventListener('click', ()=>bulkAction('delete')); }
 
   closeBtn.addEventListener('click', () => {
     history.back();
