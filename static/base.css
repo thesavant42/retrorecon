@@ -716,6 +716,15 @@ body {
   background: var(--bg-color);
   color: var(--fg-color);
 }
+/* Reduce height of Tagify inputs to avoid tall rows */
+.retrorecon-root .tagify {
+  font-size: 12px !important;
+  min-height: 1.6em;
+}
+.retrorecon-root .tagify__input {
+  padding: 0 4px;
+  line-height: 1.2em;
+}
 /* Bulk action buttons use the generic .btn style */
 .retrorecon-root .bulk-action-btn {
   font-size: 1em;
