@@ -731,7 +731,7 @@ body {
 .retrorecon-root .url-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   margin-bottom: 0.4em;
   border-radius: 8px;
 }
@@ -757,7 +757,7 @@ body {
 
 /* Table header style this seems wrong to me JB*/
 .retrorecon-root .url-table thead {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   color: var(--color-contrast);
   opacity: 1;
 }
@@ -847,7 +847,7 @@ body {
 
 /* URL row button cells */
 .retrorecon-root .url-row-buttons {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
   transition: background-color 0.2s;
 }
 .retrorecon-root .url-row-buttons td {
@@ -872,11 +872,11 @@ body {
 }
 .retrorecon-root .url-row-main:nth-child(4n),
 .retrorecon-root .url-row-main:nth-child(4n + 2) {
-  background: rgb(var(--bg-rgb));
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
 .retrorecon-root .url-row-buttons:nth-child(4n + 1),
 .retrorecon-root .url-row-buttons:nth-child(4n + 3) {
-  background: var(--bg-color);
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
 
 /* Main row: cursor pointer for entire row */
