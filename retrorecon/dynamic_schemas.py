@@ -49,11 +49,11 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                 },
                                 {
                                     "tag": "select",
-                                    "attrs": {"id": "subdomonster-source", "class": "form-select mr-05 w-3em"},
+                                    "attrs": {"id": "subdomonster-source", "class": "form-select mr-05 w-6em"},
                                     "children": [
-                                        {"tag": "option", "attrs": {"value": "crtsh", "selected": True}, "text": "C"},
-                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "V"},
-                                        {"tag": "option", "attrs": {"value": "local"}, "text": "L"},
+                                        {"tag": "option", "attrs": {"value": "crtsh", "selected": True}, "text": "crt.sh"},
+                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "VirusTotal"},
+                                        {"tag": "option", "attrs": {"value": "local"}, "text": "Local"},
                                     ],
                                 },
                                 {
@@ -71,7 +71,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "attrs": {
                                         "type": "text",
                                         "id": "subdomonster-search",
-                                        "class": "form-input mr-05",
+                                        "class": "form-input mr-05 w-20em",
                                         "placeholder": "search",
                                     },
                                 },
