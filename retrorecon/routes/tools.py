@@ -268,7 +268,6 @@ def screenshot_route():
     agent = request.form.get('user_agent', '').strip()
     spoof = request.form.get('spoof_referrer', '0') == '1'
     debug_log = request.form.get('debug', '0') == '1'
-    capture_har = request.form.get('har', '0') == '1'
     ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
     log_path = None
     os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
