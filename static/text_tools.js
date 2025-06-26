@@ -84,7 +84,14 @@ function initTextTools(){
     });
   });
 
-  closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
+  closeBtn.addEventListener('click', () => {
+    if(typeof hideTextTools === 'function'){
+      hideTextTools();
+    } else {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  });
 }
 
 if(document.readyState === 'loading'){

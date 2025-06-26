@@ -53,6 +53,9 @@
 .retrorecon-root #text-tools-overlay .btn {
   margin-right: 0.25em;
 }
+.retrorecon-root .emoji-badge {
+  margin-right: 0.25em;
+}
 
 /* JWT Tools overlay */
 .retrorecon-root #jwt-tools-overlay .btn {

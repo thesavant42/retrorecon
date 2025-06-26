@@ -925,6 +925,7 @@
           textToolsLoaded = true;
         }
         document.getElementById('text-tools-overlay').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
         if(!skipPush){
           history.pushState({tool:'text'}, '', '/tools/text_tools');
         }
@@ -933,6 +934,7 @@
       function hideTextTools(){
         const ov = document.getElementById('text-tools-overlay');
         if(ov) ov.classList.add('hidden');
+        document.body.style.overflow = '';
       }
 
       if (textToolsLink) {
