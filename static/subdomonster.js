@@ -514,6 +514,11 @@ function initSubdomonster(){
   closeBtn.addEventListener('click', () => {
     history.back();
   });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !overlay.classList.contains('hidden')){
+      closeBtn.click();
+    }
+  });
 
   if(tableData.length){
     render();

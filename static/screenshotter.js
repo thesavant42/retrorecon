@@ -161,6 +161,11 @@ function initScreenshotter(){
       history.pushState({}, '', '/');
     }
   });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !overlay.classList.contains('hidden')){
+      closeBtn.click();
+    }
+  });
 
   if(toggleBtn){
     toggleBtn.addEventListener('click', () => {

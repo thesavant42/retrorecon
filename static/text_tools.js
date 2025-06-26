@@ -92,6 +92,11 @@ function initTextTools(){
       document.body.style.overflow = '';
     }
   });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !overlay.classList.contains('hidden')){
+      closeBtn.click();
+    }
+  });
 }
 
 if(document.readyState === 'loading'){
