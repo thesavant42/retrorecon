@@ -3,6 +3,7 @@ import sys
 import io
 import zipfile
 from pathlib import Path
+import requests
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
 
@@ -59,5 +60,19 @@ def test_view_har(monkeypatch, tmp_path):
         resp = client.get(f"/view_har/{sid}")
         assert resp.status_code == 200
         assert resp.data == b'{"log":{}}'
+
+
+def test_httpolaroid_capture_dns_failure(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    def fake_capture(url, agent="", spoof_referrer=False, log_path=None, har_path=None):
+        raise requests.exceptions.ConnectionError("dns fail")
+
+    monkeypatch.setattr(app, "capture_snap", fake_capture)
+    import retrorecon.routes.tools as tools_routes
+    monkeypatch.setattr(tools_routes, "dynamic_template", lambda *a, **k: "")
+    with app.app.test_client() as client:
+        resp = client.post("/tools/httpolaroid", data={"url": "http://bad.example"})
+        assert resp.status_code == 500
+        assert b"Error capturing site" in resp.data
 
 

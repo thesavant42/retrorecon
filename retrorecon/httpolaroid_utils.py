@@ -6,6 +6,7 @@ from urllib.parse import urlparse, urlunparse, urljoin
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.packages.urllib3 import disable_warnings
+import logging
 
 # Suppress warnings when capturing sites with invalid certificates
 disable_warnings(InsecureRequestWarning)
@@ -15,6 +16,8 @@ from database import execute_db, query_db
 from . import screenshot_utils
 from bs4 import BeautifulSoup
 import json
+
+logger = logging.getLogger(__name__)
 
 
 def save_record(
@@ -107,15 +110,19 @@ def capture_site(
             netloc += f":{parsed.port}"
         url = urlunparse(parsed._replace(netloc=netloc, username=None, password=None))
 
-    resp = requests.get(
-        url,
-        headers=headers,
-        timeout=15,
-        verify=False,
-        allow_redirects=True,
-        auth=auth,
-    )
-    resp.raise_for_status()
+    try:
+        resp = requests.get(
+            url,
+            headers=headers,
+            timeout=15,
+            verify=False,
+            allow_redirects=True,
+            auth=auth,
+        )
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logger.debug("initial request failed: %s", e)
+        raise
     html = resp.text
     ip = ''
     try:
