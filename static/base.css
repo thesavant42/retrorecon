@@ -1240,9 +1240,9 @@ body.bg-hidden {
 .retrorecon-root .tags-overlay {
   position: fixed;
   top: var(--navbar-height);
-  left: 0;
   right: 0;
   bottom: 0;
+  width: 20em;
   background: rgba(var(--bg-rgb) / 0.95);
   color: var(--fg-color);
   z-index: 1000;
@@ -1250,8 +1250,13 @@ body.bg-hidden {
   padding: 1em;
   display: flex;
   flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease-in-out;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+.retrorecon-root .tags-overlay.show {
+  transform: translateX(0);
 }
 
 .retrorecon-root .dropdown-shade {
@@ -1268,7 +1273,25 @@ body.bg-hidden {
   display: none;
 }
 .retrorecon-root .tags-overlay.hidden {
-  display: none;
+  transform: translateX(100%);
+}
+.retrorecon-root .tag-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.retrorecon-root .tag-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4em;
+}
+.retrorecon-root .tag-item .saved-tag {
+  flex-shrink: 0;
+}
+.retrorecon-root #tag-editor {
+  border-top: 1px solid var(--fg-color);
+  padding-top: 0.5em;
 }
 .retrorecon-root .notes-textarea {
   width: 100%;

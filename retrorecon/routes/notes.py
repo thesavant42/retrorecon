@@ -10,6 +10,7 @@ def saved_tags_route():
         return jsonify({'tags': app.load_saved_tags()})
     tag = request.form.get('tag', '').strip()
     color = request.form.get('color', '').strip() or saved_tags_mod.DEFAULT_COLOR
+    desc = request.form.get('desc', '').strip()
     if not tag:
         return ('', 400)
     if not tag.startswith('#'):
@@ -19,7 +20,7 @@ def saved_tags_route():
     tags = app.load_saved_tags()
     names = [t['name'] for t in tags]
     if tag not in names:
-        tags.append({'name': tag, 'color': color})
+        tags.append({'name': tag, 'color': color, 'desc': desc})
         app.save_saved_tags(tags)
     return ('', 204)
 
@@ -41,6 +42,7 @@ def rename_saved_tag():
     old_tag = request.form.get('old_tag', '').strip()
     new_tag = request.form.get('new_tag', '').strip()
     color = request.form.get('color', '').strip()
+    desc = request.form.get('desc', '').strip()
     if not old_tag or not new_tag:
         return ('', 400)
     if not old_tag.startswith('#'):
@@ -56,12 +58,15 @@ def rename_saved_tag():
             t['name'] = new_tag
             if color:
                 t['color'] = color
+            if desc:
+                t['desc'] = desc
             updated = True
     if updated:
-        names = [t['name'] for t in tags]
-        if len(set(names)) != len(names):
-            tags = [dict(name=n, color=c) for n,c in {(t['name'], t['color']) for t in tags}]
-        app.save_saved_tags(tags)
+        unique = {}
+        for t in tags:
+            if t['name'] not in unique:
+                unique[t['name']] = t
+        app.save_saved_tags(list(unique.values()))
     return ('', 204)
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])
