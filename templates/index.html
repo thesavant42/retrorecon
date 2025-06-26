@@ -260,8 +260,8 @@
         <div class="search-buttons">
           <button type="submit" class="btn">Search</button>
           <button type="button" id="save-tag-btn" class="btn">Save Tag</button>
+          <button type="button" id="clear-search-btn" class="btn">Clear</button>
           <button type="button" id="manage-tags-btn" class="btn">Tags…</button>
-          <button type="button" class="btn" onclick="document.getElementById('searchbox').value=''; document.getElementById('search-form').submit();">Clear</button>
         </div>
       </div>
     </form>
@@ -827,6 +827,19 @@
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
+    const clearBtn = document.getElementById('clear-search-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (searchTagify) {
+          searchTagify.removeAllTags();
+        }
+        const input = document.getElementById('searchbox');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      });
+    }
     initSearchTags();
 
     const saveForm = document.getElementById('save-db-form');
