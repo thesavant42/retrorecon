@@ -17,7 +17,14 @@ function initSubdomonster(){
   let savedTags = [];
   fetch('/saved_tags')
     .then(r => r.ok ? r.json() : {tags: []})
-    .then(d => { const arr = Array.isArray(d.tags) ? d.tags : []; savedTags = arr.map(t => t.name); if(searchInput){ new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags}); }});
+    .then(d => {
+      const arr = Array.isArray(d.tags) ? d.tags : [];
+      savedTags = arr.map(t => t.name);
+      if(searchInput){
+        const tagify = new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags});
+        if(tagify.DOM.scopeParent) tagify.DOM.scopeParent.style.width = '20em';
+      }
+    });
   const sourceSel = document.getElementById('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let currentPage = 1;
@@ -144,6 +151,10 @@ function initSubdomonster(){
     const cols = table.querySelectorAll('col');
     let widths = {};
     try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
+    if(Object.keys(widths).length !== ths.length){
+      widths = {};
+      localStorage.removeItem(key);
+    }
     ths.forEach((th, idx) => {
       const id = idx;
       let w = widths[id];

@@ -1582,6 +1582,10 @@
       const cols = table.querySelectorAll('col');
       let widths = {};
       try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
+      if(Object.keys(widths).length !== ths.length){
+        widths = {};
+        localStorage.removeItem(key);
+      }
       ths.forEach((th, idx) => {
         const id = idx;
         if(widths[id]){
