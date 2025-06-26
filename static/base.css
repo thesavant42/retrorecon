@@ -1337,6 +1337,7 @@ body.bg-hidden {
   top: 0.5em;
   right: 0.5em;
   float: none;
+  z-index: 1;
 }
 
 .retrorecon-root .help-overlay {
