@@ -55,6 +55,7 @@
 }
 .retrorecon-root .emoji-badge {
   margin-right: 0.25em;
+  vertical-align: middle;
 }
 
 /* JWT Tools overlay */
