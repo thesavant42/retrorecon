@@ -2,7 +2,7 @@ import io
 import csv
 import re
 import json
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, jsonify, Response, current_app
 from .dynamic import dynamic_template, render_from_payload, schema_registry, html_generator
 import app
 from retrorecon import subdomain_utils, status as status_mod
@@ -63,7 +63,7 @@ def subdomains_route():
 
     domain = request.form.get('domain', '').strip().lower()
     source = request.form.get('source', 'crtsh')
-    api_key = request.form.get('api_key', '').strip()
+    api_key = request.form.get('api_key', '').strip() or current_app.config.get('VIRUSTOTAL_API', '')
 
     if source == 'local':
         # Allow single-label hostnames or IPs when scraping local URLs. A very

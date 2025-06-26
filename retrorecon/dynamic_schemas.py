@@ -58,6 +58,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                         "id": "subdomonster-api-key",
                                         "class": "form-input mr-05 hidden",
                                         "placeholder": "API key",
+                                        "value": app.app.config.get("VIRUSTOTAL_API", ""),
                                     },
                                 },
                                 {
