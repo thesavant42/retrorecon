@@ -29,7 +29,12 @@ def test_saved_tag_crud(tmp_path, monkeypatch):
         resp = client.get('/saved_tags')
         assert resp.get_json() == {"tags": ["#foo"]}
 
-        resp = client.post('/delete_saved_tag', data={'tag': 'foo'})
+        resp = client.post('/rename_saved_tag', data={'old_tag': 'foo', 'new_tag': 'bar'})
+        assert resp.status_code == 204
+        resp = client.get('/saved_tags')
+        assert resp.get_json() == {"tags": ["#bar"]}
+
+        resp = client.post('/delete_saved_tag', data={'tag': 'bar'})
         assert resp.status_code == 204
         resp = client.get('/saved_tags')
         assert resp.get_json() == {"tags": []}
