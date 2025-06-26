@@ -71,6 +71,7 @@ paths:
           description: Successful response
     post:
       summary: POST /saved_tags
+      description: Add a saved tag with optional color
       responses:
         '200':
           description: Successful response

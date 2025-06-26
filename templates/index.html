@@ -392,6 +392,7 @@
 
   <div id="tags-overlay" class="notes-overlay hidden">
     <input type="text" id="tag-manager-input" class="form-input tag-input" placeholder="New tag..." />
+    <input type="color" id="tag-color-input" value="#cccccc" class="ml-05" />
     <div class="mt-05">
       <button type="button" class="btn" id="tag-add-btn">Add</button>
       <button type="button" class="btn" id="tag-close-btn">Close</button>
@@ -410,6 +411,7 @@
     const deleteAllBtn = document.getElementById('delete-all-notes-btn');
     const tagsOverlay = document.getElementById('tags-overlay');
     const tagInput = document.getElementById('tag-manager-input');
+    const tagColorInput = document.getElementById('tag-color-input');
     const tagsList = document.getElementById('tags-list');
     const tagAddBtn = document.getElementById('tag-add-btn');
     const tagCloseBtn = document.getElementById('tag-close-btn');
@@ -491,7 +493,9 @@
         const div = document.createElement('div');
         div.className = 'note-item';
         const span = document.createElement('span');
-        span.textContent = t;
+        span.className = 'saved-tag';
+        span.textContent = t.name;
+        span.style.backgroundColor = t.color || '#ccc';
         div.appendChild(span);
         const actions = document.createElement('div');
         actions.className = 'notes-actions';
@@ -502,14 +506,14 @@
         del.addEventListener('click', e => {
           e.preventDefault();
           if(confirm('Delete tag?')){
-            fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:t})}).then(loadTags);
+            fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:t.name})}).then(loadTags);
           }
         });
         actions.appendChild(del);
         div.appendChild(actions);
         tagsList.appendChild(div);
       });
-      if(searchTagify) searchTagify.settings.whitelist = list;
+      if(searchTagify) searchTagify.settings.whitelist = list.map(x => x.name);
     }
 
     function loadTags(){
@@ -529,7 +533,8 @@
       let val = tagInput.value.trim();
       if(!val) return;
       if(!val.startsWith('#')) val = '#' + val;
-      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})})
+      const params = new URLSearchParams({tag:val, color: tagColorInput.value});
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params})
         .then(() => { tagInput.value=''; loadTags(); });
     });
 
@@ -808,7 +813,8 @@
         const resp = await fetch('/saved_tags');
         if(resp.ok){
           const data = await resp.json();
-          saved = Array.isArray(data.tags) ? data.tags : [];
+          const arr = Array.isArray(data.tags) ? data.tags : [];
+          saved = arr.map(t => t.name);
         }
       } catch(e){}
       const input = document.getElementById('searchbox');

@@ -175,11 +175,11 @@ def clear_import_progress() -> None:
     progress_mod.clear_progress(IMPORT_PROGRESS_FILE)
 
 
-def load_saved_tags() -> List[str]:
+def load_saved_tags() -> List[Dict[str, str]]:
     return saved_tags_mod.load_tags(SAVED_TAGS_FILE)
 
 
-def save_saved_tags(tags: List[str]) -> None:
+def save_saved_tags(tags: List[Dict[str, str]]) -> None:
     saved_tags_mod.save_tags(SAVED_TAGS_FILE, tags)
 
 

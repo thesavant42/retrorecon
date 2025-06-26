@@ -730,6 +730,15 @@ body {
 .retrorecon-root .tagify__tag {
   margin: 1px;
 }
+
+.retrorecon-root .saved-tag {
+  display: inline-block;
+  padding: 0 6px;
+  margin: 2px;
+  font-size: 12px;
+  border-radius: 3px;
+  color: #fff;
+}
 /* Bulk action buttons use the generic .btn style */
 .retrorecon-root .bulk-action-btn {
   font-size: 1em;

@@ -17,7 +17,7 @@ function initSubdomonster(){
   let savedTags = [];
   fetch('/saved_tags')
     .then(r => r.ok ? r.json() : {tags: []})
-    .then(d => { savedTags = Array.isArray(d.tags) ? d.tags : []; if(searchInput){ new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags}); }});
+    .then(d => { const arr = Array.isArray(d.tags) ? d.tags : []; savedTags = arr.map(t => t.name); if(searchInput){ new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags}); }});
   const sourceSel = document.getElementById('subdomonster-source');
   const apiInput = document.getElementById('subdomonster-api-key');
   let currentPage = 1;

@@ -137,7 +137,8 @@ curl -X POST -d "theme=nostalgia.css" -d "size=16" \
 ```
 
 ### `GET /saved_tags`
-Return the list of saved tag searches.
+Return the list of saved tag searches. Each tag object contains ``name`` and
+``color`` fields.
 
 ```
 curl http://localhost:5000/saved_tags
@@ -146,11 +147,12 @@ curl http://localhost:5000/saved_tags
 ### `POST /saved_tags`
 Add a new tag query to the saved list.
 
-Parameter:
+Parameters:
 - `tag` – search expression to store.
+- `color` – optional hex color code.
 
 ```
-curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/saved_tags
+curl -X POST -d "tag=#foo" -d "color=#ff0000" http://localhost:5000/saved_tags
 ```
 
 ### `POST /delete_saved_tag`
@@ -169,9 +171,11 @@ Rename an existing saved tag.
 Parameters:
 - `old_tag` – current tag name.
 - `new_tag` – new tag value.
+- `color` – optional hex color code.
 
 ```
-curl -X POST -d "old_tag=#foo" -d "new_tag=#bar" http://localhost:5000/rename_saved_tag
+curl -X POST -d "old_tag=#foo" -d "new_tag=#bar" -d "color=#00ff00" \
+  http://localhost:5000/rename_saved_tag
 ```
 
 ### `POST /tools/webpack-zip`

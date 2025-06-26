@@ -40,7 +40,8 @@ async function initTagInputs(){
     const resp = await fetch('/saved_tags');
     if(resp.ok){
       const data = await resp.json();
-      saved = Array.isArray(data.tags) ? data.tags : [];
+      const arr = Array.isArray(data.tags) ? data.tags : [];
+      saved = arr.map(t => t.name);
     }
   }catch{}
   document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {

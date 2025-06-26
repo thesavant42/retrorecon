@@ -1,5 +1,6 @@
 import app
 from flask import Blueprint, request, jsonify
+from retrorecon import saved_tags as saved_tags_mod
 
 bp = Blueprint('notes', __name__)
 
@@ -8,13 +9,17 @@ def saved_tags_route():
     if request.method == 'GET':
         return jsonify({'tags': app.load_saved_tags()})
     tag = request.form.get('tag', '').strip()
+    color = request.form.get('color', '').strip() or saved_tags_mod.DEFAULT_COLOR
     if not tag:
         return ('', 400)
     if not tag.startswith('#'):
         tag = '#' + tag
+    if not color.startswith('#'):
+        color = '#' + color
     tags = app.load_saved_tags()
-    if tag not in tags:
-        tags.append(tag)
+    names = [t['name'] for t in tags]
+    if tag not in names:
+        tags.append({'name': tag, 'color': color})
         app.save_saved_tags(tags)
     return ('', 204)
 
@@ -26,27 +31,37 @@ def delete_saved_tag():
     if not tag.startswith('#'):
         tag = '#' + tag
     tags = app.load_saved_tags()
-    if tag in tags:
-        tags.remove(tag)
-        app.save_saved_tags(tags)
+    filtered = [t for t in tags if t['name'] != tag]
+    if len(filtered) != len(tags):
+        app.save_saved_tags(filtered)
     return ('', 204)
 
 @bp.route('/rename_saved_tag', methods=['POST'])
 def rename_saved_tag():
     old_tag = request.form.get('old_tag', '').strip()
     new_tag = request.form.get('new_tag', '').strip()
+    color = request.form.get('color', '').strip()
     if not old_tag or not new_tag:
         return ('', 400)
     if not old_tag.startswith('#'):
         old_tag = '#' + old_tag
     if not new_tag.startswith('#'):
         new_tag = '#' + new_tag
+    if color and not color.startswith('#'):
+        color = '#' + color
     tags = app.load_saved_tags()
-    if old_tag in tags:
-        tags.remove(old_tag)
-    if new_tag not in tags:
-        tags.append(new_tag)
-    app.save_saved_tags(tags)
+    updated = False
+    for t in tags:
+        if t['name'] == old_tag:
+            t['name'] = new_tag
+            if color:
+                t['color'] = color
+            updated = True
+    if updated:
+        names = [t['name'] for t in tags]
+        if len(set(names)) != len(names):
+            tags = [dict(name=n, color=c) for n,c in {(t['name'], t['color']) for t in tags}]
+        app.save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])
