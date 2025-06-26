@@ -108,4 +108,18 @@ document.addEventListener('DOMContentLoaded', function(){
       saveTheme(theme);
     });
   }
+
+  // Close dropdown menus when a menu item is selected
+  document.querySelectorAll('.dropdown-content').forEach(menu => {
+    menu.addEventListener('click', ev => {
+      if (ev.target.closest('a, button, input[type="submit"]')) {
+        if (typeof closeMenus === 'function') closeMenus();
+      }
+    });
+    menu.addEventListener('change', ev => {
+      if (ev.target.closest('select')) {
+        if (typeof closeMenus === 'function') closeMenus();
+      }
+    });
+  });
 });
