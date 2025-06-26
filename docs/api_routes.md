@@ -521,7 +521,7 @@ Fetch subdomains from crt.sh, VirusTotal, or the local URL list.
 Parameters:
 - `domain` – target domain (optional when using the `local` source).
 - `source` – `crtsh`, `virustotal`, or `local`.
-- `api_key` – required for VirusTotal.
+- `api_key` – VirusTotal API key, optional if `VIRUSTOTAL_API` is configured.
 
 Use `source=local` to import subdomains discovered by scraping existing URLs.
 
