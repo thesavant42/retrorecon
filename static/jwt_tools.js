@@ -192,16 +192,18 @@ function initJWTTools(){
     secret.value = '';
   });
 
-  closeBtn.addEventListener('click', () => {
-    if(typeof hideJwtTools === 'function'){
-      hideJwtTools();
-    }else{
-      overlay.classList.add('hidden');
-      if(location.pathname === '/tools/jwt'){
-        history.pushState({}, '', '/');
+  if(closeBtn){
+    closeBtn.addEventListener('click', () => {
+      if(typeof hideJwtTools === 'function'){
+        hideJwtTools();
+      }else{
+        overlay.classList.add('hidden');
+        if(location.pathname === '/tools/jwt'){
+          history.pushState({}, '', '/');
+        }
       }
-    }
-  });
+    });
+  }
 
   function getSelected(){
     return Array.from(jarDiv.querySelectorAll('.row-checkbox:checked')).map(c => c.value);
