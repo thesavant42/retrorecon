@@ -35,6 +35,10 @@ function saveTheme(t){
 loadTheme();
 
 document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {
+    new Tagify(el, { maxTags: 1,
+      originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
+  });
   document.querySelectorAll('.url-row-main[data-url]').forEach(row => {
     row.addEventListener('click', () => {
       const raw = row.getAttribute('data-url');
