@@ -6,6 +6,7 @@ from flask import Blueprint, request, jsonify, Response, current_app
 from .dynamic import dynamic_template, render_from_payload, schema_registry, html_generator
 import app
 from retrorecon import subdomain_utils, status as status_mod
+from retrorecon import domain_sort
 
 bp = Blueprint('domains', __name__)
 
@@ -199,3 +200,26 @@ def subdomain_action():
             subdomain_utils.clear_tags(root_domain, sub)
             count += 1
     return jsonify({'updated': count})
+
+@bp.route('/domain_summary', methods=['GET'])
+def domain_summary_page():
+    """Return a simple summary of subdomain counts."""
+    if not app._db_loaded():
+        return dynamic_template('subdomain_summary.html', total_domains=0, total_hosts=0,
+                                top_subdomains=[], lonely_subdomains=[])
+
+    rows = subdomain_utils.list_all_subdomains()
+    hosts = [r['subdomain'] for r in rows]
+    roots = {r['domain'] for r in rows}
+    tree = domain_sort.aggregate_hosts(hosts)
+    flat = domain_sort.flatten_tree(tree)
+    flat_sorted = sorted(flat, key=lambda x: x[1], reverse=True)
+    top_subs = flat_sorted[:5]
+    lonely_subs = sorted(flat, key=lambda x: x[1])[:5]
+    return dynamic_template(
+        'subdomain_summary.html',
+        total_domains=len(roots),
+        total_hosts=len(set(hosts)),
+        top_subdomains=top_subs,
+        lonely_subdomains=lonely_subs,
+    )
