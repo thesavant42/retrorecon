@@ -453,6 +453,11 @@
     });
 
     noteCloseBtn.addEventListener('click', () => { notesOverlay.classList.add('hidden'); });
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && !notesOverlay.classList.contains('hidden')){
+        noteCloseBtn.click();
+      }
+    });
 
     deleteAllBtn.addEventListener('click', () => {
       if(confirm('Delete all notes?')){

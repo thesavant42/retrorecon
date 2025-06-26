@@ -9,6 +9,11 @@ function initHelpReadme(){
       history.pushState({}, '', '/');
     }
   });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !overlay.classList.contains('hidden')){
+      closeBtn.click();
+    }
+  });
   backBtn.addEventListener('click', () => {
     overlay.scrollTo({top:0, behavior:'smooth'});
   });
