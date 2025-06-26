@@ -4,7 +4,7 @@
 }
 
 .retrorecon-root {
-  font-family: monospace;
+  font-family: var(--font-family-base, monospace);
   padding: 12px;
   position: relative;
   display: block; /* avoid flex layout from base.css so tab labels align */

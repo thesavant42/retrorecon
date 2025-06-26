@@ -17,6 +17,7 @@ function applyTheme({bg, text, accent, border, fontFamily}){
   root.style.setProperty('--color-accent', accent || '#0af');
   root.style.setProperty('--color-border', border || '#888');
   root.style.setProperty('--font-family-base', fontFamily || 'monospace');
+  root.style.setProperty('--font-main', fontFamily || 'monospace');
 }
 
 function loadTheme(){
