@@ -96,6 +96,7 @@ def take_screenshot(
     spoof_referrer: bool = False,
     executable_path: Optional[str] = None,
     log_path: Optional[str] = None,
+    har_path: Optional[str] = None,
 ) -> Tuple[bytes, int, str]:
     logger.debug("take_screenshot url=%s agent=%s spoof=%s", url, user_agent, spoof_referrer)
     ips = resolve_ips(url)
@@ -128,6 +129,9 @@ def take_screenshot(
                 ctx_opts = {"ignore_https_errors": True}
                 if user_agent:
                     ctx_opts["user_agent"] = user_agent
+                if har_path:
+                    ctx_opts["record_har_path"] = har_path
+                    ctx_opts["record_har_content"] = "attach"
                 context = browser.new_context(**ctx_opts)
                 if spoof_referrer:
                     context.set_extra_http_headers({"Referer": url})
@@ -138,6 +142,7 @@ def take_screenshot(
                 response = page.goto(url, wait_until="load", timeout=15000)
                 status = response.status if response else 0
                 data = page.screenshot(full_page=True)
+                context.close()
                 browser.close()
                 return data, status
         except Exception as e:

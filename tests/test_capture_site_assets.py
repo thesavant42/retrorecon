@@ -48,3 +48,20 @@ def test_capture_site_saves_js(monkeypatch):
         names = zf.namelist()
     assert any(n.startswith('assets/js') for n in names)
 
+
+def test_capture_site_har_included(monkeypatch, tmp_path):
+    resp = FakeResp('http://example.com', text='hello')
+    monkeypatch.setattr(utils.requests, 'get', lambda *a, **k: resp)
+
+    def fake_take(url, agent='', spoof_referrer=False, executable_path=None, log_path=None, har_path=None):
+        if har_path:
+            Path(har_path).write_text('{"log":{}}')
+        return b'IMG', 200, '1.1.1.1'
+
+    monkeypatch.setattr(utils.screenshot_utils, 'take_screenshot', fake_take)
+
+    data, screenshot, status, ip = utils.capture_site('http://example.com', har_path=str(tmp_path / 't.har'))
+    z = io.BytesIO(data)
+    with utils.zipfile.ZipFile(z) as zf:
+        assert 'harlog.json' in zf.namelist()
+

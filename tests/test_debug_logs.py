@@ -39,7 +39,7 @@ def test_screenshot_route_debug_logs(monkeypatch, tmp_path):
 def test_httpolaroid_route_debug_logs(monkeypatch, tmp_path):
     setup_tmp(monkeypatch, tmp_path)
 
-    def fake_capture(url, agent="", spoof=False, log_path=None):
+    def fake_capture(url, agent="", spoof=False, log_path=None, har_path=None):
         assert log_path is not None
         assert os.path.isdir(os.path.dirname(log_path))
         return b"ZIP", b"IMG", 200, "1.1.1.1"
