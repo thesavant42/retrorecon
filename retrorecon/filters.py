@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import datetime
 from typing import Any, Dict
 
 from markupsafe import Markup, escape
@@ -13,6 +14,17 @@ _SPEC_LINKS = {
     "application/vnd.docker.image.rootfs.diff.tar.gzip": "https://github.com/opencontainers/image-spec/blob/main/layer.md",
     "application/vnd.docker.container.image.v1+json": "https://github.com/opencontainers/image-spec/blob/main/config.md",
 }
+
+
+def wb_timestamp(ts: str | None) -> str:
+    """Return Wayback timestamp ``ts`` formatted as YYYY-MM-DD HH:MM:SS."""
+    if not ts:
+        return ""
+    try:
+        dt = datetime.datetime.strptime(str(ts), "%Y%m%d%H%M%S")
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return str(ts)
 
 
 def _link_media_type(media_type: str) -> str:
