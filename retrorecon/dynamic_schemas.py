@@ -78,7 +78,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                 {
                                     "tag": "button",
                                     "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-export-btn"},
-                                    "text": "\ud83d\udcbe",
+                                    "text": "\U0001f4be",
                                 },
                                 {
                                     "tag": "form",
