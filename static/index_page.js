@@ -31,6 +31,22 @@ function saveTheme(t){
   localStorage.setItem('retroTheme', JSON.stringify(t));
 }
 
+function getLastDb(){
+  try{
+    return localStorage.getItem('retroLastDb') || '';
+  }catch(e){
+    return '';
+  }
+}
+
+function saveLastDb(name){
+  try{
+    if(name){
+      localStorage.setItem('retroLastDb', name);
+    }
+  }catch(e){}
+}
+
 // Apply stored theme on load
 loadTheme();
 
@@ -54,7 +70,27 @@ async function initTagInputs(){
   }
 }
 
+function autoloadLastDb(current){
+  if(current && current !== '(none)' && current !== 'UNSAVED'){
+    saveLastDb(current);
+    return;
+  }
+  const last = getLastDb();
+  if(!last) return;
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/load_saved_db';
+  const inp = document.createElement('input');
+  inp.type = 'hidden';
+  inp.name = 'db_file';
+  inp.value = last;
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  form.submit();
+}
+
 document.addEventListener('DOMContentLoaded', function(){
+  autoloadLastDb(document.body.dataset.db);
   initTagInputs();
   document.querySelectorAll('.url-row-main[data-url]').forEach(row => {
     row.addEventListener('click', () => {

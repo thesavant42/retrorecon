@@ -34,7 +34,7 @@
   </style>
   <link rel="shortcut icon" href="{{ url_for('core.favicon_ico') }}">
 </head>
-<body class="app">
+<body class="app" data-db="{{ db_name }}">
   <div class="retrorecon-root">
     <div id="dropdown-shade" class="dropdown-shade hidden"></div>
 {% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) %}
