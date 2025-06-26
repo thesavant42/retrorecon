@@ -112,6 +112,11 @@ body.bg-hidden {
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
 }
 
+.retrorecon-root .navbar {
+  background: rgb(var(--bg-rgb)/var(--panel-opacity));
+  border-radius: var(--radius);
+}
+
 /* Ensure nav menu controls use the theme font */
 .retrorecon-root .navbar button,
 .retrorecon-root .navbar select,
