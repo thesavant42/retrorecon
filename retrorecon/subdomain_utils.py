@@ -1,4 +1,5 @@
 import logging
+import re
 import urllib.parse
 import requests
 from typing import List, Dict, Optional, Any
@@ -12,6 +13,14 @@ logger = logging.getLogger(__name__)
 # This avoids long delays or failures in environments without outbound network
 # access when ``scrape_from_urls`` tries to parse hostnames.
 _EXTRACTOR = tldextract.TLDExtract(suffix_list_urls=None)
+
+# Regex to strip stray surrogate code points that break UTF-8 encoding
+_SURROGATE_RE = re.compile('[\ud800-\udfff]')
+
+
+def _clean(text: str) -> str:
+    """Return ``text`` with any surrogate code points removed."""
+    return _SURROGATE_RE.sub('', text)
 
 
 def _merge_tags(tag_str: Optional[str]) -> str:
@@ -66,7 +75,7 @@ def insert_records(
 ) -> int:
     """Insert ``subs`` for ``root_domain`` and return count inserted."""
     params = [
-        (root_domain, sub, source, "", int(cdx))
+        (_clean(root_domain), _clean(sub), source, "", int(cdx))
         for sub in subs
     ]
     try:
@@ -93,7 +102,7 @@ def mark_cdxed(subdomain: str) -> None:
     """Mark a subdomain as indexed by CDX."""
     execute_db(
         "UPDATE domains SET cdx_indexed = 1 WHERE subdomain = ?",
-        [subdomain],
+        [_clean(subdomain)],
     )
 
 
@@ -101,14 +110,14 @@ def delete_record(root_domain: str, subdomain: str) -> None:
     """Remove ``subdomain`` for ``root_domain`` from the DB."""
     execute_db(
         "DELETE FROM domains WHERE root_domain = ? AND subdomain = ?",
-        [root_domain, subdomain],
+        [_clean(root_domain), _clean(subdomain)],
     )
 
 
 def add_tag(root_domain: str, subdomain: str, tag: str) -> None:
     rows = query_db(
         "SELECT id, tags FROM domains WHERE root_domain = ? AND subdomain = ?",
-        [root_domain, subdomain],
+        [_clean(root_domain), _clean(subdomain)],
     )
     for r in rows:
         tag_list = [t.strip() for t in (r["tags"] or "").split(',') if t.strip()]
@@ -123,7 +132,7 @@ def add_tag(root_domain: str, subdomain: str, tag: str) -> None:
 def remove_tag(root_domain: str, subdomain: str, tag: str) -> None:
     rows = query_db(
         "SELECT id, tags FROM domains WHERE root_domain = ? AND subdomain = ?",
-        [root_domain, subdomain],
+        [_clean(root_domain), _clean(subdomain)],
     )
     for r in rows:
         tag_list = [
@@ -140,7 +149,7 @@ def remove_tag(root_domain: str, subdomain: str, tag: str) -> None:
 def clear_tags(root_domain: str, subdomain: str) -> None:
     execute_db(
         "UPDATE domains SET tags = '' WHERE root_domain = ? AND subdomain = ?",
-        [root_domain, subdomain],
+        [_clean(root_domain), _clean(subdomain)],
     )
 
 
@@ -152,7 +161,7 @@ def search_subdomains(term: str, root_domain: Optional[str] = None) -> List[Dict
     params.extend([term, term])
     if root_domain:
         where += " AND d.root_domain = ?"
-        params.append(root_domain)
+        params.append(_clean(root_domain))
     rows = query_db(
         f"""
         SELECT d.subdomain, d.root_domain as domain,
@@ -172,10 +181,10 @@ def search_subdomains(term: str, root_domain: Optional[str] = None) -> List[Dict
         indexed = r["cdxed"] or r["in_urls"]
         results.append(
             {
-                "subdomain": r["subdomain"],
-                "domain": r["domain"],
-                "source": r["sources"],
-                "tags": _merge_tags(r["tags"]),
+                "subdomain": _clean(r["subdomain"]),
+                "domain": _clean(r["domain"]),
+                "source": _clean(r["sources"]),
+                "tags": _clean(_merge_tags(r["tags"])),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -196,17 +205,17 @@ def list_subdomains(root_domain: str) -> List[Dict[str, str]]:
         GROUP BY d.subdomain, d.root_domain
         ORDER BY d.subdomain
         """,
-        [root_domain],
+        [_clean(root_domain)],
     )
     results = []
     for r in rows:
         indexed = r["cdxed"] or r["in_urls"]
         results.append(
             {
-                "subdomain": r["subdomain"],
-                "domain": r["domain"],
-                "source": r["sources"],
-                "tags": _merge_tags(r["tags"]),
+                "subdomain": _clean(r["subdomain"]),
+                "domain": _clean(r["domain"]),
+                "source": _clean(r["sources"]),
+                "tags": _clean(_merge_tags(r["tags"])),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -232,10 +241,10 @@ def list_all_subdomains() -> List[Dict[str, str]]:
         indexed = r["cdxed"] or r["in_urls"]
         results.append(
             {
-                "subdomain": r["subdomain"],
-                "domain": r["domain"],
-                "source": r["sources"],
-                "tags": _merge_tags(r["tags"]),
+                "subdomain": _clean(r["subdomain"]),
+                "domain": _clean(r["domain"]),
+                "source": _clean(r["sources"]),
+                "tags": _clean(_merge_tags(r["tags"])),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -247,7 +256,7 @@ def count_subdomains(root_domain: Optional[str] = None) -> int:
     if root_domain:
         row = query_db(
             "SELECT COUNT(DISTINCT subdomain) AS cnt FROM domains WHERE root_domain = ?",
-            [root_domain],
+            [_clean(root_domain)],
             one=True,
         )
     else:
@@ -266,7 +275,7 @@ def list_subdomains_page(
     where = ""
     if root_domain:
         where = "WHERE d.root_domain = ?"
-        params.append(root_domain)
+        params.append(_clean(root_domain))
     rows = query_db(
         f"""
         SELECT d.subdomain, d.root_domain as domain,
@@ -287,10 +296,10 @@ def list_subdomains_page(
         indexed = r["cdxed"] or r["in_urls"]
         results.append(
             {
-                "subdomain": r["subdomain"],
-                "domain": r["domain"],
-                "source": r["sources"],
-                "tags": _merge_tags(r["tags"]),
+                "subdomain": _clean(r["subdomain"]),
+                "domain": _clean(r["domain"]),
+                "source": _clean(r["sources"]),
+                "tags": _clean(_merge_tags(r["tags"])),
                 "cdx_indexed": bool(indexed),
             }
         )
@@ -318,20 +327,20 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
         if not rows:
             break
         for r in rows:
-            host = (r["domain"] or "").lower()
+            host = _clean((r["domain"] or "").lower())
             if not host:
                 host = urllib.parse.urlsplit(r["url"]).hostname or ""
-                host = host.lower()
+                host = _clean(host.lower())
             if not host:
                 continue
             if target_root:
-                root = target_root
+                root = _clean(target_root)
             else:
                 root = cache.get(host)
                 if not root:
                     ext = _EXTRACTOR(host)
                     root = f"{ext.domain}.{ext.suffix}" if ext.suffix else host
                     cache[host] = root
-            count += insert_records(root, [host], "scrape", cdx=True)
+            count += insert_records(_clean(root), [_clean(host)], "scrape", cdx=True)
         offset += limit
     return count
