@@ -204,7 +204,7 @@
             <input id="domain-input" type="hidden" name="domain" />
             <button type="button" class="menu-btn" id="fetch-cdx-btn">Hindsight (CDX API)</button>
           </form>
-          <div class="menu-row"><a href="#" class="menu-btn" id="dag-explorer-link">OCI Explorer</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="oci-explorer-link">OCI Explorer</a></div>
           <div class="menu-header">Active Recon</div>
           <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">Screenshotter</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="httpolaroid-link">HTTPolaroid</a></div>
@@ -1303,52 +1303,21 @@
         showRegistryViewer(true);
       }
 
-      const dagLink = document.getElementById('dag-explorer-link');
-      let dagLoaded = false;
-
-      async function showDagExplorer(skipPush){
-        if(!dagLoaded){
-          const resp = await fetch('/dag_explorer');
-          const html = await resp.text();
-          const root = document.querySelector('.retrorecon-root') || document.body;
-          root.insertAdjacentHTML('beforeend', html);
-          const script = document.createElement('script');
-          script.src = '/static/dag_explorer.js';
-          document.body.appendChild(script);
-          dagLoaded = true;
-        }
-        document.getElementById('dag-explorer-overlay').classList.remove('hidden');
-        if(!skipPush){
-          history.pushState({tool:'dag'}, '', '/tools/dag_explorer');
-        }
-      }
-
-      function hideDagExplorer(){
-        const ov = document.getElementById('dag-explorer-overlay');
-        if(ov) ov.classList.add('hidden');
-      }
-
-      if(dagLink){
-        dagLink.addEventListener('click', async (e) => {
+      const ociLink = document.getElementById('oci-explorer-link');
+      if(ociLink){
+        ociLink.addEventListener('click', async (e) => {
           e.preventDefault();
-          showDagExplorer();
+          showRegistryViewer();
         });
       }
 
       window.addEventListener('popstate', () => {
         if(location.pathname === '/tools/oci_explorer'){
           showRegistryViewer(true);
-        } else if(location.pathname === '/tools/dag_explorer'){
-          showDagExplorer(true);
         } else {
           hideRegistryViewer();
-          hideDagExplorer();
         }
       });
-
-      if(location.pathname === '/tools/dag_explorer' || openTool === 'dag'){
-        showDagExplorer(true);
-      }
 
       const helpReadmeLink = document.getElementById('help-readme-link');
       let helpReadmeLoaded = false;

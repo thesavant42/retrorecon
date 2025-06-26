@@ -5,7 +5,7 @@ This table lists each HTML template in the project alongside the dynamic pattern
 | Classic Template | Dynamic Schema / Lambda |
 |------------------|------------------------|
 | _webpack_exploder_form.html | static_html |
-| dag_explorer.html | static_html |
+| registry_explorer.html | static_html |
 | demo.html | static_html |
 | fetching.html | static_html |
 | help_about.html | help_about_page |

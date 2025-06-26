@@ -620,15 +620,15 @@ curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/registry_ta
 ```
 Add `insecure=1` to fetch manifests from registries with self-signed certificates.
 
-### `GET /dag_explorer`
-Serve the Dag Explorer overlay.
+### `GET /dag_explorer` (legacy)
+Alias for `/oci_explorer` used by older bookmarks.
 
 ```
 curl http://localhost:5000/dag_explorer
 ```
 
-### `GET /tools/dag_explorer`
-Full-page Dag Explorer overlay.
+### `GET /tools/dag_explorer` (legacy)
+Full-page alias for `/tools/oci_explorer`.
 
 ```
 curl http://localhost:5000/tools/dag_explorer

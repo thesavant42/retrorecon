@@ -24,7 +24,7 @@ This document breaks down the user story from issue #560 into actionable tasks f
 7. **Performance and Caching**
    - Cache partial tar data so repeated navigation is fast and comparable to https://oci.dag.dev/.
 8. **UI Integration**
-   - Extend the current `dag_explorer` overlay or create new templates as needed.
+   - Extend the current `oci_explorer` overlay or create new templates as needed.
    - Ensure metadata tables can be collapsed and progress indicators show during fetches.
 9. **Documentation and Testing**
    - Document new routes in `docs/api_routes.md` and update the README feature list.

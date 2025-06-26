@@ -29,7 +29,7 @@ from layerslayer.utils import human_readable_size
 bp = Blueprint("oci", __name__)
 
 
-@bp.route("/tools/registry_explorer", methods=["GET"])
+@bp.route("/tools/oci_explorer", methods=["GET"])
 def oci_index():
     return dynamic_template("oci_index.html")
 
