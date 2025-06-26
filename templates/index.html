@@ -311,7 +311,7 @@
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
                   <td class="url-result"><div class="cell-content">{{ url.url }}</div></td>
-                  <td class="text-center"><div class="cell-content">{{ url.timestamp or '-' }}</div></td>
+                  <td class="text-center"><div class="cell-content">{{ url.timestamp|human_ts if url.timestamp else '-' }}</div></td>
                   <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}"><div class="cell-content">{{ url.status_code if url.status_code else '-' }}</div></td>
                   <td class="text-center"><div class="cell-content">{{ url.mime_type or '-' }}</div></td>
                 </tr>

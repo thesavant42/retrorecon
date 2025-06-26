@@ -55,7 +55,7 @@ from retrorecon import (
     subdomain_utils,
     status as status_mod,
 )
-from retrorecon.filters import manifest_links, oci_obj, manifest_table
+from retrorecon.filters import manifest_links, oci_obj, manifest_table, human_ts
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
@@ -63,6 +63,7 @@ app.config.from_object(Config)
 app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
 app.add_template_filter(manifest_table, name="manifest_table")
+app.add_template_filter(human_ts, name="human_ts")
 
 
 @app.route('/favicon.ico', endpoint='core.favicon_ico')
