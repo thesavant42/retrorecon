@@ -390,12 +390,20 @@
     <div id="notes-list" class="notes-list mt-05"></div>
   </div>
 
-  <div id="tags-overlay" class="notes-overlay hidden">
-    <input type="text" id="tag-manager-input" class="form-input tag-input" placeholder="New tag..." />
-    <input type="color" id="tag-color-input" value="#cccccc" class="ml-05" />
-    <div class="mt-05">
-      <button type="button" class="btn" id="tag-add-btn">Add</button>
+  <div id="tags-overlay" class="tags-overlay hidden">
+    <div class="tag-toolbar">
+      <input type="text" id="tag-search-input" class="form-input tag-input" placeholder="Search tags..." />
+      <button type="button" class="btn" id="tag-new-btn">New</button>
       <button type="button" class="btn" id="tag-close-btn">Close</button>
+    </div>
+    <div id="tag-editor" class="mt-05 hidden">
+      <input type="text" id="tag-name-input" class="form-input tag-input" placeholder="Tag name" />
+      <input type="color" id="tag-color-input" value="#cccccc" class="ml-05" />
+      <input type="text" id="tag-desc-input" class="form-input tag-input mt-05" placeholder="Description" />
+      <div class="mt-05">
+        <button type="button" class="btn" id="tag-save-btn">Save</button>
+        <button type="button" class="btn" id="tag-cancel-btn">Cancel</button>
+      </div>
     </div>
     <div id="tags-list" class="notes-list mt-05"></div>
   </div>
@@ -410,11 +418,18 @@
     const noteCloseBtn = document.getElementById('note-close-btn');
     const deleteAllBtn = document.getElementById('delete-all-notes-btn');
     const tagsOverlay = document.getElementById('tags-overlay');
-    const tagInput = document.getElementById('tag-manager-input');
+    const tagSearchInput = document.getElementById('tag-search-input');
+    const tagNameInput = document.getElementById('tag-name-input');
+    const tagDescInput = document.getElementById('tag-desc-input');
     const tagColorInput = document.getElementById('tag-color-input');
+    const tagEditor = document.getElementById('tag-editor');
     const tagsList = document.getElementById('tags-list');
-    const tagAddBtn = document.getElementById('tag-add-btn');
+    const tagSaveBtn = document.getElementById('tag-save-btn');
+    const tagCancelBtn = document.getElementById('tag-cancel-btn');
+    const tagNewBtn = document.getElementById('tag-new-btn');
     const tagCloseBtn = document.getElementById('tag-close-btn');
+    let editingTag = null;
+    let allTags = [];
     let currentUrlId = null;
     let editingId = null;
 
@@ -489,9 +504,10 @@
 
     function renderTags(list){
       tagsList.innerHTML = '';
+      list.sort((a,b)=>a.name.localeCompare(b.name));
       list.forEach(t => {
         const div = document.createElement('div');
-        div.className = 'note-item';
+        div.className = 'tag-item';
         const span = document.createElement('span');
         span.className = 'saved-tag';
         span.textContent = t.name;
@@ -499,6 +515,18 @@
         div.appendChild(span);
         const actions = document.createElement('div');
         actions.className = 'notes-actions';
+        const edit = document.createElement('a');
+        edit.href = '#';
+        edit.className = 'notes-link';
+        edit.textContent = 'Edit';
+        edit.addEventListener('click', e => {
+          e.preventDefault();
+          editingTag = t;
+          tagNameInput.value = t.name;
+          tagColorInput.value = t.color || '#cccccc';
+          tagDescInput.value = t.desc || '';
+          tagEditor.classList.remove('hidden');
+        });
         const del = document.createElement('a');
         del.href = '#';
         del.className = 'notes-link ml-05';
@@ -509,6 +537,7 @@
             fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:t.name})}).then(loadTags);
           }
         });
+        actions.appendChild(edit);
         actions.appendChild(del);
         div.appendChild(actions);
         tagsList.appendChild(div);
@@ -518,27 +547,52 @@
 
     function loadTags(){
       fetch('/saved_tags').then(r=>r.json()).then(d=>{
-        const tags = Array.isArray(d.tags) ? d.tags : [];
-        renderTags(tags);
+        allTags = Array.isArray(d.tags) ? d.tags : [];
+        applySearch();
       });
     }
 
-    function openTags(){
-      tagInput.value = '';
-      loadTags();
-      tagsOverlay.classList.remove('hidden');
+    function applySearch(){
+      const term = tagSearchInput.value.trim().toLowerCase();
+      const filtered = term ? allTags.filter(t => t.name.toLowerCase().includes(term)) : allTags;
+      renderTags(filtered);
     }
 
-    tagAddBtn.addEventListener('click', () => {
-      let val = tagInput.value.trim();
-      if(!val) return;
-      if(!val.startsWith('#')) val = '#' + val;
-      const params = new URLSearchParams({tag:val, color: tagColorInput.value});
-      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params})
-        .then(() => { tagInput.value=''; loadTags(); });
+    function openTags(){
+      tagEditor.classList.add('hidden');
+      tagSearchInput.value = '';
+      editingTag = null;
+      loadTags();
+      tagsOverlay.classList.remove('hidden');
+      tagsOverlay.classList.add('show');
+    }
+
+    tagSearchInput.addEventListener('input', applySearch);
+
+    tagNewBtn.addEventListener('click', () => {
+      editingTag = null;
+      tagNameInput.value = '';
+      tagColorInput.value = '#cccccc';
+      tagDescInput.value = '';
+      tagEditor.classList.remove('hidden');
     });
 
-    tagCloseBtn.addEventListener('click', () => { tagsOverlay.classList.add('hidden'); });
+    tagSaveBtn.addEventListener('click', () => {
+      const name = tagNameInput.value.trim();
+      if(!name) return;
+      const params = new URLSearchParams({color: tagColorInput.value, desc: tagDescInput.value});
+      if(!name.startsWith('#')) params.set(editingTag ? 'new_tag' : 'tag', '#' + name); else params.set(editingTag ? 'new_tag' : 'tag', name);
+      if(editingTag){
+        params.set('old_tag', editingTag.name);
+        fetch('/rename_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params}).then(()=>{tagEditor.classList.add('hidden'); loadTags();});
+      }else{
+        fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params}).then(()=>{tagEditor.classList.add('hidden'); loadTags();});
+      }
+    });
+
+    tagCancelBtn.addEventListener('click', () => { tagEditor.classList.add('hidden'); });
+
+    tagCloseBtn.addEventListener('click', () => { tagsOverlay.classList.add('hidden'); tagsOverlay.classList.remove('show'); });
     document.getElementById('manage-tags-btn').addEventListener('click', openTags);
     document.addEventListener('keydown', e => {
       if(e.key === 'Escape' && !tagsOverlay.classList.contains('hidden')){

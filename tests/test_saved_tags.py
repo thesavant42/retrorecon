@@ -18,21 +18,21 @@ def test_saved_tag_crud(tmp_path, monkeypatch):
         resp = client.get('/saved_tags')
         assert resp.get_json() == {"tags": []}
 
-        resp = client.post('/saved_tags', data={'tag': 'foo', 'color': '#123456'})
+        resp = client.post('/saved_tags', data={'tag': 'foo', 'color': '#123456', 'desc': 'd'})
         assert resp.status_code == 204
         assert (tmp_path / "tags.json").exists()
 
         resp = client.get('/saved_tags')
-        assert resp.get_json() == {"tags": [{"name": "#foo", "color": "#123456"}]}
+        assert resp.get_json() == {"tags": [{"name": "#foo", "color": "#123456", "desc": "d"}]}
 
-        client.post('/saved_tags', data={'tag': 'foo', 'color': '#123456'})  # duplicate
+        client.post('/saved_tags', data={'tag': 'foo', 'color': '#123456', 'desc': 'd'})  # duplicate
         resp = client.get('/saved_tags')
-        assert resp.get_json() == {"tags": [{"name": "#foo", "color": "#123456"}]}
+        assert resp.get_json() == {"tags": [{"name": "#foo", "color": "#123456", "desc": "d"}]}
 
-        resp = client.post('/rename_saved_tag', data={'old_tag': 'foo', 'new_tag': 'bar', 'color': '#654321'})
+        resp = client.post('/rename_saved_tag', data={'old_tag': 'foo', 'new_tag': 'bar', 'color': '#654321', 'desc': 'e'})
         assert resp.status_code == 204
         resp = client.get('/saved_tags')
-        assert resp.get_json() == {"tags": [{"name": "#bar", "color": "#654321"}]}
+        assert resp.get_json() == {"tags": [{"name": "#bar", "color": "#654321", "desc": "e"}]}
 
         resp = client.post('/delete_saved_tag', data={'tag': 'bar'})
         assert resp.status_code == 204
