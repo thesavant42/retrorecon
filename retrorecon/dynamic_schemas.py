@@ -38,17 +38,22 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "attrs": {
                                         "type": "text",
                                         "id": "subdomonster-domain",
-                                        "class": "form-input mr-05",
+                                        "class": "hidden",
                                         "placeholder": "example.com",
                                     },
                                 },
                                 {
+                                    "tag": "button",
+                                    "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-add-domain-btn"},
+                                    "text": "+",
+                                },
+                                {
                                     "tag": "select",
-                                    "attrs": {"id": "subdomonster-source", "class": "form-select mr-05"},
+                                    "attrs": {"id": "subdomonster-source", "class": "form-select mr-05 w-3em"},
                                     "children": [
-                                        {"tag": "option", "attrs": {"value": "crtsh", "selected": True}, "text": "crt.sh"},
-                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "VirusTotal"},
-                                        {"tag": "option", "attrs": {"value": "local"}, "text": "Local"},
+                                        {"tag": "option", "attrs": {"value": "crtsh", "selected": True}, "text": "C"},
+                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "V"},
+                                        {"tag": "option", "attrs": {"value": "local"}, "text": "L"},
                                     ],
                                 },
                                 {
@@ -62,11 +67,6 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     },
                                 },
                                 {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdomonster-fetch-btn"},
-                                    "text": "Fetch",
-                                },
-                                {
                                     "tag": "input",
                                     "attrs": {
                                         "type": "text",
@@ -76,14 +76,9 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     },
                                 },
                                 {
-                                    "tag": "select",
-                                    "attrs": {"id": "subdom-export-formats", "class": "form-select mr-05"},
-                                    "children": [
-                                        {"tag": "option", "attrs": {"value": "", "selected": True}, "text": "Export as..."},
-                                        {"tag": "option", "attrs": {"value": "md"}, "text": "Markdown"},
-                                        {"tag": "option", "attrs": {"value": "csv"}, "text": "CSV"},
-                                        {"tag": "option", "attrs": {"value": "json"}, "text": "JSON"},
-                                    ],
+                                    "tag": "button",
+                                    "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-export-btn"},
+                                    "text": "\ud83d\udcbe",
                                 },
                                 {
                                     "tag": "form",
@@ -110,47 +105,8 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     ],
                                 },
                                 {
-                                    "tag": "select",
-                                    "attrs": {"id": "subdom-select-mode", "class": "form-select mr-05"},
-                                    "children": [
-                                        {"tag": "option", "attrs": {"value": "", "selected": True}, "text": "Select..."},
-                                        {"tag": "option", "attrs": {"value": "page"}, "text": "Select Page"},
-                                        {"tag": "option", "attrs": {"value": "all"}, "text": "Select All Matching"},
-                                        {"tag": "option", "attrs": {"value": "none"}, "text": "Select None"},
-                                    ],
-                                },
-                                {
-                                    "tag": "input",
-                                    "attrs": {
-                                        "type": "text",
-                                        "id": "subdom-bulk-tag",
-                                        "class": "form-input mr-05",
-                                        "placeholder": "tag",
-                                    },
-                                },
-                                {
                                     "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdom-add-tag-btn"},
-                                    "text": "Add Tag",
-                                },
-                                {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdom-remove-tag-btn"},
-                                    "text": "Remove Tag",
-                                },
-                                {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdom-clear-tags-btn"},
-                                    "text": "Clear Tags",
-                                },
-                                {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdom-delete-btn"},
-                                    "text": "Delete Selected",
-                                },
-                                {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn", "id": "subdomonster-close-btn"},
+                                    "attrs": {"type": "button", "class": "btn overlay-close-btn", "id": "subdomonster-close-btn"},
                                     "text": "Close",
                                 },
                                 {
