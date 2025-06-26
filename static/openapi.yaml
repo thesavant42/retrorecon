@@ -453,12 +453,6 @@ paths:
   /oci_explorer_api:
     get:
       summary: GET /oci_explorer_api
-      parameters:
-        - in: query
-          name: insecure
-          schema:
-            type: boolean
-          description: Disable TLS verification
       responses:
         '200':
           description: Successful response
