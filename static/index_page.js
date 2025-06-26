@@ -34,11 +34,27 @@ function saveTheme(t){
 // Apply stored theme on load
 loadTheme();
 
-document.addEventListener('DOMContentLoaded', function(){
+async function initTagInputs(){
+  let saved = [];
+  try{
+    const resp = await fetch('/saved_tags');
+    if(resp.ok){
+      const data = await resp.json();
+      saved = Array.isArray(data.tags) ? data.tags : [];
+    }
+  }catch{}
   document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {
-    new Tagify(el, { maxTags: 1,
+    new Tagify(el, { maxTags: 1, whitelist: saved,
       originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
   });
+  const sb = document.getElementById('searchbox');
+  if(sb){
+    new Tagify(sb, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  initTagInputs();
   document.querySelectorAll('.url-row-main[data-url]').forEach(row => {
     row.addEventListener('click', () => {
       const raw = row.getAttribute('data-url');
