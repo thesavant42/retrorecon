@@ -5,7 +5,7 @@ This document catalogs the HTML templates currently present in the repository an
 | Template | Purpose / Unique Features |
 |---------|---------------------------|
 | `_webpack_exploder_form.html` | Standalone form for entering a `.js.map` URL and either listing modules or downloading a ZIP of sources. Used inside the Webpack Exploder tool. |
-| `dag_explorer.html` | Overlay for browsing OCI image manifests and layer contents. Provides example links and fetches tags or manifests on demand. |
+| `registry_explorer.html` | Overlay for browsing OCI image manifests and layer contents. Provides example links and fetches tags or manifests on demand. |
 | `fetching.html` | Simple progress page polling the server while CDX data is imported from the Wayback Machine. Redirects back to `/` when finished. |
 | `index.html` | Main interface listing URLs. Includes search, pagination, menus and the Notes overlay. Loads other overlays like Text Tools and Screenshotter. |
 | `overview.html` | Presents project-level counts and lists subdomains grouped by domain. |

@@ -23,7 +23,7 @@ The table below lists routes implemented in `dagdotdev` and whether an equivalen
 | `/blob/<digest>` | **No** |
 | `/oauth` | **No** |
 | `/zurl/<digest>` | **No** |
-| *(Retrorecon only)* `/dag_explorer`, `/tools/dag_explorer`, `/dag/repo/<repo>`, `/dag/image/<image>`, `/dag/fs/<digest>/<path>`, `/dag/layer/<digest>` | Not present in `dagdotdev` |
+| *(Retrorecon only)* `/oci_explorer`, `/tools/oci_explorer`, `/dag/repo/<repo>`, `/dag/image/<image>`, `/dag/fs/<digest>/<path>`, `/dag/layer/<digest>` | Not present in `dagdotdev` |
 
 All `dagdotdev` routes are currently missing from Retrorecon, which implements only a minimal explorer.
 

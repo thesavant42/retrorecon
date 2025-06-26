@@ -458,13 +458,13 @@ paths:
           description: Successful response
   /dag_explorer:
     get:
-      summary: GET /dag_explorer
+      summary: GET /dag_explorer (legacy)
       responses:
         '200':
           description: Successful response
   /tools/dag_explorer:
     get:
-      summary: GET /tools/dag_explorer
+      summary: GET /tools/dag_explorer (legacy)
       responses:
         '200':
           description: Successful response
