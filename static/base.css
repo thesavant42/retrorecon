@@ -312,6 +312,7 @@ body {
   border: 1px solid var(--color-contrast);
   background: var(--bg-color);
   color: var(--fg-color);
+  white-space: nowrap;
   cursor: pointer;
   transition: opacity 0.2s;
 }
