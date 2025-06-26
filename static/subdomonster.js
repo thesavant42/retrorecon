@@ -22,7 +22,13 @@ function initSubdomonster(){
       savedTags = arr.map(t => t.name);
       if(searchInput){
         const tagify = new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags});
-        if(tagify.DOM.scopeParent) tagify.DOM.scopeParent.style.width = '20em';
+        if(tagify.DOM.scopeParent){
+          const sp = tagify.DOM.scopeParent;
+          sp.style.width = '20em';
+          sp.style.maxWidth = '50vw';
+          sp.style.whiteSpace = 'nowrap';
+          sp.style.overflowX = 'auto';
+        }
       }
     });
   const sourceSel = document.getElementById('subdomonster-source');
@@ -322,8 +328,15 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
-      new Tagify(el, { maxTags: 1, whitelist: savedTags,
+      const tg = new Tagify(el, { maxTags: 1, whitelist: savedTags,
         originalInputValueFormat: v => v.map(t => t.value).join(',') });
+      if(tg.DOM.scopeParent){
+        const sp = tg.DOM.scopeParent;
+        sp.style.width = '8em';
+        sp.style.maxWidth = '50vw';
+        sp.style.whiteSpace = 'nowrap';
+        sp.style.overflowX = 'auto';
+      }
     });
     const table = tableDiv.querySelector('table');
     const pageCb = document.getElementById('subdom-page-cb');

@@ -141,5 +141,11 @@
   overflow: visible;
 }
 
+.retrorecon-root #subdomonster-overlay .tagify {
+  max-width: 50vw;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
 .retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }
 
