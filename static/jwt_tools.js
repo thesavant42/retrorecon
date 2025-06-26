@@ -181,11 +181,13 @@ function initJWTTools(){
     }
   });
 
-  saveBtn.addEventListener('click', () => {
-    const blob=new Blob([input.value],{type:'text/plain'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download='jwt.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  });
+  if(saveBtn){
+    saveBtn.addEventListener('click', () => {
+      const blob=new Blob([input.value],{type:'text/plain'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='jwt.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    });
+  }
 
   clearBtn.addEventListener('click', () => {
     input.value = '';
