@@ -154,7 +154,7 @@ function initHttpolaroid(){
     }
   });
 
-  loadRows();
+  window.loadHttpolaroidRows = loadRows;
 }
 
 if(document.readyState==='loading'){
