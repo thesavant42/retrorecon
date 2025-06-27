@@ -878,7 +878,7 @@
         }
       } catch(e){}
       const input = document.getElementById('searchbox');
-      if(input){
+      if(input && window.Tagify){
         searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved});
       }
     }
