@@ -1671,10 +1671,12 @@
     });
 
     // Column resizing
-    const urlTable = document.querySelector('.url-table');
-    if(urlTable && typeof makeResizableTable === 'function'){
-      makeResizableTable(urlTable, 'url-col-widths');
-    }
+    document.addEventListener('DOMContentLoaded', function(){
+      const urlTable = document.querySelector('.url-table');
+      if(urlTable && typeof makeResizableTable === 'function'){
+        makeResizableTable(urlTable, 'url-col-widths');
+      }
+    });
   </script>
 </div>
 <script src="{{ url_for('static', filename='col_resize.js') }}"></script>
