@@ -897,8 +897,9 @@
             const exists = t.tagify.value.some(v => v.value === val);
             if(exists){
               t.tagify.removeTags(val);
-            }else{
-              t.tagify.addMixTags([{value: val, color: color}]);
+            } else {
+              const tagData = {value: val, style: `--tag-bg: ${color}`};
+              t.tagify.addTags([tagData], true);
             }
           }else{
             const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
