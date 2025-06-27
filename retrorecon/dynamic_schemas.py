@@ -71,7 +71,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "attrs": {
                                         "type": "text",
                                         "id": "subdomonster-search",
-                                        "class": "form-input mr-05 w-20em",
+                                        "class": "form-input mr-05 subdom-search",
                                         "placeholder": "search",
                                     },
                                 },
