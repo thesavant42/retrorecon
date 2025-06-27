@@ -864,6 +864,7 @@
       .catch(() => { updateImportStatus({status:'idle'}); });
 
     let searchTagify;
+    let savedTagColors = {};
     async function initSearchTags(){
       let saved = [];
       try {
@@ -872,6 +873,8 @@
           const data = await resp.json();
           const arr = Array.isArray(data.tags) ? data.tags : [];
           saved = arr.map(t => t.name);
+          savedTagColors = {};
+          arr.forEach(t => { savedTagColors[t.name] = t.color || '#ccc'; });
         }
       } catch(e){}
       const input = document.getElementById('searchbox');
@@ -882,6 +885,8 @@
 
     function toggleSearchTag(tag){
       if(!tag.startsWith('#')) tag = '#' + tag;
+      const val = tag.slice(1);
+      const color = savedTagColors[tag] || '#ccc';
       const targets = [
         {input: document.getElementById('searchbox'), tagify: searchTagify},
         {input: document.getElementById('subdomonster-search'), tagify: window.subdomSearchTagify}
@@ -889,11 +894,11 @@
       for(const t of targets){
         if(t.input && !t.input.closest('.hidden')){
           if(t.tagify){
-            const exists = t.tagify.value.some(v => v.value === tag);
+            const exists = t.tagify.value.some(v => v.value === val);
             if(exists){
-              t.tagify.removeTag(tag);
+              t.tagify.removeTags(val);
             }else{
-              t.tagify.addTags([tag]);
+              t.tagify.addMixTags([{value: val, color: color}]);
             }
           }else{
             const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
