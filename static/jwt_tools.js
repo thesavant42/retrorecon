@@ -215,7 +215,7 @@ function initJWTTools(){
     });
   }
 
-  loadJar();
+  window.loadJwtJar = loadJar;
 }
 
 if(document.readyState==='loading'){

@@ -506,10 +506,12 @@ function initSubdomonster(){
     }
   });
 
-  if(tableData.length){
-    render();
-    updateSelectionStatus();
-  }
+  window.renderSubdomonster = () => {
+    if(tableData.length){
+      render();
+      updateSelectionStatus();
+    }
+  };
   window.startSubdomonsterStatus = startStatusPolling;
   window.stopSubdomonsterStatus = stopStatusPolling;
 }

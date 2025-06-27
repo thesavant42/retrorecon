@@ -1135,12 +1135,18 @@
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
-          const script = document.createElement('script');
-          script.src = '/static/jwt_tools.js';
-          document.body.appendChild(script);
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/jwt_tools.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
           jwtToolsLoaded = true;
         }
-        document.getElementById('jwt-tools-overlay').classList.remove('hidden');
+        const ov = document.getElementById('jwt-tools-overlay');
+        ov.classList.remove('hidden');
+        if(window.loadJwtJar){ window.loadJwtJar(); }
         if(!skipPush){
           history.pushState({tool:'jwt'}, '', '/tools/jwt');
         }
@@ -1179,12 +1185,18 @@
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
-          const script = document.createElement('script');
-          script.src = '/static/screenshotter.js';
-          document.body.appendChild(script);
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/screenshotter.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
           screenshotLoaded = true;
         }
-        document.getElementById('screenshot-overlay').classList.remove('hidden');
+        const ov = document.getElementById('screenshot-overlay');
+        ov.classList.remove('hidden');
+        if(window.loadScreenshotRows){ window.loadScreenshotRows(); }
         if(!skipPush){
           history.pushState({tool:'screenshot'}, '', '/tools/screenshotter');
         }
@@ -1211,12 +1223,18 @@
           const html = await resp.text();
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
-          const script = document.createElement('script');
-          script.src = '/static/httpolaroid.js';
-          document.body.appendChild(script);
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/httpolaroid.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
           httpolaroidLoaded = true;
         }
-        document.getElementById('httpolaroid-overlay').classList.remove('hidden');
+        const ov = document.getElementById('httpolaroid-overlay');
+        ov.classList.remove('hidden');
+        if(window.loadHttpolaroidRows){ window.loadHttpolaroidRows(); }
         if(!skipPush){
           history.pushState({tool:'httpolaroid'}, '', '/tools/httpolaroid');
         }
@@ -1302,6 +1320,7 @@
         const ov = document.getElementById('subdomonster-overlay');
         ov.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        if(window.renderSubdomonster){ window.renderSubdomonster(); }
         if(window.startSubdomonsterStatus){
           window.startSubdomonsterStatus();
         }

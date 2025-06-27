@@ -139,7 +139,7 @@ function initScreenshotter(){
     });
   }
 
-  loadShots();
+  window.loadScreenshotRows = loadShots;
 }
 
 if(document.readyState==='loading'){
