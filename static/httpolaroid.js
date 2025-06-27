@@ -35,45 +35,9 @@ function initHttpolaroid(){
   }
 
   function makeResizable(table, key){
-    table.style.tableLayout = 'fixed';
-    const ths = table.querySelectorAll('th');
-    const cols = table.querySelectorAll('col');
-    let widths = {};
-    try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
-    ths.forEach((th, idx) => {
-      const id = idx;
-      if(widths[id]){
-        th.style.width = widths[id];
-        if(cols[id]) cols[id].style.width = widths[id];
-      }
-      const initial = th.style.width || th.offsetWidth + 'px';
-      th.style.width = initial;
-      if(cols[id]) cols[id].style.width = initial;
-      if(th.classList.contains('no-resize')) return;
-      const res = document.createElement('div');
-      res.className = 'col-resizer';
-      th.appendChild(res);
-      let startX = 0;
-      let startWidth = 0;
-      res.addEventListener('mousedown', e => {
-        startX = e.pageX;
-        startWidth = th.offsetWidth;
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', stop);
-        e.preventDefault();
-      });
-      function onMove(e){
-        const w = Math.max(30, startWidth + (e.pageX - startX));
-        th.style.width = w + 'px';
-        if(cols[id]) cols[id].style.width = w + 'px';
-        widths[id] = w + 'px';
-      }
-      function stop(){
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', stop);
-        localStorage.setItem(key, JSON.stringify(widths));
-      }
-    });
+    if(typeof makeResizableTable === 'function'){
+      makeResizableTable(table, key);
+    }
   }
 
   function render(){

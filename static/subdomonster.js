@@ -161,53 +161,9 @@ function initSubdomonster(){
   }
 
   function makeResizable(table, key){
-    table.style.tableLayout = 'fixed';
-    const ths = table.querySelectorAll('th');
-    const cols = table.querySelectorAll('col');
-    let widths = {};
-    try{ widths = JSON.parse(localStorage.getItem(key) || '{}'); }catch{}
-    if(Object.keys(widths).length !== ths.length){
-      widths = {};
-      localStorage.removeItem(key);
+    if(typeof makeResizableTable === 'function'){
+      makeResizableTable(table, key);
     }
-    ths.forEach((th, idx) => {
-      const id = idx;
-      let w = widths[id];
-      if(!w){
-        const ow = th.offsetWidth;
-        if(ow > 0){
-          w = ow + 'px';
-        }
-      }
-      if(w){
-        th.style.width = w;
-        if(cols[id]) cols[id].style.width = w;
-      }
-      if(th.classList.contains('no-resize')) return;
-      const res = document.createElement('div');
-      res.className = 'col-resizer';
-      th.appendChild(res);
-      let startX = 0;
-      let startWidth = 0;
-      res.addEventListener('mousedown', e => {
-        startX = e.pageX;
-        startWidth = th.offsetWidth;
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', stop);
-        e.preventDefault();
-      });
-      function onMove(e){
-        const w = Math.max(30, startWidth + (e.pageX - startX));
-        th.style.width = w + 'px';
-        if(cols[id]) cols[id].style.width = w + 'px';
-        widths[id] = w + 'px';
-      }
-      function stop(){
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', stop);
-        localStorage.setItem(key, JSON.stringify(widths));
-      }
-    });
   }
 
   function renderPagination(totalPages, totalCount){
