@@ -17,5 +17,6 @@ static/screenshots/
 static/sitezips/
 logs/
 *.log
+.vscode/
 venv/
 !schemas/*.json

@@ -1,0 +1,60 @@
+<!-- File: templates/dag_explorer_page.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registry Explorer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
+  {% if current_theme %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
+  {% endif %}
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <style>
+  .retrorecon-root .mt:hover { text-decoration: underline; }
+  .retrorecon-root .mt { color: inherit; text-decoration: inherit; }
+  .retrorecon-root .link { position: relative; bottom: .125em; }
+  .retrorecon-root .crane { height: 1em; width: 1em; }
+  .retrorecon-root .top { color: inherit; text-decoration: inherit; }
+  </style>
+</head>
+<body class="app">
+<div class="retrorecon-root">
+<h1><a class="top" href="/"><img class="crane" src="/favicon.svg"/> <span class="link">Registry Explorer</span></a></h1>
+<p>
+This beautiful tool allows you to <em>explore</em> the contents of a registry interactively.
+</p>
+<p>
+You can even drill down into layers to explore an image's filesystem.
+</p>
+<p>
+Enter a <strong>public</strong> image, e.g. <tt>"ubuntu:latest"</tt>:
+</p>
+<form action="/" method="GET" autocomplete="off" spellcheck="false">
+<input size="100" type="text" name="image" value="ubuntu:latest" />
+<input type="submit" />
+</form>
+<p></p>
+<p>
+Enter a <strong>public</strong> repository, e.g. <tt>"ubuntu"</tt>:
+</p>
+<form action="/" method="GET" autocomplete="off" spellcheck="false">
+<input size="100" type="text" name="repo" value="ubuntu" />
+<input type="submit" />
+</form>
+<p></p>
+<h4>Interesting examples</h4>
+<ul>
+  <li><a href="/?image=cgr.dev/chainguard/static:latest-glibc">cgr.dev/chainguard/static:latest-glibc</a></li>
+  <li><a href="/?image=gcr.io/distroless/static">gcr.io/distroless/static:latest</a></li>
+  <li><a href="/?repo=ghcr.io/homebrew/core/crane">ghcr.io/homebrew/core/crane</a></li>
+  <li><a href="/?repo=registry.k8s.io">registry.k8s.io</a></li>
+  <li><a href="/?image=registry.k8s.io/bom/bom:sha256-499bdf4cc0498bbfb2395f8bbaf3b7e9e407cca605aecc46b2ef1b390a0bc4c4.sig">registry.k8s.io/bom/bom:sha256-499bdf4cc0498bbfb2395f8bbaf3b7e9e407cca605aecc46b2ef1b390a0bc4c4.sig</a></li>
+  <li><a href="/?image=docker/dockerfile:1.5.1">docker/dockerfile:1.5.1</a></li>
+  <li><a href="/?image=pengfeizhou/test-oci:sha256-04eaff953b0066d7e4ea2e822eb5c31be0742fca494561336f0912fabc246760">pengfeizhou/test-oci:sha256-04eaff953b0066d7e4ea2e822eb5c31be0742fca494561336f0912fabc246760</a></li>
+  <li><a href="/?image=tianon/true:oci">tianon/true:oci</a></li>
+  <li><a href="/?image=ghcr.io/stargz-containers/node:13.13.0-esgz">ghcr.io/stargz-containers/node:13.13.0-esgz</a></li>
+</ul>
+</div>
+</body>
+</html>
+
