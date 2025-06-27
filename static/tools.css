@@ -147,16 +147,20 @@
   max-width: 50vw;
   white-space: nowrap;
   overflow-x: hidden;
+  min-height: 30px;
 }
 
 .retrorecon-root #subdomonster-overlay .tagify__input {
   white-space: nowrap;
   overflow-x: hidden;
+  line-height: 28px;
 }
 
 .retrorecon-root #subdomonster-overlay .subdom-search {
   width: 20em;
   max-width: 50vw;
+  height: 30px;
+  min-height: 30px;
 }
 
 .retrorecon-root #subdomonster-overlay .row-tag-input {
@@ -166,7 +170,7 @@
 
 .retrorecon-root .subdomonster-domain-bar {
   width: 20em;
-  height: 2em;
+  height: 30px;
 }
 
 .retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }

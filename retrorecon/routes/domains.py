@@ -39,6 +39,7 @@ def subdomains_route():
 
     if request.method == 'GET':
         domain = request.args.get('domain', '').strip().lower()
+        q = request.args.get('q', '').strip().lower()
         try:
             page = int(request.args.get('page', '0'))
         except ValueError:
@@ -49,8 +50,13 @@ def subdomains_route():
             items = 0
         if page > 0 and items > 0:
             offset = (page - 1) * items
-            total = subdomain_utils.count_subdomains(domain or None)
-            rows = subdomain_utils.list_subdomains_page(domain or None, offset, items)
+            if q:
+                rows = subdomain_utils.search_subdomains(q, domain or None)
+                total = len(rows)
+                rows = rows[offset:offset + items]
+            else:
+                total = subdomain_utils.count_subdomains(domain or None)
+                rows = subdomain_utils.list_subdomains_page(domain or None, offset, items)
             total_pages = max(1, (total + items - 1) // items)
             return jsonify({
                 'page': page,
@@ -58,6 +64,8 @@ def subdomains_route():
                 'total_count': total,
                 'results': rows,
             })
+        if q:
+            return jsonify(subdomain_utils.search_subdomains(q, domain or None))
         if domain:
             return jsonify(subdomain_utils.list_subdomains(domain))
         return jsonify(subdomain_utils.list_all_subdomains())

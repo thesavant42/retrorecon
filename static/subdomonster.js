@@ -134,11 +134,27 @@ function initSubdomonster(){
   }
 
 
+  async function fetchSearch(){
+    const term = searchInput.value.trim();
+    const domain = domainInput.value.trim();
+    const params = new URLSearchParams();
+    if(term) params.append('q', term);
+    if(domain) params.append('domain', domain);
+    const resp = await fetch('/subdomains?' + params.toString());
+    if(resp.ok){
+      const data = await resp.json();
+      tableData = Array.isArray(data.results) ? data.results : data;
+    } else {
+      tableData = [];
+    }
+  }
+
   if(searchInput){
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('input', async () => {
       searchText = searchInput.value.trim().toLowerCase();
       currentPage = 1;
       selectedSubs.clear();
+      await fetchSearch();
       render();
       updateSelectionStatus();
     });
