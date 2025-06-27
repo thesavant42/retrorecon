@@ -514,6 +514,7 @@
         span.className = 'saved-tag';
         span.textContent = t.name;
         span.style.backgroundColor = t.color || '#ccc';
+        span.addEventListener('click', () => toggleSearchTag(t.name));
         div.appendChild(span);
         const actions = document.createElement('div');
         actions.className = 'notes-actions';
@@ -876,6 +877,36 @@
       const input = document.getElementById('searchbox');
       if(input){
         searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+      }
+    }
+
+    function toggleSearchTag(tag){
+      if(!tag.startsWith('#')) tag = '#' + tag;
+      const targets = [
+        {input: document.getElementById('searchbox'), tagify: searchTagify},
+        {input: document.getElementById('subdomonster-search'), tagify: window.subdomSearchTagify}
+      ];
+      for(const t of targets){
+        if(t.input && !t.input.closest('.hidden')){
+          if(t.tagify){
+            const exists = t.tagify.value.some(v => v.value === tag);
+            if(exists){
+              t.tagify.removeTag(tag);
+            }else{
+              t.tagify.addTags([tag]);
+            }
+          }else{
+            const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
+            const idx = parts.indexOf(tag);
+            if(idx >= 0){
+              parts.splice(idx,1);
+            }else{
+              parts.push(tag);
+            }
+            t.input.value = parts.join(' ');
+          }
+          break;
+        }
       }
     }
 
