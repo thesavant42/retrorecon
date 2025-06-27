@@ -60,13 +60,15 @@ async function initTagInputs(){
       saved = arr.map(t => t.name);
     }
   }catch{}
-  document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {
-    new Tagify(el, { maxTags: 1, whitelist: saved,
-      originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
-  });
-  const sb = document.getElementById('searchbox');
-  if(sb && !sb.tagify){
-    new Tagify(sb, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+  if(window.Tagify){
+    document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {
+      new Tagify(el, { maxTags: 1, whitelist: saved,
+        originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
+    });
+    const sb = document.getElementById('searchbox');
+    if(sb && !sb.tagify){
+      new Tagify(sb, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+    }
   }
 }
 
