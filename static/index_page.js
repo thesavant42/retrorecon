@@ -65,7 +65,7 @@ async function initTagInputs(){
       originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
   });
   const sb = document.getElementById('searchbox');
-  if(sb){
+  if(sb && !sb.tagify){
     new Tagify(sb, {mode:'mix', pattern:/#\w+/, whitelist:saved});
   }
 }
