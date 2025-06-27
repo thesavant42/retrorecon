@@ -21,7 +21,7 @@ function initSubdomonster(){
       const arr = Array.isArray(d.tags) ? d.tags : [];
       savedTags = arr.map(t => t.name);
       if(searchInput){
-        new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags});
+        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags});
       }
     });
   const sourceSel = document.getElementById('subdomonster-source');
