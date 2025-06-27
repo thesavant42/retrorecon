@@ -38,7 +38,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "attrs": {
                                         "type": "text",
                                         "id": "subdomonster-domain",
-                                        "class": "hidden",
+                                        "class": "form-input mr-05 subdomonster-domain-bar",
                                         "placeholder": "example.com",
                                     },
                                 },

@@ -162,5 +162,10 @@
   max-width: 50vw;
 }
 
+.retrorecon-root .subdomonster-domain-bar {
+  width: 226px;
+  height: 31px;
+}
+
 .retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }
 
