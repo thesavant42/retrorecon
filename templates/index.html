@@ -1262,6 +1262,7 @@
         }
         const ov = document.getElementById('subdomonster-overlay');
         ov.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
         if(window.startSubdomonsterStatus){
           window.startSubdomonsterStatus();
         }
@@ -1278,6 +1279,7 @@
             window.stopSubdomonsterStatus();
           }
         }
+        document.body.style.overflow = '';
       }
 
       if(subLink){

@@ -31,7 +31,7 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                     "children": [
                         {
                             "tag": "div",
-                            "attrs": {"class": "mb-05"},
+                            "attrs": {"class": "mb-05 search-input-row"},
                             "children": [
                                 {
                                     "tag": "input",

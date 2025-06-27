@@ -119,7 +119,7 @@
   width: 120px;
 }
 .retrorecon-root #subdomonster-overlay {
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 .retrorecon-root #subdomonster-table {
@@ -139,17 +139,19 @@
 }
 .retrorecon-root #subdomonster-table th {
   overflow: visible;
+  position: relative;
+  padding-right: 1em;
 }
 
 .retrorecon-root #subdomonster-overlay .tagify {
   max-width: 50vw;
   white-space: nowrap;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .retrorecon-root #subdomonster-overlay .tagify__input {
   white-space: nowrap;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .retrorecon-root #subdomonster-overlay .subdom-search {
@@ -163,8 +165,8 @@
 }
 
 .retrorecon-root .subdomonster-domain-bar {
-  width: 226px;
-  height: 31px;
+  width: 20em;
+  height: 2em;
 }
 
 .retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }
