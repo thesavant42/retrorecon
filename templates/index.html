@@ -391,10 +391,12 @@
   </div>
 
   <div id="tags-overlay" class="tags-overlay hidden">
+    <div class="tag-toolbar mb-05">
+      <button type="button" class="btn" id="tag-new-btn">+🏷️</button>
+      <button type="button" class="btn" id="tag-close-btn">Close</button>
+    </div>
     <div class="tag-toolbar">
       <input type="text" id="tag-search-input" class="form-input tag-input" placeholder="Search tags..." />
-      <button type="button" class="btn" id="tag-new-btn">New</button>
-      <button type="button" class="btn" id="tag-close-btn">Close</button>
     </div>
     <div id="tag-editor" class="mt-05 hidden">
       <input type="text" id="tag-name-input" class="form-input tag-input" placeholder="Tag name" />
@@ -446,7 +448,7 @@
         const edit = document.createElement('a');
         edit.href = '#';
         edit.className = 'notes-link';
-        edit.textContent = 'Edit';
+        edit.textContent = '✏️🏷️';
         edit.addEventListener('click', e => {
           e.preventDefault();
           noteInput.value = n.content;
@@ -455,7 +457,7 @@
         const del = document.createElement('a');
         del.href = '#';
         del.className = 'notes-link ml-05';
-        del.textContent = 'Delete';
+        del.textContent = '-🏷️';
         del.addEventListener('click', e => {
           e.preventDefault();
           if(confirm('Delete note?')){
