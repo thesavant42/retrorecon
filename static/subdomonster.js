@@ -15,17 +15,31 @@ function initSubdomonster(){
   const exportQInp = document.getElementById('subdom-export-q');
   const searchInput = document.getElementById('subdomonster-search');
   function cleanTagString(str){
-    if(!str) return '';
-    const nozw = str.replace(/\u200b/g, '');
-    return nozw.replace(/\[\[(.*?)\]\]/g, (m, p) => {
-      try {
+    console.debug('cleanTagString input', str);
+    if(!str){ console.debug('cleanTagString result', ''); return ''; }
+    if(Array.isArray(str)){
+      const res = str.map(o => (o && o.value) ? o.value : '').join(' ').trim();
+      console.debug('cleanTagString result', res); return res;
+    }
+    const raw = String(str).replace(/\u200b/g, '');
+    try{
+      const arr = JSON.parse(raw);
+      if(Array.isArray(arr)){
+        const res = arr.map(o => (o && o.value) ? o.value : '').join(' ').trim();
+        console.debug('cleanTagString result', res); return res;
+      }
+    }catch{}
+    const res = raw.replace(/\[\[(.*?)\]\]/g, (m,p) => {
+      try{
         let obj = JSON.parse(p);
         if(Array.isArray(obj)) obj = obj[0];
         return obj && obj.value ? obj.value : '';
-      } catch {
+      }catch{
         return p;
       }
     }).trim();
+    console.debug('cleanTagString result', res);
+    return res;
   }
   let savedTags = [];
   fetch('/saved_tags')
