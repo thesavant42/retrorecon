@@ -1,6 +1,5 @@
 import app
 from flask import Blueprint, request, jsonify
-from retrorecon import saved_tags as saved_tags_mod
 
 bp = Blueprint('notes', __name__)
 
@@ -8,57 +7,46 @@ bp = Blueprint('notes', __name__)
 def saved_tags_route():
     if request.method == 'GET':
         return jsonify({'tags': app.load_saved_tags()})
-    tag = request.form.get('tag', '').lstrip('#').strip()
-    color = request.form.get('color', '').strip() or saved_tags_mod.DEFAULT_COLOR
-    desc = request.form.get('desc', '').strip()
+    tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
-    if not color.startswith('#'):
-        color = '#' + color
+    if not tag.startswith('#'):
+        tag = '#' + tag
     tags = app.load_saved_tags()
-    names = [t['name'] for t in tags]
-    if tag not in names:
-        tags.append({'name': tag, 'color': color, 'desc': desc})
+    if tag not in tags:
+        tags.append(tag)
         app.save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/delete_saved_tag', methods=['POST'])
 def delete_saved_tag():
-    tag = request.form.get('tag', '').lstrip('#').strip()
+    tag = request.form.get('tag', '').strip()
     if not tag:
         return ('', 400)
+    if not tag.startswith('#'):
+        tag = '#' + tag
     tags = app.load_saved_tags()
-    filtered = [t for t in tags if t['name'] != tag]
-    if len(filtered) != len(tags):
-        app.save_saved_tags(filtered)
+    if tag in tags:
+        tags.remove(tag)
+        app.save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/rename_saved_tag', methods=['POST'])
 def rename_saved_tag():
-    old_tag = request.form.get('old_tag', '').lstrip('#').strip()
-    new_tag = request.form.get('new_tag', '').lstrip('#').strip()
-    color = request.form.get('color', '').strip()
-    desc = request.form.get('desc', '').strip()
+    old_tag = request.form.get('old_tag', '').strip()
+    new_tag = request.form.get('new_tag', '').strip()
     if not old_tag or not new_tag:
         return ('', 400)
-    if color and not color.startswith('#'):
-        color = '#' + color
+    if not old_tag.startswith('#'):
+        old_tag = '#' + old_tag
+    if not new_tag.startswith('#'):
+        new_tag = '#' + new_tag
     tags = app.load_saved_tags()
-    updated = False
-    for t in tags:
-        if t['name'] == old_tag:
-            t['name'] = new_tag
-            if color:
-                t['color'] = color
-            if desc:
-                t['desc'] = desc
-            updated = True
-    if updated:
-        unique = {}
-        for t in tags:
-            if t['name'] not in unique:
-                unique[t['name']] = t
-        app.save_saved_tags(list(unique.values()))
+    if old_tag in tags:
+        tags.remove(old_tag)
+    if new_tag not in tags:
+        tags.append(new_tag)
+    app.save_saved_tags(tags)
     return ('', 204)
 
 @bp.route('/notes/<int:url_id>', methods=['GET'])

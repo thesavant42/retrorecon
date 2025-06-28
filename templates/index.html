@@ -8,8 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
   {% if current_theme %}
   {% if current_theme == 'terminal-sans-dark.css' %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/terminal.css@latest" />
@@ -125,7 +123,7 @@
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Delete Selected</button></div>
           <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset tags Selected</button></div>
           <div class="menu-row bulk-controls">
-            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input tag-input" />
+            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
             <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag to Selected</button>
           </div>
           <div class="menu-header">Preferences</div>
@@ -257,7 +255,7 @@
   <div class="search-bar">
     <form method="GET" action="/" id="search-form">
       <div class="search-input-row">
-        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-100 form-input tag-input" />
+        <input type="text" name="q" placeholder="Search..." value="{{ q }}" id="searchbox" class="w-100 form-input" />
         <div class="search-buttons">
           <button type="submit" class="btn">Search</button>
           <button type="button" id="save-tag-btn" class="btn">+🏷️</button>
@@ -265,6 +263,7 @@
           <button type="button" id="manage-tags-btn" class="btn">Tags…</button>
         </div>
       </div>
+      <div id="search-history" class="search-history"></div>
     </form>
   </div>
 
@@ -346,7 +345,7 @@
                       <form method="POST" action="/bulk_action" class="d-inline ml-05">
                         <input type="hidden" name="action" value="add_tag" />
                         <input type="hidden" name="selected_ids" value="{{ url.id }}" />
-                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input tag-input row-tag-input" />
+                        <input type="text" name="tag" placeholder="Tag" size="8" required class="form-input row-tag-input" />
                         <button type="submit" title="Add tag" class="btn">+</button>
                       </form>
                       {% for tag in (url.tags or '').split(',') if tag %}
@@ -396,12 +395,12 @@
       <button type="button" class="btn" id="tag-close-btn">Close</button>
     </div>
     <div class="tag-toolbar">
-      <input type="text" id="tag-search-input" class="form-input tag-input" placeholder="Search tags..." />
+      <input type="text" id="tag-search-input" class="form-input" placeholder="Search tags..." />
     </div>
     <div id="tag-editor" class="mt-05 hidden">
-      <input type="text" id="tag-name-input" class="form-input tag-input" placeholder="Tag name" />
+      <input type="text" id="tag-name-input" class="form-input" placeholder="Tag name" />
       <input type="color" id="tag-color-input" value="#cccccc" class="ml-05" />
-      <input type="text" id="tag-desc-input" class="form-input tag-input mt-05" placeholder="Description" />
+      <input type="text" id="tag-desc-input" class="form-input mt-05" placeholder="Description" />
       <div class="mt-05">
         <button type="button" class="btn" id="tag-save-btn">Save</button>
         <button type="button" class="btn" id="tag-cancel-btn">Cancel</button>
@@ -545,7 +544,6 @@
         div.appendChild(actions);
         tagsList.appendChild(div);
       });
-      if(searchTagify) searchTagify.settings.whitelist = list.map(x => x.name);
     }
 
     function loadTags(){
@@ -863,174 +861,138 @@
       })
       .catch(() => { updateImportStatus({status:'idle'}); });
 
-    let searchTagify;
-    let savedTagColors = {};
 
-      function cleanTagString(str){
-        console.debug('cleanTagString input', str);
-        if(!str) { console.debug('cleanTagString result', ''); return ''; }
-        if(Array.isArray(str)){
-          const res = str.map(o => (o && o.value) ? o.value : '').join(' ').trim();
-          console.debug('cleanTagString result', res); return res;
-        }
-        const raw = String(str).replace(/\u200b/g, '');
-        try{
-          const arr = JSON.parse(raw);
-          if(Array.isArray(arr)){
-            const res = arr.map(o => (o && o.value) ? o.value : '').join(' ').trim();
-            console.debug('cleanTagString result', res); return res;
-          }
-        }catch{}
-        const res = raw.replace(/\[\[(.*?)\]\]/g, (m,p) => {
-          try{
-            let obj = JSON.parse(p);
-            if(Array.isArray(obj)) obj = obj[0];
-            return obj && obj.value ? obj.value : '';
-          }catch{
-            return p;
-          }
-        }).trim();
-        console.debug('cleanTagString result', res);
-        return res.trim();
+      })
+      .catch(() => { updateImportStatus({status:'idle'}); });
+
+    function quickSearch(term){
+      if(term.startsWith('#')){
+        term = '"' + term.slice(1) + '"';
       }
-    async function initSearchTags(){
+      const box = document.getElementById('searchbox');
+      let current = box.value.trim();
+      if(current){
+        current += ' AND ' + term;
+      } else {
+        current = term;
+      }
+      box.value = current;
+      document.getElementById('search-form').submit();
+    }
+
+    function addHistoryButton(text){
+      const historyDiv = document.getElementById('search-history');
+      const pill = document.createElement('span');
+      pill.className = 'tag-pill';
+      pill.style.cursor = 'pointer';
+      const label = document.createElement('span');
+      label.textContent = text.replace(/#/g, '');
+      pill.appendChild(label);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'btn';
+      close.innerHTML = '&times;';
+      close.title = 'Remove tag';
+      close.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(confirm('Delete saved tag?')){
+          historyDiv.removeChild(pill);
+          fetch('/delete_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:text})});
+        }
+      });
+      pill.appendChild(close);
+      pill.addEventListener('click', () => quickSearch(text));
+      historyDiv.appendChild(pill);
+    }
+
+    async function loadHistory(){
       let saved = [];
       try {
         const resp = await fetch('/saved_tags');
         if(resp.ok){
           const data = await resp.json();
-          const arr = Array.isArray(data.tags) ? data.tags : [];
-          saved = arr.map(t => t.name);
-          savedTagColors = {};
-          arr.forEach(t => { savedTagColors[t.name] = t.color || '#ccc'; });
+          saved = Array.isArray(data.tags) ? data.tags : [];
         }
       } catch(e){}
-      const input = document.getElementById('searchbox');
-      if(input && window.Tagify){
-        if(input.tagify){
-          searchTagify = input.tagify;
-          searchTagify.settings.whitelist = saved;
-        }else{
-          searchTagify = new Tagify(input, {pattern:/.+/, whitelist:saved,
-            originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
-          const trap = (e) => {
-            if(e.key === 'Enter'){
-              e.preventDefault();
-              if(searchTagify) input.value = cleanTagString(searchTagify.getMixedTagsAsString());
-              searchForm.submit();
-            }
-          };
-          searchTagify.DOM.input.addEventListener('keydown', trap);
-          searchTagify.on('add', e => {
-            const val = e.detail.data.value;
-            const color = savedTagColors[val];
-            if(color) e.detail.tag.style.setProperty('--tag-bg', color);
-          });
-        }
-      }
-    }
-
-    function toggleSearchTag(tag){
-      const val = tag;
-      const color = savedTagColors[tag] || '#ccc';
-      const targets = [
-        {input: document.getElementById('searchbox'), tagify: searchTagify}
-      ];
-      for(const t of targets){
-        if(t.input && !t.input.closest('.hidden')){
-          if(t.tagify){
-            const current = cleanTagString(t.tagify.getMixedTagsAsString());
-            const parts = current.split(/\s+/).filter(Boolean);
-            const idx = parts.indexOf(tag);
-            if(idx >= 0){
-              parts.splice(idx,1);
-            } else {
-              parts.push(tag);
-            }
-            t.tagify.removeAllTags();
-            const tags = parts.map(p => ({value:p, style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
-            console.debug('Setting tags:', tags.map(t => t.value));
-            if(t.tagify.addMixTags){
-              t.tagify.addMixTags(tags);
-            } else {
-              t.tagify.addTags(tags, true);
-            }
-            const inp = t.tagify.DOM.input;
-            if(inp) inp.focus();
-          }else{
-            const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
-            const idx = parts.indexOf(tag);
-            if(idx >= 0){
-              parts.splice(idx,1);
-            }else{
-              parts.push(tag);
-            }
-            t.input.value = parts.join(' ');
-          }
-          break;
-        }
-      }
+      saved.forEach(addHistoryButton);
     }
 
     function saveTag(){
-      let val = searchTagify ? searchTagify.getMixedTagsAsString() : document.getElementById('searchbox').value.trim();
-      val = cleanTagString(val);
+      let val = document.getElementById('searchbox').value.trim();
       if(!val) return;
-      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})})
-        .then(() => { if(searchTagify && !searchTagify.settings.whitelist.includes(val)) searchTagify.settings.whitelist.push(val); });
+      if(!val.startsWith('#')){
+        val = '#' + val;
+      }
+      addHistoryButton(val);
+      fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})});
     }
 
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
-    const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('searchbox');
-    const clearBtn = document.getElementById('clear-search-btn');
-    if (searchInput && searchForm) {
-      searchForm.addEventListener('submit', () => {
-        if(searchTagify){
-          console.debug('Before submit:', searchTagify.getMixedTagsAsString());
-          const cleaned = cleanTagString(searchTagify.getMixedTagsAsString());
-          console.debug('After clean:', cleaned);
-          searchInput.value = cleaned;
-        } else {
-          console.debug('Before submit:', searchInput.value);
-          const cleaned = cleanTagString(searchInput.value);
-          console.debug('After clean:', cleaned);
-          searchInput.value = cleaned;
-        }
-      });
-      searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          if(searchTagify){
-            console.debug('Before submit:', searchTagify.getMixedTagsAsString());
-            const cleaned = cleanTagString(searchTagify.getMixedTagsAsString());
-            console.debug('After clean:', cleaned);
-            searchInput.value = cleaned;
-          } else {
-            console.debug('Before submit:', searchInput.value);
-            const cleaned = cleanTagString(searchInput.value);
-            console.debug('After clean:', cleaned);
-            searchInput.value = cleaned;
-          }
-          searchForm.submit();
-        }
-      });
-    }
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        if (searchTagify) {
-          searchTagify.removeAllTags();
-        }
-        if (searchInput) {
-          searchInput.value = '';
-        }
-        if (searchForm) {
-          searchForm.submit();
-        }
-      });
-    }
-    initSearchTags();
+    loadHistory();
 
+    const saveForm = document.getElementById('save-db-form');
+    if (saveForm) {
+      saveForm.addEventListener('submit', function(e) {
+        if (!/name=/.test(this.action)) {
+          e.preventDefault();
+          const nm = prompt('Enter database name:', 'waybax');
+          if (nm) {
+            const enc = encodeURIComponent(nm.trim());
+            window.location = '/save_db?name=' + enc;
+          }
+        }
+      });
+    }
+
+    const newForm = document.getElementById('new-db-form');
+    if (newForm) {
+      newForm.addEventListener('submit', function(e) {
+        const input = document.getElementById('new-db-name');
+        if (!input.value.trim()) {
+          e.preventDefault();
+          const nm = prompt('Enter new database name:', 'waybax');
+          if (nm) {
+            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+            if (cleaned) {
+              input.value = cleaned;
+              this.submit();
+            }
+          }
+        }
+      });
+    }
+
+    const renameForm = document.getElementById('rename-db-form');
+    if (renameForm) {
+      renameForm.addEventListener('submit', function(e) {
+        const input = document.getElementById('rename-db-name');
+        if (!input.value.trim()) {
+          e.preventDefault();
+          const nm = prompt('Enter new database name:', 'waybax');
+          if (nm) {
+            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+            if (cleaned) {
+              input.value = cleaned;
+              this.submit();
+            }
+          }
+        }
+      });
+    }
+
+    const loadBtn = document.getElementById('load-db-btn');
+    const loadInput = document.getElementById('load-db-file');
+    const loadForm = document.getElementById('load-db-form');
+    if (loadBtn && loadInput && loadForm) {
+      loadBtn.addEventListener('click', () => loadInput.click());
+      const dbDisplay = document.getElementById('db-display');
+      if (dbDisplay) {
+        dbDisplay.addEventListener('click', () => loadInput.click());
+      }
+      loadInput.addEventListener('change', () => {
+        if (loadInput.files.length) {
+          loadForm.submit();
+        }
     const saveForm = document.getElementById('save-db-form');
     if (saveForm) {
       saveForm.addEventListener('submit', function(e) {

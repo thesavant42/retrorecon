@@ -718,19 +718,6 @@ body {
   background: var(--bg-color);
   color: var(--fg-color);
 }
-/* Reduce height of Tagify inputs to avoid tall rows */
-.retrorecon-root .tagify {
-  font-size: 12px !important;
-  min-height: 1.4em;
-}
-.retrorecon-root .tagify__input {
-  padding: 0 4px;
-  line-height: 1.1em;
-  margin: 1px 0;
-}
-.retrorecon-root .tagify__tag {
-  margin: 1px;
-}
 
 .retrorecon-root .saved-tag {
   display: inline-block;

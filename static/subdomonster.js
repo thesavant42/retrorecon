@@ -12,40 +12,7 @@ function initSubdomonster(){
   const exportDomainInp = document.getElementById('subdom-export-domain');
   const exportFormatInp = document.getElementById('subdom-export-format');
   const exportQInp = document.getElementById('subdom-export-q');
-  function cleanTagString(str){
-    console.debug('cleanTagString input', str);
-    if(!str){ console.debug('cleanTagString result', ''); return ''; }
-    if(Array.isArray(str)){
-      const res = str.map(o => (o && o.value) ? o.value : '').join(' ').trim();
-      console.debug('cleanTagString result', res); return res;
-    }
-    const raw = String(str).replace(/\u200b/g, '');
-    try{
-      const arr = JSON.parse(raw);
-      if(Array.isArray(arr)){
-        const res = arr.map(o => (o && o.value) ? o.value : '').join(' ').trim();
-        console.debug('cleanTagString result', res); return res;
-      }
-    }catch{}
-    const res = raw.replace(/\[\[(.*?)\]\]/g, (m,p) => {
-      try{
-        let obj = JSON.parse(p);
-        if(Array.isArray(obj)) obj = obj[0];
-        return obj && obj.value ? obj.value : '';
-      }catch{
-        return p;
-      }
-    }).trim();
-    console.debug('cleanTagString result', res);
-    return res;
-  }
-  let savedTags = [];
-  fetch('/saved_tags')
-    .then(r => r.ok ? r.json() : {tags: []})
-    .then(d => {
-      const arr = Array.isArray(d.tags) ? d.tags : [];
-      savedTags = arr.map(t => t.name);
-    });
+  // Tagify removed
   let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
@@ -284,7 +251,6 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
-      new Tagify(el, { maxTags: 1, whitelist: savedTags,
         originalInputValueFormat: v => v.map(t => t.value).join(',') });
     });
     const table = tableDiv.querySelector('table');

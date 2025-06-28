@@ -51,21 +51,7 @@ function saveLastDb(name){
 loadTheme();
 
 async function initTagInputs(){
-  let saved = [];
-  try{
-    const resp = await fetch('/saved_tags');
-    if(resp.ok){
-      const data = await resp.json();
-      const arr = Array.isArray(data.tags) ? data.tags : [];
-      saved = arr.map(t => t.name);
-    }
-  }catch{}
-  if(window.Tagify){
-    document.querySelectorAll('#bulk-tag-input, .row-tag-input').forEach(el => {
-      new Tagify(el, { maxTags: 1, whitelist: saved,
-        originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
-    });
-  }
+  // Tagify removed; no initialization needed
 }
 
 function autoloadLastDb(current){
