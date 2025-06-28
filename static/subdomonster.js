@@ -14,14 +14,29 @@ function initSubdomonster(){
   const exportFormatInp = document.getElementById('subdom-export-format');
   const exportQInp = document.getElementById('subdom-export-q');
   const searchInput = document.getElementById('subdomonster-search');
+  function cleanTagString(str){
+    if(!str) return '';
+    const nozw = str.replace(/\u200b/g, '');
+    try{
+      const arr = JSON.parse(nozw);
+      if(Array.isArray(arr)){
+        return arr.map(it => {
+          const obj = Array.isArray(it) ? it[0] : it;
+          return obj && obj.value ? obj.value : '';
+        }).join(' ').trim();
+      }
+    }catch{}
+    return nozw;
+  }
   let savedTags = [];
   fetch('/saved_tags')
     .then(r => r.ok ? r.json() : {tags: []})
     .then(d => {
       const arr = Array.isArray(d.tags) ? d.tags : [];
       savedTags = arr.map(t => t.name);
-      if(searchInput){
-        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags});
+        if(searchInput){
+        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/.+/,whitelist:savedTags,
+          originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
       }
     });
   const sourceSel = document.getElementById('subdomonster-source');
@@ -135,7 +150,7 @@ function initSubdomonster(){
 
 
   async function fetchSearch(){
-    const term = searchInput.value.trim();
+    const term = cleanTagString(searchInput.value.trim());
     const domain = domainInput.value.trim();
     const params = new URLSearchParams();
     if(term) params.append('q', term);
@@ -151,7 +166,7 @@ function initSubdomonster(){
 
   if(searchInput){
     searchInput.addEventListener('input', async () => {
-      searchText = searchInput.value.trim().toLowerCase();
+      searchText = cleanTagString(searchInput.value.trim()).toLowerCase();
       currentPage = 1;
       selectedSubs.clear();
       await fetchSearch();

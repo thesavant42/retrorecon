@@ -67,7 +67,7 @@ async function initTagInputs(){
     });
     const sb = document.getElementById('searchbox');
     if(sb && !sb.tagify){
-      new Tagify(sb, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+      new Tagify(sb, {mode:'mix', pattern:/.+/, whitelist:saved, originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
     }
   }
 }

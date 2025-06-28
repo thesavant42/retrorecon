@@ -9,3 +9,4 @@ def test_subdomonster_js_has_checkbox_column():
     assert '<col class="w-1-6em checkbox-col"' in js
     assert '<th class="w-1-6em checkbox-col no-resize text-center"' in js
     assert 'subdomonster-col-widths' in js
+    assert 'checkbox-col no-resize' in js
