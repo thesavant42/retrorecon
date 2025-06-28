@@ -1,15 +1,19 @@
+function getColWidths(key, count){
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || '{}');
+    if(!count || Object.keys(data).length === count){
+      return data;
+    }
+  } catch {}
+  return {};
+}
+
 function makeResizableTable(table, key){
   if(!table) return;
   table.style.tableLayout = 'fixed';
   const ths = table.querySelectorAll('th');
   const cols = table.querySelectorAll('col');
-  let widths = {};
-  try {
-    widths = JSON.parse(localStorage.getItem(key) || '{}');
-  } catch {}
-  if(Object.keys(widths).length !== ths.length){
-    widths = {};
-  }
+  let widths = getColWidths(key, ths.length);
   ths.forEach((th, idx) => {
     const id = idx;
     if(widths[id]){
@@ -45,3 +49,4 @@ function makeResizableTable(table, key){
     }
   });
 }
+window.getColWidths = getColWidths;
