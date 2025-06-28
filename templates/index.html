@@ -865,6 +865,21 @@
 
     let searchTagify;
     let savedTagColors = {};
+
+    function cleanTagString(str){
+      if(!str) return '';
+      const nozw = str.replace(/\u200b/g, '');
+      try{
+        const arr = JSON.parse(nozw);
+        if(Array.isArray(arr)){
+          return arr.map(it => {
+            const obj = Array.isArray(it) ? it[0] : it;
+            return obj && obj.value ? '#' + obj.value : '';
+          }).join(' ').trim();
+        }
+      }catch{}
+      return nozw;
+    }
     async function initSearchTags(){
       let saved = [];
       try {
@@ -879,11 +894,12 @@
       } catch(e){}
       const input = document.getElementById('searchbox');
       if(input && window.Tagify){
-        searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+        searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved,
+          originalInputValueFormat:v=>v.map(t=>'#'+t.value).join(' ')});
         const trap = (e) => {
           if(e.key === 'Enter'){
             e.preventDefault();
-            if(searchTagify) input.value = searchTagify.getMixedTagsAsString();
+            if(searchTagify) input.value = cleanTagString(searchTagify.getMixedTagsAsString());
             searchForm.submit();
           }
         };
@@ -913,6 +929,12 @@
             } else {
               const tagData = {value: val, style: `--tag-bg: ${color}`};
               t.tagify.addTags([tagData], true);
+              const inp = t.tagify.DOM.input;
+              if(inp){
+                inp.focus();
+                const len = inp.value.length;
+                if(inp.setSelectionRange) inp.setSelectionRange(len,len);
+              }
             }
           }else{
             const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
@@ -930,7 +952,8 @@
     }
 
     function saveTag(){
-      let val = document.getElementById('searchbox').value.trim();
+      let val = searchTagify ? searchTagify.getMixedTagsAsString() : document.getElementById('searchbox').value.trim();
+      val = cleanTagString(val);
       if(!val) return;
       if(!val.startsWith('#')){
         val = '#' + val;
@@ -945,12 +968,14 @@
     const clearBtn = document.getElementById('clear-search-btn');
     if (searchInput && searchForm) {
       searchForm.addEventListener('submit', () => {
-        if(searchTagify) searchInput.value = searchTagify.getMixedTagsAsString();
+        if(searchTagify) searchInput.value = cleanTagString(searchTagify.getMixedTagsAsString());
+        else searchInput.value = cleanTagString(searchInput.value);
       });
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          if(searchTagify) searchInput.value = searchTagify.getMixedTagsAsString();
+          if(searchTagify) searchInput.value = cleanTagString(searchTagify.getMixedTagsAsString());
+          else searchInput.value = cleanTagString(searchInput.value);
           searchForm.submit();
         }
       });
