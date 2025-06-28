@@ -137,8 +137,7 @@ curl -X POST -d "theme=nostalgia.css" -d "size=16" \
 ```
 
 ### `GET /saved_tags`
-Return the list of saved tag searches. Each tag object contains ``name`` and
-``color`` fields.
+Return the list of saved tag searches.
 
 ```
 curl http://localhost:5000/saved_tags
@@ -147,12 +146,11 @@ curl http://localhost:5000/saved_tags
 ### `POST /saved_tags`
 Add a new tag query to the saved list.
 
-Parameters:
+Parameter:
 - `tag` – search expression to store.
-- `color` – optional hex color code.
 
 ```
-curl -X POST -d "tag=foo" -d "color=#ff0000" http://localhost:5000/saved_tags
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/saved_tags
 ```
 
 ### `POST /delete_saved_tag`
@@ -162,20 +160,7 @@ Parameter:
 - `tag` – query string to delete.
 
 ```
-curl -X POST -d "tag=foo AND bar" http://localhost:5000/delete_saved_tag
-```
-
-### `POST /rename_saved_tag`
-Rename an existing saved tag.
-
-Parameters:
-- `old_tag` – current tag name.
-- `new_tag` – new tag value.
-- `color` – optional hex color code.
-
-```
-curl -X POST -d "old_tag=foo" -d "new_tag=bar" -d "color=#00ff00" \
-  http://localhost:5000/rename_saved_tag
+curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
 ```
 
 ### `POST /tools/webpack-zip`
@@ -523,18 +508,11 @@ List subdomains from the database.
 
 Parameters (optional):
 - `domain` – limit results to a root domain.
-- `q` – filter by substring or tag.
 - `page` – return a specific page of results.
 - `items` – number of subdomains per page.
 
 ```
 curl "http://localhost:5000/subdomains?domain=example.com&page=1&items=50"
-```
-
-To search by term:
-
-```
-curl "http://localhost:5000/subdomains?q=admin&page=1&items=50"
 ```
 
 ### `POST /subdomains`
@@ -631,6 +609,8 @@ Query manifest information for an image.
 ```
 curl -G --data-urlencode "image=ubuntu:latest" http://localhost:5000/oci_explorer_api
 ```
+
+Pass `insecure=1` to disable TLS validation or when connecting to self-signed registries.
 
 ### `GET /registry_table`
 Return manifest details as a hierarchical table structure.
