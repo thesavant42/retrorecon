@@ -880,6 +880,19 @@
       const input = document.getElementById('searchbox');
       if(input && window.Tagify){
         searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved});
+        const trap = (e) => {
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            if(searchTagify) input.value = searchTagify.getMixedTagsAsString();
+            searchForm.submit();
+          }
+        };
+        searchTagify.DOM.input.addEventListener('keydown', trap);
+        searchTagify.on('add', e => {
+          const val = '#' + e.detail.data.value;
+          const color = savedTagColors[val];
+          if(color) e.detail.tag.style.setProperty('--tag-bg', color);
+        });
       }
     }
 
@@ -931,9 +944,13 @@
     const searchInput = document.getElementById('searchbox');
     const clearBtn = document.getElementById('clear-search-btn');
     if (searchInput && searchForm) {
+      searchForm.addEventListener('submit', () => {
+        if(searchTagify) searchInput.value = searchTagify.getMixedTagsAsString();
+      });
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          if(searchTagify) searchInput.value = searchTagify.getMixedTagsAsString();
           searchForm.submit();
         }
       });
