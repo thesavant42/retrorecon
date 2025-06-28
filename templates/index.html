@@ -891,7 +891,7 @@
           }
         }).trim();
         console.debug('cleanTagString result', res);
-        return res;
+        return res.trim();
       }
     async function initSearchTags(){
       let saved = [];
@@ -944,6 +944,7 @@
             }
             t.tagify.removeAllTags();
             const tags = parts.map(p => ({value:p, style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
+            console.debug('Setting tags:', tags.map(t => t.value));
             if(t.tagify.addMixTags){
               t.tagify.addMixTags(tags);
             } else {
@@ -980,14 +981,32 @@
     const clearBtn = document.getElementById('clear-search-btn');
     if (searchInput && searchForm) {
       searchForm.addEventListener('submit', () => {
-        if(searchTagify) searchInput.value = cleanTagString(searchTagify.getMixedTagsAsString());
-        else searchInput.value = cleanTagString(searchInput.value);
+        if(searchTagify){
+          console.debug('Before submit:', searchTagify.getMixedTagsAsString());
+          const cleaned = cleanTagString(searchTagify.getMixedTagsAsString());
+          console.debug('After clean:', cleaned);
+          searchInput.value = cleaned;
+        } else {
+          console.debug('Before submit:', searchInput.value);
+          const cleaned = cleanTagString(searchInput.value);
+          console.debug('After clean:', cleaned);
+          searchInput.value = cleaned;
+        }
       });
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          if(searchTagify) searchInput.value = cleanTagString(searchTagify.getMixedTagsAsString());
-          else searchInput.value = cleanTagString(searchInput.value);
+          if(searchTagify){
+            console.debug('Before submit:', searchTagify.getMixedTagsAsString());
+            const cleaned = cleanTagString(searchTagify.getMixedTagsAsString());
+            console.debug('After clean:', cleaned);
+            searchInput.value = cleaned;
+          } else {
+            console.debug('Before submit:', searchInput.value);
+            const cleaned = cleanTagString(searchInput.value);
+            console.debug('After clean:', cleaned);
+            searchInput.value = cleaned;
+          }
           searchForm.submit();
         }
       });
