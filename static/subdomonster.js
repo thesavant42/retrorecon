@@ -3,7 +3,6 @@ function initSubdomonster(){
   const overlay = document.getElementById('subdomonster-overlay');
   if(!overlay) return;
   const domainInput = document.getElementById('subdomonster-domain');
-  const addBtn = document.getElementById('subdom-add-domain-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
@@ -13,7 +12,6 @@ function initSubdomonster(){
   const exportDomainInp = document.getElementById('subdom-export-domain');
   const exportFormatInp = document.getElementById('subdom-export-format');
   const exportQInp = document.getElementById('subdom-export-q');
-  const searchInput = document.getElementById('subdomonster-search');
   function cleanTagString(str){
     console.debug('cleanTagString input', str);
     if(!str){ console.debug('cleanTagString result', ''); return ''; }
@@ -47,13 +45,7 @@ function initSubdomonster(){
     .then(d => {
       const arr = Array.isArray(d.tags) ? d.tags : [];
       savedTags = arr.map(t => t.name);
-        if(searchInput){
-        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/.+/,whitelist:savedTags,
-          originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
-      }
     });
-  const sourceSel = document.getElementById('subdomonster-source');
-  const apiInput = document.getElementById('subdomonster-api-key');
   let currentPage = 1;
   let tableData = [];
   const init = document.getElementById('subdomonster-init');
@@ -122,7 +114,6 @@ function initSubdomonster(){
       await new Promise(r=>setTimeout(r,1000));
     }
     cdxProcessing = false;
-    if(addBtn) addBtn.click();
   }
 
   function enqueueCdxImport(list){
@@ -162,31 +153,6 @@ function initSubdomonster(){
   }
 
 
-  async function fetchSearch(){
-    const term = cleanTagString(searchInput.value.trim());
-    const domain = domainInput.value.trim();
-    const params = new URLSearchParams();
-    if(term) params.append('q', term);
-    if(domain) params.append('domain', domain);
-    const resp = await fetch('/subdomains?' + params.toString());
-    if(resp.ok){
-      const data = await resp.json();
-      tableData = Array.isArray(data.results) ? data.results : data;
-    } else {
-      tableData = [];
-    }
-  }
-
-  if(searchInput){
-    searchInput.addEventListener('input', async () => {
-      searchText = cleanTagString(searchInput.value.trim()).toLowerCase();
-      currentPage = 1;
-      selectedSubs.clear();
-      await fetchSearch();
-      render();
-      updateSelectionStatus();
-    });
-  }
 
   function makeResizable(table, key){
     if(typeof makeResizableTable === 'function'){
@@ -246,14 +212,6 @@ function initSubdomonster(){
     });
   }
 
-  if(sourceSel){
-    sourceSel.addEventListener('change', () => {
-      const val = sourceSel.value;
-      apiInput.classList.toggle('hidden', val !== 'virustotal');
-    });
-    // initialize visibility
-    apiInput.classList.toggle('hidden', sourceSel.value !== 'virustotal');
-  }
 
   function render(){
     const widths = window.getColWidths ? window.getColWidths('subdomonster-col-widths', 5) : {};
@@ -281,7 +239,7 @@ function initSubdomonster(){
       `<col${widths[3]?` style=\"width:${widths[3]}\"`:''}/>`+
       `<col${widths[4]?` style=\"width:${widths[4]}\"`:''}/>`+
       '</colgroup><thead><tr>'+
-      `<th class="w-1-6em checkbox-col no-resize text-center"${widths[0]?` style=\"width:${widths[0]}\"`:''}><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>`+
+      `<th class="w-1-6em checkbox-col text-center"${widths[0]?` style=\"width:${widths[0]}\"`:''}><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>`+
       `<th class="sortable" data-field="subdomain"${widths[1]?` style=\"width:${widths[1]}\"`:''}>Subdomain</th>`+
       `<th class="sortable" data-field="domain"${widths[2]?` style=\"width:${widths[2]}\"`:''}>Domain</th>`+
       `<th class="sortable" data-field="source"${widths[3]?` style=\"width:${widths[3]}\"`:''}>Source</th>`+
@@ -484,46 +442,17 @@ function initSubdomonster(){
     renderPagination(totalPages, sorted.length);
   }
 
-  addBtn.addEventListener('click', async () => {
-    const input = prompt('Domain to fetch', domainInput.value.trim());
-    const domain = (input || '').trim();
-    if(!domain) return;
-    domainInput.value = domain;
-    const source = sourceSel ? sourceSel.value : 'crtsh';
-    const params = new URLSearchParams();
-    if(domain) params.append('domain', domain);
-    params.append('source', source);
-    if(source === 'virustotal'){
-      const api_key = apiInput.value.trim();
-      params.append('api_key', api_key);
-      if(!domain) return;
-    } else if(source !== 'local' && !domain){
-      return;
-    }
-    showStatus('Fetching...');
-    const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
-    if(resp.ok){
-      const data = await resp.json();
-      tableData = Array.isArray(data) ? data : [];
-      currentPage = 1;
-      selectedSubs.clear();
-      render();
-      updateSelectionStatus();
-    } else {
-      alert(await resp.text());
-    }
-  });
 
 
   if(exportBtn && exportForm){
     exportBtn.addEventListener('click', () => {
       const fmt = prompt('Format (md,csv,json)', 'json');
       if(!fmt) return;
-      const domain = domainInput.value.trim();
+      const domain = domainInput ? domainInput.value.trim() : '';
       if(!domain) return;
       if(exportDomainInp) exportDomainInp.value = domain;
       if(exportFormatInp) exportFormatInp.value = fmt;
-      if(exportQInp) exportQInp.value = searchInput ? searchInput.value.trim() : '';
+      if(exportQInp) exportQInp.value = '';
       exportForm.submit();
     });
   }
