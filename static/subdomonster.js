@@ -17,13 +17,15 @@ function initSubdomonster(){
   function cleanTagString(str){
     if(!str) return '';
     const nozw = str.replace(/\u200b/g, '');
-    try{
-      const arr = JSON.parse(nozw);
-      if(Array.isArray(arr)){
-        return arr.map(it => (Array.isArray(it) ? it[0] : it).value || '').join(' ').trim();
+    return nozw.replace(/\[\[(.*?)\]\]/g, (m, p) => {
+      try {
+        let obj = JSON.parse(p);
+        if(Array.isArray(obj)) obj = obj[0];
+        return obj && obj.value ? obj.value : '';
+      } catch {
+        return p;
       }
-    }catch{}
-    return nozw.trim();
+    }).trim();
   }
   let savedTags = [];
   fetch('/saved_tags')
