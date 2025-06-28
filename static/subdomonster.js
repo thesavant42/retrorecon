@@ -228,6 +228,7 @@ function initSubdomonster(){
   }
 
   function render(){
+    const widths = window.getColWidths ? window.getColWidths('subdomonster-col-widths', 5) : {};
     const filtered = searchText ?
       tableData.filter(r =>
         r.subdomain.toLowerCase().includes(searchText) ||
@@ -246,13 +247,17 @@ function initSubdomonster(){
     if(currentPage > totalPages) currentPage = totalPages;
     const pageData = sorted.slice((currentPage-1)*itemsPerPage, (currentPage-1)*itemsPerPage + itemsPerPage);
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-1-6em checkbox-col"/><col/><col/><col/><col/>'+
+      `<col class="w-1-6em checkbox-col"${widths[0]?` style=\"width:${widths[0]}\"`:''}/>`+
+      `<col${widths[1]?` style=\"width:${widths[1]}\"`:''}/>`+
+      `<col${widths[2]?` style=\"width:${widths[2]}\"`:''}/>`+
+      `<col${widths[3]?` style=\"width:${widths[3]}\"`:''}/>`+
+      `<col${widths[4]?` style=\"width:${widths[4]}\"`:''}/>`+
       '</colgroup><thead><tr>'+
-      '<th class="w-1-6em checkbox-col no-resize text-center"><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>'+
-      '<th class="sortable" data-field="subdomain">Subdomain</th>'+
-      '<th class="sortable" data-field="domain">Domain</th>'+
-      '<th class="sortable" data-field="source">Source</th>'+
-      '<th class="sortable" data-field="cdx_indexed">CDXed</th>'+
+      `<th class="w-1-6em checkbox-col no-resize text-center"${widths[0]?` style=\"width:${widths[0]}\"`:''}><input type="checkbox" onclick="document.querySelectorAll(\'#subdomonster-table .row-checkbox\').forEach(c=>c.checked=this.checked);selectAll=false;" /></th>`+
+      `<th class="sortable" data-field="subdomain"${widths[1]?` style=\"width:${widths[1]}\"`:''}>Subdomain</th>`+
+      `<th class="sortable" data-field="domain"${widths[2]?` style=\"width:${widths[2]}\"`:''}>Domain</th>`+
+      `<th class="sortable" data-field="source"${widths[3]?` style=\"width:${widths[3]}\"`:''}>Source</th>`+
+      `<th class="sortable" data-field="cdx_indexed"${widths[4]?` style=\"width:${widths[4]}\"`:''}>CDXed</th>`+
       '</tr></thead><tbody>';
     for(const r of pageData){
       const encoded = encodeURIComponent(r.subdomain);

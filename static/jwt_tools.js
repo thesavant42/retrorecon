@@ -27,6 +27,7 @@ function initJWTTools(){
 
   function renderJar(){
     if(!jarDiv) return;
+    const widths = window.getColWidths ? window.getColWidths('jwt-col-widths', 7) : {};
     const sorted = jarData.slice().sort((a,b)=>{
       const av = (a[sortField] || '').toString().toLowerCase();
       const bv = (b[sortField] || '').toString().toLowerCase();
@@ -35,15 +36,21 @@ function initJWTTools(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/>'+
+      `<col class="w-2em"${widths[0]?` style=\"width:${widths[0]}\"`:''}/>`+
+      `<col${widths[1]?` style=\"width:${widths[1]}\"`:''}/>`+
+      `<col${widths[2]?` style=\"width:${widths[2]}\"`:''}/>`+
+      `<col${widths[3]?` style=\"width:${widths[3]}\"`:''}/>`+
+      `<col${widths[4]?` style=\"width:${widths[4]}\"`:''}/>`+
+      `<col${widths[5]?` style=\"width:${widths[5]}\"`:''}/>`+
+      `<col${widths[6]?` style=\"width:${widths[6]}\"`:''}/>`+
       '</colgroup><thead><tr>'+
-      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>'+
-      '<th class="sortable" data-field="created_at">Time</th>'+
-      '<th class="sortable" data-field="issuer">Issuer</th>'+
-      '<th class="sortable" data-field="alg">alg</th>'+
-      '<th class="sortable" data-field="claims">claims</th>'+
-      '<th class="sortable" data-field="notes">Notes</th>'+
-      '<th class="sortable" data-field="token">JWT</th>'+
+      `<th class="w-2em checkbox-col no-resize text-center"${widths[0]?` style=\"width:${widths[0]}\"`:''}><input type="checkbox" id="jwt-select-all" class="form-checkbox" /></th>`+
+      `<th class="sortable" data-field="created_at"${widths[1]?` style=\"width:${widths[1]}\"`:''}>Time</th>`+
+      `<th class="sortable" data-field="issuer"${widths[2]?` style=\"width:${widths[2]}\"`:''}>Issuer</th>`+
+      `<th class="sortable" data-field="alg"${widths[3]?` style=\"width:${widths[3]}\"`:''}>alg</th>`+
+      `<th class="sortable" data-field="claims"${widths[4]?` style=\"width:${widths[4]}\"`:''}>claims</th>`+
+      `<th class="sortable" data-field="notes"${widths[5]?` style=\"width:${widths[5]}\"`:''}>Notes</th>`+
+      `<th class="sortable" data-field="token"${widths[6]?` style=\"width:${widths[6]}\"`:''}>JWT</th>`+
       '</tr></thead><tbody>';
     for(const row of sorted){
       const claims = Array.isArray(row.claims) ? row.claims.join(',') : '';

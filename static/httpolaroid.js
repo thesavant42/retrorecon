@@ -41,6 +41,7 @@ function initHttpolaroid(){
   }
 
   function render(){
+    const widths = window.getColWidths ? window.getColWidths('httpolaroid-col-widths', 10) : {};
     const sorted = tableData.slice().sort((a,b)=>{
       const av = (a[sortField] || '').toString().toLowerCase();
       const bv = (b[sortField] || '').toString().toLowerCase();
@@ -49,15 +50,27 @@ function initHttpolaroid(){
       return 0;
     });
     let html = '<table class="table url-table w-100"><colgroup>'+
-      '<col class="w-2em"/><col/><col/><col/><col/><col/><col/><col/><col/><col/>'+
+      `<col class="w-2em"${widths[0]?` style=\"width:${widths[0]}\"`:''}/>`+
+      `<col${widths[1]?` style=\"width:${widths[1]}\"`:''}/>`+
+      `<col${widths[2]?` style=\"width:${widths[2]}\"`:''}/>`+
+      `<col${widths[3]?` style=\"width:${widths[3]}\"`:''}/>`+
+      `<col${widths[4]?` style=\"width:${widths[4]}\"`:''}/>`+
+      `<col${widths[5]?` style=\"width:${widths[5]}\"`:''}/>`+
+      `<col${widths[6]?` style=\"width:${widths[6]}\"`:''}/>`+
+      `<col${widths[7]?` style=\"width:${widths[7]}\"`:''}/>`+
+      `<col${widths[8]?` style=\"width:${widths[8]}\"`:''}/>`+
+      `<col${widths[9]?` style=\"width:${widths[9]}\"`:''}/>`+
       '</colgroup><thead><tr>'+
-      '<th class="w-2em checkbox-col no-resize text-center"><input type="checkbox" id="httpolaroid-select-all" class="form-checkbox" /></th>'+
-      '<th class="sortable" data-field="created_at">Time</th>'+
-      '<th class="sortable" data-field="url">URL</th>'+
-      '<th class="sortable" data-field="status_code">Status</th>'+
-      '<th class="sortable" data-field="ip_addresses">IPs</th>'+
-      '<th class="sortable" data-field="method">Method</th>'+
-      '<th>ZIP</th><th>HAR</th><th class="sortable" data-field="zip_size">Size</th><th>Screenshot</th>'+
+      `<th class="w-2em checkbox-col no-resize text-center"${widths[0]?` style=\"width:${widths[0]}\"`:''}><input type="checkbox" id="httpolaroid-select-all" class="form-checkbox" /></th>`+
+      `<th class="sortable" data-field="created_at"${widths[1]?` style=\"width:${widths[1]}\"`:''}>Time</th>`+
+      `<th class="sortable" data-field="url"${widths[2]?` style=\"width:${widths[2]}\"`:''}>URL</th>`+
+      `<th class="sortable" data-field="status_code"${widths[3]?` style=\"width:${widths[3]}\"`:''}>Status</th>`+
+      `<th class="sortable" data-field="ip_addresses"${widths[4]?` style=\"width:${widths[4]}\"`:''}>IPs</th>`+
+      `<th class="sortable" data-field="method"${widths[5]?` style=\"width:${widths[5]}\"`:''}>Method</th>`+
+      `<th${widths[6]?` style=\"width:${widths[6]}\"`:''}>ZIP</th>`+
+      `<th${widths[7]?` style=\"width:${widths[7]}\"`:''}>HAR</th>`+
+      `<th class="sortable" data-field="zip_size"${widths[8]?` style=\"width:${widths[8]}\"`:''}>Size</th>`+
+      `<th${widths[9]?` style=\"width:${widths[9]}\"`:''}>Screenshot</th>`+
       '</tr></thead><tbody>';
     for(const row of sorted){
       const img = `<img src="${row.preview}" class="screenshot-thumb"/>`;
