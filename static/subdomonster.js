@@ -22,7 +22,7 @@ function initSubdomonster(){
       if(Array.isArray(arr)){
         return arr.map(it => {
           const obj = Array.isArray(it) ? it[0] : it;
-          return obj && obj.value ? '#' + obj.value : '';
+          return obj && obj.value ? obj.value : '';
         }).join(' ').trim();
       }
     }catch{}
@@ -34,9 +34,9 @@ function initSubdomonster(){
     .then(d => {
       const arr = Array.isArray(d.tags) ? d.tags : [];
       savedTags = arr.map(t => t.name);
-      if(searchInput){
-        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/#\w+/,whitelist:savedTags,
-          originalInputValueFormat:v=>v.map(t=>'#'+t.value).join(' ')});
+        if(searchInput){
+        window.subdomSearchTagify = new Tagify(searchInput,{mode:'mix',pattern:/.+/,whitelist:savedTags,
+          originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
       }
     });
   const sourceSel = document.getElementById('subdomonster-source');

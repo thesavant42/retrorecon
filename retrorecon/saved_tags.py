@@ -23,16 +23,14 @@ def load_tags(file_path: str) -> List[Dict[str, str]]:
                 result = []
                 for item in data:
                     if isinstance(item, dict):
-                        name = str(item.get("name", "")).strip()
+                        name = str(item.get("name", "")).lstrip("#").strip()
                         color = str(item.get("color", DEFAULT_COLOR)).strip() or DEFAULT_COLOR
                         desc = str(item.get("desc", "")).strip()
                     else:
-                        name = str(item).strip()
+                        name = str(item).lstrip("#").strip()
                         color = DEFAULT_COLOR
                         desc = ""
                     if name:
-                        if not name.startswith("#"):
-                            name = "#" + name
                         if not color.startswith("#"):
                             color = "#" + color
                         result.append({"name": name, "color": color, "desc": desc})
