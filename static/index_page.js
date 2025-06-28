@@ -65,10 +65,6 @@ async function initTagInputs(){
       new Tagify(el, { maxTags: 1, whitelist: saved,
         originalInputValueFormat: vals => vals.map(v => v.value).join(',') });
     });
-    const sb = document.getElementById('searchbox');
-    if(sb && !sb.tagify){
-      new Tagify(sb, {mode:'mix', pattern:/.+/, whitelist:saved, originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
-    }
   }
 }
 
