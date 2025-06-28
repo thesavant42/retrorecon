@@ -911,7 +911,7 @@
           searchTagify = input.tagify;
           searchTagify.settings.whitelist = saved;
         }else{
-          searchTagify = new Tagify(input, {mode:'mix', pattern:/.+/, whitelist:saved,
+          searchTagify = new Tagify(input, {pattern:/.+/, whitelist:saved,
             originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
           const trap = (e) => {
             if(e.key === 'Enter'){
