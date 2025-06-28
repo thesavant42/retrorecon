@@ -874,7 +874,11 @@
           if(Array.isArray(arr)){
             return arr.map(it => {
               const obj = Array.isArray(it) ? it[0] : it;
-              return obj && obj.value ? obj.value : '';
+              if(obj && obj.value){
+                const v = obj.value;
+                return /\s/.test(v) ? '"' + v + '"' : v;
+              }
+              return '';
             }).join(' ').trim();
           }
         }catch{}
