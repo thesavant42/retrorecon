@@ -8,13 +8,11 @@ bp = Blueprint('notes', __name__)
 def saved_tags_route():
     if request.method == 'GET':
         return jsonify({'tags': app.load_saved_tags()})
-    tag = request.form.get('tag', '').strip()
+    tag = request.form.get('tag', '').lstrip('#').strip()
     color = request.form.get('color', '').strip() or saved_tags_mod.DEFAULT_COLOR
     desc = request.form.get('desc', '').strip()
     if not tag:
         return ('', 400)
-    if not tag.startswith('#'):
-        tag = '#' + tag
     if not color.startswith('#'):
         color = '#' + color
     tags = app.load_saved_tags()
@@ -26,11 +24,9 @@ def saved_tags_route():
 
 @bp.route('/delete_saved_tag', methods=['POST'])
 def delete_saved_tag():
-    tag = request.form.get('tag', '').strip()
+    tag = request.form.get('tag', '').lstrip('#').strip()
     if not tag:
         return ('', 400)
-    if not tag.startswith('#'):
-        tag = '#' + tag
     tags = app.load_saved_tags()
     filtered = [t for t in tags if t['name'] != tag]
     if len(filtered) != len(tags):
@@ -39,16 +35,12 @@ def delete_saved_tag():
 
 @bp.route('/rename_saved_tag', methods=['POST'])
 def rename_saved_tag():
-    old_tag = request.form.get('old_tag', '').strip()
-    new_tag = request.form.get('new_tag', '').strip()
+    old_tag = request.form.get('old_tag', '').lstrip('#').strip()
+    new_tag = request.form.get('new_tag', '').lstrip('#').strip()
     color = request.form.get('color', '').strip()
     desc = request.form.get('desc', '').strip()
     if not old_tag or not new_tag:
         return ('', 400)
-    if not old_tag.startswith('#'):
-        old_tag = '#' + old_tag
-    if not new_tag.startswith('#'):
-        new_tag = '#' + new_tag
     if color and not color.startswith('#'):
         color = '#' + color
     tags = app.load_saved_tags()

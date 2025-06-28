@@ -584,7 +584,7 @@
       const name = tagNameInput.value.trim();
       if(!name) return;
       const params = new URLSearchParams({color: tagColorInput.value, desc: tagDescInput.value});
-      if(!name.startsWith('#')) params.set(editingTag ? 'new_tag' : 'tag', '#' + name); else params.set(editingTag ? 'new_tag' : 'tag', name);
+      params.set(editingTag ? 'new_tag' : 'tag', name);
       if(editingTag){
         params.set('old_tag', editingTag.name);
         fetch('/rename_saved_tag', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params}).then(()=>{tagEditor.classList.add('hidden'); loadTags();});
@@ -866,20 +866,20 @@
     let searchTagify;
     let savedTagColors = {};
 
-    function cleanTagString(str){
-      if(!str) return '';
-      const nozw = str.replace(/\u200b/g, '');
-      try{
-        const arr = JSON.parse(nozw);
-        if(Array.isArray(arr)){
-          return arr.map(it => {
-            const obj = Array.isArray(it) ? it[0] : it;
-            return obj && obj.value ? '#' + obj.value : '';
-          }).join(' ').trim();
-        }
-      }catch{}
-      return nozw;
-    }
+      function cleanTagString(str){
+        if(!str) return '';
+        const nozw = str.replace(/\u200b/g, '');
+        try{
+          const arr = JSON.parse(nozw);
+          if(Array.isArray(arr)){
+            return arr.map(it => {
+              const obj = Array.isArray(it) ? it[0] : it;
+              return obj && obj.value ? obj.value : '';
+            }).join(' ').trim();
+          }
+        }catch{}
+        return nozw;
+      }
     async function initSearchTags(){
       let saved = [];
       try {
@@ -894,8 +894,8 @@
       } catch(e){}
       const input = document.getElementById('searchbox');
       if(input && window.Tagify){
-        searchTagify = new Tagify(input, {mode:'mix', pattern:/#\w+/, whitelist:saved,
-          originalInputValueFormat:v=>v.map(t=>'#'+t.value).join(' ')});
+        searchTagify = new Tagify(input, {mode:'mix', pattern:/.+/, whitelist:saved,
+          originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
         const trap = (e) => {
           if(e.key === 'Enter'){
             e.preventDefault();
@@ -905,7 +905,7 @@
         };
         searchTagify.DOM.input.addEventListener('keydown', trap);
         searchTagify.on('add', e => {
-          const val = '#' + e.detail.data.value;
+          const val = e.detail.data.value;
           const color = savedTagColors[val];
           if(color) e.detail.tag.style.setProperty('--tag-bg', color);
         });
@@ -913,8 +913,7 @@
     }
 
     function toggleSearchTag(tag){
-      if(!tag.startsWith('#')) tag = '#' + tag;
-      const val = tag.slice(1);
+      const val = tag;
       const color = savedTagColors[tag] || '#ccc';
       const targets = [
         {input: document.getElementById('searchbox'), tagify: searchTagify},
@@ -932,7 +931,7 @@
               parts.push(tag);
             }
             t.tagify.removeAllTags();
-            const tags = parts.map(p => ({value:p.slice(1), style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
+            const tags = parts.map(p => ({value:p, style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
             t.tagify.addTags(tags, true);
             const inp = t.tagify.DOM.input;
             if(inp) inp.focus();
@@ -955,9 +954,6 @@
       let val = searchTagify ? searchTagify.getMixedTagsAsString() : document.getElementById('searchbox').value.trim();
       val = cleanTagString(val);
       if(!val) return;
-      if(!val.startsWith('#')){
-        val = '#' + val;
-      }
       fetch('/saved_tags', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({tag:val})})
         .then(() => { if(searchTagify && !searchTagify.settings.whitelist.includes(val)) searchTagify.settings.whitelist.push(val); });
     }

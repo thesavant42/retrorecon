@@ -152,7 +152,7 @@ Parameters:
 - `color` – optional hex color code.
 
 ```
-curl -X POST -d "tag=#foo" -d "color=#ff0000" http://localhost:5000/saved_tags
+curl -X POST -d "tag=foo" -d "color=#ff0000" http://localhost:5000/saved_tags
 ```
 
 ### `POST /delete_saved_tag`
@@ -162,7 +162,7 @@ Parameter:
 - `tag` – query string to delete.
 
 ```
-curl -X POST -d "tag=#foo AND #bar" http://localhost:5000/delete_saved_tag
+curl -X POST -d "tag=foo AND bar" http://localhost:5000/delete_saved_tag
 ```
 
 ### `POST /rename_saved_tag`
@@ -174,7 +174,7 @@ Parameters:
 - `color` – optional hex color code.
 
 ```
-curl -X POST -d "old_tag=#foo" -d "new_tag=#bar" -d "color=#00ff00" \
+curl -X POST -d "old_tag=foo" -d "new_tag=bar" -d "color=#00ff00" \
   http://localhost:5000/rename_saved_tag
 ```
 
