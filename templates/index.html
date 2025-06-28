@@ -907,21 +907,26 @@
       } catch(e){}
       const input = document.getElementById('searchbox');
       if(input && window.Tagify){
-        searchTagify = new Tagify(input, {mode:'mix', pattern:/.+/, whitelist:saved,
-          originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
-        const trap = (e) => {
-          if(e.key === 'Enter'){
-            e.preventDefault();
-            if(searchTagify) input.value = cleanTagString(searchTagify.getMixedTagsAsString());
-            searchForm.submit();
-          }
-        };
-        searchTagify.DOM.input.addEventListener('keydown', trap);
-        searchTagify.on('add', e => {
-          const val = e.detail.data.value;
-          const color = savedTagColors[val];
-          if(color) e.detail.tag.style.setProperty('--tag-bg', color);
-        });
+        if(input.tagify){
+          searchTagify = input.tagify;
+          searchTagify.settings.whitelist = saved;
+        }else{
+          searchTagify = new Tagify(input, {mode:'mix', pattern:/.+/, whitelist:saved,
+            originalInputValueFormat:v=>v.map(t=>t.value).join(' ')});
+          const trap = (e) => {
+            if(e.key === 'Enter'){
+              e.preventDefault();
+              if(searchTagify) input.value = cleanTagString(searchTagify.getMixedTagsAsString());
+              searchForm.submit();
+            }
+          };
+          searchTagify.DOM.input.addEventListener('keydown', trap);
+          searchTagify.on('add', e => {
+            const val = e.detail.data.value;
+            const color = savedTagColors[val];
+            if(color) e.detail.tag.style.setProperty('--tag-bg', color);
+          });
+        }
       }
     }
 
