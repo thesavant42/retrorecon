@@ -34,48 +34,6 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                             "attrs": {"class": "mb-05 search-input-row"},
                             "children": [
                                 {
-                                    "tag": "input",
-                                    "attrs": {
-                                        "type": "text",
-                                        "id": "subdomonster-domain",
-                                        "class": "form-input mr-05 subdomonster-domain-bar",
-                                        "placeholder": "example.com",
-                                    },
-                                },
-                                {
-                                    "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-add-domain-btn"},
-                                    "text": "+",
-                                },
-                                {
-                                    "tag": "select",
-                                    "attrs": {"id": "subdomonster-source", "class": "form-select mr-05 w-6em"},
-                                    "children": [
-                                        {"tag": "option", "attrs": {"value": "crtsh", "selected": True}, "text": "crt.sh"},
-                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "VirusTotal"},
-                                        {"tag": "option", "attrs": {"value": "local"}, "text": "Local"},
-                                    ],
-                                },
-                                {
-                                    "tag": "input",
-                                    "attrs": {
-                                        "type": "text",
-                                        "id": "subdomonster-api-key",
-                                        "class": "form-input mr-05 hidden",
-                                        "placeholder": "API key",
-                                        "value": app.app.config.get("VIRUSTOTAL_API", ""),
-                                    },
-                                },
-                                {
-                                    "tag": "input",
-                                    "attrs": {
-                                        "type": "text",
-                                        "id": "subdomonster-search",
-                                        "class": "form-input mr-05 subdom-search",
-                                        "placeholder": "search",
-                                    },
-                                },
-                                {
                                     "tag": "button",
                                     "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-export-btn"},
                                     "text": "\U0001f4be",

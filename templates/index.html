@@ -915,8 +915,7 @@
       const val = tag;
       const color = savedTagColors[tag] || '#ccc';
       const targets = [
-        {input: document.getElementById('searchbox'), tagify: searchTagify},
-        {input: document.getElementById('subdomonster-search'), tagify: window.subdomSearchTagify}
+        {input: document.getElementById('searchbox'), tagify: searchTagify}
       ];
       for(const t of targets){
         if(t.input && !t.input.closest('.hidden')){
