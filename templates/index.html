@@ -923,19 +923,19 @@
       for(const t of targets){
         if(t.input && !t.input.closest('.hidden')){
           if(t.tagify){
-            const exists = t.tagify.value.some(v => v.value === val);
-            if(exists){
-              t.tagify.removeTags(val);
+            const current = cleanTagString(t.tagify.getMixedTagsAsString());
+            const parts = current.split(/\s+/).filter(Boolean);
+            const idx = parts.indexOf(tag);
+            if(idx >= 0){
+              parts.splice(idx,1);
             } else {
-              const tagData = {value: val, style: `--tag-bg: ${color}`};
-              t.tagify.addTags([tagData], true);
-              const inp = t.tagify.DOM.input;
-              if(inp){
-                inp.focus();
-                const len = inp.value.length;
-                if(inp.setSelectionRange) inp.setSelectionRange(len,len);
-              }
+              parts.push(tag);
             }
+            t.tagify.removeAllTags();
+            const tags = parts.map(p => ({value:p.slice(1), style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
+            t.tagify.addTags(tags, true);
+            const inp = t.tagify.DOM.input;
+            if(inp) inp.focus();
           }else{
             const parts = t.input.value.trim().split(/\s+/).filter(Boolean);
             const idx = parts.indexOf(tag);
