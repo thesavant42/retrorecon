@@ -31,5 +31,5 @@ const out = getColWidths('w',2);
 console.log(JSON.stringify(out));
 """
     out = run_js(script)
-    assert json.loads(out) == {}
+    assert json.loads(out) == {'0': '40px'}
 

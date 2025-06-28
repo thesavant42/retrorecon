@@ -1,9 +1,12 @@
 function getColWidths(key, count){
   try {
     const data = JSON.parse(localStorage.getItem(key) || '{}');
-    if(!count || Object.keys(data).length === count){
-      return data;
+    if(!count) return data;
+    const out = {};
+    for(let i=0; i<count; i++){
+      if(data[i]) out[i] = data[i];
     }
+    return out;
   } catch {}
   return {};
 }
