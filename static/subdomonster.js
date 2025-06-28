@@ -20,13 +20,10 @@ function initSubdomonster(){
     try{
       const arr = JSON.parse(nozw);
       if(Array.isArray(arr)){
-        return arr.map(it => {
-          const obj = Array.isArray(it) ? it[0] : it;
-          return obj && obj.value ? obj.value : '';
-        }).join(' ').trim();
+        return arr.map(it => (Array.isArray(it) ? it[0] : it).value || '').join(' ').trim();
       }
     }catch{}
-    return nozw;
+    return nozw.trim();
   }
   let savedTags = [];
   fetch('/saved_tags')
