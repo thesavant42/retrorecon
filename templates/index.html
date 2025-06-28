@@ -872,17 +872,10 @@
         try{
           const arr = JSON.parse(nozw);
           if(Array.isArray(arr)){
-            return arr.map(it => {
-              const obj = Array.isArray(it) ? it[0] : it;
-              if(obj && obj.value){
-                const v = obj.value;
-                return /\s/.test(v) ? '"' + v + '"' : v;
-              }
-              return '';
-            }).join(' ').trim();
+            return arr.map(it => (Array.isArray(it) ? it[0] : it).value || '').join(' ').trim();
           }
         }catch{}
-        return nozw;
+        return nozw.trim();
       }
     async function initSearchTags(){
       let saved = [];
@@ -936,7 +929,11 @@
             }
             t.tagify.removeAllTags();
             const tags = parts.map(p => ({value:p, style:`--tag-bg: ${savedTagColors[p] || '#ccc'}`}));
-            t.tagify.addTags(tags, true);
+            if(t.tagify.addMixTags){
+              t.tagify.addMixTags(tags);
+            } else {
+              t.tagify.addTags(tags, true);
+            }
             const inp = t.tagify.DOM.input;
             if(inp) inp.focus();
           }else{
