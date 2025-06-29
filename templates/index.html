@@ -994,69 +994,6 @@
         if (loadInput.files.length) {
           loadForm.submit();
         }
-    const saveForm = document.getElementById('save-db-form');
-    if (saveForm) {
-      saveForm.addEventListener('submit', function(e) {
-        if (!/name=/.test(this.action)) {
-          e.preventDefault();
-          const nm = prompt('Enter database name:', 'waybax');
-          if (nm) {
-            const enc = encodeURIComponent(nm.trim());
-            window.location = '/save_db?name=' + enc;
-          }
-        }
-      });
-    }
-
-    const newForm = document.getElementById('new-db-form');
-    if (newForm) {
-      newForm.addEventListener('submit', function(e) {
-        const input = document.getElementById('new-db-name');
-        if (!input.value.trim()) {
-          e.preventDefault();
-          const nm = prompt('Enter new database name:', 'waybax');
-          if (nm) {
-            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
-            if (cleaned) {
-              input.value = cleaned;
-              this.submit();
-            }
-          }
-        }
-      });
-    }
-
-    const renameForm = document.getElementById('rename-db-form');
-    if (renameForm) {
-      renameForm.addEventListener('submit', function(e) {
-        const input = document.getElementById('rename-db-name');
-        if (!input.value.trim()) {
-          e.preventDefault();
-          const nm = prompt('Enter new database name:', 'waybax');
-          if (nm) {
-            const cleaned = nm.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
-            if (cleaned) {
-              input.value = cleaned;
-              this.submit();
-            }
-          }
-        }
-      });
-    }
-
-    const loadBtn = document.getElementById('load-db-btn');
-    const loadInput = document.getElementById('load-db-file');
-    const loadForm = document.getElementById('load-db-form');
-    if (loadBtn && loadInput && loadForm) {
-      loadBtn.addEventListener('click', () => loadInput.click());
-      const dbDisplay = document.getElementById('db-display');
-      if (dbDisplay) {
-        dbDisplay.addEventListener('click', () => loadInput.click());
-      }
-      loadInput.addEventListener('change', () => {
-        if (loadInput.files.length) {
-          loadForm.submit();
-        }
       });
     }
 
