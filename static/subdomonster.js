@@ -362,6 +362,13 @@ function initSubdomonster(){
       link.addEventListener('click', (ev) => {
         ev.preventDefault();
         const sub = decodeURIComponent(link.dataset.sub);
+        const form = document.getElementById('fetch-cdx-form');
+        const input = document.getElementById('domain-input');
+        if(form && input){
+          input.value = sub;
+          form.submit();
+          return;
+        }
         const selected = Array.from(document.querySelectorAll('#subdomonster-table .row-checkbox:checked')).map(c=>c.dataset.sub);
         if(selected.length > 1){
           enqueueCdxImport(selected);
