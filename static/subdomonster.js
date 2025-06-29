@@ -7,11 +7,6 @@ function initSubdomonster(){
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
   const statusSpan = document.getElementById('subdomonster-status');
-  const exportBtn = document.getElementById('subdom-export-btn');
-  const exportForm = document.getElementById('subdom-export-form');
-  const exportDomainInp = document.getElementById('subdom-export-domain');
-  const exportFormatInp = document.getElementById('subdom-export-format');
-  const exportQInp = document.getElementById('subdom-export-q');
   // Tagify removed
   let currentPage = 1;
   let tableData = [];
@@ -251,7 +246,10 @@ function initSubdomonster(){
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
     tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
-        originalInputValueFormat: v => v.map(t => t.value).join(',') });
+      new Tagify(el, {
+        maxTags: 1,
+        originalInputValueFormat: v => v.map(t => t.value).join(',')
+      });
     });
     const table = tableDiv.querySelector('table');
     const pageCb = document.getElementById('subdom-page-cb');
@@ -410,18 +408,6 @@ function initSubdomonster(){
 
 
 
-  if(exportBtn && exportForm){
-    exportBtn.addEventListener('click', () => {
-      const fmt = prompt('Format (md,csv,json)', 'json');
-      if(!fmt) return;
-      const domain = domainInput ? domainInput.value.trim() : '';
-      if(!domain) return;
-      if(exportDomainInp) exportDomainInp.value = domain;
-      if(exportFormatInp) exportFormatInp.value = fmt;
-      if(exportQInp) exportQInp.value = '';
-      exportForm.submit();
-    });
-  }
 
 
 

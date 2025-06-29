@@ -35,35 +35,6 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                             "children": [
                                 {
                                     "tag": "button",
-                                    "attrs": {"type": "button", "class": "btn mr-05", "id": "subdom-export-btn"},
-                                    "text": "\U0001f4be",
-                                },
-                                {
-                                    "tag": "form",
-                                    "attrs": {
-                                        "id": "subdom-export-form",
-                                        "class": "hidden",
-                                        "action": "/export_subdomains",
-                                        "method": "GET",
-                                        "target": "_blank",
-                                    },
-                                    "children": [
-                                        {
-                                            "tag": "input",
-                                            "attrs": {"type": "hidden", "name": "domain", "id": "subdom-export-domain"},
-                                        },
-                                        {
-                                            "tag": "input",
-                                            "attrs": {"type": "hidden", "name": "format", "id": "subdom-export-format"},
-                                        },
-                                        {
-                                            "tag": "input",
-                                            "attrs": {"type": "hidden", "name": "q", "id": "subdom-export-q"},
-                                        },
-                                    ],
-                                },
-                                {
-                                    "tag": "button",
                                     "attrs": {"type": "button", "class": "btn overlay-close-btn", "id": "subdomonster-close-btn"},
                                     "text": "Close",
                                 },
