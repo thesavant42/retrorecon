@@ -152,11 +152,10 @@ def parse_search_expression(tokens: List[str], pos: int = 0) -> Tuple[str, List[
             return "mime_type LIKE ?", [f"%{val}%"]
         if lower.startswith('tag:'):
             return "has_tag(tags, ?)", [tok[4:]]
-        return (
-            "(" "url LIKE ? OR tags LIKE ? OR CAST(timestamp AS TEXT) LIKE ? OR "
-            "CAST(status_code AS TEXT) LIKE ? OR mime_type LIKE ?" ")",
-            [f"%{tok}%"] * 5,
-        )
+        # If no prefix is provided, restrict the search to the URL field. This
+        # avoids NOT clauses excluding rows due to matches in unrelated columns
+        # like tags or MIME type.
+        return "url LIKE ?", [f"%{tok}%"]
 
     def parse_primary(p: int) -> Tuple[str, List[str], int]:
         if p >= len(tokens):
