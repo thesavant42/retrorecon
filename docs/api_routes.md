@@ -23,7 +23,8 @@ curl http://localhost:5000/
 
 Optional query parameter `q` accepts plain text or expressions using the
 `url:`, `timestamp:`, `http:` and `mime:` operators combined with Boolean
-keywords (`AND`, `OR`, `NOT`).
+keywords (`AND`, `OR`, `NOT`). If a term has no prefix it is matched only
+against the URL field.
 
 Example:
 
