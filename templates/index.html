@@ -854,17 +854,14 @@
     pollStatus();
 
     // Check once on load and show current status
-    fetch('/import_progress')
-      .then(r => r.json())
-      .then(data => {
-        updateImportStatus(data);
-        if (data.status && data.status !== 'idle') startImportPolling();
-      })
-      .catch(() => { updateImportStatus({status:'idle'}); });
+      fetch('/import_progress')
+        .then(r => r.json())
+        .then(data => {
+          updateImportStatus(data);
+          if (data.status && data.status !== 'idle') startImportPolling();
+        })
+        .catch(() => { updateImportStatus({status:'idle'}); });
 
-
-      })
-      .catch(() => { updateImportStatus({status:'idle'}); });
 
     function quickSearch(term){
       if(term.startsWith('#')){
