@@ -245,10 +245,12 @@ function initSubdomonster(){
     }
     html += '</tbody></table>';
     tableDiv.innerHTML = html;
+    // Inputs previously used Tagify for single-tag entry, but the library
+    // was removed. The plain text box already works for comma separated tags,
+    // so simply ensure any stray whitespace is trimmed on blur.
     tableDiv.querySelectorAll('.row-tag-input').forEach(el => {
-      new Tagify(el, {
-        maxTags: 1,
-        originalInputValueFormat: v => v.map(t => t.value).join(',')
+      el.addEventListener('blur', () => {
+        el.value = el.value.trim();
       });
     });
     const table = tableDiv.querySelector('table');
