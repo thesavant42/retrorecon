@@ -372,8 +372,19 @@ function initSubdomonster(){
         const selected = Array.from(document.querySelectorAll('#subdomonster-table .row-checkbox:checked')).map(c=>c.dataset.sub);
         if(selected.length > 1){
           enqueueCdxImport(selected);
-        }else{
-          enqueueCdxImport([sub]);
+        } else {
+          const form = document.getElementById('fetch-cdx-form');
+          const input = document.getElementById('domain-input');
+          if(form && input){
+            input.value = sub;
+            if(typeof form.requestSubmit === 'function'){
+              form.requestSubmit();
+            }else{
+              form.submit();
+            }
+          }else{
+            enqueueCdxImport([sub]);
+          }
         }
         const row = link.closest('tr');
         const main = row ? row.previousElementSibling : null;
