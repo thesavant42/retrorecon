@@ -495,7 +495,7 @@ def index() -> str:
     default_theme = 'nostalgia.css' if 'nostalgia.css' in AVAILABLE_THEMES else (AVAILABLE_THEMES[0] if AVAILABLE_THEMES else '')
     current_theme = session.get('theme', default_theme)
 
-    default_background = 'background.jpg' if 'background.jpg' in AVAILABLE_BACKGROUNDS else (AVAILABLE_BACKGROUNDS[0] if AVAILABLE_BACKGROUNDS else '')
+    default_background = AVAILABLE_BACKGROUNDS[0] if AVAILABLE_BACKGROUNDS else ''
     current_background = session.get('background', default_background)
 
     panel_opacity = float(session.get('panel_opacity', 0.75))

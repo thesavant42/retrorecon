@@ -195,8 +195,7 @@ body {
 /* --- Updated CSS to emulate Fandom Map Room style --- */
 
 .retrorecon-root {
-  background: var(--bg-color) url("/static/img/background.jpg") no-repeat center center fixed;
-  background-size: cover;
+  background: var(--bg-color);
   display: flex;
   flex-direction: column;
   position: relative;
