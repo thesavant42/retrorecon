@@ -1,12 +1,10 @@
 <div id="domain-sort-overlay" class="notes-overlay hidden">
   <button type="button" class="btn overlay-close-btn" id="domain-sort-close-btn">Close</button>
-  <form id="domain-sort-form" method="post" enctype="multipart/form-data" class="mt-05">
-    <label>Paste domains:<br/>
-      <textarea name="domains" rows="10" cols="60" class="form-input"></textarea>
-    </label><br/>
-    <label>Or upload file: <input type="file" name="file"></label><br/>
-    <label><input type="checkbox" name="as_html" value="1"/> Output as HTML</label><br/>
-    <button type="submit" class="btn mt-05">Generate Tree</button>
+  <form id="domain-sort-form" method="post" enctype="multipart/form-data" class="mt-05 domain-sort-form">
+    <label class="mr-05">Upload file: <input type="file" name="file"></label>
+    <button type="submit" class="btn mr-05">Generate Tree</button>
+    <button type="button" class="btn" id="domain-sort-export-btn">Export to MD</button>
+    <input type="hidden" name="format" value="html" id="domain-sort-format">
   </form>
   <div id="domain-sort-output" class="mt-05"></div>
 </div>
