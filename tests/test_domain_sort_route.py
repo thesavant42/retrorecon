@@ -50,6 +50,17 @@ def test_domain_sort_html(tmp_path, monkeypatch):
         assert subs == ['a.example.com', 'b.example.com']
 
 
+def test_domain_sort_toggle_attribute(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    f = tmp_path / "domains.txt"
+    f.write_text("a.example.com")
+    with app.app.test_client() as client:
+        with open(f, 'rb') as fh:
+            resp = client.post('/domain_sort', data={'file': fh})
+        text = resp.get_data(as_text=True)
+        assert 'class=\'domain-sort-toggle\'' in text
+
+
 def test_domain_sort_aggregates_all(tmp_path, monkeypatch):
     setup_tmp(monkeypatch, tmp_path)
     f1 = tmp_path / "one.txt"
