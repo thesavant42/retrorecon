@@ -1037,6 +1037,7 @@ body {
 .retrorecon-root .pagination span,
 .retrorecon-root .pagination form {
   margin: 0 0.1em;
+  font-size: 20px !important;
 }
 .retrorecon-root .pagination a:hover {
   background: var(--bg-color);
