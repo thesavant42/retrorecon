@@ -415,6 +415,12 @@ paths:
       responses:
         '200':
           description: Successful response
+  /update_subdomain:
+    post:
+      summary: POST /update_subdomain
+      responses:
+        '200':
+          description: Successful response
   /subdomain_action:
     post:
       summary: POST /subdomain_action

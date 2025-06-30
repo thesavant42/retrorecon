@@ -594,6 +594,15 @@ Delete a subdomain entry.
 curl -X POST -d "domain=example.com" -d "subdomain=dev" http://localhost:5000/delete_subdomain
 ```
 
+### `POST /update_subdomain`
+Rename a subdomain entry.
+
+```
+curl -X POST -d "domain=example.com" -d "subdomain=old" \
+     -d "new_domain=example.net" -d "new_subdomain=new" \
+     http://localhost:5000/update_subdomain
+```
+
 
 ### `POST /load_saved_db`
 Switch to a database file stored under `db/`.

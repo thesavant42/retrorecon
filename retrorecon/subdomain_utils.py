@@ -114,6 +114,17 @@ def delete_record(root_domain: str, subdomain: str) -> None:
     )
 
 
+def update_record(
+    root_domain: str, subdomain: str, new_root: str, new_sub: str
+) -> None:
+    """Rename ``subdomain`` and/or ``root_domain`` in the DB."""
+    execute_db(
+        "UPDATE domains SET root_domain = ?, subdomain = ?"
+        " WHERE root_domain = ? AND subdomain = ?",
+        [_clean(new_root), _clean(new_sub), _clean(root_domain), _clean(subdomain)],
+    )
+
+
 def add_tag(root_domain: str, subdomain: str, tag: str) -> None:
     rows = query_db(
         "SELECT id, tags FROM domains WHERE root_domain = ? AND subdomain = ?",
