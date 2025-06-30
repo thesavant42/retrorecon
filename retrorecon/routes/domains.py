@@ -73,6 +73,40 @@ def _render_tree_html(tree, root, domains, printed=None):
     return line
 
 
+def _render_domain_sort_output(roots: dict) -> str:
+    """Return the full HTML output for the domain sort table and tree."""
+    rows = []
+    for root in sorted(roots):
+        rows.append(
+            "<tr>"
+            f"<td><a href='#' class='domain-sort-toggle' data-target='root-{root}'>"
+            f"{root}</a></td>"
+            f"<td>{len(roots[root])}</td>"
+            "</tr>"
+        )
+    table = (
+        "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th></tr></thead>"
+        "<tbody>" + ''.join(rows) + "</tbody></table>"
+    )
+    output = table
+    for root in sorted(roots):
+        tree = _build_tree(roots[root])
+        top_level = [
+            d
+            for d in roots[root]
+            if d == root or (d.endswith('.' + root) and d.count('.') == root.count('.') + 1)
+        ]
+        items = ''.join(
+            _render_tree_html(tree, dom, roots[root])
+            for dom in sorted(top_level, key=lambda d: (len(d.split('.')), d))
+        )
+        output += (
+            f"<details class='collapsible domain-sort-root' open id='root-{root}'>"
+            f"<summary>{root}</summary><ul class='domain-sort-tree'>{items}</ul></details>"
+        )
+    return output
+
+
 def _summary_data() -> dict:
     """Return aggregate subdomain summary information."""
     if not app._db_loaded():
@@ -367,31 +401,18 @@ def domain_sort_page():
                     lines.append(_render_tree_md(tree, dom, roots[root]))
             return Response('\n'.join(lines), mimetype='text/markdown')
 
-        rows = []
-        for root in sorted(roots):
-            rows.append(
-                "<tr>"
-                f"<td><a href='#' class='domain-sort-toggle' data-target='root-{root}'>" 
-                f"{root}</a></td>"
-                f"<td>{len(roots[root])}</td>"
-                "</tr>"
-            )
-        table = (
-            "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th></tr></thead>"
-            "<tbody>" + ''.join(rows) + "</tbody></table>"
-        )
-        output = table
-        for root in sorted(roots):
-            tree = _build_tree(roots[root])
-            top_level = [d for d in roots[root] if d == root or (d.endswith('.'+root) and d.count('.') == root.count('.') + 1)]
-            items = ''.join(_render_tree_html(tree, dom, roots[root]) for dom in sorted(top_level, key=lambda d: (len(d.split('.')), d)))
-            output += (
-                f"<details class='collapsible domain-sort-root' open id='root-{root}'>"
-                f"<summary>{root}</summary><ul class='domain-sort-tree'>{items}</ul></details>"
-            )
+        output = _render_domain_sort_output(roots)
         return Response(output, mimetype='text/html')
 
-    return dynamic_template('domain_sort.html')
+    if app._db_loaded():
+        rows = subdomain_utils.list_all_subdomains()
+        if rows:
+            roots = defaultdict(list)
+            for r in rows:
+                roots[r['domain']].append(r['subdomain'])
+            output = _render_domain_sort_output(roots)
+            return dynamic_template('domain_sort.html', initial_output=output)
+    return dynamic_template('domain_sort.html', initial_output="")
 
 
 @bp.route('/tools/domain_sort', methods=['GET'])
