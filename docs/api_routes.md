@@ -532,6 +532,14 @@ Serve the recursive domain sort overlay.
 curl http://localhost:5000/domain_sort
 ```
 
+### `POST /domain_sort`
+Generate a collapsible domain tree. Accepts a file upload named `file` and an optional
+`format` field of `html` or `md`. When `format=md`, a Markdown document is returned.
+
+```
+curl -X POST -F "file=@domains.txt" -F "format=md" http://localhost:5000/domain_sort
+```
+
 ### `GET /tools/domain_sort`
 Full-page domain sort overlay that loads on page visit.
 
