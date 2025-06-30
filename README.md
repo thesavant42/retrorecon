@@ -44,6 +44,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | Dynamic Rendering API         | Programmatically render pages from schemas with managed assets             |
 | OCI Registry Table Explorer   | Browse container images as tables with direct download links |
 | HTTPolaroid Snapshots         | Capture a single URL with full headers, screenshot and assets into a zip |
+| Subdomain Info Summary        | View aggregate counts of root domains and hosts |
 
 ---
 
