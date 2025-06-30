@@ -10,6 +10,11 @@ def setup_tmp(monkeypatch, tmp_path):
     (tmp_path / "db").mkdir(exist_ok=True)
     schema = Path(__file__).resolve().parents[1] / "db" / "schema.sql"
     (tmp_path / "db" / "schema.sql").write_text(schema.read_text())
+    # copy templates needed for dynamic rendering
+    tmpl_dir = tmp_path / "templates"
+    tmpl_dir.mkdir(exist_ok=True)
+    orig_tmpl = Path(__file__).resolve().parents[1] / "templates" / "domain_sort.html"
+    (tmpl_dir / "domain_sort.html").write_text(orig_tmpl.read_text())
     monkeypatch.setitem(app.app.config, "DATABASE", str(tmp_path / "test.db"))
     with app.app.app_context():
         app.create_new_db("test")
@@ -80,3 +85,15 @@ def test_domain_sort_aggregates_all(tmp_path, monkeypatch):
         text = resp.get_data(as_text=True)
         assert 'a.example.com' in text
         assert 'b.other.com' in text
+
+
+def test_domain_sort_get_persists(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    f = tmp_path / "domains.txt"
+    f.write_text("a.example.com")
+    with app.app.test_client() as client:
+        with open(f, 'rb') as fh:
+            client.post('/domain_sort', data={'file': fh})
+        resp = client.get('/domain_sort')
+        body = resp.get_data(as_text=True)
+        assert 'a.example.com' in body
