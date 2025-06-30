@@ -202,7 +202,7 @@
           <div class="menu-header">OSINT</div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="domain-sort-link">Domain Sort</a></div>
-          <div class="menu-row"><a href="/domain_summary" class="menu-btn">Subdomain Info</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="domain-summary-link">Subdomain Info</a></div>
           <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
             <input id="domain-input" type="hidden" name="domain" />
             <button type="button" class="menu-btn" id="fetch-cdx-btn">Hindsight (CDX API)</button>
@@ -1449,6 +1449,54 @@
 
       if(location.pathname === '/tools/domain_sort' || openTool === 'domain_sort'){
         showDomainSort(true);
+      }
+
+      const summaryLink = document.getElementById('domain-summary-link');
+      let summaryLoaded = false;
+
+      async function showDomainSummary(skipPush){
+        if(!summaryLoaded){
+          const resp = await fetch('/domain_summary');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/domain_summary.js';
+          document.body.appendChild(script);
+          summaryLoaded = true;
+        }
+        document.getElementById('domain-summary-overlay').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        if(window.loadDomainSummary){ window.loadDomainSummary(); }
+        if(!skipPush){
+          history.pushState({tool:'domain_summary'}, '', '/tools/domain_summary');
+        }
+      }
+
+      function hideDomainSummary(){
+        const ov = document.getElementById('domain-summary-overlay');
+        if(ov) ov.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      if(summaryLink){
+        summaryLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          closeMenus();
+          showDomainSummary();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/domain_summary'){
+          showDomainSummary(true);
+        } else {
+          hideDomainSummary();
+        }
+      });
+
+      if(location.pathname === '/tools/domain_summary' || openTool === 'domain_summary'){
+        showDomainSummary(true);
       }
 
       window.addEventListener('popstate', () => {

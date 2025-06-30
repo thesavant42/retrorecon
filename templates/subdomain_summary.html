@@ -1,27 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Subdomain Summary</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
-</head>
-<body>
-  <div class="retrorecon-root">
-    <h1>Subdomain Summary</h1>
-    <p>Total root domains: {{ total_domains }}</p>
-    <p>Total unique hosts: {{ total_hosts }}</p>
-    <h2>Top 5 Subdomains</h2>
-    <ul>
-    {% for dom, cnt in top_subdomains %}
-      <li>{{ dom }} ({{ cnt }})</li>
-    {% endfor %}
-    </ul>
-    <h2>Lonely Subdomains</h2>
-    <ul>
-    {% for dom, cnt in lonely_subdomains %}
-      <li>{{ dom }} ({{ cnt }})</li>
-    {% endfor %}
-    </ul>
-  </div>
-</body>
-</html>
+<div id="domain-summary-overlay" class="notes-overlay hidden">
+  <button type="button" class="btn overlay-close-btn" id="domain-summary-close-btn">Close</button>
+  <h1>Subdomain Summary</h1>
+  <p>Total root domains: <span id="summary-total-domains">{{ total_domains }}</span></p>
+  <p>Total unique hosts: <span id="summary-total-hosts">{{ total_hosts }}</span></p>
+  <h2>Top 5 Subdomains</h2>
+  <ul id="summary-top-list">
+  {% for dom, cnt in top_subdomains %}
+    <li>{{ dom }} ({{ cnt }})</li>
+  {% endfor %}
+  </ul>
+  <h2>Lonely Subdomains</h2>
+  <ul id="summary-lonely-list">
+  {% for dom, cnt in lonely_subdomains %}
+    <li>{{ dom }} ({{ cnt }})</li>
+  {% endfor %}
+  </ul>
+</div>

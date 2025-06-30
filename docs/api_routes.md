@@ -726,3 +726,10 @@ Return aggregate subdomain statistics including the top and loneliest hosts.
 curl http://localhost:5000/domain_summary
 ```
 
+### `GET /domain_summary.json`
+Return the same subdomain summary data as JSON.
+
+```
+curl http://localhost:5000/domain_summary.json
+```
+

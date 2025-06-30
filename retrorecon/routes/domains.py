@@ -48,6 +48,32 @@ def _render_tree(tree, root, domains, level=0, printed=None, as_html=False):
     return line
 
 
+def _summary_data() -> dict:
+    """Return aggregate subdomain summary information."""
+    if not app._db_loaded():
+        return {
+            'total_domains': 0,
+            'total_hosts': 0,
+            'top_subdomains': [],
+            'lonely_subdomains': [],
+        }
+
+    rows = subdomain_utils.list_all_subdomains()
+    hosts = [r['subdomain'] for r in rows]
+    roots = {r['domain'] for r in rows}
+    tree = domain_sort.aggregate_hosts(hosts)
+    flat = domain_sort.flatten_tree(tree)
+    flat_sorted = sorted(flat, key=lambda x: x[1], reverse=True)
+    top_subs = flat_sorted[:5]
+    lonely_subs = sorted(flat, key=lambda x: x[1])[:5]
+    return {
+        'total_domains': len(roots),
+        'total_hosts': len(set(hosts)),
+        'top_subdomains': top_subs,
+        'lonely_subdomains': lonely_subs,
+    }
+
+
 @bp.route('/subdomonster', methods=['GET'])
 def subdomonster_page():
     data = []
@@ -249,25 +275,14 @@ def subdomain_action():
 @bp.route('/domain_summary', methods=['GET'])
 def domain_summary_page():
     """Return a simple summary of subdomain counts."""
-    if not app._db_loaded():
-        return dynamic_template('subdomain_summary.html', total_domains=0, total_hosts=0,
-                                top_subdomains=[], lonely_subdomains=[])
+    data = _summary_data()
+    return dynamic_template('subdomain_summary.html', **data)
 
-    rows = subdomain_utils.list_all_subdomains()
-    hosts = [r['subdomain'] for r in rows]
-    roots = {r['domain'] for r in rows}
-    tree = domain_sort.aggregate_hosts(hosts)
-    flat = domain_sort.flatten_tree(tree)
-    flat_sorted = sorted(flat, key=lambda x: x[1], reverse=True)
-    top_subs = flat_sorted[:5]
-    lonely_subs = sorted(flat, key=lambda x: x[1])[:5]
-    return dynamic_template(
-        'subdomain_summary.html',
-        total_domains=len(roots),
-        total_hosts=len(set(hosts)),
-        top_subdomains=top_subs,
-        lonely_subdomains=lonely_subs,
-    )
+
+@bp.route('/domain_summary.json', methods=['GET'])
+def domain_summary_json():
+    """Return subdomain summary as JSON."""
+    return jsonify(_summary_data())
 
 
 @bp.route('/domain_sort', methods=['GET', 'POST'])
