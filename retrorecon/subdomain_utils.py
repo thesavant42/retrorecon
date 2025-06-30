@@ -9,10 +9,10 @@ from database import execute_db, executemany_db, query_db, get_db
 
 logger = logging.getLogger(__name__)
 
-# Use a preconfigured TLDExtract instance that never performs network lookups.
-# This avoids long delays or failures in environments without outbound network
-# access when ``scrape_from_urls`` tries to parse hostnames.
-_EXTRACTOR = tldextract.TLDExtract(suffix_list_urls=None)
+# Use a preconfigured TLDExtract instance that never performs network lookups
+# and never writes cache files. This avoids delays from file locks or missing
+# network access when ``scrape_from_urls`` tries to parse hostnames.
+_EXTRACTOR = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=())
 
 # Regex to strip stray surrogate code points that break UTF-8 encoding
 _SURROGATE_RE = re.compile('[\ud800-\udfff]')
