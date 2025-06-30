@@ -1423,3 +1423,29 @@ body.bg-hidden {
   from { top: 100%; }
   to { top: -100%; }
 }
+
+.retrorecon-root #markdown-editor-overlay {
+  overflow: hidden;
+}
+
+.retrorecon-root .md-editor-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.retrorecon-root .md-file-list {
+  width: 14em;
+  overflow-y: auto;
+  border-right: 1px solid var(--fg-color);
+  padding-right: 0.5em;
+}
+
+.retrorecon-root .md-file-item {
+  cursor: pointer;
+  margin-bottom: 0.25em;
+}
+
+.retrorecon-root .md-file-item:hover {
+  text-decoration: underline;
+}

@@ -6,6 +6,30 @@ function initMarkdownEditor(){
   const openBtn = document.getElementById('md-open-btn');
   const saveBtn = document.getElementById('md-save-btn');
   const fileInput = document.getElementById('md-file-input');
+  const fileList = document.getElementById('md-file-list');
+
+  function loadFiles(){
+    if(!fileList) return;
+    fetch('/markdown_files').then(r=>r.json()).then(files => {
+      fileList.innerHTML = '';
+      files.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'md-file-item';
+        item.textContent = name;
+        item.addEventListener('click', () => {
+          fetch('/markdown_file/' + encodeURIComponent(name))
+            .then(r=>r.text())
+            .then(t => {
+              if(textarea) textarea.value = t;
+              if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
+                window.editormd.instances['mdeditor'].setValue(t);
+              }
+            });
+        });
+        fileList.appendChild(item);
+      });
+    });
+  }
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
@@ -43,6 +67,8 @@ function initMarkdownEditor(){
       closeBtn.click();
     }
   });
+
+  loadFiles();
 }
 
 if(document.readyState === 'loading'){

@@ -216,6 +216,27 @@ Serve the JWT Tools overlay used for decoding and encoding JWTs.
 curl http://localhost:5000/jwt_tools
 ```
 
+### `GET /markdown_editor`
+Serve the Markdown Editor overlay with the file list sidebar.
+
+```
+curl http://localhost:5000/markdown_editor
+```
+
+### `GET /markdown_files`
+Return a JSON array of Markdown filenames located under the configured docs directory.
+
+```
+curl http://localhost:5000/markdown_files
+```
+
+### `GET /markdown_file/<name>`
+Return the raw contents of `<name>` from the docs directory.
+
+```
+curl http://localhost:5000/markdown_file/api_routes.md
+```
+
 ### `POST /tools/jwt_decode`
 Decode a JWT sent in the `token` field. Returns JSON containing the header,
 payload and additional fields:

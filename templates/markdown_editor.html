@@ -1,11 +1,12 @@
 <div id="markdown-editor-overlay" class="notes-overlay hidden">
-  <div class="d-flex flex-between mb-05">
-    <span class="font-bold">Markdown Editor</span>
-    <button type="button" class="btn overlay-close-btn" id="markdown-editor-close">Close</button>
+  <button type="button" class="btn overlay-close-btn" id="markdown-editor-close">Close</button>
+  <div class="font-bold mb-05">Markdown Editor</div>
+  <div class="md-editor-body d-flex flex-1">
+    <div id="md-file-list" class="md-file-list mr-05"></div>
+    <form id="markdown-editor-form" class="flex-1">
+      {{ mdeditor.load(name='mdeditor') }}
+    </form>
   </div>
-  <form id="markdown-editor-form">
-    {{ mdeditor.load(name='mdeditor') }}
-  </form>
   <div class="mt-05">
     <button type="button" class="btn" id="md-open-btn">Load File</button>
     <input type="file" id="md-file-input" accept=".md,text/markdown" class="d-none" />
