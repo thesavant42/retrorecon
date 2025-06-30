@@ -364,7 +364,13 @@ def domain_sort_page():
 
         rows = []
         for root in sorted(roots):
-            rows.append(f"<tr><td><a href='#root-{root}'>{root}</a></td><td>{len(roots[root])}</td></tr>")
+            rows.append(
+                "<tr>"
+                f"<td><a href='#' class='domain-sort-toggle' data-target='root-{root}'>" 
+                f"{root}</a></td>"
+                f"<td>{len(roots[root])}</td>"
+                "</tr>"
+            )
         table = (
             "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th></tr></thead>"
             "<tbody>" + ''.join(rows) + "</tbody></table>"

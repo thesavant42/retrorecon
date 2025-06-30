@@ -7,6 +7,15 @@ function initDomainSort(){
   const exportBtn = document.getElementById('domain-sort-export-btn');
   const closeBtn = document.getElementById('domain-sort-close-btn');
 
+  outputDiv.addEventListener('click', (e) => {
+    if(e.target.classList.contains('domain-sort-toggle')){
+      e.preventDefault();
+      const id = e.target.dataset.target;
+      const el = document.getElementById(id);
+      if(el){ el.open = !el.open; }
+    }
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
