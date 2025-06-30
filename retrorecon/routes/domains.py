@@ -2,13 +2,50 @@ import io
 import csv
 import re
 import json
-from flask import Blueprint, request, jsonify, Response, current_app
+from flask import Blueprint, request, jsonify, Response, current_app, render_template_string
 from .dynamic import dynamic_template, render_from_payload, schema_registry, html_generator
 import app
 from retrorecon import subdomain_utils, status as status_mod
 from retrorecon import domain_sort
+from collections import defaultdict
+import tldextract
 
 bp = Blueprint('domains', __name__)
+
+
+def _extract_root(domain: str) -> str:
+    ext = tldextract.extract(domain)
+    if ext.domain and ext.suffix:
+        return f"{ext.domain}.{ext.suffix}"
+    return domain
+
+
+def _build_tree(domains):
+    tree = {}
+    for dom in sorted(domains, key=lambda d: (len(d.split('.')), d)):
+        tree.setdefault(dom, [])
+    for dom in tree:
+        for other in tree:
+            if other == dom:
+                continue
+            if other.endswith('.' + dom):
+                tree[dom].append(other)
+    return tree
+
+
+def _render_tree(tree, root, domains, level=0, printed=None, as_html=False):
+    if printed is None:
+        printed = set()
+    if root in printed:
+        return ""
+    indent = '  ' * level
+    line = f"{indent}{root}\n" if not as_html else f"{'&nbsp;' * 2 * level}{root}<br/>"
+    printed.add(root)
+    children = [d for d in domains if d.endswith('.' + root) and d not in printed]
+    children = sorted(children, key=lambda d: (len(d.split('.')), d))
+    for child in children:
+        line += _render_tree(tree, child, domains, level + 1, printed, as_html)
+    return line
 
 
 @bp.route('/subdomonster', methods=['GET'])
@@ -231,3 +268,35 @@ def domain_summary_page():
         top_subdomains=top_subs,
         lonely_subdomains=lonely_subs,
     )
+
+
+@bp.route('/domain_sort', methods=['GET', 'POST'])
+def domain_sort_page():
+    """Return an overlay that sorts domains recursively."""
+    if request.method == 'POST':
+        if 'file' in request.files:
+            file = request.files['file']
+            lines = file.read().decode('utf-8', 'replace').splitlines()
+        else:
+            lines = request.form.get('domains', '').splitlines()
+        domains = [l.strip() for l in lines if l.strip()]
+        roots = defaultdict(list)
+        for dom in domains:
+            roots[_extract_root(dom)].append(dom)
+        as_html = request.form.get('as_html', '0') == '1'
+        output = ''
+        for root in sorted(roots):
+            header = f"{'='*40}\nRoot domain: {root}\n" if not as_html else f"<hr/><b>Root domain: {root}</b><br/>"
+            output += header
+            tree = _build_tree(roots[root])
+            top_level = [d for d in roots[root] if d == root or (d.endswith('.'+root) and d.count('.') == root.count('.') + 1)]
+            for dom in sorted(top_level, key=lambda d: (len(d.split('.')), d)):
+                output += _render_tree(tree, dom, roots[root], as_html=as_html)
+        return Response(f"<pre>{output}</pre>", mimetype='text/html')
+
+    return dynamic_template('domain_sort.html')
+
+
+@bp.route('/tools/domain_sort', methods=['GET'])
+def domain_sort_full_page():
+    return app.index()

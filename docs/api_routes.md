@@ -525,6 +525,20 @@ Full-page subdomain overlay with the same bulk-selection features.
 curl http://localhost:5000/tools/subdomonster
 ```
 
+### `GET /domain_sort`
+Serve the recursive domain sort overlay.
+
+```
+curl http://localhost:5000/domain_sort
+```
+
+### `GET /tools/domain_sort`
+Full-page domain sort overlay that loads on page visit.
+
+```
+curl http://localhost:5000/tools/domain_sort
+```
+
 ### `GET /subdomains`
 List subdomains from the database.
 

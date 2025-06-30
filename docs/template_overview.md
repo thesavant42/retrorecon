@@ -26,6 +26,7 @@ This document catalogs the HTML templates currently present in the repository an
 | `httpolaroid.html` | Overlay similar to Screenshotter but crawls a URL and packages all assets into a downloadable ZIP. |
 | `subdomonster.html` | Overlay that fetches subdomains from crt.sh or VirusTotal, supports tagging and export with pagination. |
 | `subdomain_summary.html` | Displays counts of root domains and hosts with top and bottom subdomains. |
+| `domain_sort.html` | Accepts a list of domains and renders them as a recursive tree grouped by root domain. |
 | `swaggerui.html` | Embeds Swagger UI for browsing the REST API, applying Retrorecon theming. |
 | `text_tools.html` | Overlay for encoding/decoding text using Base64 or URL transforms with copy/save actions. |
 
