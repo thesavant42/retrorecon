@@ -30,6 +30,20 @@ function initMarkdownEditor(){
       });
     });
   }
+  window.loadMdFiles = loadFiles;
+
+  function refreshEditor(){
+    if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
+      const inst = window.editormd.instances['mdeditor'];
+      const body = overlay.querySelector('.md-editor-body');
+      if(body){
+        inst.resize('100%', body.clientHeight || 700);
+      } else {
+        inst.resize('100%', 700);
+      }
+    }
+  }
+  window.refreshMdEditor = refreshEditor;
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');

@@ -1449,3 +1449,13 @@ body.bg-hidden {
 .retrorecon-root .md-file-item:hover {
   text-decoration: underline;
 }
+
+.retrorecon-root #markdown-editor-form,
+.retrorecon-root #markdown-editor-form .wmd-wrapper,
+.retrorecon-root #markdown-editor-form .editormd {
+  height: 100%;
+}
+
+.retrorecon-root #markdown-editor-close {
+  right: 1em;
+}

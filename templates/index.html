@@ -1189,6 +1189,8 @@
         }
         ov.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        if(window.loadMdFiles) window.loadMdFiles();
+        if(window.refreshMdEditor) window.refreshMdEditor();
         if(!skipPush){
           history.pushState({tool:'markdown'}, '', '/tools/markdown');
         }
