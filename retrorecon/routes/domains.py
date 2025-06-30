@@ -330,17 +330,24 @@ def domain_sort_page():
         else:
             lines = request.form.get('domains', '').splitlines()
         domains = [l.strip() for l in lines if l.strip()]
-        roots = defaultdict(list)
+        uploaded = defaultdict(list)
         for dom in domains:
-            roots[_extract_root(dom)].append(dom)
+            uploaded[_extract_root(dom)].append(dom)
         # Persist imported domains so the Subdomonster table reflects them
         if app._db_loaded():
-            for root, hosts in roots.items():
+            for root, hosts in uploaded.items():
                 subdomain_utils.insert_records(root, hosts, 'domain_sort')
                 try:
                     subdomain_utils.scrape_from_urls(root)
                 except Exception:
                     pass
+            # After inserting, rebuild using every subdomain in the DB
+            all_roots = defaultdict(list)
+            for row in subdomain_utils.list_all_subdomains():
+                all_roots[row['domain']].append(row['subdomain'])
+            roots = all_roots
+        else:
+            roots = uploaded
 
         fmt = request.form.get('format', 'html')
         if fmt not in ('html', 'md'):

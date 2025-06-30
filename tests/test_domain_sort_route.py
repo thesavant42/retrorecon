@@ -48,3 +48,19 @@ def test_domain_sort_html(tmp_path, monkeypatch):
             )
             subs = [r['subdomain'] for r in rows]
         assert subs == ['a.example.com', 'b.example.com']
+
+
+def test_domain_sort_aggregates_all(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
+    f1 = tmp_path / "one.txt"
+    f1.write_text("a.example.com")
+    f2 = tmp_path / "two.txt"
+    f2.write_text("b.other.com")
+    with app.app.test_client() as client:
+        with open(f1, 'rb') as fh:
+            client.post('/domain_sort', data={'file': fh})
+        with open(f2, 'rb') as fh:
+            resp = client.post('/domain_sort', data={'file': fh})
+        text = resp.get_data(as_text=True)
+        assert 'a.example.com' in text
+        assert 'b.other.com' in text
