@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import requests
 import jwt
 import urllib.parse
+from flask_mdeditor import MDEditor
 from flask import (
     Flask,
     render_template,
@@ -60,6 +61,8 @@ from retrorecon.filters import manifest_links, oci_obj, manifest_table, wb_times
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.config.from_object(Config)
+os.makedirs(app.config['MDEDITOR_FILE_UPLOADER'], exist_ok=True)
+MDEditor(app)
 app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
 app.add_template_filter(manifest_table, name="manifest_table")
@@ -404,6 +407,8 @@ def index() -> str:
         tool = 'subdomonster'
     elif request.path == '/tools/text_tools':
         tool = 'text'
+    elif request.path == '/tools/markdown':
+        tool = 'markdown'
     elif request.path == '/tools/readme':
         tool = 'readme'
     elif request.path == '/tools/about':

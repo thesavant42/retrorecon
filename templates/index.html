@@ -213,6 +213,7 @@
           <div class="menu-header">Utilities</div>
           <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="markdown-editor-link">Markdown Editor</a></div>
           <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
             <input type="hidden" name="map_url" id="webpack-url-input" />
             <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
@@ -1158,6 +1159,64 @@
 
       if(location.pathname === '/tools/jwt' || openTool === 'jwt'){
         showJwtTools(true);
+      }
+
+      const markdownLink = document.getElementById('markdown-editor-link');
+      let markdownLoaded = false;
+
+      async function showMarkdownEditor(skipPush, preset){
+        if(!markdownLoaded){
+          const resp = await fetch('/markdown_editor');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/markdown_editor.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
+          markdownLoaded = true;
+        }
+        const ov = document.getElementById('markdown-editor-overlay');
+        const ta = ov.querySelector('textarea[name="mdeditor"]');
+        if(preset && ta){
+          ta.value = preset;
+          if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
+            window.editormd.instances['mdeditor'].setValue(preset);
+          }
+        }
+        ov.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        if(!skipPush){
+          history.pushState({tool:'markdown'}, '', '/tools/markdown');
+        }
+      }
+
+      function hideMarkdownEditor(){
+        const ov = document.getElementById('markdown-editor-overlay');
+        if(ov) ov.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      if(markdownLink){
+        markdownLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showMarkdownEditor();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/markdown'){
+          showMarkdownEditor(true);
+        } else {
+          hideMarkdownEditor();
+        }
+      });
+
+      if(location.pathname === '/tools/markdown' || openTool === 'markdown'){
+        showMarkdownEditor(true);
       }
 
       const screenshotLink = document.getElementById('screenshot-link');
