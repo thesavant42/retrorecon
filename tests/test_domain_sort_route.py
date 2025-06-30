@@ -58,7 +58,12 @@ def test_domain_sort_toggle_attribute(tmp_path, monkeypatch):
         with open(f, 'rb') as fh:
             resp = client.post('/domain_sort', data={'file': fh})
         text = resp.get_data(as_text=True)
-        assert 'class=\'domain-sort-toggle\'' in text
+    assert 'class=\'domain-sort-toggle\'' in text
+
+
+def test_domain_sort_form_action():
+    html = (Path(__file__).resolve().parents[1] / 'templates' / 'domain_sort.html').read_text()
+    assert 'action="/domain_sort"' in html
 
 
 def test_domain_sort_aggregates_all(tmp_path, monkeypatch):
