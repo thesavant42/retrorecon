@@ -10,11 +10,15 @@ from retrorecon import domain_sort
 from collections import defaultdict
 import tldextract
 
+# Use a local suffix list to avoid network requests when extracting domains
+_EXTRACTOR = tldextract.TLDExtract(suffix_list_urls=None)
+
 bp = Blueprint('domains', __name__)
 
 
 def _extract_root(domain: str) -> str:
-    ext = tldextract.extract(domain)
+    """Return the registered domain using a local suffix cache."""
+    ext = _EXTRACTOR(domain)
     if ext.domain and ext.suffix:
         return f"{ext.domain}.{ext.suffix}"
     return domain
