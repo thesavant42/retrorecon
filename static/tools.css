@@ -201,3 +201,7 @@
   content: '-';
 }
 
+.retrorecon-root details.domain-sort-root {
+  margin-bottom: 0.5em;
+}
+

@@ -333,6 +333,15 @@ def domain_sort_page():
         roots = defaultdict(list)
         for dom in domains:
             roots[_extract_root(dom)].append(dom)
+        # Persist imported domains so the Subdomonster table reflects them
+        if app._db_loaded():
+            for root, hosts in roots.items():
+                subdomain_utils.insert_records(root, hosts, 'domain_sort')
+                try:
+                    subdomain_utils.scrape_from_urls(root)
+                except Exception:
+                    pass
+
         fmt = request.form.get('format', 'html')
         if fmt not in ('html', 'md'):
             fmt = 'html'
@@ -358,7 +367,10 @@ def domain_sort_page():
             tree = _build_tree(roots[root])
             top_level = [d for d in roots[root] if d == root or (d.endswith('.'+root) and d.count('.') == root.count('.') + 1)]
             items = ''.join(_render_tree_html(tree, dom, roots[root]) for dom in sorted(top_level, key=lambda d: (len(d.split('.')), d)))
-            output += f"<h3 id='root-{root}'>{root}</h3><ul class='domain-sort-tree'>{items}</ul>"
+            output += (
+                f"<details class='collapsible domain-sort-root' open id='root-{root}'>"
+                f"<summary>{root}</summary><ul class='domain-sort-tree'>{items}</ul></details>"
+            )
         return Response(output, mimetype='text/html')
 
     return dynamic_template('domain_sort.html')

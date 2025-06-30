@@ -4,7 +4,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
 
 
-def test_domain_sort_markdown(tmp_path):
+def setup_tmp(monkeypatch, tmp_path):
+    monkeypatch.setattr(app.app, "root_path", str(tmp_path))
+    (tmp_path / "data").mkdir(exist_ok=True)
+    (tmp_path / "db").mkdir(exist_ok=True)
+    schema = Path(__file__).resolve().parents[1] / "db" / "schema.sql"
+    (tmp_path / "db" / "schema.sql").write_text(schema.read_text())
+    monkeypatch.setitem(app.app.config, "DATABASE", str(tmp_path / "test.db"))
+    with app.app.app_context():
+        app.create_new_db("test")
+
+
+def test_domain_sort_markdown(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
     f = tmp_path / "domains.txt"
     f.write_text("a.example.com\nb.example.com")
     with app.app.test_client() as client:
@@ -16,7 +28,8 @@ def test_domain_sort_markdown(tmp_path):
         assert '- a.example.com' in body
 
 
-def test_domain_sort_html(tmp_path):
+def test_domain_sort_html(tmp_path, monkeypatch):
+    setup_tmp(monkeypatch, tmp_path)
     f = tmp_path / "domains.txt"
     f.write_text("a.example.com\nb.example.com")
     with app.app.test_client() as client:
@@ -26,3 +39,12 @@ def test_domain_sort_html(tmp_path):
         text = resp.get_data(as_text=True)
         assert '<table' in text
         assert 'a.example.com' in text
+        assert '<details' in text
+
+        with app.app.app_context():
+            rows = app.query_db(
+                'SELECT subdomain FROM domains WHERE root_domain = ? ORDER BY subdomain',
+                ['example.com']
+            )
+            subs = [r['subdomain'] for r in rows]
+        assert subs == ['a.example.com', 'b.example.com']
