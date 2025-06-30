@@ -201,6 +201,7 @@
       <div class="dropdown-content" id="tools-menu">
           <div class="menu-header">OSINT</div>
           <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="domain-sort-link">Domain Sort</a></div>
           <div class="menu-row"><a href="/domain_summary" class="menu-btn">Subdomain Info</a></div>
           <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
             <input id="domain-input" type="hidden" name="domain" />
@@ -1401,6 +1402,53 @@
 
       if(location.pathname === '/tools/subdomonster' || openTool === 'subdomonster'){
         showSubdomonster(true);
+      }
+
+      const sortLink = document.getElementById('domain-sort-link');
+      let sortLoaded = false;
+
+      async function showDomainSort(skipPush){
+        if(!sortLoaded){
+          const resp = await fetch('/domain_sort');
+          const html = await resp.text();
+          const root = document.querySelector('.retrorecon-root') || document.body;
+          root.insertAdjacentHTML('beforeend', html);
+          const script = document.createElement('script');
+          script.src = '/static/domain_sort.js';
+          document.body.appendChild(script);
+          sortLoaded = true;
+        }
+        document.getElementById('domain-sort-overlay').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        if(!skipPush){
+          history.pushState({tool:'domain_sort'}, '', '/tools/domain_sort');
+        }
+      }
+
+      function hideDomainSort(){
+        const ov = document.getElementById('domain-sort-overlay');
+        if(ov) ov.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      if(sortLink){
+        sortLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          closeMenus();
+          showDomainSort();
+        });
+      }
+
+      window.addEventListener('popstate', () => {
+        if(location.pathname === '/tools/domain_sort'){
+          showDomainSort(true);
+        } else {
+          hideDomainSort();
+        }
+      });
+
+      if(location.pathname === '/tools/domain_sort' || openTool === 'domain_sort'){
+        showDomainSort(true);
       }
 
       window.addEventListener('popstate', () => {

@@ -368,6 +368,18 @@ paths:
       responses:
         '200':
           description: Successful response
+  /domain_sort:
+    get:
+      summary: GET /domain_sort
+      responses:
+        '200':
+          description: Successful response
+  /tools/domain_sort:
+    get:
+      summary: GET /tools/domain_sort
+      responses:
+        '200':
+          description: Successful response
   /subdomains:
     get:
       summary: GET /subdomains
