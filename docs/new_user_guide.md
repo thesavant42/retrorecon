@@ -6,7 +6,7 @@ This short guide walks through the typical workflow of exploring archived URLs.
    ```bash
    curl -X POST http://localhost:5000/fetch_cdx -d "domain=example.com"
    ```
-   This pulls Wayback Machine records into the local SQLite database.
+   This pulls Wayback Machine records for `example.com` **and all of its subdomains** into the local SQLite database. The server automatically queries `url=*.example.com/*`.
 
 2. **Browse results**
    Visit `http://localhost:5000/` in your browser. Use the search box to filter

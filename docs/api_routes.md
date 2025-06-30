@@ -33,7 +33,7 @@ curl -G --data-urlencode "q=url:example.com AND http:200" http://localhost:5000/
 ```
 
 ### `POST /fetch_cdx`
-Fetch Wayback Machine CDX records for a domain and insert any new URLs into the loaded database.
+Fetch Wayback Machine CDX records for a domain and insert any new URLs into the loaded database. The backend automatically queries `url=*.DOMAIN/*` so all subdomains are included.
 
 Parameters:
 - `domain` – domain name to query.

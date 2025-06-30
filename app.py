@@ -550,7 +550,7 @@ def fetch_cdx() -> Response:
 
     cdx_api = (
         'http://web.archive.org/cdx/search/cdx'
-        '?url={domain}/*&output=json&fl=original,timestamp,statuscode,mimetype'
+        '?url=*.{domain}/*&output=json&fl=original,timestamp,statuscode,mimetype'
         '&collapse=urlkey&limit=1000'
     ).format(domain=domain)
 
