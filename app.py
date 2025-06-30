@@ -374,6 +374,15 @@ def delete_subdomain(root_domain: str, subdomain: str) -> None:
     subdomain_utils.delete_record(root_domain, subdomain)
 
 
+def update_subdomain(
+    old_root_domain: str, old_subdomain: str, new_root_domain: str, new_subdomain: str
+) -> None:
+    """Rename a subdomain entry in the database."""
+    subdomain_utils.update_record(
+        old_root_domain, old_subdomain, new_root_domain, new_subdomain
+    )
+
+
 @app.route('/', methods=['GET'])
 def index() -> str:
     """Render the main search page or serve registry explorer views."""
