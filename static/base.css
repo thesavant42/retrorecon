@@ -948,14 +948,14 @@ body {
 .retrorecon-root .search-history .tag-pill {
   display: inline-flex;
   align-items: center;
-  padding: 1px 3px;
+  padding: 0px 0px;
   font-size: 0.275em;
   font-weight: 600;
-  margin-right: 4px;
-  margin-bottom: 4px;
+  margin-right: 0;
+  margin-bottom: 0px;
   color: var(--fg-color);
   border: 1px solid var(--color-contrast);
-  border-radius: 999px;
+  border-radius: 0;
   background: linear-gradient(135deg, #ff2caf, #6a4cff);
   cursor: pointer;
   transition: opacity 0.2s;
