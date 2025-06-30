@@ -541,7 +541,7 @@ def fetch_cdx() -> Response:
     if not domain:
         flash("No domain provided for CDX fetch.", "error")
         return redirect(url_for('index'))
-    if not re.match(r'^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
+    if not re.match(r'^(?:\*\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}$', domain):
         flash("Invalid domain value.", "error")
         return redirect(url_for('index'))
     if not _db_loaded():
