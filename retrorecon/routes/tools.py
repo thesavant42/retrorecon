@@ -106,6 +106,31 @@ def markdown_editor_full_page():
     return app.index()
 
 
+@bp.route('/markdown_files', methods=['GET'])
+def markdown_files():
+    """Return a list of Markdown files from the configured directory."""
+    from pathlib import Path
+    from retrorecon.markdown_utils import list_markdown_files
+
+    directory = Path(current_app.config['MARKDOWN_STORAGE'])
+    files = list_markdown_files(directory)
+    return jsonify(files)
+
+
+@bp.route('/markdown_file/<path:name>', methods=['GET'])
+def markdown_file(name: str):
+    """Return the contents of a Markdown file."""
+    from pathlib import Path
+    from retrorecon.markdown_utils import read_markdown_file
+
+    directory = Path(current_app.config['MARKDOWN_STORAGE'])
+    try:
+        text = read_markdown_file(directory, name)
+    except FileNotFoundError:
+        return ('', 404)
+    return Response(text, mimetype='text/markdown')
+
+
 @bp.route('/tools/jwt_decode', methods=['POST'])
 def jwt_decode_route():
     token = request.form.get('token', '')

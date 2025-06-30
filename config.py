@@ -54,3 +54,6 @@ class Config:
     MDEDITOR_THEME = 'dark'
     MDEDITOR_PREVIEW_THEME = 'dark'
     MDEDITOR_EDITOR_THEME = 'pastel-on-dark'
+    MDEDITOR_WIDTH = '100%'
+    MDEDITOR_HEIGHT = 700
+    MARKDOWN_STORAGE = os.path.join(os.getcwd(), 'docs')
