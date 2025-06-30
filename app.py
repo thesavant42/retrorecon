@@ -383,7 +383,12 @@ def index() -> str:
         from retrorecon.routes.oci import image_view
         return image_view(image_param)
 
-    q = request.args.get('q', '').strip()
+    q_param = request.args.get('q')
+    if q_param is None:
+        q = session.get('search_query', '').strip()
+    else:
+        q = q_param.strip()
+        session['search_query'] = q
     select_all_matching = request.args.get('select_all_matching', 'false').lower() == 'true'
     try:
         page = int(request.args.get('page', 1))
