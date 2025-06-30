@@ -4,7 +4,7 @@
   <div class="md-editor-body d-flex flex-1">
     <div id="md-file-list" class="md-file-list mr-05"></div>
     <form id="markdown-editor-form" class="flex-1">
-      {{ mdeditor.load(name='mdeditor') }}
+      {% include 'custom/markdown_embed.html' %}
     </form>
   </div>
   <div class="mt-05">
