@@ -7,6 +7,7 @@ function initTextTools(){
   const copyBtn = document.getElementById('text-copy-btn');
   const saveBtn = document.getElementById('text-save-btn');
   const saveNoteBtn = document.getElementById('text-save-note-btn');
+  const mdBtn = document.getElementById('text-mdeditor-btn');
   const notesList = document.getElementById('text-notes-list');
   const b64DecodeBtn = document.getElementById('b64-decode-btn');
   const b64EncodeBtn = document.getElementById('b64-encode-btn');
@@ -132,6 +133,14 @@ function initTextTools(){
       }
     });
   });
+
+  if(mdBtn){
+    mdBtn.addEventListener('click', () => {
+      if(typeof showMarkdownEditor === 'function'){
+        showMarkdownEditor(false, input.value);
+      }
+    });
+  }
 
   closeBtn.addEventListener('click', () => {
     if(typeof hideTextTools === 'function'){

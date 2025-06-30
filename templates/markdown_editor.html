@@ -1,0 +1,14 @@
+<div id="markdown-editor-overlay" class="notes-overlay hidden">
+  <div class="d-flex flex-between mb-05">
+    <span class="font-bold">Markdown Editor</span>
+    <button type="button" class="btn overlay-close-btn" id="markdown-editor-close">Close</button>
+  </div>
+  <form id="markdown-editor-form">
+    {{ mdeditor.load(name='mdeditor') }}
+  </form>
+  <div class="mt-05">
+    <button type="button" class="btn" id="md-open-btn">Load File</button>
+    <input type="file" id="md-file-input" accept=".md,text/markdown" class="d-none" />
+    <button type="button" class="btn" id="md-save-btn">Save As</button>
+  </div>
+</div>

@@ -95,6 +95,17 @@ def jwt_tools_full_page():
     return app.index()
 
 
+@bp.route('/markdown_editor', methods=['GET'])
+def markdown_editor_page():
+    return dynamic_template('markdown_editor.html')
+
+
+@bp.route('/tools/markdown', methods=['GET'])
+def markdown_editor_full_page():
+    """Serve the main dashboard so the overlay can open on load."""
+    return app.index()
+
+
 @bp.route('/tools/jwt_decode', methods=['POST'])
 def jwt_decode_route():
     token = request.form.get('token', '')
