@@ -1460,3 +1460,8 @@ body.bg-hidden {
 .retrorecon-root #markdown-editor-close {
   right: 1em;
 }
+
+.retrorecon-root .domain-sort-status {
+  font-style: italic;
+  color: var(--fg-color);
+}
