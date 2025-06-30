@@ -875,6 +875,10 @@
         current = term;
       }
       box.value = current;
+      if(typeof tagsOverlay !== 'undefined' && !tagsOverlay.classList.contains('hidden')){
+        tagsOverlay.classList.add('hidden');
+        tagsOverlay.classList.remove('show');
+      }
       document.getElementById('search-form').submit();
     }
 
