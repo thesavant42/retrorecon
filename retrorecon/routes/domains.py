@@ -237,6 +237,21 @@ def delete_subdomain_route():
     return ('', 204)
 
 
+@bp.route('/update_subdomain', methods=['POST'])
+def update_subdomain_route():
+    """Rename a subdomain entry."""
+    if not app._db_loaded():
+        return ('', 400)
+    domain = request.form.get('domain', '').strip().lower()
+    subdomain = request.form.get('subdomain', '').strip().lower()
+    new_domain = request.form.get('new_domain', '').strip().lower()
+    new_subdomain = request.form.get('new_subdomain', '').strip().lower()
+    if not domain or not subdomain or not new_domain or not new_subdomain:
+        return ('', 400)
+    app.update_subdomain(domain, subdomain, new_domain, new_subdomain)
+    return ('', 204)
+
+
 @bp.route('/subdomain_action', methods=['POST'])
 def subdomain_action():
     """Bulk modify or delete subdomains."""

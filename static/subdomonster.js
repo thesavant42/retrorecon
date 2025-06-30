@@ -234,6 +234,7 @@ function initSubdomonster(){
               `</div>`+
             `</div>`+
             `<button type="button" class="btn explode-btn copy-btn" data-sub="${encoded}" title="Copy">📋 Copy</button>`+
+            `<button type="button" class="btn edit-btn" title="Edit">✏️ Edit</button>`+
             `<button type="button" class="btn delete-btn" title="Delete">🗑️ Delete</button>`+
             `<button type="button" class="btn ml-05 notes-btn" data-sub="${encoded}">📝 Notes</button>`+
             `<input type="text" class="form-input ml-05 row-tag-input tag-input" placeholder="Tag" size="8" />`+
@@ -303,6 +304,36 @@ function initSubdomonster(){
           document.body.removeChild(t);
           btn.textContent = 'Copied!';
           setTimeout(() => { btn.textContent = '📋 Copy'; }, 1000);
+        }
+      });
+    });
+
+    table.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', async ev => {
+        ev.stopPropagation();
+        const tr = btn.closest('tr');
+        if(!tr) return;
+        const sub = tr.dataset.sub;
+        const domain = tr.dataset.domain;
+        const newSub = prompt('Subdomain', sub);
+        if(!newSub) return;
+        const newDom = prompt('Root domain', domain);
+        if(!newDom) return;
+        const params = new URLSearchParams({domain, subdomain: sub, new_domain: newDom, new_subdomain: newSub});
+        const resp = await fetch('/update_subdomain', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:params});
+        if(resp.ok){
+          const item = tableData.find(r => r.subdomain === sub && r.domain === domain);
+          if(item){
+            item.subdomain = newSub;
+            item.domain = newDom;
+          }
+          if(selectedSubs.has(sub)){
+            selectedSubs.delete(sub);
+            selectedSubs.add(newSub);
+          }
+          render();
+        } else {
+          alert('Update failed');
         }
       });
     });
