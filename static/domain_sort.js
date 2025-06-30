@@ -6,6 +6,7 @@ function initDomainSort(){
   const outputDiv = document.getElementById('domain-sort-output');
   const exportBtn = document.getElementById('domain-sort-export-btn');
   const closeBtn = document.getElementById('domain-sort-close-btn');
+  const statusDiv = document.getElementById('domain-sort-status');
 
   outputDiv.addEventListener('click', (e) => {
     if(e.target.classList.contains('domain-sort-toggle')){
@@ -16,18 +17,25 @@ function initDomainSort(){
     }
   });
 
+  function setStatus(msg){
+    if(statusDiv) statusDiv.textContent = msg;
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     formData.set('format', 'html');
+    setStatus('Processing...');
     const resp = await fetch('/domain_sort', {method:'POST', body: formData});
     outputDiv.innerHTML = await resp.text();
+    setStatus(resp.ok ? 'List imported successfully.' : 'Upload failed.');
   });
 
   exportBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     formData.set('format', 'md');
+    setStatus('Processing...');
     const resp = await fetch('/domain_sort', {method:'POST', body: formData});
     const text = await resp.text();
     const blob = new Blob([text], {type:'text/markdown'});
@@ -37,6 +45,7 @@ function initDomainSort(){
     a.download = 'domain_tree.md';
     a.click();
     URL.revokeObjectURL(url);
+    setStatus(resp.ok ? 'Markdown exported.' : 'Export failed.');
   });
 
   closeBtn.addEventListener('click', () => {
