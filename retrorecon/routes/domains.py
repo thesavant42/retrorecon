@@ -63,13 +63,15 @@ def _render_tree_html(tree, root, domains, printed=None):
     printed.add(root)
     children = [d for d in domains if d.endswith('.' + root) and d not in printed]
     children = sorted(children, key=lambda d: (len(d.split('.')), d))
+    count = subdomain_utils.count_urls_for_host(root)
+    label = f"{root} ({count})" if count else root
     if children:
-        line = f'<li><details class="collapsible" open><summary>{root}</summary><ul>'
+        line = f'<li><details class="collapsible" open><summary>{label}</summary><ul>'
         for child in children:
             line += _render_tree_html(tree, child, domains, printed)
         line += '</ul></details></li>'
     else:
-        line = f'<li>{root}</li>'
+        line = f'<li>{label}</li>'
     return line
 
 
@@ -77,15 +79,17 @@ def _render_domain_sort_output(roots: dict) -> str:
     """Return the full HTML output for the domain sort table and tree."""
     rows = []
     for root in sorted(roots):
+        url_count = subdomain_utils.count_urls_for_root(root)
         rows.append(
             "<tr>"
             f"<td><a href='#' class='domain-sort-toggle' data-target='root-{root}'>"
             f"{root}</a></td>"
             f"<td>{len(roots[root])}</td>"
+            f"<td>{url_count}</td>"
             "</tr>"
         )
     table = (
-        "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th></tr></thead>"
+        "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th><th>URLs</th></tr></thead>"
         "<tbody>" + ''.join(rows) + "</tbody></table>"
     )
     output = table
