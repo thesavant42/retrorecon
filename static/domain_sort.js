@@ -7,6 +7,8 @@ function initDomainSort(){
   const exportBtn = document.getElementById('domain-sort-export-btn');
   const closeBtn = document.getElementById('domain-sort-close-btn');
   const statusDiv = document.getElementById('domain-sort-status');
+  const importInput = document.getElementById('domain-import-input');
+  const importBtn = document.getElementById('domain-import-btn');
 
   outputDiv.addEventListener('click', (e) => {
     if(e.target.classList.contains('domain-sort-toggle')){
@@ -30,6 +32,25 @@ function initDomainSort(){
     outputDiv.innerHTML = await resp.text();
     setStatus(resp.ok ? 'List imported successfully.' : 'Upload failed.');
   });
+
+  if(importBtn && importInput){
+    importBtn.addEventListener('click', async () => {
+      const domain = importInput.value.trim().toLowerCase();
+      if(!domain) return;
+      importInput.value = '';
+      setStatus('Importing...');
+      for(const src of ['crtsh','virustotal']){
+        const params = new URLSearchParams({domain, source: src});
+        await fetch('/subdomains', {method:'POST', body: params});
+      }
+      const cdxData = new URLSearchParams({domain, ajax:'1'});
+      const resp = await fetch('/fetch_cdx', {method:'POST', body: cdxData});
+      const json = await resp.json().catch(() => ({}));
+      setStatus(json.message || (resp.ok ? 'Import complete.' : 'Import failed.'));
+      const listResp = await fetch('/domain_sort');
+      outputDiv.innerHTML = await listResp.text();
+    });
+  }
 
   exportBtn.addEventListener('click', async (e) => {
     e.preventDefault();
