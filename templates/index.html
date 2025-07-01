@@ -1411,7 +1411,7 @@
         }
         document.getElementById('domain-summary-overlay').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-        if(window.startDomainSummary){ window.startDomainSummary(); }
+        if(window.loadDomainSummary){ window.loadDomainSummary(); }
         if(!skipPush){
           history.pushState({tool:'domain_summary'}, '', '/tools/domain_summary');
         }
@@ -1420,7 +1420,6 @@
       function hideDomainSummary(){
         const ov = document.getElementById('domain-summary-overlay');
         if(ov) ov.classList.add('hidden');
-        if(window.stopDomainSummary){ window.stopDomainSummary(); }
         document.body.style.overflow = '';
       }
 
