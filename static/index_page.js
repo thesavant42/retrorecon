@@ -1,7 +1,13 @@
 // JS for main index page
 function sanitizeUrl(u){
   try {
-    const url = new URL(u, window.location.href);
+    let raw = (u || '').trim();
+    if(!raw) return null;
+    // Prepend http:// if scheme is missing
+    if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)){
+      raw = 'http://' + raw;
+    }
+    const url = new URL(raw);
     if(url.protocol === 'http:' || url.protocol === 'https:'){
       return url.href;
     }
