@@ -24,6 +24,13 @@ paths:
   /fetch_cdx:
     post:
       summary: POST /fetch_cdx
+      parameters:
+        - in: formData
+          name: domain
+          type: string
+        - in: formData
+          name: resume_key
+          type: string
       responses:
         '200':
           description: Successful response

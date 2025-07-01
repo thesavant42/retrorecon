@@ -8,6 +8,8 @@ Status events are retrieved via the `/status` API and shown in the UI.
 - `cdx_api_waiting` – waiting for a response from the Wayback CDX API.
 - `cdx_api_downloading` – currently downloading CDX records.
 - `cdx_api_download_complete` – finished downloading the CDX data.
+- `cdx_page_processed` – one page of CDX results has been inserted.
+- `cdx_resume_key` – emitted when a resume key is available for the next page.
 - `cdx_import_complete` – all CDX records processed and inserted.
 - `layerpeek_start` – layerpeek fetch initiated.
 - `layerpeek_fetch_manifest` – retrieving image manifest information.
