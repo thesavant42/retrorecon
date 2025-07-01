@@ -934,7 +934,11 @@
     document.getElementById('save-tag-btn').addEventListener('click', saveTag);
     document.getElementById('clear-search-btn').addEventListener('click', function(){
       const box = document.getElementById('searchbox');
-      if(box){ box.value = ''; box.focus(); }
+      if(box){
+        box.value = '';
+        box.focus();
+      }
+      document.getElementById('search-form').submit();
     });
     loadHistory();
 
