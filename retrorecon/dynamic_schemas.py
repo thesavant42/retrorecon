@@ -44,6 +44,44 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                 },
                             ],
                         },
+                        {
+                            "tag": "div",
+                            "attrs": {"class": "mb-05"},
+                            "children": [
+                                {
+                                    "tag": "input",
+                                    "attrs": {
+                                        "type": "text",
+                                        "id": "subdomonster-domain",
+                                        "class": "form-input mr-05 subdomonster-domain-bar",
+                                        "placeholder": "example.com",
+                                    },
+                                },
+                                {
+                                    "tag": "select",
+                                    "attrs": {"id": "subdom-source", "class": "form-select mr-05"},
+                                    "children": [
+                                        {"tag": "option", "attrs": {"value": "crtsh"}, "text": "crt.sh"},
+                                        {"tag": "option", "attrs": {"value": "virustotal"}, "text": "VirusTotal"},
+                                        {"tag": "option", "attrs": {"value": "local"}, "text": "Local"},
+                                    ],
+                                },
+                                {
+                                    "tag": "input",
+                                    "attrs": {
+                                        "type": "text",
+                                        "id": "subdom-api",
+                                        "class": "form-input mr-05 w-10em",
+                                        "placeholder": "API key",
+                                    },
+                                },
+                                {
+                                    "tag": "button",
+                                    "attrs": {"type": "button", "class": "btn", "id": "subdom-fetch-btn"},
+                                    "text": "Import",
+                                },
+                            ],
+                        },
                         {"tag": "div", "attrs": {"id": "subdomonster-table", "class": "mt-05"}},
                         {"tag": "div", "attrs": {"id": "subdomonster-pagination", "class": "mt-05"}},
                         {"html_field": "init_script"},
