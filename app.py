@@ -555,8 +555,9 @@ def index() -> str:
 
 @app.route('/fetch_cdx', methods=['POST'])
 def fetch_cdx() -> Response:
-    """Fetch CDX data for a domain and insert new URLs."""
+    """Fetch CDX data for a domain and insert new URLs with pagination."""
     domain = request.form.get('domain', '').strip().lower()
+    resume_key = request.form.get('resume_key', '').strip()
     if not domain:
         flash("No domain provided for CDX fetch.", "error")
         return redirect(url_for('index'))
@@ -567,48 +568,70 @@ def fetch_cdx() -> Response:
         flash("No database loaded.", "error")
         return redirect(url_for('index'))
 
-    cdx_api = (
+    base_api = (
         'http://web.archive.org/cdx/search/cdx'
         '?url=*.{domain}/*&output=json&fl=original,timestamp,statuscode,mimetype'
-        '&collapse=urlkey&limit=1000'
+        '&collapse=urlkey&limit=1000&showResumeKey=true'
     ).format(domain=domain)
 
-    status_mod.push_status('cdx_api_waiting', domain)
-    try:
-        status_mod.push_status('cdx_api_downloading', domain)
-        resp = requests.get(cdx_api, timeout=20)
-        resp.raise_for_status()
-        data = resp.json()
-        status_mod.push_status('cdx_api_download_complete', domain)
-    except Exception as e:
-        flash(f"Error fetching CDX data: {e}", "error")
-        return redirect(url_for('index'))
-
     inserted = 0
-    for idx, row in enumerate(data):
-        if idx == 0:
-            continue
-        original_url = row[0]
-        timestamp = row[1] if len(row) > 1 else None
-        if len(row) > 2:
-            status_raw = str(row[2])
-            status_code = int(status_raw) if status_raw.isdigit() else None
-        else:
-            status_code = None
-        mime_type = row[3] if len(row) > 3 else None
-        existing = query_db(
-            "SELECT id FROM urls WHERE url = ?",
-            [original_url],
-            one=True
-        )
-        if existing:
-            continue
-        entry_domain = urllib.parse.urlsplit(original_url).hostname or domain
-        execute_db(
-            "INSERT INTO urls (url, domain, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?, ?)",
-            [original_url, entry_domain, timestamp, status_code, mime_type, ""]
-        )
-        inserted += 1
+    page = 0
+    while True:
+        url = base_api
+        if resume_key:
+            url += f"&resumeKey={resume_key}"
+
+        status_mod.push_status('cdx_api_waiting', domain)
+        try:
+            status_mod.push_status('cdx_api_downloading', url)
+            resp = requests.get(url, timeout=20)
+            resp.raise_for_status()
+            data = resp.json()
+            status_mod.push_status('cdx_api_download_complete', url)
+        except Exception as e:
+            flash(f"Error fetching CDX data: {e}", "error")
+            return redirect(url_for('index'))
+
+        next_key = None
+        if data and isinstance(data[-1], list) and len(data[-1]) == 1:
+            next_key = str(data[-1][0])
+            data = data[:-1]
+        elif data and isinstance(data[-1], dict) and 'resumeKey' in data[-1]:
+            next_key = str(data[-1].get('resumeKey'))
+            data = data[:-1]
+
+        for idx, row in enumerate(data):
+            if idx == 0:
+                continue
+            original_url = row[0]
+            timestamp = row[1] if len(row) > 1 else None
+            if len(row) > 2:
+                status_raw = str(row[2])
+                status_code = int(status_raw) if status_raw.isdigit() else None
+            else:
+                status_code = None
+            mime_type = row[3] if len(row) > 3 else None
+            existing = query_db(
+                "SELECT id FROM urls WHERE url = ?",
+                [original_url],
+                one=True
+            )
+            if existing:
+                continue
+            entry_domain = urllib.parse.urlsplit(original_url).hostname or domain
+            execute_db(
+                "INSERT INTO urls (url, domain, timestamp, status_code, mime_type, tags) VALUES (?, ?, ?, ?, ?, ?)",
+                [original_url, entry_domain, timestamp, status_code, mime_type, ""]
+            )
+            inserted += 1
+
+        page += 1
+        status_mod.push_status('cdx_page_processed', str(page))
+
+        if not next_key:
+            break
+        resume_key = next_key
+        status_mod.push_status('cdx_resume_key', resume_key)
 
     message = f"Fetched CDX for {domain}: inserted {inserted} new URLs."
     status_mod.push_status('cdx_import_complete', str(inserted))
