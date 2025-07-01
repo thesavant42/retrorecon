@@ -28,3 +28,23 @@ def test_domain_summary_json(monkeypatch, tmp_path):
         assert data["total_domains"] == 2
         assert data["total_hosts"] == 3
         assert any(dom == "a.example.com" for dom, cnt in data["top_subdomains"])
+
+
+def test_domain_summary_includes_url_hosts(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.execute_db(
+            "INSERT INTO urls (url, domain) VALUES (?, ?)",
+            ["https://foo.example.com/index.html", "foo.example.com"]
+        )
+        app.execute_db(
+            "INSERT INTO urls (url, domain) VALUES (?, ?)",
+            ["https://bar.example.com/index.html", "bar.example.com"]
+        )
+    with app.app.test_client() as client:
+        resp = client.get("/domain_summary.json")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["total_domains"] == 1
+        assert data["total_hosts"] == 2
+        assert any(dom == "foo.example.com" for dom, cnt in data["top_subdomains"])

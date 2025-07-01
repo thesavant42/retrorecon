@@ -355,3 +355,17 @@ def scrape_from_urls(target_root: Optional[str] = None) -> int:
             count += insert_records(_clean(root), [_clean(host)], "scrape", cdx=True)
         offset += limit
     return count
+
+
+def list_url_hosts() -> List[str]:
+    """Return distinct hostnames from the ``urls`` table."""
+    rows = query_db("SELECT url, domain FROM urls")
+    hosts: List[str] = []
+    for r in rows:
+        host = (r["domain"] or "").lower().strip()
+        if not host:
+            host = urllib.parse.urlsplit(r["url"]).hostname or ""
+            host = host.lower().strip()
+        if host and host not in hosts:
+            hosts.append(_clean(host))
+    return hosts
