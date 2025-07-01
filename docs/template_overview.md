@@ -24,7 +24,6 @@ This document catalogs the HTML templates currently present in the repository an
 | `registry_explorer.html` | Overlay calling `/oci_explorer_api` to fetch image information via multiple methods (extension, layerslayer). |
 | `screenshotter.html` | Overlay for capturing website screenshots with optional user agent and referrer spoofing. Displays existing shots in a table. |
 | `httpolaroid.html` | Overlay similar to Screenshotter but crawls a URL and packages all assets into a downloadable ZIP. |
-| `subdomonster.html` | Overlay that fetches subdomains from crt.sh or VirusTotal, supports tagging and export with pagination. |
 | `subdomain_summary.html` | Displays counts of root domains and hosts with top and bottom subdomains. |
 | `domain_sort.html` | Upload a domain list and view a collapsible tree grouped by root domain with an optional Markdown export. |
 | `swaggerui.html` | Embeds Swagger UI for browsing the REST API, applying Retrorecon theming. |
@@ -35,7 +34,7 @@ This document catalogs the HTML templates currently present in the repository an
 Many of the overlays share very similar markup and JavaScript for handling tables, pagination and close buttons. A few refactoring ideas:
 
 - **Create a shared overlay base template.** Extract the repeated `<div class="notes-overlay">` structure and button rows so individual tools only define their unique controls.
-- **Consolidate JavaScript utilities.** Screenshotter, Site2Zip and Subdomonster each implement nearly identical functions for loading rows and handling selection. Moving these helpers into a common module will reduce duplication.
+- **Consolidate JavaScript utilities.** Screenshotter and Site2Zip each implement nearly identical functions for loading rows and handling selection. Moving these helpers into a common module will reduce duplication.
 - **Reuse table components.** Registry and layerslayer overlays both build resizable tables. Using a single table component or Jinja macro would simplify markup and styling.
 - **Progressively enhance index.html.** Loading overlays dynamically via fetch requests would pave the way for a single page application where tools can be swapped in without reloading.
 

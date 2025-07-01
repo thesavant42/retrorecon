@@ -1391,10 +1391,6 @@ body.bg-hidden {
   right: 0.5em;
   float: none;
 }
-.retrorecon-root #subdomonster-close-btn {
-  top: 1em;
-  right: calc(1em + 10px);
-}
 
 .retrorecon-root .help-overlay {
   max-width: 95%;

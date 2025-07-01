@@ -17,7 +17,7 @@ This short guide walks through the typical workflow of exploring archived URLs.
    delete entries.
 
 4. **Use built‑in tools**
-   Open the **Tools** menu for helpers like Subdomonster or the Screenshotter.
+   Open the **Tools** menu for helpers like the Screenshotter.
    Each loads dynamically without leaving the page.
 
 5. **Try the Demo panel**

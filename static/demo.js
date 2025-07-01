@@ -11,20 +11,13 @@ function initDemo(){
     if(!name) return;
     let url = '';
     if(name === 'index'){ url = '/dynamic/demo/index'; }
-    else if(name === 'subdomonster'){ url = '/dynamic/demo/subdomonster'; }
     else if(name === 'screenshotter'){ url = '/dynamic/demo/screenshotter'; }
     else if(name === 'about'){ url = '/dynamic/demo/about'; }
     if(!url) return;
     const resp = await fetch(url);
     const html = await resp.text();
     view.innerHTML = html;
-    if(name === 'subdomonster'){
-      const ov = view.querySelector('#subdomonster-overlay');
-      if(ov) ov.classList.remove('hidden');
-      const script = document.createElement('script');
-      script.src = '/static/subdomonster.js';
-      document.body.appendChild(script);
-    }else if(name === 'screenshotter'){
+    if(name === 'screenshotter'){
       const ov = view.querySelector('#screenshot-overlay');
       if(ov) ov.classList.remove('hidden');
       const script = document.createElement('script');
