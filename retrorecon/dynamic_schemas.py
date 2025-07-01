@@ -39,16 +39,6 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "text": "Close",
                                 },
                                 {
-                                    "tag": "span",
-                                    "attrs": {"id": "subdomonster-status", "class": "ml-05"},
-                                },
-                            ],
-                        },
-                        {
-                            "tag": "div",
-                            "attrs": {"class": "mb-05"},
-                            "children": [
-                                {
                                     "tag": "input",
                                     "attrs": {
                                         "type": "text",
@@ -79,6 +69,10 @@ def register_demo_schemas(registry: SchemaRegistry) -> None:
                                     "tag": "button",
                                     "attrs": {"type": "button", "class": "btn", "id": "subdom-fetch-btn"},
                                     "text": "Import",
+                                },
+                                {
+                                    "tag": "span",
+                                    "attrs": {"id": "subdomonster-status", "class": "ml-05"},
                                 },
                             ],
                         },
