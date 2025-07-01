@@ -3,6 +3,9 @@ function initSubdomonster(){
   const overlay = document.getElementById('subdomonster-overlay');
   if(!overlay) return;
   const domainInput = document.getElementById('subdomonster-domain');
+  const sourceSel = document.getElementById('subdom-source');
+  const apiInput = document.getElementById('subdom-api');
+  const fetchBtn = document.getElementById('subdom-fetch-btn');
   const tableDiv = document.getElementById('subdomonster-table');
   const paginationDiv = document.getElementById('subdomonster-pagination');
   const closeBtn = document.getElementById('subdomonster-close-btn');
@@ -114,6 +117,30 @@ function initSubdomonster(){
       clearTimeout(statusTimer);
       statusTimer = null;
     }
+  }
+
+  if(fetchBtn){
+    fetchBtn.addEventListener('click', async () => {
+      const domain = domainInput ? domainInput.value.trim() : '';
+      const source = sourceSel ? sourceSel.value : 'crtsh';
+      if(source !== 'local' && !domain) return;
+      const params = new URLSearchParams({source});
+      if(domain) params.set('domain', domain);
+      if(apiInput && apiInput.value.trim()) params.set('api_key', apiInput.value.trim());
+      startStatusPolling();
+      try{
+        const resp = await fetch('/subdomains', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+        if(resp.ok){
+          tableData = await resp.json();
+          currentPage = 1;
+          render();
+        } else {
+          showStatus(await resp.text());
+        }
+      }catch(err){
+        console.error('import failed', err);
+      }
+    });
   }
 
 
