@@ -3,6 +3,8 @@
   <form id="domain-sort-form" action="/domain_sort" method="post" enctype="multipart/form-data" class="mt-05 domain-sort-form">
     <label class="mr-05">Upload file: <input type="file" name="file"></label>
     <button type="submit" class="btn mr-05">Generate Tree</button>
+    <input type="text" id="domain-import-input" class="form-input subdomonster-domain-bar mr-05" placeholder="example.com" />
+    <button type="button" class="btn mr-05" id="domain-import-btn">Import</button>
     <button type="button" class="btn" id="domain-sort-export-btn">Export to MD</button>
     <input type="hidden" name="format" value="html" id="domain-sort-format">
   </form>
