@@ -120,6 +120,10 @@ def _summary_data() -> dict:
     rows = subdomain_utils.list_all_subdomains()
     hosts = [r['subdomain'] for r in rows]
     roots = {r['domain'] for r in rows}
+    for host in subdomain_utils.list_url_hosts():
+        if host not in hosts:
+            hosts.append(host)
+        roots.add(_extract_root(host))
     tree = domain_sort.aggregate_hosts(hosts)
     flat = domain_sort.flatten_tree(tree)
     flat_sorted = sorted(flat, key=lambda x: x[1], reverse=True)
@@ -380,11 +384,13 @@ def domain_sort_page():
                     subdomain_utils.scrape_from_urls(root)
                 except Exception:
                     pass
-            # After inserting, rebuild using every subdomain in the DB
-            all_roots = defaultdict(list)
+            # After inserting, rebuild using every subdomain and URL host
+            all_roots = defaultdict(set)
             for row in subdomain_utils.list_all_subdomains():
-                all_roots[row['domain']].append(row['subdomain'])
-            roots = all_roots
+                all_roots[row['domain']].add(row['subdomain'])
+            for host in subdomain_utils.list_url_hosts():
+                all_roots[_extract_root(host)].add(host)
+            roots = {k: sorted(v) for k, v in all_roots.items()}
         else:
             roots = uploaded
 
@@ -406,11 +412,15 @@ def domain_sort_page():
 
     if app._db_loaded():
         rows = subdomain_utils.list_all_subdomains()
-        if rows:
-            roots = defaultdict(list)
+        url_hosts = subdomain_utils.list_url_hosts()
+        if rows or url_hosts:
+            roots = defaultdict(set)
             for r in rows:
-                roots[r['domain']].append(r['subdomain'])
-            output = _render_domain_sort_output(roots)
+                roots[r['domain']].add(r['subdomain'])
+            for host in url_hosts:
+                roots[_extract_root(host)].add(host)
+            sorted_roots = {k: sorted(v) for k, v in roots.items()}
+            output = _render_domain_sort_output(sorted_roots)
             return dynamic_template('domain_sort.html', initial_output=output)
     return dynamic_template('domain_sort.html', initial_output="")
 
