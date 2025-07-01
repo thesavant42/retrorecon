@@ -23,6 +23,28 @@ function initScreenshotter(){
   const presetUrl = initParams.get('url');
   if(presetUrl) urlInput.value = presetUrl;
 
+  let statusTimer = null;
+  let statusDelay = 1000;
+
+  function pollStatus(){
+    if(overlay.classList.contains('hidden')){ statusTimer = null; return; }
+    fetch('/status')
+      .then(r => r.status === 204 ? null : r.json())
+      .then(data => {
+        if(data && data.code && data.code.startsWith('screenshot')){
+          if(window.showStatus) window.showStatus(data.message || data.code);
+          statusDelay = 1000;
+        } else {
+          statusDelay = Math.min(statusDelay * 2, 3000);
+        }
+        statusTimer = setTimeout(pollStatus, statusDelay);
+      })
+      .catch(() => { statusTimer = setTimeout(pollStatus, 5000); });
+  }
+
+  function startStatusPolling(){ if(!statusTimer) pollStatus(); }
+  function stopStatusPolling(){ if(statusTimer){ clearTimeout(statusTimer); statusTimer = null; } }
+
   function makeResizable(table, key){
     if(typeof makeResizableTable === 'function'){
       makeResizableTable(table, key);
@@ -109,6 +131,7 @@ function initScreenshotter(){
     if(!url) return;
     const params = new URLSearchParams({url, agent: agentSel.value, spoof: refChk.checked ? '1':'0'});
     if(debugEnabled) params.set('debug', '1');
+    startStatusPolling();
     const resp = await fetch('/tools/screenshot', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
     if(resp.ok){
       const data = await resp.json();
@@ -128,6 +151,7 @@ function initScreenshotter(){
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
+    stopStatusPolling();
     if(location.pathname === '/tools/screenshotter'){
       history.pushState({}, '', '/');
     }
@@ -147,6 +171,8 @@ function initScreenshotter(){
   }
 
   window.loadScreenshotRows = loadShots;
+  window.startScreenshotStatus = startStatusPolling;
+  window.stopScreenshotStatus = stopStatusPolling;
 }
 
 if(document.readyState==='loading'){

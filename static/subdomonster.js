@@ -42,7 +42,9 @@ function initSubdomonster(){
   }
 
   function showStatus(msg){
-    if(statusSpan){
+    if(window.showStatus){
+      window.showStatus(msg);
+    } else if(statusSpan){
       statusSpan.textContent = msg;
       setTimeout(() => { if(statusSpan.textContent === msg) statusSpan.textContent = ''; }, 4000);
     }
