@@ -30,7 +30,7 @@ function initDomainSummary(){
     fetch('/status')
       .then(r => r.status === 204 ? null : r.json())
       .then(data => {
-        if(data && data.code && data.code.startsWith('subdomonster')){
+        if(data && data.code && (data.code.startsWith('subdomonster') || data.code.startsWith('summary_update'))){
           showStatus(data.message || data.code);
           statusDelay = 1000;
         } else {
