@@ -263,19 +263,31 @@ def list_all_subdomains() -> List[Dict[str, str]]:
 
 
 def count_subdomains(root_domain: Optional[str] = None) -> int:
-    """Return the number of unique subdomains for ``root_domain`` or all."""
+    """Return the number of unique subdomains for ``root_domain`` or all.
+
+    This includes hosts referenced in the ``urls`` table so the count
+    reflects every known subdomain, even if no explicit domain record
+    exists for it.
+    """
+    hosts: set[str] = set()
     if root_domain:
-        row = query_db(
-            "SELECT COUNT(DISTINCT subdomain) AS cnt FROM domains WHERE root_domain = ?",
+        rows = query_db(
+            "SELECT DISTINCT subdomain FROM domains WHERE root_domain = ?",
             [_clean(root_domain)],
-            one=True,
         )
+        hosts.update(_clean(r["subdomain"]) for r in rows)
+        url_rows = query_db(
+            "SELECT DISTINCT domain FROM urls WHERE domain = ? OR domain LIKE ?",
+            [_clean(root_domain), f"%.{_clean(root_domain)}"],
+        )
+        hosts.update(_clean(r["domain"]) for r in url_rows if r["domain"])
     else:
-        row = query_db(
-            "SELECT COUNT(DISTINCT subdomain) AS cnt FROM domains",
-            one=True,
-        )
-    return row["cnt"] if row else 0
+        rows = query_db("SELECT DISTINCT subdomain FROM domains")
+        hosts.update(_clean(r["subdomain"]) for r in rows)
+        url_rows = query_db("SELECT DISTINCT domain FROM urls")
+        hosts.update(_clean(r["domain"]) for r in url_rows if r["domain"])
+
+    return len(hosts)
 
 
 def list_subdomains_page(
