@@ -92,7 +92,9 @@ def _render_domain_sort_output(roots: dict) -> str:
         "<table class='domain-sort-summary'><thead><tr><th>Domain</th><th>Subdomains</th><th>URLs</th></tr></thead>"
         "<tbody>" + ''.join(rows) + "</tbody></table>"
     )
-    output = table
+    total_hosts = len({h for v in roots.values() for h in v})
+    counts = f"<p class='domain-sort-counts'>{total_hosts} hosts across {len(roots)} root domains</p>"
+    output = counts + table
     for root in sorted(roots):
         tree = _build_tree(roots[root])
         top_level = [
