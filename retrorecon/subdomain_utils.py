@@ -77,6 +77,7 @@ def insert_records(
     params = [
         (_clean(root_domain), _clean(sub), source, "", int(cdx))
         for sub in subs
+        if _clean(sub) != _clean(root_domain)
     ]
     try:
         return executemany_db(

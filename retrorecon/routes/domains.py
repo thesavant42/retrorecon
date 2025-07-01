@@ -101,7 +101,7 @@ def _render_domain_sort_output(roots: dict) -> str:
         top_level = [
             d
             for d in roots[root]
-            if d == root or (d.endswith('.' + root) and d.count('.') == root.count('.') + 1)
+            if d.endswith('.' + root) and d.count('.') == root.count('.') + 1
         ]
         items = ''.join(
             _render_tree_html(tree, dom, roots[root])
@@ -319,7 +319,10 @@ def domain_sort_page():
         domains = [l.strip() for l in lines if l.strip()]
         uploaded = defaultdict(list)
         for dom in domains:
-            uploaded[_extract_root(dom)].append(dom)
+            root = _extract_root(dom)
+            host = dom.strip().lower()
+            if host != root:
+                uploaded[root].append(host)
         # Persist imported domains so the subdomain table reflects them
         if app._db_loaded():
             for root, hosts in uploaded.items():
@@ -331,9 +334,12 @@ def domain_sort_page():
             # After inserting, rebuild using every subdomain and URL host
             all_roots = defaultdict(set)
             for row in subdomain_utils.list_all_subdomains():
-                all_roots[row['domain']].add(row['subdomain'])
+                if row['subdomain'] != row['domain']:
+                    all_roots[row['domain']].add(row['subdomain'])
             for host in subdomain_utils.list_url_hosts():
-                all_roots[_extract_root(host)].add(host)
+                root = _extract_root(host)
+                if host != root:
+                    all_roots[root].add(host)
             roots = {k: sorted(v) for k, v in all_roots.items()}
         else:
             roots = uploaded
@@ -346,7 +352,7 @@ def domain_sort_page():
             for root in sorted(roots):
                 lines.append(f"### {root}")
                 tree = _build_tree(roots[root])
-                top_level = [d for d in roots[root] if d == root or (d.endswith('.'+root) and d.count('.') == root.count('.') + 1)]
+                top_level = [d for d in roots[root] if d.endswith('.'+root) and d.count('.') == root.count('.') + 1]
                 for dom in sorted(top_level, key=lambda d: (len(d.split('.')), d)):
                     lines.append(_render_tree_md(tree, dom, roots[root]))
             return Response('\n'.join(lines), mimetype='text/markdown')
@@ -360,9 +366,12 @@ def domain_sort_page():
         if rows or url_hosts:
             roots = defaultdict(set)
             for r in rows:
-                roots[r['domain']].add(r['subdomain'])
+                if r['subdomain'] != r['domain']:
+                    roots[r['domain']].add(r['subdomain'])
             for host in url_hosts:
-                roots[_extract_root(host)].add(host)
+                root = _extract_root(host)
+                if host != root:
+                    roots[root].add(host)
             sorted_roots = {k: sorted(v) for k, v in roots.items()}
             output = _render_domain_sort_output(sorted_roots)
             return dynamic_template('domain_sort.html', initial_output=output)
