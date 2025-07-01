@@ -15,6 +15,7 @@ function initDomainSummary(){
 
   let statusTimer = null;
   let statusDelay = 1000;
+  let summaryTimer = null;
 
   function showStatus(msg){
     if(window.showStatus){
@@ -44,6 +45,19 @@ function initDomainSummary(){
   function startStatusPolling(){ if(!statusTimer) pollStatus(); }
   function stopStatusPolling(){ if(statusTimer){ clearTimeout(statusTimer); statusTimer = null; } }
 
+  function startSummaryUpdates(){
+    if(summaryTimer) return;
+    loadSummary();
+    summaryTimer = setInterval(loadSummary, 5000);
+  }
+
+  function stopSummaryUpdates(){
+    if(summaryTimer){
+      clearInterval(summaryTimer);
+      summaryTimer = null;
+    }
+  }
+
   async function loadSummary(){
     try{
       const resp = await fetch('/domain_summary.json');
@@ -69,6 +83,7 @@ function initDomainSummary(){
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
     document.body.style.overflow = '';
+    stopSummaryUpdates();
     stopStatusPolling();
     if(location.pathname === '/tools/domain_summary'){
       history.pushState({}, '', '/');
@@ -103,9 +118,9 @@ function initDomainSummary(){
     });
   }
 
-  loadSummary();
-  setInterval(loadSummary, 5000);
-  window.loadDomainSummary = loadSummary;
+  window.loadDomainSummary = startSummaryUpdates;
+  window.startDomainSummary = startSummaryUpdates;
+  window.stopDomainSummary = () => { stopSummaryUpdates(); stopStatusPolling(); };
 }
 
 if(document.readyState==='loading'){
