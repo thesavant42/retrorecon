@@ -24,7 +24,6 @@ This document catalogs the HTML templates currently present in the repository an
 | `registry_explorer.html` | Overlay calling `/oci_explorer_api` to fetch image information via multiple methods (extension, layerslayer). |
 | `screenshotter.html` | Overlay for capturing website screenshots with optional user agent and referrer spoofing. Displays existing shots in a table. |
 | `httpolaroid.html` | Overlay similar to Screenshotter but crawls a URL and packages all assets into a downloadable ZIP. |
-| `subdomain_summary.html` | Displays counts of root domains and hosts with top and bottom subdomains. |
 | `domain_sort.html` | Upload a domain list and view a collapsible tree grouped by root domain with an optional Markdown export. |
 | `swaggerui.html` | Embeds Swagger UI for browsing the REST API, applying Retrorecon theming. |
 | `text_tools.html` | Overlay for encoding/decoding text using Base64 or URL transforms with copy/save actions. |

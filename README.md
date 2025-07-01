@@ -45,7 +45,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | OCI Registry Table Explorer   | Browse container images as tables with direct download links |
 | HTTPolaroid Snapshots         | Capture a single URL with full headers, screenshot and assets into a zip |
 | Markdown Editor               | Edit and preview project docs with a resizable editor |
-| Subdomain Info Summary        | View aggregate counts of root domains and hosts |
+| Domain Sort (Subdomain View)  | Recursively group hosts by root domain |
 
 ---
 
