@@ -61,3 +61,33 @@ def test_fetch_cdx_pagination(monkeypatch, tmp_path):
 
     assert urls == ["http://a.example.com/", "http://b.example.com/"]
     assert len(calls) == 2
+
+def test_fetch_cdx_skips_empty_rows(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    page1 = [["original", "timestamp", "statuscode", "mimetype"],
+             ["http://a.example.com/", "202101", "200", "text/html"],
+             [],
+             ["key123"]]
+    page2 = [["original", "timestamp", "statuscode", "mimetype"],
+             ["http://b.example.com/", "202102", "200", "text/html"]]
+
+    calls = []
+
+    def fake_get(url, timeout=20):
+        calls.append(url)
+        if "resumeKey=key123" in url:
+            return FakeResp(page2)
+        return FakeResp(page1)
+
+    monkeypatch.setattr(app.requests, "get", fake_get)
+
+    with app.app.test_client() as client:
+        resp = client.post("/fetch_cdx", data={"domain": "example.com"})
+        assert resp.status_code == 302
+
+    with app.app.app_context():
+        rows = app.query_db("SELECT url FROM urls ORDER BY id")
+        urls = [r["url"] for r in rows]
+
+    assert urls == ["http://a.example.com/", "http://b.example.com/"]
+    assert len(calls) == 2

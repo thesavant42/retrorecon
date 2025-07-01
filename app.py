@@ -599,7 +599,7 @@ def fetch_cdx() -> Response:
             data = data[:-1]
 
         for idx, row in enumerate(data):
-            if idx == 0:
+            if idx == 0 or not row:
                 continue
             original_url = row[0]
             timestamp = row[1] if len(row) > 1 else None
