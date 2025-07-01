@@ -369,3 +369,23 @@ def list_url_hosts() -> List[str]:
         if host and host not in hosts:
             hosts.append(_clean(host))
     return hosts
+
+
+def count_urls_for_host(host: str) -> int:
+    """Return how many URL records are associated with ``host``."""
+    row = query_db(
+        "SELECT COUNT(*) AS cnt FROM urls WHERE domain = ?",
+        [_clean(host)],
+        one=True,
+    )
+    return row["cnt"] if row else 0
+
+
+def count_urls_for_root(root: str) -> int:
+    """Return total URL records for ``root`` and all its subdomains."""
+    row = query_db(
+        "SELECT COUNT(*) AS cnt FROM urls WHERE domain = ? OR domain LIKE ?",
+        [_clean(root), f"%.{_clean(root)}"],
+        one=True,
+    )
+    return row["cnt"] if row else 0

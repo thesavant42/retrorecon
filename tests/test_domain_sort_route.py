@@ -109,3 +109,15 @@ def test_domain_sort_includes_url_hosts(monkeypatch, tmp_path):
         resp = client.get('/domain_sort')
         text = resp.get_data(as_text=True)
         assert 'foo.example.com' in text
+
+def test_domain_sort_url_counts(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        app.execute_db(
+            "INSERT INTO urls (url, domain) VALUES (?, ?)",
+            ["https://bar.example.com/index.html", "bar.example.com"]
+        )
+    with app.app.test_client() as client:
+        resp = client.get('/domain_sort')
+        text = resp.get_data(as_text=True)
+        assert 'bar.example.com (1)' in text
