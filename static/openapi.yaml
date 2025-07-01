@@ -363,18 +363,6 @@ paths:
       responses:
         '200':
           description: Successful response
-  /subdomonster:
-    get:
-      summary: GET /subdomonster
-      responses:
-        '200':
-          description: Successful response
-  /tools/subdomonster:
-    get:
-      summary: GET /tools/subdomonster
-      responses:
-        '200':
-          description: Successful response
   /domain_sort:
     get:
       summary: GET /domain_sort

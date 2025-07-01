@@ -48,3 +48,15 @@ def test_domain_summary_includes_url_hosts(monkeypatch, tmp_path):
         assert data["total_domains"] == 1
         assert data["total_hosts"] == 2
         assert any(dom == "foo.example.com" for dom, cnt in data["top_subdomains"])
+
+def test_domain_summary_page_has_import_controls(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    tpl_dir = Path(__file__).resolve().parents[1] / "templates"
+    (tmp_path / "templates").mkdir(exist_ok=True)
+    (tmp_path / "templates" / "subdomain_summary.html").write_text((tpl_dir / "subdomain_summary.html").read_text())
+    app.app.jinja_loader.searchpath = [str(tmp_path / "templates")]
+    with app.app.test_client() as client:
+        resp = client.get("/domain_summary")
+        assert resp.status_code == 200
+        text = resp.get_data(as_text=True)
+        assert 'id="subdom-fetch-btn"' in text

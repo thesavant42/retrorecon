@@ -27,7 +27,6 @@ This table lists each HTML template in the project alongside the dynamic pattern
 | registry_explorer.html | static_html |
 | screenshotter.html | screenshotter_page |
 | httpolaroid.html | static_html |
-| subdomonster.html | subdomonster_page |
 | domain_sort.html | static_html |
 | subdomain_summary.html | static_html |
 | swaggerui.html | static_html |
@@ -41,5 +40,5 @@ The main navigation bar consists of four top‑level menus:
 |------|----------|
 | File | New Project, Save Project, Save Project As…, Open Project, Export As (JSON / CSV / MD / XML / TXT), Backup SQL |
 | Edit | Bulk Select (all matching / visible / none), Bulk Actions (delete tag / add tag / clear tags), Preferences (background selector, toggle, font options, color palette, opacity slider) |
-| Tools | OSINT (Subdomonster, Hindsight, OCI Explorer), Active Recon (Screenshotter, Site2Zip), Utilities (Text Tools, JWT Tools, Webpack Exploder) |
+| Tools | OSINT (Hindsight, OCI Explorer), Active Recon (Screenshotter, Site2Zip), Utilities (Text Tools, JWT Tools, Webpack Exploder) |
 | Help | GitHub Wiki, README, About |

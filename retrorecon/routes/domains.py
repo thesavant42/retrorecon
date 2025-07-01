@@ -141,26 +141,6 @@ def _summary_data() -> dict:
     }
 
 
-@bp.route('/subdomonster', methods=['GET'])
-def subdomonster_page():
-    data = []
-    if app._db_loaded():
-        data = subdomain_utils.list_all_subdomains()
-    if request.args.get('legacy') == '1':
-        return dynamic_template('subdomonster.html', initial_data=data, use_legacy=True)
-    init_script = (
-        '<script type="application/json" id="subdomonster-init">'
-        + json.dumps(data)
-        + '</script>'
-    )
-    payload = {'schema': 'subdomonster_page', 'data': {'init_script': init_script}}
-    return render_from_payload(payload, schema_registry, html_generator)
-
-
-@bp.route('/tools/subdomonster', methods=['GET'])
-def subdomonster_full_page():
-    return app.index()
-
 
 @bp.route('/subdomains', methods=['GET', 'POST'])
 def subdomains_route():
@@ -380,7 +360,7 @@ def domain_sort_page():
         uploaded = defaultdict(list)
         for dom in domains:
             uploaded[_extract_root(dom)].append(dom)
-        # Persist imported domains so the Subdomonster table reflects them
+        # Persist imported domains so the subdomain table reflects them
         if app._db_loaded():
             for root, hosts in uploaded.items():
                 subdomain_utils.insert_records(root, hosts, 'domain_sort')

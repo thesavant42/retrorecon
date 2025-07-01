@@ -412,8 +412,6 @@ def index() -> str:
         tool = 'jwt'
     elif request.path == '/tools/screenshotter':
         tool = 'screenshot'
-    elif request.path == '/tools/subdomonster':
-        tool = 'subdomonster'
     elif request.path == '/tools/text_tools':
         tool = 'text'
     elif request.path == '/tools/markdown':

@@ -104,64 +104,14 @@
   display: none;
 }
 
-/* Subdomonster overlay */
-.retrorecon-root #subdomonster-table table {
-  table-layout: fixed;
-  font-size: 0.875em;
-}
-.retrorecon-root #subdomonster-table col.checkbox-col {
-  width: 1.6em;
-}
-.retrorecon-root #subdomonster-table col.send-col {
-  width: 280px;
-}
-.retrorecon-root #subdomonster-table col.tag-col {
-  width: 120px;
-}
-.retrorecon-root #subdomonster-overlay {
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-.retrorecon-root #subdomonster-table {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  overflow-x: auto;
-}
-.retrorecon-root #subdomonster-table td {
-  padding: 0.3em 0.6em;
-  word-break: break-all;
-}
-.retrorecon-root #subdomonster-table td.actions-col {
-  white-space: nowrap;
-}
-.retrorecon-root #subdomonster-table td.actions-col .url-tools-row {
-  flex-wrap: nowrap;
-}
-.retrorecon-root #subdomonster-table th {
-  overflow: visible;
-  position: relative;
-  padding-right: 1em;
-}
 
+.retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }
 
-.retrorecon-root #subdomonster-overlay .subdom-search {
-  width: 20em;
-  max-width: 50vw;
-  height: 30px;
-  min-height: 30px;
-}
-
-.retrorecon-root #subdomonster-overlay .row-tag-input {
-  width: 8em;
-  max-width: 50vw;
-}
-
+/* Subdomain import controls */
 .retrorecon-root .subdomonster-domain-bar {
   width: 20em;
   height: 30px;
 }
-
-.retrorecon-root #demo-view { flex: 1 1 auto; overflow-y: auto; }
 
 /* Domain Sort styles */
 .retrorecon-root .domain-sort-form {

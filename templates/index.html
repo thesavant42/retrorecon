@@ -200,7 +200,6 @@
       <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
       <div class="dropdown-content" id="tools-menu">
           <div class="menu-header">OSINT</div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="subdomonster-link">Subdomonster</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="domain-sort-link">Domain Sort</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="domain-summary-link">Subdomain Info</a></div>
           <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
@@ -1348,66 +1347,6 @@
         });
       }
 
-      const subLink = document.getElementById('subdomonster-link');
-      let subLoaded = false;
-
-      async function showSubdomonster(skipPush){
-        if(!subLoaded){
-          const resp = await fetch('/subdomonster');
-          const html = await resp.text();
-          const root = document.querySelector('.retrorecon-root') || document.body;
-          root.insertAdjacentHTML('beforeend', html);
-          await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = '/static/subdomonster.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.body.appendChild(script);
-          });
-          subLoaded = true;
-        }
-        const ov = document.getElementById('subdomonster-overlay');
-        ov.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        if(window.renderSubdomonster){ window.renderSubdomonster(); }
-        if(window.startSubdomonsterStatus){
-          window.startSubdomonsterStatus();
-        }
-        if(!skipPush){
-          history.pushState({tool:'subdomonster'}, '', '/tools/subdomonster');
-        }
-      }
-
-      function hideSubdomonster(){
-        const ov = document.getElementById('subdomonster-overlay');
-        if(ov){
-          ov.classList.add('hidden');
-          if(window.stopSubdomonsterStatus){
-            window.stopSubdomonsterStatus();
-          }
-        }
-        document.body.style.overflow = '';
-      }
-
-      if(subLink){
-        subLink.addEventListener('click', async (e) => {
-          e.preventDefault();
-          closeMenus();
-          showSubdomonster();
-        });
-      }
-
-      window.addEventListener('popstate', () => {
-        if(location.pathname === '/tools/subdomonster'){
-          showSubdomonster(true);
-        } else {
-          hideSubdomonster();
-        }
-      });
-
-      if(location.pathname === '/tools/subdomonster' || openTool === 'subdomonster'){
-        showSubdomonster(true);
-      }
 
       const sortLink = document.getElementById('domain-sort-link');
       let sortLoaded = false;
