@@ -115,7 +115,9 @@ def _render_domain_sort_output(roots: dict) -> str:
 
 def _summary_data() -> dict:
     """Return aggregate subdomain summary information."""
+    status_mod.push_status('summary_update_start')
     if not app._db_loaded():
+        status_mod.push_status('summary_update_done', '0 domains')
         return {
             'total_domains': 0,
             'total_hosts': 0,
@@ -135,12 +137,14 @@ def _summary_data() -> dict:
     flat_sorted = sorted(flat, key=lambda x: x[1], reverse=True)
     top_subs = flat_sorted[:5]
     lonely_subs = sorted(flat, key=lambda x: x[1])[:5]
-    return {
+    result = {
         'total_domains': len(roots),
         'total_hosts': len(set(hosts)),
         'top_subdomains': top_subs,
         'lonely_subdomains': lonely_subs,
     }
+    status_mod.push_status('summary_update_done', f"{result['total_domains']} domains")
+    return result
 
 
 
