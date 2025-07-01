@@ -125,6 +125,10 @@
   border-collapse: collapse;
   margin-bottom: 1em;
 }
+.retrorecon-root .domain-sort-counts {
+  margin: 0.25em 0;
+  font-weight: bold;
+}
 /* stylelint-disable-next-line no-descending-specificity */
 .retrorecon-root .domain-sort-summary th,
 .retrorecon-root .domain-sort-summary td {
