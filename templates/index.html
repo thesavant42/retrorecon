@@ -835,6 +835,7 @@
       if(statusClear) clearTimeout(statusClear);
       statusClear = setTimeout(() => { text.textContent = 'idle'; }, 3000);
     }
+    window.showStatus = showStatus;
 
     function pollStatus(){
       fetch('/status')
@@ -1243,6 +1244,7 @@
         const ov = document.getElementById('screenshot-overlay');
         ov.classList.remove('hidden');
         if(window.loadScreenshotRows){ window.loadScreenshotRows(); }
+        if(window.startScreenshotStatus){ window.startScreenshotStatus(); }
         if(!skipPush){
           history.pushState({tool:'screenshot'}, '', '/tools/screenshotter');
         }
@@ -1251,6 +1253,7 @@
       function hideScreenshot(){
         const ov = document.getElementById('screenshot-overlay');
         if(ov) ov.classList.add('hidden');
+        if(window.stopScreenshotStatus){ window.stopScreenshotStatus(); }
       }
 
       if(screenshotLink){

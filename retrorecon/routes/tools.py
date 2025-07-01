@@ -8,6 +8,7 @@ import requests
 import zipfile
 import app
 from layerslayer.utils import human_readable_size
+from retrorecon import status as status_mod
 from flask import (
     Blueprint,
     request,
@@ -306,9 +307,11 @@ def screenshot_route():
     os.makedirs(app.SCREENSHOT_DIR, exist_ok=True)
     if debug_log:
         log_path = os.path.join(app.SCREENSHOT_DIR, f'shot_{ts}.log')
+    status_mod.push_status('screenshot_start', url)
     try:
         img_bytes, status_code, ips = app.take_screenshot(url, agent, spoof, log_path)
     except Exception as e:
+        status_mod.push_status('screenshot_error', str(e))
         return (f'Error taking screenshot: {e}', 500)
     fname = f'shot_{ts}.png'
     thumb = f'shot_{ts}_th.png'
@@ -326,6 +329,7 @@ def screenshot_route():
         with open(thumb_path, 'wb') as f:
             f.write(img_bytes)
     sid = app.save_screenshot_record(url, fname, thumb, 'GET', status_code, ips)
+    status_mod.push_status('screenshot_done', str(sid))
     log_text = ''
     if debug_log and log_path and os.path.exists(log_path):
         try:
