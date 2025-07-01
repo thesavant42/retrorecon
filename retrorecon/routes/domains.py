@@ -19,10 +19,11 @@ bp = Blueprint('domains', __name__)
 
 def _extract_root(domain: str) -> str:
     """Return the registered domain using a local suffix cache."""
-    ext = _EXTRACTOR(domain)
+    dom = domain.strip().lower()
+    ext = _EXTRACTOR(dom)
     if ext.domain and ext.suffix:
         return f"{ext.domain}.{ext.suffix}"
-    return domain
+    return dom
 
 
 def _build_tree(domains):
