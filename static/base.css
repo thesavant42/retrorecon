@@ -1455,6 +1455,9 @@ body.bg-hidden {
 .retrorecon-root #markdown-editor-form .editor-preview {
   height: 100%;
 }
+.retrorecon-root #markdown-editor-form .editor-toolbar {
+  width: 100%;
+}
 /* stylelint-enable selector-class-pattern */
 
 .retrorecon-root #markdown-editor-close {

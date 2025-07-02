@@ -7,7 +7,8 @@
     "static/wabax.css",
     "static/themes/**/*.css",
     "static/vendor/**/*.css",
-    "templates/indexBack.html"
+    "templates/indexBack.html",
+    "templates/markdown_editor.html"
   ],
   "rules": {
     "selector-disallowed-list": ["^[a-z]"],
