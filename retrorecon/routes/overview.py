@@ -2,6 +2,7 @@ from typing import Dict, Any
 import os
 from flask import Blueprint, jsonify
 from .dynamic import dynamic_template
+from retrorecon import subdomain_utils
 import app
 
 bp = Blueprint('overview', __name__)
@@ -26,22 +27,32 @@ def _collect_counts() -> Dict[str, int]:
 def _collect_domains() -> list:
     if not app._db_loaded():
         return []
-    roots = app.query_db('SELECT root_domain, COUNT(*) AS cnt FROM domains GROUP BY root_domain ORDER BY root_domain')
+    roots = app.query_db(
+        'SELECT root_domain, COUNT(DISTINCT subdomain) AS cnt '
+        'FROM domains GROUP BY root_domain ORDER BY root_domain'
+    )
     domains = []
     for r in roots:
         rows = app.query_db(
-            'SELECT subdomain, tags, cdx_indexed FROM domains WHERE root_domain = ? ORDER BY subdomain',
+            'SELECT subdomain, GROUP_CONCAT(tags, ",") AS tags, '
+            'MAX(cdx_indexed) AS cdx_indexed '
+            'FROM domains WHERE root_domain = ? '
+            'GROUP BY subdomain ORDER BY subdomain',
             [r['root_domain']]
         )
         subs = [
             {
-                'subdomain': s['subdomain'],
-                'tags': s['tags'],
+                'subdomain': subdomain_utils._clean(s['subdomain']),
+                'tags': subdomain_utils._merge_tags(s['tags']),
                 'cdx_indexed': bool(s['cdx_indexed'])
             }
             for s in rows
         ]
-        domains.append({'root_domain': r['root_domain'], 'count': r['cnt'], 'subdomains': subs})
+        domains.append({
+            'root_domain': subdomain_utils._clean(r['root_domain']),
+            'count': r['cnt'],
+            'subdomains': subs
+        })
     return domains
 
 
