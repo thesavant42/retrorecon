@@ -332,15 +332,7 @@ def domain_sort_page():
                 except Exception:
                     pass
             # After inserting, rebuild using every subdomain and URL host
-            all_roots = defaultdict(set)
-            for row in subdomain_utils.list_all_subdomains():
-                if row['subdomain'] != row['domain']:
-                    all_roots[row['domain']].add(row['subdomain'])
-            for host in subdomain_utils.list_url_hosts():
-                root = _extract_root(host)
-                if host != root:
-                    all_roots[root].add(host)
-            roots = {k: sorted(v) for k, v in all_roots.items()}
+            roots = subdomain_utils.aggregate_root_domains()
         else:
             roots = uploaded
 
@@ -361,19 +353,9 @@ def domain_sort_page():
         return Response(output, mimetype='text/html')
 
     if app._db_loaded():
-        rows = subdomain_utils.list_all_subdomains()
-        url_hosts = subdomain_utils.list_url_hosts()
-        if rows or url_hosts:
-            roots = defaultdict(set)
-            for r in rows:
-                if r['subdomain'] != r['domain']:
-                    roots[r['domain']].add(r['subdomain'])
-            for host in url_hosts:
-                root = _extract_root(host)
-                if host != root:
-                    roots[root].add(host)
-            sorted_roots = {k: sorted(v) for k, v in roots.items()}
-            output = _render_domain_sort_output(sorted_roots)
+        roots = subdomain_utils.aggregate_root_domains()
+        if roots:
+            output = _render_domain_sort_output(roots)
             return dynamic_template('domain_sort.html', initial_output=output)
     return dynamic_template('domain_sort.html', initial_output="")
 
