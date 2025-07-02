@@ -229,14 +229,23 @@
   </div>
   <div class="navbar__title">
       <span class="cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
-      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form" class="ml-5px">
-        <select name="db_file" id="load-saved-db-bar-select" class="form-select menu-btn">
-          <option value="">Load Saved DB...</option>
-          {% for db in saved_dbs %}
-          <option value="{{ db }}">{{ db }}</option>
-          {% endfor %}
-        </select>
+      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form" class="d-none">
+        <input type="hidden" name="db_file" id="load-saved-db-bar-input" />
       </form>
+      <div class="dropdown ml-5px">
+        <button class="dropbtn" data-menu="db-menu">Load Saved DB ▼</button>
+        <div class="dropdown-content" id="db-menu">
+          <div class="menu-row"><input type="text" id="db-filter-bar" class="form-input w-100" placeholder="Filter projects..."></div>
+          <div id="db-bar-list">
+            {% for db in saved_dbs %}
+            <div class="menu-row db-entry" data-db="{{ db }}">
+              <span class="db-name cursor-pointer">{{ db }}</span>
+              <button type="button" class="menu-btn ml-05 delete-db-btn" data-db="{{ db }}" {% if db == db_name %}disabled title="Cannot delete while active."{% endif %}>Delete</button>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="navbar__info">
       <div id="import-status-block" class="db-info">
@@ -1027,15 +1036,44 @@
         }
       });
     }
-    const savedBarSelect = document.getElementById('load-saved-db-bar-select');
-    const savedBarForm = document.getElementById('load-saved-db-bar-form');
-    if (savedBarSelect && savedBarForm) {
-      savedBarSelect.addEventListener('change', () => {
-        if (savedBarSelect.value) {
-          savedBarForm.submit();
-        }
+    const dbFilterBar = document.getElementById('db-filter-bar');
+    if (dbFilterBar) {
+      dbFilterBar.addEventListener('input', () => {
+        const val = dbFilterBar.value.toLowerCase();
+        document.querySelectorAll('#db-bar-list .db-entry').forEach(div => {
+          div.classList.toggle('hidden', !div.dataset.db.toLowerCase().includes(val));
+        });
       });
     }
+
+    document.querySelectorAll('#db-bar-list .db-name').forEach(span => {
+      span.addEventListener('click', () => {
+        const name = span.parentElement.dataset.db;
+        const input = document.getElementById('load-saved-db-bar-input');
+        const form = document.getElementById('load-saved-db-bar-form');
+        if (input && form) {
+          input.value = name;
+          form.submit();
+        }
+      });
+    });
+
+    document.querySelectorAll('#db-bar-list .delete-db-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.db;
+        if (!confirm(`You're about to permanently delete '${name}'. This cannot be undone.`)) return;
+        const params = new URLSearchParams();
+        params.append('db_file', name);
+        const resp = await fetch('/delete_db', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+        if (resp.ok) {
+          alert(`✅ '${name}' successfully deleted.`);
+          location.reload();
+        } else {
+          const text = await resp.text();
+          alert(`❌ Failed to delete '${name}': ${text}`);
+        }
+      });
+    });
 
     const importBtn = document.getElementById('import-file-btn');
     const importInput = document.getElementById('import-file-input');
