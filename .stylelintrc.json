@@ -6,6 +6,7 @@
   "ignoreFiles": [
     "static/wabax.css",
     "static/themes/**/*.css",
+    "static/vendor/**/*.css",
     "templates/indexBack.html"
   ],
   "rules": {

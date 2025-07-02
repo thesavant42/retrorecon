@@ -13,4 +13,3 @@ pytest
 requests
 tldextract
 zstandard
-flask-mdeditor

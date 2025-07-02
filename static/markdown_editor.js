@@ -1,12 +1,25 @@
+let simplemde = null;
+
 function initMarkdownEditor(){
   const overlay = document.getElementById('markdown-editor-overlay');
   if(!overlay) return;
-  const textarea = overlay.querySelector('textarea[name="mdeditor"]');
+  const textarea = overlay.querySelector('#mdeditor-textarea');
   const closeBtn = document.getElementById('markdown-editor-close');
   const openBtn = document.getElementById('md-open-btn');
   const saveBtn = document.getElementById('md-save-btn');
   const fileInput = document.getElementById('md-file-input');
   const fileList = document.getElementById('md-file-list');
+
+  function ensureEditor(){
+    if(!simplemde && window.SimpleMDE){
+      simplemde = new SimpleMDE({
+        element: textarea,
+        autoDownloadFontAwesome: false,
+        spellChecker: false
+      });
+      window.simplemde = simplemde;
+    }
+  }
 
   function loadFiles(){
     if(!fileList) return;
@@ -21,8 +34,8 @@ function initMarkdownEditor(){
             .then(r=>r.text())
             .then(t => {
               if(textarea) textarea.value = t;
-              if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
-                window.editormd.instances['mdeditor'].setValue(t);
+              if(simplemde){
+                simplemde.value(t);
               }
             });
         });
@@ -33,14 +46,11 @@ function initMarkdownEditor(){
   window.loadMdFiles = loadFiles;
 
   function refreshEditor(){
-    if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
-      const inst = window.editormd.instances['mdeditor'];
+    if(simplemde){
       const body = overlay.querySelector('.md-editor-body');
-      if(body){
-        inst.resize('100%', body.clientHeight || 700);
-      } else {
-        inst.resize('100%', 700);
-      }
+      const h = body ? body.clientHeight || 700 : 700;
+      simplemde.codemirror.setSize('100%', h);
+      simplemde.codemirror.refresh();
     }
   }
   window.refreshMdEditor = refreshEditor;
@@ -57,15 +67,15 @@ function initMarkdownEditor(){
     if(f){
       f.text().then(t => {
         if(textarea) textarea.value = t;
-        if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
-          window.editormd.instances['mdeditor'].setValue(t);
+        if(simplemde){
+          simplemde.value(t);
         }
       });
     }
   });
 
   saveBtn.addEventListener('click', () => {
-    const text = textarea.value;
+    const text = simplemde ? simplemde.value() : textarea.value;
     const blob = new Blob([text], {type:'text/markdown'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -82,6 +92,8 @@ function initMarkdownEditor(){
     }
   });
 
+  ensureEditor();
+  refreshEditor();
   loadFiles();
 }
 
