@@ -881,6 +881,9 @@
         tagsOverlay.classList.add('hidden');
         tagsOverlay.classList.remove('show');
       }
+      if(typeof notesOverlay !== 'undefined' && !notesOverlay.classList.contains('hidden')){
+        notesOverlay.classList.add('hidden');
+      }
       document.getElementById('search-form').submit();
     }
 
@@ -937,6 +940,13 @@
       if(box){
         box.value = '';
         box.focus();
+      }
+      if(typeof tagsOverlay !== 'undefined' && !tagsOverlay.classList.contains('hidden')){
+        tagsOverlay.classList.add('hidden');
+        tagsOverlay.classList.remove('show');
+      }
+      if(typeof notesOverlay !== 'undefined' && !notesOverlay.classList.contains('hidden')){
+        notesOverlay.classList.add('hidden');
       }
       document.getElementById('search-form').submit();
     });
@@ -1703,6 +1713,13 @@
     if(perPageInput){
       document.querySelectorAll('#results-per-page-select').forEach(sel => {
         sel.addEventListener('change', function(){
+          if(typeof tagsOverlay !== 'undefined' && !tagsOverlay.classList.contains('hidden')){
+            tagsOverlay.classList.add('hidden');
+            tagsOverlay.classList.remove('show');
+          }
+          if(typeof notesOverlay !== 'undefined' && !notesOverlay.classList.contains('hidden')){
+            notesOverlay.classList.add('hidden');
+          }
           perPageInput.value = this.value;
           document.getElementById('set-items-form').submit();
         });
