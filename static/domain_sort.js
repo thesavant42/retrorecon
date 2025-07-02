@@ -43,10 +43,7 @@ function initDomainSort(){
         const params = new URLSearchParams({domain, source: src});
         await fetch('/subdomains', {method:'POST', body: params});
       }
-      const cdxData = new URLSearchParams({domain, ajax:'1'});
-      const resp = await fetch('/fetch_cdx', {method:'POST', body: cdxData});
-      const json = await resp.json().catch(() => ({}));
-      setStatus(json.message || (resp.ok ? 'Import complete.' : 'Import failed.'));
+      setStatus('Import complete.');
       const listResp = await fetch('/domain_sort');
       outputDiv.innerHTML = await listResp.text();
     });
