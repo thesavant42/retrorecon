@@ -1447,11 +1447,15 @@ body.bg-hidden {
   text-decoration: underline;
 }
 
-.retrorecon-root #markdown-editor-form,
-.retrorecon-root #markdown-editor-form .wmd-wrapper,
-.retrorecon-root #markdown-editor-form .editormd {
+.retrorecon-root #markdown-editor-form {
   height: 100%;
 }
+/* stylelint-disable selector-class-pattern */
+.retrorecon-root #markdown-editor-form .CodeMirror,
+.retrorecon-root #markdown-editor-form .editor-preview {
+  height: 100%;
+}
+/* stylelint-enable selector-class-pattern */
 
 .retrorecon-root #markdown-editor-close {
   right: 1em;

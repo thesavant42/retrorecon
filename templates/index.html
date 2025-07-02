@@ -1220,20 +1220,20 @@
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
           await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = '/static/markdown_editor.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.body.appendChild(script);
+          const script = document.createElement('script');
+          script.src = '/static/markdown_editor.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
           });
           markdownLoaded = true;
         }
         const ov = document.getElementById('markdown-editor-overlay');
-        const ta = ov.querySelector('textarea[name="mdeditor"]');
+        const ta = ov.querySelector('#mdeditor-textarea');
         if(preset && ta){
           ta.value = preset;
-          if(window.editormd && window.editormd.instances && window.editormd.instances['mdeditor']){
-            window.editormd.instances['mdeditor'].setValue(preset);
+          if(window.simplemde){
+            window.simplemde.value(preset);
           }
         }
         ov.classList.remove('hidden');

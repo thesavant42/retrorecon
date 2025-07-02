@@ -47,13 +47,5 @@ class Config:
     REGISTRY_USERNAME = os.environ.get('REGISTRY_USERNAME')
     REGISTRY_PASSWORD = os.environ.get('REGISTRY_PASSWORD')
 
-    # Markdown editor settings
-    MDEDITOR_FILE_UPLOADER = os.environ.get(
-        'MDEDITOR_UPLOAD_FOLDER', os.path.join(os.getcwd(), 'uploads')
-    )
-    MDEDITOR_THEME = 'dark'
-    MDEDITOR_PREVIEW_THEME = 'dark'
-    MDEDITOR_EDITOR_THEME = 'pastel-on-dark'
-    MDEDITOR_WIDTH = '100%'
-    MDEDITOR_HEIGHT = 700
+    # Markdown editor storage
     MARKDOWN_STORAGE = os.path.join(os.getcwd(), 'docs')
