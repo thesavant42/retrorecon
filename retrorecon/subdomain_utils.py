@@ -3,6 +3,7 @@ import re
 import urllib.parse
 import requests
 from typing import List, Dict, Optional, Any
+from collections import defaultdict
 import tldextract
 
 from database import execute_db, executemany_db, query_db, get_db
@@ -73,11 +74,36 @@ def insert_records(
     source: str = "crtsh",
     cdx: bool = False,
 ) -> int:
-    """Insert ``subs`` for ``root_domain`` and return count inserted."""
+    """Insert ``subs`` for ``root_domain`` and return count inserted.
+
+    Each subdomain is only inserted once regardless of how many import
+    sources provide it. Deduplication is performed against existing
+    records so repeated imports do not inflate counts.
+    """
+    cleaned = []
+    seen: set[str] = set()
+    for s in subs:
+        sub = _clean(s).lower()
+        if not sub or sub == _clean(root_domain):
+            continue
+        if sub not in seen:
+            seen.add(sub)
+            cleaned.append(sub)
+
+    if not cleaned:
+        return 0
+
+    placeholders = ",".join(["?"] * len(cleaned))
+    rows = query_db(
+        f"SELECT subdomain FROM domains WHERE root_domain = ? AND subdomain IN ({placeholders})",
+        [_clean(root_domain), *cleaned],
+    )
+    existing = { _clean(r["subdomain"]) for r in rows }
+
     params = [
-        (_clean(root_domain), _clean(sub), source, "", int(cdx))
-        for sub in subs
-        if _clean(sub) != _clean(root_domain)
+        (_clean(root_domain), sub, source, "", int(cdx))
+        for sub in cleaned
+        if sub not in existing
     ]
     try:
         return executemany_db(
@@ -266,8 +292,9 @@ def list_all_subdomains() -> List[Dict[str, str]]:
 def count_subdomains(root_domain: Optional[str] = None) -> int:
     """Return the number of unique subdomains for ``root_domain`` or all.
 
-    Hosts referenced only in the ``urls`` table are also counted so the
-    result reflects every known subdomain.
+    This function combines the ``domains`` table and hostnames referenced
+    by URL records. Results are deduplicated so multiple imports from
+    different sources do not affect the count.
     """
 
     hosts: set[str] = set()
@@ -381,7 +408,12 @@ def list_url_hosts() -> List[str]:
 
 
 def count_urls_for_host(host: str) -> int:
-    """Return how many URL records are associated with ``host``."""
+    """Return how many URL records are associated with ``host``.
+
+    Counts are based solely on the ``urls`` table and are not affected by
+    any active filters on the UI. Consumers should refresh displays after
+    deleting URLs so these numbers remain accurate.
+    """
     row = query_db(
         "SELECT COUNT(*) AS cnt FROM urls WHERE domain = ?",
         [_clean(host)],
@@ -398,3 +430,21 @@ def count_urls_for_root(root: str) -> int:
         one=True,
     )
     return row["cnt"] if row else 0
+
+
+def aggregate_root_domains() -> Dict[str, List[str]]:
+    """Return mapping of root domains to deduplicated subdomain lists.
+
+    Both the ``domains`` table and hostnames found in the ``urls`` table
+    are consulted so the result reflects the full dataset.
+    """
+    roots: Dict[str, set[str]] = defaultdict(set)
+    for row in list_all_subdomains():
+        if row["subdomain"] != row["domain"]:
+            roots[row["domain"]].add(row["subdomain"])
+    for host in list_url_hosts():
+        ext = _EXTRACTOR(host)
+        root = f"{ext.domain}.{ext.suffix}" if ext.suffix else host
+        if host != root:
+            roots[root].add(host)
+    return {k: sorted(v) for k, v in roots.items()}

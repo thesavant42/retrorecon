@@ -23,6 +23,11 @@ function initDomainSort(){
     if(statusDiv) statusDiv.textContent = msg;
   }
 
+  async function refresh(){
+    const resp = await fetch('/domain_sort');
+    outputDiv.innerHTML = await resp.text();
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
@@ -31,6 +36,7 @@ function initDomainSort(){
     const resp = await fetch('/domain_sort', {method:'POST', body: formData});
     outputDiv.innerHTML = await resp.text();
     setStatus(resp.ok ? 'List imported successfully.' : 'Upload failed.');
+    document.dispatchEvent(new Event('domainDataChanged'));
   });
 
   if(importBtn && importInput){
@@ -44,10 +50,14 @@ function initDomainSort(){
         await fetch('/subdomains', {method:'POST', body: params});
       }
       setStatus('Import complete.');
-      const listResp = await fetch('/domain_sort');
-      outputDiv.innerHTML = await listResp.text();
+      await refresh();
+      document.dispatchEvent(new Event('domainDataChanged'));
     });
   }
+
+  document.addEventListener('domainDataChanged', () => {
+    refresh();
+  });
 
   exportBtn.addEventListener('click', async (e) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app
+from retrorecon import subdomain_utils
 
 
 def setup_tmp(monkeypatch, tmp_path):
@@ -121,3 +122,40 @@ def test_domain_sort_url_counts(monkeypatch, tmp_path):
         resp = client.get('/domain_sort')
         text = resp.get_data(as_text=True)
         assert 'bar.example.com (1)' in text
+
+
+def test_domain_sort_multi_source_dedup(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        subdomain_utils.insert_records('example.com', ['dup.example.com'], 'crtsh')
+        subdomain_utils.insert_records('example.com', ['dup.example.com'], 'virustotal')
+    with app.app.test_client() as client:
+        resp = client.get('/domain_sort')
+        body = resp.get_data(as_text=True)
+        assert body.count('dup.example.com') == 1
+    with app.app.app_context():
+        assert subdomain_utils.count_subdomains('example.com') == 1
+
+
+def test_domain_sort_delete_updates(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        subdomain_utils.insert_records('example.com', ['gone.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.get('/domain_sort')
+        assert 'gone.example.com' in resp.get_data(as_text=True)
+        client.post('/delete_subdomain', data={'domain': 'example.com', 'subdomain': 'gone.example.com'})
+        resp = client.get('/domain_sort')
+        assert 'gone.example.com' not in resp.get_data(as_text=True)
+
+
+def test_subdomains_filtered_vs_total(monkeypatch, tmp_path):
+    setup_tmp(monkeypatch, tmp_path)
+    with app.app.app_context():
+        subdomain_utils.insert_records('example.com', ['one.example.com', 'two.example.com'], 'crtsh')
+    with app.app.test_client() as client:
+        resp = client.get('/subdomains?domain=example.com&q=one')
+        data = resp.get_json()
+        assert data[0]['subdomain'] == 'one.example.com'
+        total = subdomain_utils.count_subdomains('example.com')
+        assert total == 2

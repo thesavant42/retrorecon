@@ -27,36 +27,26 @@ def _collect_counts() -> Dict[str, int]:
 def _collect_domains() -> list:
     if not app._db_loaded():
         return []
-    roots = app.query_db(
-        'SELECT root_domain, COUNT(DISTINCT subdomain) AS cnt '
-        'FROM domains GROUP BY root_domain ORDER BY root_domain'
-    )
+
+    roots = subdomain_utils.aggregate_root_domains()
     domains = []
-    for r in roots:
-        rows = app.query_db(
-            'SELECT subdomain, tags, cdx_indexed '
-            'FROM domains WHERE root_domain = ? ORDER BY subdomain',
-            [r['root_domain']]
+    for root, subs in roots.items():
+        rows = subdomain_utils.list_subdomains(root)
+        domains.append(
+            {
+                'root_domain': root,
+                'count': len(subs),
+                'subdomains': [
+                    {
+                        'subdomain': r['subdomain'],
+                        'tags': r['tags'],
+                        'cdx_indexed': r['cdx_indexed'],
+                    }
+                    for r in rows
+                ],
+            }
         )
-        seen = set()
-        subs = []
-        for row in rows:
-            sub = subdomain_utils._clean(row['subdomain'])
-            if sub in seen:
-                continue
-            seen.add(sub)
-            subs.append(
-                {
-                    'subdomain': sub,
-                    'tags': row['tags'],
-                    'cdx_indexed': bool(row['cdx_indexed']),
-                }
-            )
-        domains.append({
-            'root_domain': subdomain_utils._clean(r['root_domain']),
-            'count': r['cnt'],
-            'subdomains': subs
-        })
+    domains.sort(key=lambda d: d['root_domain'])
     return domains
 
 
