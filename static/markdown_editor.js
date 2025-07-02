@@ -12,10 +12,43 @@ function initMarkdownEditor(){
 
   function ensureEditor(){
     if(!simplemde && window.SimpleMDE){
+      const underline = {
+        name: 'underline',
+        action: function customUnderline(editor){
+          const cm = editor.codemirror;
+          const selectedText = cm.getSelection();
+          cm.replaceSelection(`<u>${selectedText}</u>`);
+        },
+        className: 'fa fa-underline',
+        title: 'Underline'
+      };
       simplemde = new SimpleMDE({
         element: textarea,
         autoDownloadFontAwesome: false,
-        spellChecker: false
+        spellChecker: false,
+        toolbar: [
+          'bold',
+          'italic',
+          'strikethrough',
+          underline,
+          '|',
+          'heading-1',
+          'heading-2',
+          'heading-3',
+          '|',
+          'quote',
+          'unordered-list',
+          'ordered-list',
+          '|',
+          'link',
+          'image',
+          '|',
+          'preview',
+          'side-by-side',
+          'fullscreen',
+          '|',
+          'guide'
+        ]
       });
       window.simplemde = simplemde;
     }
