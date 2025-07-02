@@ -501,6 +501,17 @@ def index() -> str:
         session['db_display_name'] = actual_name
     db_name = session['db_display_name']
 
+    if not _db_loaded() and db_name not in ('(none)', TEMP_DISPLAY_NAME):
+        missing_path = os.path.join(get_db_folder(), db_name)
+        if not os.path.exists(missing_path) and not session.get('missing_db_warned'):
+            flash(
+                f"\N{WARNING SIGN} Previously loaded database '{db_name}' not found. Please select another or import a fresh copy.",
+                'error'
+            )
+            session['missing_db_warned'] = True
+    elif _db_loaded():
+        session.pop('missing_db_warned', None)
+
     try:
         saved_dbs = sorted([
             f for f in os.listdir(get_db_folder())

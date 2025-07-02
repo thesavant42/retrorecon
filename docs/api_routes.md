@@ -607,6 +607,13 @@ Switch to a database file stored under `db/`.
 curl -X POST -d "db_file=wabax.db" http://localhost:5000/load_saved_db
 ```
 
+### `POST /delete_db`
+Remove a database snapshot from the `db/` folder.
+
+```
+curl -X POST -d "db_file=old.db" http://localhost:5000/delete_db
+```
+
 ### `POST /set_items_per_page`
 Change how many results display on the search page.
 

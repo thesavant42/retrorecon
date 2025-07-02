@@ -115,3 +115,22 @@ def load_saved_db():
     except Exception as e:
         flash(f'Error loading database: {e}', 'error')
     return redirect(url_for('index'))
+
+@bp.route('/delete_db', methods=['POST'])
+def delete_db_route():
+    """Delete a saved database file."""
+    filename = request.form.get('db_file', '').strip()
+    safe = app._sanitize_db_name(filename)
+    if not safe:
+        return ('invalid', 400)
+    current = os.path.basename(app.app.config.get('DATABASE') or '')
+    if current == safe:
+        return ('active', 400)
+    path = os.path.join(app.get_db_folder(), safe)
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        return ('not_found', 404)
+    except OSError:
+        return ('error', 500)
+    return ('', 204)

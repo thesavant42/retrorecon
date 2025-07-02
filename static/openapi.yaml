@@ -333,6 +333,12 @@ paths:
       responses:
         '200':
           description: Successful response
+  /delete_db:
+    post:
+      summary: POST /delete_db
+      responses:
+        '200':
+          description: Successful response
   /set_theme:
     post:
       summary: POST /set_theme
