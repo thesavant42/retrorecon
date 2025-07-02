@@ -67,6 +67,15 @@ function autoloadLastDb(current){
   }
   const last = getLastDb();
   if(!last) return;
+  const selector = document.getElementById('load-saved-db-bar-select') ||
+                   document.getElementById('load-saved-db-select');
+  if(selector){
+    const found = Array.from(selector.options).some(opt => opt.value === last);
+    if(!found){
+      try{ localStorage.removeItem('retroLastDb'); }catch(e){}
+      return;
+    }
+  }
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = '/load_saved_db';
