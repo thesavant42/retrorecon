@@ -34,20 +34,24 @@ def _collect_domains() -> list:
     domains = []
     for r in roots:
         rows = app.query_db(
-            'SELECT subdomain, GROUP_CONCAT(tags, ",") AS tags, '
-            'MAX(cdx_indexed) AS cdx_indexed '
-            'FROM domains WHERE root_domain = ? '
-            'GROUP BY subdomain ORDER BY subdomain',
+            'SELECT subdomain, tags, cdx_indexed '
+            'FROM domains WHERE root_domain = ? ORDER BY subdomain',
             [r['root_domain']]
         )
-        subs = [
-            {
-                'subdomain': subdomain_utils._clean(s['subdomain']),
-                'tags': subdomain_utils._merge_tags(s['tags']),
-                'cdx_indexed': bool(s['cdx_indexed'])
-            }
-            for s in rows
-        ]
+        seen = set()
+        subs = []
+        for row in rows:
+            sub = subdomain_utils._clean(row['subdomain'])
+            if sub in seen:
+                continue
+            seen.add(sub)
+            subs.append(
+                {
+                    'subdomain': sub,
+                    'tags': row['tags'],
+                    'cdx_indexed': bool(row['cdx_indexed']),
+                }
+            )
         domains.append({
             'root_domain': subdomain_utils._clean(r['root_domain']),
             'count': r['cnt'],
