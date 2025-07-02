@@ -567,7 +567,7 @@ def fetch_cdx() -> Response:
         return redirect(url_for('index'))
 
     base_api = (
-        'http://web.archive.org/cdx/search/cdx'
+        'https://web.archive.org/cdx/search/cdx'
         '?url=*.{domain}/*&output=json&fl=original,timestamp,statuscode,mimetype'
         '&collapse=urlkey&limit=1000&showResumeKey=true'
     ).format(domain=domain)
@@ -633,6 +633,10 @@ def fetch_cdx() -> Response:
 
     message = f"Fetched CDX for {domain}: inserted {inserted} new URLs."
     status_mod.push_status('cdx_import_complete', str(inserted))
+    try:
+        subdomain_utils.scrape_from_urls(domain)
+    except Exception:
+        pass
     if request.form.get('ajax') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({"inserted": inserted, "message": message})
     flash(message, "success")
