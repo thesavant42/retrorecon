@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional
 from fastmcp import FastMCP
 from mcp.types import TextContent
 from fastmcp.tools import FunctionTool
+from .config import MCPConfig, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,10 @@ logger = logging.getLogger(__name__)
 class RetroReconMCPServer:
     """Embedded MCP server for querying RetroRecon SQLite databases."""
 
-    def __init__(self, db_path: Optional[str] = None) -> None:
-        self.db_path = db_path
+    def __init__(self, db_path: Optional[str] = None, config: MCPConfig | None = None) -> None:
+        self.config = config or load_config()
+        self.db_path = db_path or self.config.db_path
+        self.row_limit = self.config.row_limit
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
 
@@ -26,6 +29,7 @@ class RetroReconMCPServer:
 
     def update_database_path(self, db_path: str) -> None:
         self.db_path = db_path
+        self.config.db_path = db_path
 
     # tools
     def _create_read_query_tool(self):
@@ -80,7 +84,7 @@ class RetroReconMCPServer:
         with self.get_connection() as conn:
             c = conn.cursor()
             if "LIMIT" not in query.upper():
-                query += " LIMIT 100"
+                query += f" LIMIT {self.row_limit}"
             c.execute(query, params or [])
             rows = c.fetchall()
             columns = [d[0] for d in c.description]

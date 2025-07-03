@@ -1,7 +1,7 @@
 import app
 from flask import Blueprint, request, jsonify
 
-from retrorecon.mcp.server import RetroReconMCPServer
+from retrorecon.mcp import RetroReconMCPServer, load_config
 
 bp = Blueprint('chat', __name__, url_prefix='/chat')
 
@@ -10,7 +10,7 @@ def _get_server() -> RetroReconMCPServer:
     """Get or create the MCP server instance."""
     server = getattr(app, 'mcp_server', None)
     if server is None:
-        server = RetroReconMCPServer()
+        server = RetroReconMCPServer(config=load_config())
         app.mcp_server = server
     _ensure_db_path(server)
     return server
