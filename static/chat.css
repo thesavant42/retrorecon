@@ -2,16 +2,33 @@
   position: fixed;
   top: var(--navbar-height);
   right: 0;
-  width: 300px;
-  height: calc(100% - var(--navbar-height));
+  bottom: 0;
+  width: 50vw;
+  max-width: 600px;
+  min-width: 300px;
   background: var(--bg-color);
   border-left: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease-in-out;
+}
+
+.retrorecon-root .chat-overlay.show {
+  transform: translateX(0);
 }
 
 .retrorecon-root .chat-overlay.hidden {
-  display: none;
+  transform: translateX(100%);
+}
+
+.retrorecon-root .chat-overlay__resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: ew-resize;
 }
 
 .retrorecon-root .chat-overlay__header {
