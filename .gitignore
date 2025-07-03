@@ -1,3 +1,4 @@
+*.db
 db/*.db
 *.zip
 *.sqlite
@@ -19,4 +20,6 @@ logs/
 *.log
 .vscode/
 venv/
+.venv/
+*/.venv/
 !schemas/*.json
