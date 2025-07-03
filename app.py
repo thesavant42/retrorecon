@@ -935,6 +935,44 @@ app.register_blueprint(help_bp)
 app.register_blueprint(dynamic_bp)
 app.register_blueprint(chat_bp)
 
+# --- MCP integration (reference FastAPI/ASGI server mounted at /mcp) ---
+try:
+    from asgiref.wsgi import WsgiToAsgi
+    from asgiref.compatibility import guarantee_single_callable
+    from starlette.middleware.wsgi import WSGIMiddleware
+except Exception as exc:  # pragma: no cover - missing optional deps
+    raise RuntimeError(
+        "Please install asgiref and starlette: pip install asgiref starlette"
+    ) from exc
+
+
+def _get_mcp_app(db_path: str):
+    """Return a FastAPI MCP application for *db_path*."""
+    from mcp_server_sqlite.server import make_app as make_mcp_app  # type: ignore
+
+    return make_mcp_app(db_path=db_path)
+
+
+class MCPMountMiddleware:
+    """WSGI middleware to mount the MCP ASGI app under /mcp."""
+
+    def __init__(self, flask_app: Flask) -> None:
+        self.flask_app = flask_app
+        self._next = flask_app.wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        if path.startswith("/mcp"):
+            db_path = self.flask_app.config.get("DATABASE")
+            mcp_app = _get_mcp_app(db_path)
+            asgi_mcp = WsgiToAsgi(WSGIMiddleware(mcp_app))
+            asgi_callable = guarantee_single_callable(asgi_mcp)
+            return asgi_callable(environ, start_response)
+        return self._next(environ, start_response)
+
+
+app.wsgi_app = MCPMountMiddleware(app)
+
 
 @app.after_request
 def add_no_cache_headers(response: Response) -> Response:
