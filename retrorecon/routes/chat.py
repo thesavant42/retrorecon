@@ -24,7 +24,12 @@ def _ensure_db_path(server: RetroReconMCPServer) -> None:
 
 @bp.route('/message', methods=['POST'])
 def handle_chat_message():
-    """Process a chat message via MCP."""
+    """Process a natural language chat message.
+
+    The user sends plain English questions. The MCP server uses a language model
+    to translate the question into SQL and execute it. Direct SQL input from the
+    user is not required or expected.
+    """
     data = request.get_json() or {}
     message = data.get('message', '').strip()
     if not message:
@@ -32,7 +37,7 @@ def handle_chat_message():
 
     server = _get_server()
     try:
-        result = server.execute_query(message)
+        result = server.answer_question(message)
         return jsonify(result)
     except Exception as exc:
         return jsonify({'error': str(exc)})

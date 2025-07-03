@@ -1,3 +1,6 @@
+// RetroRecon chat overlay for natural language questions.
+// Users should type plain English queries. The server uses an
+// LLM to translate requests into safe SQL before execution.
 window.retroChat = (function() {
   const overlay = document.querySelector('.chat-overlay');
   const messages = overlay.querySelector('.chat-overlay__messages');
@@ -14,6 +17,7 @@ window.retroChat = (function() {
     overlay.classList.add('hidden');
   }
 
+  // Send the user's natural language query to the backend
   async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;

@@ -74,6 +74,7 @@ class RetroReconMCPServer:
 
     # query execution
     def execute_query(self, query: str, params: Optional[List[Any]] = None) -> Dict[str, Any]:
+        """Execute a validated SELECT statement."""
         if not self.validate_query(query):
             raise ValueError("Query validation failed")
         with self.get_connection() as conn:
@@ -84,6 +85,15 @@ class RetroReconMCPServer:
             rows = c.fetchall()
             columns = [d[0] for d in c.description]
             return {"columns": columns, "rows": rows, "count": len(rows)}
+
+    def answer_question(self, question: str) -> Dict[str, Any]:
+        """Translate a natural language question into SQL and execute it.
+
+        The default implementation treats ``question`` as a SQL SELECT query so
+        existing behavior remains unchanged. In production this should call an
+        LLM to generate the SQL string before execution.
+        """
+        return self.execute_query(question)
 
     # handlers
     async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> TextContent:
