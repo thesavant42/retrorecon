@@ -14,4 +14,4 @@ requests
 tldextract
 zstandard
 fastmcp>=0.1.0
-asgiref
+a2wsgi
