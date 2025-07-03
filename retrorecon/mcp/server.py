@@ -17,6 +17,9 @@ class RetroReconMCPServer:
     def __init__(self, db_path: Optional[str] = None, config: MCPConfig | None = None) -> None:
         self.config = config or load_config()
         self.db_path = db_path or self.config.db_path
+        self.api_base = self.config.api_base
+        self.model = self.config.model
+        self.temperature = self.config.temperature
         self.row_limit = self.config.row_limit
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
