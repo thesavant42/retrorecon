@@ -11,6 +11,7 @@ class MCPConfig:
     model: str = "qwen2.5-coldbrew-aetheria-test2_tools"
     temperature: float = 0.1
     row_limit: int = 100
+    api_key: Optional[str] = None
 
 
 def load_config() -> MCPConfig:
@@ -22,6 +23,7 @@ def load_config() -> MCPConfig:
         temperature = float(os.getenv("RETRORECON_MCP_TEMPERATURE", "0.1"))
     except ValueError:
         temperature = 0.1
+    api_key = os.getenv("RETRORECON_MCP_API_KEY")
     try:
         row_limit = int(os.getenv("RETRORECON_MCP_ROW_LIMIT", "100"))
     except ValueError:
@@ -32,4 +34,5 @@ def load_config() -> MCPConfig:
         model=model,
         temperature=temperature,
         row_limit=row_limit,
+        api_key=api_key,
     )

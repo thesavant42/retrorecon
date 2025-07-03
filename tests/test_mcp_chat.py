@@ -32,3 +32,34 @@ def test_help_message(tmp_path):
     resp = server.answer_question("help")
     assert "RetroRecon chat is ready" in resp.get("message", "")
     assert cfg.model in resp.get("message", "")
+
+
+def test_llm_request(monkeypatch, tmp_path):
+    cfg = load_config()
+    cfg.db_path = str(tmp_path / "empty.db")
+    cfg.api_base = "http://llm"
+    cfg.api_key = "key"
+    with open(cfg.db_path, "wb"):
+        pass
+
+    captured = {}
+
+    def fake_post(url, json, headers, timeout):
+        captured["url"] = url
+        captured["json"] = json
+        captured["headers"] = headers
+        class Resp:
+            status_code = 200
+            def raise_for_status(self):
+                pass
+            def json(self):
+                return {"choices": [{"message": {"content": "hi there"}}]}
+        return Resp()
+
+    monkeypatch.setattr("httpx.post", fake_post)
+
+    server = RetroReconMCPServer(config=cfg)
+    resp = server.answer_question("What tables exist?")
+    assert resp == {"message": "hi there"}
+    assert captured["url"] == "http://llm/chat/completions"
+    assert captured["headers"]["Authorization"] == "Bearer key"

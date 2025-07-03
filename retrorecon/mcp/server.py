@@ -5,7 +5,16 @@ from typing import Dict, Any, List, Optional
 
 from fastmcp import FastMCP
 from mcp.types import TextContent
-from fastmcp.tools import FunctionTool
+import httpx
+try:
+    from fastmcp.tools import FunctionTool
+except Exception:  # pragma: no cover - fallback for older fastmcp
+    class FunctionTool:
+        """Minimal stub when fastmcp lacks FunctionTool."""
+
+        @staticmethod
+        def from_function(func, name=None, description=None):
+            return func
 from .config import MCPConfig, load_config
 
 logger = logging.getLogger(__name__)
@@ -21,8 +30,33 @@ class RetroReconMCPServer:
         self.model = self.config.model
         self.temperature = self.config.temperature
         self.row_limit = self.config.row_limit
+        self.api_key = self.config.api_key
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
+
+    def _llm_chat(self, message: str) -> str:
+        """Send *message* to the configured model and return the reply."""
+        if not self.api_base:
+            raise RuntimeError("API base not configured")
+        url = f"{self.api_base}/chat/completions"
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "user", "content": message},
+            ],
+            "temperature": self.temperature,
+        }
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        resp = httpx.post(url, json=payload, headers=headers, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        try:
+            return data["choices"][0]["message"]["content"].strip()
+        except Exception as exc:  # pragma: no cover - handle unexpected schema
+            logger.error("Invalid LLM response: %s", exc)
+            raise RuntimeError("Invalid LLM response")
 
     # tool setup
     def _setup_tools(self) -> None:
@@ -122,10 +156,15 @@ class RetroReconMCPServer:
         if lowered == "prompt":
             return {"message": "Try asking about tables or data in plain English."}
 
-        return {
-            "error": "Query validation failed",
-            "hint": "Use plain English to ask about the database",
-        }
+        try:
+            reply = self._llm_chat(question)
+            return {"message": reply}
+        except Exception as exc:
+            logger.error("LLM request failed: %s", exc)
+            return {
+                "error": "LLM request failed",
+                "hint": str(exc),
+            }
 
     # handlers
     async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> TextContent:
