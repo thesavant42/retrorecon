@@ -1238,6 +1238,7 @@
         }
         ov.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        if(window.ensureMdEditor) window.ensureMdEditor();
         if(window.loadMdFiles) window.loadMdFiles();
         if(window.refreshMdEditor) window.refreshMdEditor();
         if(!skipPush){

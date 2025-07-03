@@ -1450,6 +1450,10 @@ body.bg-hidden {
 .retrorecon-root #markdown-editor-form {
   height: 100%;
 }
+
+.retrorecon-root #mdeditor-textarea {
+  min-height: 20em;
+}
 /* stylelint-disable selector-class-pattern */
 .retrorecon-root #markdown-editor-form .CodeMirror,
 .retrorecon-root #markdown-editor-form .editor-preview {
