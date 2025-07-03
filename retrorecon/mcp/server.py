@@ -94,13 +94,29 @@ class RetroReconMCPServer:
             return {"columns": columns, "rows": rows, "count": len(rows)}
 
     def answer_question(self, question: str) -> Dict[str, Any]:
-        """Translate a natural language question into SQL and execute it.
+        """Return a response for a natural language chat question.
 
-        The default implementation treats ``question`` as a SQL SELECT query so
-        existing behavior remains unchanged. In production this should call an
-        LLM to generate the SQL string before execution.
+        The chat interface accepts **only** plain English questions. Even if a
+        valid SQL statement is provided, it will **not** be executed directly.
+        This avoids exposing raw query execution through the chat bar while
+        preserving helpful feedback for casual greetings or unsupported input.
         """
-        return self.execute_query(question)
+        lowered = question.strip().lower()
+        if self.validate_query(question):
+            return {
+                "error": "Direct SQL input is not supported in chat",
+                "hint": "Ask your question in plain English instead",
+            }
+
+        if lowered in {"hello", "hi"}:
+            return {"message": "Hello! Ask me a database question."}
+        if lowered == "prompt":
+            return {"message": "Try asking about tables or data in plain English."}
+
+        return {
+            "error": "Query validation failed",
+            "hint": "Use plain English to ask about the database",
+        }
 
     # handlers
     async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> TextContent:
