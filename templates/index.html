@@ -1224,11 +1224,18 @@
           const root = document.querySelector('.retrorecon-root') || document.body;
           root.insertAdjacentHTML('beforeend', html);
           await new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = '/static/markdown_editor.js';
-          script.onload = resolve;
-          script.onerror = reject;
-          document.body.appendChild(script);
+            const vendor = document.createElement('script');
+            vendor.src = '/static/vendor/simplemde.min.js';
+            vendor.onload = resolve;
+            vendor.onerror = reject;
+            document.body.appendChild(vendor);
+          });
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/static/markdown_editor.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
           });
           markdownLoaded = true;
         }
