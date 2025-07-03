@@ -77,6 +77,11 @@ window.retroChat = (function() {
     if (e.key === 'Enter') sendMessage();
   });
   if (closeBtn) closeBtn.addEventListener('click', hide);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('show')) {
+      hide();
+    }
+  });
 
   if (resizeHandle) resizeHandle.addEventListener('mousedown', startResize)
   document.addEventListener('DOMContentLoaded', () => {
