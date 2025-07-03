@@ -6,8 +6,8 @@
   width: 50vw;
   max-width: 90vw;
   min-width: 300px;
-  background: #000;
-  border-left: 1px solid #ccc;
+  background: rgba(var(--bg-rgb) / var(--panel-opacity, 0.95));
+  border-left: 1px solid var(--color-contrast);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
@@ -34,8 +34,8 @@
 .retrorecon-root .chat-overlay__header {
   display: flex;
   justify-content: flex-end;
-  border-bottom: 1px solid #ccc;
-  background: #000;
+  border-bottom: 1px solid var(--color-contrast);
+  background: var(--bg-color);
 }
 
 .retrorecon-root .chat-overlay__close {
@@ -57,7 +57,7 @@
 
 .retrorecon-root .chat-overlay__input {
   display: flex;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--color-contrast);
 }
 
 .retrorecon-root .chat-overlay__input-field {
