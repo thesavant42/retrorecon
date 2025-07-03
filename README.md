@@ -77,14 +77,16 @@ These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 ### Vendored MCP SQLite Server
 
 `launch_app.sh` and `launch_app.bat` also manage a local Model Context Protocol
-server located in `external/mcp-sqlite`. On first run they create a virtual
-environment under that folder, install its dependencies with `pip install -e .`,
-and start the server in the background before launching RetroRecon. The server
-uses the same database path as the main app (from `RETRORECON_DB` or
-`db/waybax.db`). When the app exits the MCP server is terminated automatically.
+server located in `external/mcp-sqlite`. They create a dedicated virtual
+environment for the server (defaulting to `external/mcp-sqlite/.venv` but
+overridable via the `MCP_VENV` variable), install dependencies with
+`pip install -e .`, and start the server in the background before launching
+RetroRecon. The server uses the same database path as the main app (from
+`RETRORECON_DB` or `db/waybax.db`). When the app exits the MCP server is
+terminated automatically.
 
-If dependency installation fails, delete `external/mcp-sqlite/.venv` and rerun
-the launch script.
+If dependency installation fails, delete the virtual environment directory and
+rerun the launch script.
 
 For a quick walkthrough of the common workflow see
 [docs/new_user_guide.md](docs/new_user_guide.md).
