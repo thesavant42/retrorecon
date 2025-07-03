@@ -67,6 +67,17 @@ Response:
 {"status": "done", "progress": 10, "total": 10, "detail": "Imported 10 records."}
 ```
 
+### `GET /chat/status`
+Check that the embedded MCP server is running and connected to the SQLite database.
+
+```
+curl http://localhost:5000/chat/status
+```
+Response:
+```json
+{"ok": true, "db": "retro.db"}
+```
+
 ### `POST /add_tag`
 Add a tag to a single URL entry.
 
