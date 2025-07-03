@@ -110,6 +110,15 @@ class RetroReconMCPServer:
 
         if lowered in {"hello", "hi"}:
             return {"message": "Hello! Ask me a database question."}
+        if lowered in {"help", "?"}:
+            db_info = self.db_path if self.db_path else "(no database loaded)"
+            return {
+                "message": (
+                    "RetroRecon chat is ready. "
+                    f"Database: {db_info}. Model: {self.model}. "
+                    "Ask about your data in plain English."
+                )
+            }
         if lowered == "prompt":
             return {"message": "Try asking about tables or data in plain English."}
 
