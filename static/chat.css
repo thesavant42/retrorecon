@@ -4,7 +4,7 @@
   right: 0;
   bottom: 0;
   width: 50vw;
-  max-width: 600px;
+  max-width: 90vw;
   min-width: 300px;
   background: #000;
   border-left: 1px solid #ccc;
@@ -48,6 +48,11 @@
   flex: 1;
   overflow-y: auto;
   padding: 0.5em;
+}
+
+.retrorecon-root .chat-overlay__messages pre {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .retrorecon-root .chat-overlay__input {
