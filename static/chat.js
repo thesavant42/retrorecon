@@ -62,7 +62,14 @@ window.retroChat = (function() {
       body: JSON.stringify({ message: text })
     });
     const data = await resp.json();
-    appendMessage(JSON.stringify(data, null, 2));
+    if (data.message) {
+      appendMessage('LLM: ' + data.message);
+    } else if (data.error) {
+      const hint = data.hint ? '\n' + data.hint : '';
+      appendMessage('Error: ' + data.error + hint);
+    } else {
+      appendMessage(JSON.stringify(data, null, 2));
+    }
   }
 
   function appendMessage(text) {
