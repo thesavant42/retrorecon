@@ -74,6 +74,18 @@ Launch the Flask UI with the provided scripts. The optional `-l` flag sets the l
 These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 **Never expose the app publicly without proper hardening.**
 
+### Vendored MCP SQLite Server
+
+`launch_app.sh` and `launch_app.bat` also manage a local Model Context Protocol
+server located in `external/mcp-sqlite`. On first run they create a virtual
+environment under that folder, install its dependencies with `pip install -e .`,
+and start the server in the background before launching RetroRecon. The server
+uses the same database path as the main app (from `RETRORECON_DB` or
+`db/waybax.db`). When the app exits the MCP server is terminated automatically.
+
+If dependency installation fails, delete `external/mcp-sqlite/.venv` and rerun
+the launch script.
+
 For a quick walkthrough of the common workflow see
 [docs/new_user_guide.md](docs/new_user_guide.md).
 
