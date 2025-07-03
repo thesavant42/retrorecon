@@ -43,6 +43,22 @@
   cursor: pointer;
 }
 
+.retrorecon-root .chat-overlay.hidden {
+  display: none;
+}
+
+.retrorecon-root .chat-overlay__header {
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid #ccc;
+}
+
+.retrorecon-root .chat-overlay__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .retrorecon-root .chat-overlay__messages {
   flex: 1;
   overflow-y: auto;

@@ -1,3 +1,6 @@
+// RetroRecon chat overlay for natural language questions.
+// Users should type plain English queries. The server uses an
+// LLM to translate requests into safe SQL before execution.
 window.retroChat = (function() {
   const overlay = document.querySelector('.chat-overlay');
   const messages = overlay.querySelector('.chat-overlay__messages');
@@ -46,6 +49,16 @@ window.retroChat = (function() {
     document.removeEventListener('mouseup', stopResize);
   }
 
+  function show() {
+    overlay.classList.remove('hidden');
+    input.focus();
+  }
+
+  function hide() {
+    overlay.classList.add('hidden');
+  }
+
+  // Send the user's natural language query to the backend
   async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
@@ -72,8 +85,8 @@ window.retroChat = (function() {
     if (e.key === 'Enter') sendMessage();
   });
   if (closeBtn) closeBtn.addEventListener('click', hide);
-  if (resizeHandle) resizeHandle.addEventListener('mousedown', startResize);
 
+  if (resizeHandle) resizeHandle.addEventListener('mousedown', startResize)
   document.addEventListener('DOMContentLoaded', () => {
     const link = document.getElementById('chat-link');
     if (link) {
