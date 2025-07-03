@@ -26,9 +26,10 @@ def _ensure_db_path(server: RetroReconMCPServer) -> None:
 def handle_chat_message():
     """Process a natural language chat message.
 
-    The user sends plain English questions. The MCP server uses a language model
-    to translate the question into SQL and execute it. Direct SQL input from the
-    user is not required or expected.
+    Users type plain English questions in the chat bar. Raw SQL statements are
+    not accepted; if provided, they will be rejected with an error message.
+    The MCP server is responsible for translating natural language into SQL
+    internally once language model support is enabled.
     """
     data = request.get_json() or {}
     message = data.get('message', '').strip()

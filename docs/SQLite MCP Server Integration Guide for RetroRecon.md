@@ -36,6 +36,8 @@ The sqlite-explorer-fastmcp-mcp-server project [1] provides the foundational tec
 
 The chat interface component transforms the user experience by providing an intuitive, conversational method for database exploration. Rather than requiring users to understand SQL syntax or navigate complex database schemas, the interface allows them to ask questions in plain English such as "Show me all JavaScript files from 2023 with 404 errors" or "What are the most common file types in my database?" The LLM processes these queries, generates appropriate SQL statements through the MCP server, and presents results in a human-readable format.
 
+**Important:** The chat input field accepts only natural language questions. Direct SQL statements typed by the user are rejected by the backend. Instead, users should describe the information they want in plain English and let the system translate that request into safe SQL internally.
+
 ### Technical Requirements Analysis
 
 The implementation requires careful consideration of several technical requirements that ensure seamless integration with RetroRecon's existing architecture. The current RetroRecon system utilizes a single-page application design with dynamic overlay loading, where different tools and features are loaded asynchronously as needed. This pattern must be preserved and extended to accommodate the new chat interface.
