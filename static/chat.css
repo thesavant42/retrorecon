@@ -1,0 +1,26 @@
+.retrorecon-root .chat-overlay {
+  position: fixed;
+  top: var(--navbar-height);
+  right: 0;
+  width: 300px;
+  height: calc(100% - var(--navbar-height));
+  background: var(--bg-color);
+  border-left: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+
+.retrorecon-root .chat-overlay__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5em;
+}
+
+.retrorecon-root .chat-overlay__input {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+.retrorecon-root .chat-overlay__input-field {
+  flex: 1;
+}
