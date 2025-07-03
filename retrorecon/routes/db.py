@@ -17,6 +17,7 @@ def new_db():
         os.remove(temp_path)
     try:
         db_name = app.create_new_db(safe)
+        app.start_mcp_sqlite(app.app.config['DATABASE'], app.MCP_PORT)
         session['db_display_name'] = db_name
         flash('New database created.', 'success')
     except ValueError as e:
@@ -43,6 +44,7 @@ def load_db_route():
         file.save(db_path)
         app.app.config['DATABASE'] = db_path
         app.ensure_schema()
+        app.start_mcp_sqlite(app.app.config['DATABASE'], app.MCP_PORT)
         session['db_display_name'] = filename
         flash("Database loaded.", "success")
     except Exception as e:
@@ -86,6 +88,7 @@ def rename_db():
         return redirect(url_for('index'))
     app.app.config['DATABASE'] = new_path
     app.ensure_schema()
+    app.start_mcp_sqlite(app.app.config['DATABASE'], app.MCP_PORT)
     session['db_display_name'] = safe
     flash('Database renamed.', 'success')
     return redirect(url_for('index'))
@@ -110,6 +113,7 @@ def load_saved_db():
     try:
         app.app.config['DATABASE'] = path
         app.ensure_schema()
+        app.start_mcp_sqlite(app.app.config['DATABASE'], app.MCP_PORT)
         session['db_display_name'] = safe
         flash('Database loaded.', 'success')
     except Exception as e:
