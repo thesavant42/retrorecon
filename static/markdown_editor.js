@@ -84,6 +84,7 @@ function initMarkdownEditor(){
     });
   }
   window.loadMdFiles = loadFiles;
+  window.ensureMdEditor = ensureEditor;
 
   function refreshEditor(){
     if(simplemde){
@@ -132,9 +133,7 @@ function initMarkdownEditor(){
     }
   });
 
-  ensureEditor();
-  refreshEditor();
-  loadFiles();
+  // initialization is performed when the overlay becomes visible
 }
 
 if(document.readyState === 'loading'){
