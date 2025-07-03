@@ -49,14 +49,6 @@ window.retroChat = (function() {
     document.removeEventListener('mouseup', stopResize);
   }
 
-  function show() {
-    overlay.classList.remove('hidden');
-    input.focus();
-  }
-
-  function hide() {
-    overlay.classList.add('hidden');
-  }
 
   // Send the user's natural language query to the backend
   async function sendMessage() {
