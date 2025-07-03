@@ -42,3 +42,20 @@ def handle_chat_message():
         return jsonify(result)
     except Exception as exc:
         return jsonify({'error': str(exc)})
+
+
+@bp.route('/status', methods=['GET'])
+def chat_status():
+    """Return health information for the MCP server."""
+    try:
+        server = _get_server()
+    except Exception as exc:  # pragma: no cover - unexpected init failure
+        return jsonify({'ok': False, 'error': str(exc)})
+
+    try:
+        with server.get_connection() as conn:
+            conn.execute('SELECT 1')
+        return jsonify({'ok': True, 'db': server.db_path})
+    except Exception as exc:
+        return jsonify({'ok': False, 'error': str(exc)})
+

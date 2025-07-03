@@ -58,6 +58,12 @@ paths:
       responses:
         '200':
           description: Successful response
+  /chat/status:
+    get:
+      summary: GET /chat/status
+      responses:
+        '200':
+          description: Successful response
   /add_tag:
     post:
       summary: POST /add_tag

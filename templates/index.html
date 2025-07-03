@@ -263,6 +263,10 @@
           <span id="import-progress-numbers-span"></span>
         </div>
       </div>
+      <div id="mcp-status-block" class="db-info ml-1">
+        <span class="ml-01"><strong>MCP:</strong></span>
+        <span id="mcp-status-text">checking…</span>
+      </div>
     </div>
   </nav>
 
@@ -870,6 +874,22 @@
     }
 
     pollStatus();
+
+    function checkMcp(){
+      const text = document.getElementById('mcp-status-text');
+      fetch('/chat/status')
+        .then(r => r.json())
+        .then(data => {
+          if(data.ok){
+            text.textContent = 'online';
+          } else {
+            text.textContent = 'error';
+          }
+        })
+        .catch(() => { text.textContent = 'error'; });
+    }
+
+    checkMcp();
 
     // Check once on load and show current status
       fetch('/import_progress')
