@@ -210,6 +210,11 @@ body {
   line-height: 1.5;
 }
 
+/* Avoid layout jumps when dynamic overlays inject nested roots */
+.retrorecon-root .retrorecon-root {
+  display: contents;
+}
+
 /* Main header style */
 .retrorecon-root h1{
   margin: 1.4em 0;
