@@ -28,11 +28,11 @@ def handle_chat_message():
     data = request.get_json() or {}
     message = data.get('message', '').strip()
     if not message:
-        return jsonify({'error': 'Message content required'}), 400
+        return jsonify({'error': 'Message content required'})
 
     server = _get_server()
     try:
         result = server.execute_query(message)
         return jsonify(result)
     except Exception as exc:
-        return jsonify({'error': str(exc)}), 400
+        return jsonify({'error': str(exc)})

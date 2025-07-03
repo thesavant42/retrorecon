@@ -3,6 +3,16 @@ window.retroChat = (function() {
   const messages = overlay.querySelector('.chat-overlay__messages');
   const input = overlay.querySelector('.chat-overlay__input-field');
   const sendBtn = overlay.querySelector('.chat-overlay__send');
+  const closeBtn = overlay.querySelector('.chat-overlay__close');
+
+  function show() {
+    overlay.classList.remove('hidden');
+    input.focus();
+  }
+
+  function hide() {
+    overlay.classList.add('hidden');
+  }
 
   async function sendMessage() {
     const text = input.value.trim();
@@ -29,4 +39,17 @@ window.retroChat = (function() {
   input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
   });
+  if (closeBtn) closeBtn.addEventListener('click', hide);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const link = document.getElementById('chat-link');
+    if (link) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        show();
+      });
+    }
+  });
+
+  return { show, hide };
 })();
