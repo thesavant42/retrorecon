@@ -737,6 +737,17 @@ body {
   padding: 2px 11px;
 }
 
+/* Side-by-side button rows in Edit menu */
+.retrorecon-root .bulk-btn-row {
+  display: flex;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+.retrorecon-root .bulk-btn-row .bulk-action-btn {
+  flex: 1 1 50%;
+  width: auto;
+}
+
 /* Row for bulk action checkboxes */
 .retrorecon-root .checkbox-row {
   display: flex;
