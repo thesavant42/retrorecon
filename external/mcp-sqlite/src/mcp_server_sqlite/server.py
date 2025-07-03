@@ -1,23 +1,13 @@
-import os
-import sys
 import sqlite3
 import logging
 from contextlib import closing
 from pathlib import Path
+from mcp.server.models import InitializationOptions
+import mcp.types as types
+from mcp.server import NotificationOptions, Server
+import mcp.server.stdio
 from pydantic import AnyUrl
 from typing import Any
-
-from mcp.server import InitializationOptions
-from mcp.server.lowlevel import Server, NotificationOptions
-from mcp.server.stdio import stdio_server
-import mcp.types as types
-
-
-# reconfigure UnicodeEncodeError prone default (i.e. windows-1252) to utf-8
-if sys.platform == "win32" and os.environ.get('PYTHONIOENCODING') is None:
-    sys.stdin.reconfigure(encoding="utf-8")
-    sys.stdout.reconfigure(encoding="utf-8")
-    sys.stderr.reconfigure(encoding="utf-8")
 
 logger = logging.getLogger('mcp_sqlite_server')
 logger.info("Starting MCP SQLite Server")
@@ -37,12 +27,12 @@ Resources:
 This server exposes one key resource: "memo://insights", which is a business insights memo that gets automatically updated throughout the analysis process. As users analyze the database and discover insights, the memo resource gets updated in real-time to reflect new findings. Resources act as living documents that provide context to the conversation.
 Tools:
 This server provides several SQL-related tools:
-"read_query": Executes SELECT queries to read data from the database
-"write_query": Executes INSERT, UPDATE, or DELETE queries to modify data
-"create_table": Creates new tables in the database
-"list_tables": Shows all existing tables
-"describe_table": Shows the schema for a specific table
-"append_insight": Adds a new business insight to the memo resource
+"read-query": Executes SELECT queries to read data from the database
+"write-query": Executes INSERT, UPDATE, or DELETE queries to modify data
+"create-table": Creates new tables in the database
+"list-tables": Shows all existing tables
+"describe-table": Shows the schema for a specific table
+"append-insight": Adds a new business insight to the memo resource
 </mcp>
 <demo-instructions>
 You are an AI assistant tasked with generating a comprehensive business scenario based on a given topic.
@@ -78,7 +68,7 @@ a. Present 1 additional multiple-choice query options to the user. Its important
 b. Explain the purpose of each query option.
 c. Wait for the user to select one of the query options.
 d. After each query be sure to opine on the results.
-e. Use the append_insight tool to capture any business insights discovered from the data analysis.
+e. Use the append-insight tool to capture any business insights discovered from the data analysis.
 
 7. Generate a dashboard:
 a. Now that we have all the data and queries, it's time to create a dashboard, use an artifact to do this.
@@ -243,7 +233,7 @@ async def main(db_path: str):
         """List available tools"""
         return [
             types.Tool(
-                name="read_query",
+                name="read-query",
                 description="Execute a SELECT query on the SQLite database",
                 inputSchema={
                     "type": "object",
@@ -254,7 +244,7 @@ async def main(db_path: str):
                 },
             ),
             types.Tool(
-                name="write_query",
+                name="write-query",
                 description="Execute an INSERT, UPDATE, or DELETE query on the SQLite database",
                 inputSchema={
                     "type": "object",
@@ -265,7 +255,7 @@ async def main(db_path: str):
                 },
             ),
             types.Tool(
-                name="create_table",
+                name="create-table",
                 description="Create a new table in the SQLite database",
                 inputSchema={
                     "type": "object",
@@ -276,7 +266,7 @@ async def main(db_path: str):
                 },
             ),
             types.Tool(
-                name="list_tables",
+                name="list-tables",
                 description="List all tables in the SQLite database",
                 inputSchema={
                     "type": "object",
@@ -284,7 +274,7 @@ async def main(db_path: str):
                 },
             ),
             types.Tool(
-                name="describe_table",
+                name="describe-table",
                 description="Get the schema information for a specific table",
                 inputSchema={
                     "type": "object",
@@ -295,7 +285,7 @@ async def main(db_path: str):
                 },
             ),
             types.Tool(
-                name="append_insight",
+                name="append-insight",
                 description="Add a business insight to the memo",
                 inputSchema={
                     "type": "object",
@@ -313,13 +303,13 @@ async def main(db_path: str):
     ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
         """Handle tool execution requests"""
         try:
-            if name == "list_tables":
+            if name == "list-tables":
                 results = db._execute_query(
                     "SELECT name FROM sqlite_master WHERE type='table'"
                 )
                 return [types.TextContent(type="text", text=str(results))]
 
-            elif name == "describe_table":
+            elif name == "describe-table":
                 if not arguments or "table_name" not in arguments:
                     raise ValueError("Missing table_name argument")
                 results = db._execute_query(
@@ -327,7 +317,7 @@ async def main(db_path: str):
                 )
                 return [types.TextContent(type="text", text=str(results))]
 
-            elif name == "append_insight":
+            elif name == "append-insight":
                 if not arguments or "insight" not in arguments:
                     raise ValueError("Missing insight argument")
 
@@ -342,19 +332,19 @@ async def main(db_path: str):
             if not arguments:
                 raise ValueError("Missing arguments")
 
-            if name == "read_query":
+            if name == "read-query":
                 if not arguments["query"].strip().upper().startswith("SELECT"):
-                    raise ValueError("Only SELECT queries are allowed for read_query")
+                    raise ValueError("Only SELECT queries are allowed for read-query")
                 results = db._execute_query(arguments["query"])
                 return [types.TextContent(type="text", text=str(results))]
 
-            elif name == "write_query":
+            elif name == "write-query":
                 if arguments["query"].strip().upper().startswith("SELECT"):
-                    raise ValueError("SELECT queries are not allowed for write_query")
+                    raise ValueError("SELECT queries are not allowed for write-query")
                 results = db._execute_query(arguments["query"])
                 return [types.TextContent(type="text", text=str(results))]
 
-            elif name == "create_table":
+            elif name == "create-table":
                 if not arguments["query"].strip().upper().startswith("CREATE TABLE"):
                     raise ValueError("Only CREATE TABLE statements are allowed")
                 db._execute_query(arguments["query"])
@@ -368,7 +358,7 @@ async def main(db_path: str):
         except Exception as e:
             return [types.TextContent(type="text", text=f"Error: {str(e)}")]
 
-    async with stdio_server() as (read_stream, write_stream):
+    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         logger.info("Server running with stdio transport")
         await server.run(
             read_stream,
@@ -382,12 +372,3 @@ async def main(db_path: str):
                 ),
             ),
         )
-
-class ServerWrapper():
-    """A wrapper to compat with mcp[cli]"""
-    def run(self):
-        import asyncio
-        asyncio.run(main("test.db"))
-
-
-wrapper = ServerWrapper()

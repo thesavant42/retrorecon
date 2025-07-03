@@ -26,11 +26,12 @@ export RETRORECON_LISTEN="$LISTEN_ADDR"
 python_cmd="venv/bin/python"
 # Setup vendored MCP SQLite server
 MCP_DIR="external/mcp-sqlite"
-if [ ! -d "$MCP_DIR/.venv" ]; then
-  python3 -m venv "$MCP_DIR/.venv"
+MCP_VENV="${MCP_VENV:-$MCP_DIR/.venv}"
+if [ ! -d "$MCP_VENV" ]; then
+  python3 -m venv "$MCP_VENV"
 fi
-"$MCP_DIR/.venv/bin/pip" install --upgrade pip
-"$MCP_DIR/.venv/bin/pip" install -e "$MCP_DIR"
+"$MCP_VENV/bin/pip" install --upgrade pip
+"$MCP_VENV/bin/pip" install -e "$MCP_DIR"
 
 # Resolve database path for MCP server
 DB_PATH="${RETRORECON_DB:-$(pwd)/db/waybax.db}"
@@ -39,7 +40,7 @@ if [ ! -f "$DB_PATH" ]; then
 fi
 
 # Start MCP server in background and ensure cleanup
-"$MCP_DIR/.venv/bin/python" -m mcp_server_sqlite --db-path "$DB_PATH" &
+"$MCP_VENV/bin/python" -m mcp_server_sqlite --db-path "$DB_PATH" &
 MCP_PID=$!
 trap 'kill $MCP_PID' EXIT
 
