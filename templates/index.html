@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}" />
   {% if current_theme %}
   {% if current_theme == 'terminal-sans-dark.css' %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/terminal.css@latest" />
@@ -419,6 +420,8 @@
     </div>
     <div id="tags-list" class="notes-list mt-05"></div>
   </div>
+
+  {% include 'chat_overlay.html' %}
 
   <script>
     const totalResultsCount = {{ total_count }};
@@ -1791,6 +1794,7 @@
   </script>
 </div>
 <script src="{{ url_for('static', filename='col_resize.js') }}"></script>
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
 <script src="{{ url_for('static', filename='index_page.js') }}"></script>
 </body>
 </html>

@@ -916,6 +916,7 @@ from retrorecon.routes import (
     overview_bp,
     help_bp,
     dynamic_bp,
+    chat_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -932,6 +933,7 @@ app.register_blueprint(swagger_bp)
 app.register_blueprint(overview_bp)
 app.register_blueprint(help_bp)
 app.register_blueprint(dynamic_bp)
+app.register_blueprint(chat_bp)
 
 
 @app.after_request
