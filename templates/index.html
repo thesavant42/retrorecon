@@ -128,14 +128,18 @@
     <div class="dropdown">
       <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
       <div class="dropdown-content" id="edit-menu">
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({})">Select All (All visible results)</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (All matching results)</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Delete Selected</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset tags Selected</button></div>
-          <div class="menu-row bulk-controls">
-            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
-            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add Tag to Selected</button>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({})">Select All (Visible)</button></div>
+          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (Matching)</button></div>
+          <div class="menu-header">Selected:</div>
+          <div class="menu-row bulk-btn-row">
+            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del</button>
+            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset 🏷️</button>
           </div>
+          <div class="menu-row bulk-btn-row">
+            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add 🏷️</button>
+            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
+          </div>
+          <hr>
           <div class="menu-header">Preferences</div>
           <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
             <input type="hidden" name="theme" id="set-theme-input" />
@@ -176,7 +180,6 @@
             <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
             <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
           </div>
-          <hr>
           <div class="menu-row mb-4px">
             <label for="font-family-select" class="form-label menu-label">Font:</label>
             <select id="font-family-select" class="form-select menu-btn">
