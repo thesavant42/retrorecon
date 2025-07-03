@@ -985,10 +985,11 @@ def add_no_cache_headers(response: Response) -> Response:
 
 if __name__ == '__main__':
     if env_db and app.config.get('DATABASE'):
-        if not os.path.exists(app.config['DATABASE']):
-            create_new_db(os.path.splitext(os.path.basename(env_db))[0])
-        else:
-            ensure_schema()
+        with app.app_context():
+            if not os.path.exists(app.config['DATABASE']):
+                create_new_db(os.path.splitext(os.path.basename(env_db))[0])
+            else:
+                ensure_schema()
     host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
     port = int(os.environ.get('RETRORECON_PORT', '5000'))
     app.run(debug=True, host=host, port=port)
