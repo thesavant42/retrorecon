@@ -79,7 +79,7 @@ class RetroReconMCPServer:
             extra = srv.args[1:]
             transport = UvxStdioTransport(
                 tool_name=tool,
-                args=extra or None,
+                tool_args=extra or None,
                 project_directory=srv.cwd,
                 env_vars=srv.env or None,
             )
