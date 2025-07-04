@@ -13,7 +13,9 @@ separate `mcp-server-sqlite` process is launched.
 3. There is no need to configure a port or connect LM Studio; the server runs
    entirely inside the application.
 4. Set `RETRORECON_LOG_LEVEL=DEBUG` before launching to view MCP debug output in
-   the console.
+   the console. Debug logs now include detailed information on which MCP servers
+   are mounted, any health check failures, and when alternate API bases are used
+   for fallback requests.
 
 ## Dynamic Tool Discovery
 
