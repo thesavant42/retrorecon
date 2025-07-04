@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import logging
+import json
 from typing import Dict, Any, List, Optional
 
 from fastmcp import FastMCP
@@ -46,6 +47,7 @@ class RetroReconMCPServer:
             ],
             "temperature": self.temperature,
         }
+        logger.debug("LLM payload: %s", json.dumps(payload))
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
