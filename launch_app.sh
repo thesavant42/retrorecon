@@ -48,10 +48,5 @@ if [ ! -f "$DB_PATH" ]; then
   echo "Database not found at $DB_PATH"
 fi
 
-# Start MCP server in background and ensure cleanup
-"$MCP_VENV/bin/python" -m mcp_server_sqlite --db-path "$DB_PATH" &
-MCP_PID=$!
-trap 'kill $MCP_PID' EXIT
-
 # On WSL, using win32 path may create issues; always use the venv python
 "$python_cmd" app.py
