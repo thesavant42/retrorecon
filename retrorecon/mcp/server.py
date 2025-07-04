@@ -281,12 +281,12 @@ class RetroReconMCPServer:
         try:
             results = self.execute_query(query, params)
             if results["count"] == 0:
-                return TextContent(text="No results found for the query.")
+                return TextContent(type="text", text="No results found for the query.")
             formatted = self._format_query_results(results)
-            return TextContent(text=formatted)
+            return TextContent(type="text", text=formatted)
         except Exception as exc:
             logger.error("Query execution failed: %s", exc)
-            return TextContent(text=f"Query execution failed: {exc}")
+            return TextContent(type="text", text=f"Query execution failed: {exc}")
 
     async def handle_list_tables(self) -> TextContent:
         logger.debug("handle_list_tables")
@@ -294,20 +294,20 @@ class RetroReconMCPServer:
             q = "SELECT name FROM sqlite_master WHERE type='table'"
             results = self.execute_query(q)
             tables = [r[0] for r in results["rows"]]
-            return TextContent(text="\n".join(tables))
+            return TextContent(type="text", text="\n".join(tables))
         except Exception as exc:
             logger.error("List tables failed: %s", exc)
-            return TextContent(text=f"Failed to list tables: {exc}")
+            return TextContent(type="text", text=f"Failed to list tables: {exc}")
 
     async def handle_describe_table(self, table: str) -> TextContent:
         logger.debug("handle_describe_table %s", table)
         try:
             q = f"PRAGMA table_info({table})"
             results = self.execute_query(q)
-            return TextContent(text=self._format_query_results(results))
+            return TextContent(type="text", text=self._format_query_results(results))
         except Exception as exc:
             logger.error("Describe table failed: %s", exc)
-            return TextContent(text=f"Failed to describe table: {exc}")
+            return TextContent(type="text", text=f"Failed to describe table: {exc}")
 
     # formatting helper
     def _format_query_results(self, results: Dict[str, Any]) -> str:

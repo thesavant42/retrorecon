@@ -292,15 +292,15 @@ async def handle_read_query(self, query: str, params: List[Any] = None) -> TextC
         
         # Format results for display
         if results['count'] == 0:
-            return TextContent(text="No results found for the query.")
+            return TextContent(type="text", text="No results found for the query.")
             
         # Create formatted table output
         formatted_output = self._format_query_results(results)
-        return TextContent(text=formatted_output)
+        return TextContent(type="text", text=formatted_output)
         
     except Exception as e:
         logging.error(f"Query execution failed: {e}")
-        return TextContent(text=f"Query execution failed: {str(e)}")
+        return TextContent(type="text", text=f"Query execution failed: {str(e)}")
 
 def _format_query_results(self, results: Dict[str, Any]) -> str:
     """Format query results for display."""
