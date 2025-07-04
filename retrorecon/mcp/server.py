@@ -116,7 +116,7 @@ class RetroReconMCPServer:
                     proxy = FastMCP.as_proxy(client)
                     # perform simple health check
                     async def _check():
-                        async with anyio.fail_after(5):
+                        with anyio.fail_after(5):
                             await proxy._list_tools()
 
                     try:
