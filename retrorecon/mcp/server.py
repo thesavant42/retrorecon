@@ -3,6 +3,7 @@ import sqlite3
 import logging
 import json
 from typing import Dict, Any, List, Optional
+from anyio.from_thread import run as await_to_sync
 
 from fastmcp import FastMCP
 from mcp.types import TextContent
@@ -54,6 +55,8 @@ class RetroReconMCPServer:
                 {"role": "user", "content": message},
             ],
             "temperature": self.temperature,
+            "tools": self._openai_tools(),
+            "tool_choice": "auto",
         }
         logger.debug("LLM payload: %s", json.dumps(payload))
         headers = {"Content-Type": "application/json"}
@@ -64,10 +67,35 @@ class RetroReconMCPServer:
         data = resp.json()
         logger.debug("LLM response: %s", json.dumps(data))
         try:
-            return data["choices"][0]["message"]["content"].strip()
+            message_data = data["choices"][0]["message"]
         except Exception as exc:  # pragma: no cover - handle unexpected schema
             logger.error("Invalid LLM response: %s", exc)
             raise RuntimeError("Invalid LLM response")
+
+        # Handle tool calls if present
+        if message_data.get("tool_calls"):
+            tool_msgs: list[dict[str, Any]] = []
+            for call in message_data["tool_calls"]:
+                name = call["function"]["name"]
+                try:
+                    args = json.loads(call["function"].get("arguments", "{}"))
+                except json.JSONDecodeError:
+                    args = {}
+                result = self._call_tool(name, args)
+                tool_msgs.append({
+                    "role": "tool",
+                    "tool_call_id": call["id"],
+                    "content": json.dumps(result),
+                })
+
+            payload["messages"].append(message_data)
+            payload["messages"].extend(tool_msgs)
+            resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
+            resp.raise_for_status()
+            data = resp.json()
+            message_data = data["choices"][0]["message"]
+
+        return message_data.get("content", "").strip()
 
     # tool setup
     def _setup_tools(self) -> None:
@@ -80,6 +108,68 @@ class RetroReconMCPServer:
         self.db_path = db_path
         self.config.db_path = db_path
         logger.debug("database path updated: %s", db_path)
+
+    def _openai_tools(self) -> list[dict[str, Any]]:
+        """Return tool specifications for OpenAI tool calling."""
+        return [
+            {
+                "type": "function",
+                "function": {
+                    "name": "read_query",
+                    "description": "Execute a SELECT query on the RetroRecon database",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string"},
+                            "params": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "Optional query parameters",
+                            },
+                        },
+                        "required": ["query"],
+                    },
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "list_tables",
+                    "description": "List tables in the current database",
+                    "parameters": {"type": "object", "properties": {}},
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "describe_table",
+                    "description": "Describe table columns",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "table": {"type": "string"},
+                        },
+                        "required": ["table"],
+                    },
+                },
+            },
+        ]
+
+    def _call_tool(self, name: str, args: dict[str, Any]) -> dict[str, Any] | str:
+        """Execute a tool by name and return its result as a JSON-able object."""
+        if name == "read_query":
+            query = args.get("query", "")
+            params = args.get("params")
+            content = await_to_sync(self.handle_read_query)(query, params)
+            return {"text": content.text}
+        if name == "list_tables":
+            content = await_to_sync(self.handle_list_tables)()
+            return {"text": content.text}
+        if name == "describe_table":
+            table = args.get("table", "")
+            content = await_to_sync(self.handle_describe_table)(table)
+            return {"text": content.text}
+        return {"error": f"Unknown tool: {name}"}
 
     # tools
     def _create_read_query_tool(self):
