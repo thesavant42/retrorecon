@@ -40,8 +40,4 @@ if not exist %MCP_VENV% (
 
 set RETRORECON_DB=%DB_PATH%
 
-for /f %%p in ('powershell -NoProfile -Command "($p=Start-Process -FilePath '%MCP_VENV%\Scripts\python.exe' -ArgumentList '-m mcp_server_sqlite --db-path \"%DB_PATH%\"' -PassThru); $p.Id"') do set MCP_PID=%%p
-
 venv\Scripts\python app.py
-
-powershell -NoProfile -Command "Stop-Process -Id %MCP_PID%"
