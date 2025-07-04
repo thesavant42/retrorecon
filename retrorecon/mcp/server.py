@@ -5,7 +5,7 @@ import json
 from typing import Dict, Any, List, Optional
 import anyio
 
-from fastmcp import FastMCP
+from fastmcp import FastMCP, Client
 from mcp.types import TextContent
 import httpx
 try:
@@ -44,8 +44,8 @@ class RetroReconMCPServer:
             self.row_limit,
         )
 
-    def _llm_chat(self, message: str) -> str:
-        """Send *message* to the configured model and return the reply."""
+    def _llm_chat(self, message: str) -> tuple[str, list[dict[str, Any]]]:
+        """Send *message* to the configured model and return the reply along with tool logs."""
         if not self.api_base:
             raise RuntimeError("API base not configured")
         url = f"{self.api_base}/chat/completions"
@@ -73,6 +73,7 @@ class RetroReconMCPServer:
             raise RuntimeError("Invalid LLM response")
 
         # Handle tool calls if present
+        tool_logs: list[dict[str, Any]] = []
         if message_data.get("tool_calls"):
             tool_msgs: list[dict[str, Any]] = []
             for call in message_data["tool_calls"]:
@@ -82,6 +83,7 @@ class RetroReconMCPServer:
                 except json.JSONDecodeError:
                     args = {}
                 result = self._call_tool(name, args)
+                tool_logs.append({"name": name, "args": args, "result": result})
                 tool_msgs.append({
                     "role": "tool",
                     "tool_call_id": call["id"],
@@ -95,13 +97,22 @@ class RetroReconMCPServer:
             data = resp.json()
             message_data = data["choices"][0]["message"]
 
-        return message_data.get("content", "").strip()
+        return message_data.get("content", "").strip(), tool_logs
 
     # tool setup
     def _setup_tools(self) -> None:
         self.server.add_tool(self._create_read_query_tool())
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
+        if self.config.mcp_servers:
+            for name, srv in self.config.mcp_servers.mcpServers.items():
+                try:
+                    client = Client(srv.to_transport())
+                    proxy = FastMCP.as_proxy(client)
+                    self.server.mount(proxy, prefix="mcp")
+                    logger.debug("Mounted MCP server %s", name)
+                except Exception as exc:  # pragma: no cover - log only
+                    logger.error("Failed to mount server %s: %s", name, exc)
         logger.debug("MCP tools registered")
 
     def update_database_path(self, db_path: str) -> None:
@@ -169,6 +180,19 @@ class RetroReconMCPServer:
             table = args.get("table", "")
             content = anyio.run(self.handle_describe_table, table)
             return {"type": "text", "text": content.text}
+        try:
+            result = anyio.run(self.server._call_tool, name, args)
+            if result.structured_content:
+                return result.structured_content
+            if result.content:
+                blocks = [
+                    getattr(b, "text", str(b))
+                    for b in result.content
+                ]
+                return {"type": "text", "text": "\n".join(blocks)}
+        except Exception as exc:
+            logger.error("External tool failed: %s", exc)
+            return {"error": str(exc)}
         return {"error": f"Unknown tool: {name}"}
 
     # tools
@@ -265,9 +289,12 @@ class RetroReconMCPServer:
 
         try:
             logger.debug("chat question: %s", question)
-            reply = self._llm_chat(question)
+            reply, tools = self._llm_chat(question)
             logger.debug("chat reply: %s", reply)
-            return {"message": reply}
+            resp = {"message": reply}
+            if tools:
+                resp["tools"] = tools
+            return resp
         except Exception as exc:
             logger.error("LLM request failed: %s", exc)
             return {
