@@ -51,12 +51,12 @@ def load_config() -> MCPConfig:
         servers_cfg = MCPServersConfig.from_dict({
             "memory": {
                 "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-memory"],
+                "args": ["-y", "--silent", "@modelcontextprotocol/server-memory"],
                 "env": {"MEMORY_FILE_PATH": "/sandbox/memory.json"}
             },
             "sequential-thinking": {
                 "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+                "args": ["-y", "--silent", "@modelcontextprotocol/server-sequential-thinking"]
             },
             "time": {
                 "command": "uvx",
