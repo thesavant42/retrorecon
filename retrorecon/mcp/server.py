@@ -35,6 +35,13 @@ class RetroReconMCPServer:
         self.timeout = self.config.timeout
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
+        logger.debug(
+            "MCPServer init db=%s api_base=%s model=%s row_limit=%d",
+            self.db_path,
+            self.api_base,
+            self.model,
+            self.row_limit,
+        )
 
     def _llm_chat(self, message: str) -> str:
         """Send *message* to the configured model and return the reply."""
@@ -55,6 +62,7 @@ class RetroReconMCPServer:
         resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
         resp.raise_for_status()
         data = resp.json()
+        logger.debug("LLM response: %s", json.dumps(data))
         try:
             return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:  # pragma: no cover - handle unexpected schema
@@ -66,10 +74,12 @@ class RetroReconMCPServer:
         self.server.add_tool(self._create_read_query_tool())
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
+        logger.debug("MCP tools registered")
 
     def update_database_path(self, db_path: str) -> None:
         self.db_path = db_path
         self.config.db_path = db_path
+        logger.debug("database path updated: %s", db_path)
 
     # tools
     def _create_read_query_tool(self):
@@ -106,11 +116,13 @@ class RetroReconMCPServer:
     def get_connection(self):
         if not self.db_path:
             raise ValueError("Database path not configured")
+        logger.debug("opening sqlite connection to %s", self.db_path)
         return sqlite3.connect(self.db_path)
 
     # validation
     def validate_query(self, query: str) -> bool:
         query_upper = query.upper().strip()
+        logger.debug("validate query: %s", query_upper)
         if not query_upper.startswith("SELECT"):
             return False
         prohibited = ["INSERT", "UPDATE", "DELETE", "DROP", "CREATE", "ALTER"]
@@ -121,6 +133,7 @@ class RetroReconMCPServer:
         """Execute a validated SELECT statement."""
         if not self.validate_query(query):
             raise ValueError("Query validation failed")
+        logger.debug("execute query: %s params=%s", query, params)
         with self.get_connection() as conn:
             c = conn.cursor()
             if "LIMIT" not in query.upper():
@@ -128,6 +141,7 @@ class RetroReconMCPServer:
             c.execute(query, params or [])
             rows = c.fetchall()
             columns = [d[0] for d in c.description]
+            logger.debug("query returned %d rows", len(rows))
             return {"columns": columns, "rows": rows, "count": len(rows)}
 
     def answer_question(self, question: str) -> Dict[str, Any]:
@@ -160,7 +174,9 @@ class RetroReconMCPServer:
             return {"message": "Try asking about tables or data in plain English."}
 
         try:
+            logger.debug("chat question: %s", question)
             reply = self._llm_chat(question)
+            logger.debug("chat reply: %s", reply)
             return {"message": reply}
         except Exception as exc:
             logger.error("LLM request failed: %s", exc)
@@ -171,6 +187,7 @@ class RetroReconMCPServer:
 
     # handlers
     async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> TextContent:
+        logger.debug("handle_read_query %s", query)
         try:
             results = self.execute_query(query, params)
             if results["count"] == 0:
@@ -182,6 +199,7 @@ class RetroReconMCPServer:
             return TextContent(text=f"Query execution failed: {exc}")
 
     async def handle_list_tables(self) -> TextContent:
+        logger.debug("handle_list_tables")
         try:
             q = "SELECT name FROM sqlite_master WHERE type='table'"
             results = self.execute_query(q)
@@ -192,6 +210,7 @@ class RetroReconMCPServer:
             return TextContent(text=f"Failed to list tables: {exc}")
 
     async def handle_describe_table(self, table: str) -> TextContent:
+        logger.debug("handle_describe_table %s", table)
         try:
             q = f"PRAGMA table_info({table})"
             results = self.execute_query(q)
@@ -211,4 +230,5 @@ class RetroReconMCPServer:
         return "{}\n{}\n{}".format(header, separator, "\n".join(rows))
 
     def cleanup(self) -> None:
+        logger.debug("MCP server cleanup")
         pass

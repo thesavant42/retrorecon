@@ -12,3 +12,5 @@ separate `mcp-server-sqlite` process is launched.
    database is created or loaded. No separate background process is required.
 3. There is no need to configure a port or connect LM Studio; the server runs
    entirely inside the application.
+4. Set `RETRORECON_LOG_LEVEL=DEBUG` before launching to view MCP debug output in
+   the console.
