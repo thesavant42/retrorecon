@@ -56,9 +56,12 @@ from retrorecon import (
     status as status_mod,
 )
 from retrorecon.filters import manifest_links, oci_obj, manifest_table, wb_timestamp
+from mcp_manager import start_mcp_sqlite, MCP_PORT
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
+app.start_mcp_sqlite = start_mcp_sqlite
+app.MCP_PORT = MCP_PORT
 app.config.from_object(Config)
 app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
@@ -152,6 +155,7 @@ def _create_temp_db() -> None:
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
+    start_mcp_sqlite(app.config['DATABASE'], MCP_PORT)
 
 
 if not env_db:
@@ -935,45 +939,6 @@ app.register_blueprint(help_bp)
 app.register_blueprint(dynamic_bp)
 app.register_blueprint(chat_bp)
 
-# --- MCP integration: mount FastMCP server under /mcp ---
-try:
-    from a2wsgi import ASGIMiddleware
-except Exception as exc:  # pragma: no cover - missing optional deps
-    raise RuntimeError(
-        "Please install a2wsgi: pip install a2wsgi"
-    ) from exc
-
-from retrorecon.mcp import RetroReconMCPServer, load_config
-
-
-class MCPMountMiddleware:
-    """WSGI middleware to mount the FastMCP ASGI app under /mcp."""
-
-    def __init__(self, flask_app: Flask) -> None:
-        self.flask_app = flask_app
-        self._next = flask_app.wsgi_app
-
-    def _get_server(self) -> RetroReconMCPServer:
-        server = getattr(self.flask_app, "mcp_server", None)
-        if server is None:
-            server = RetroReconMCPServer(config=load_config())
-            self.flask_app.mcp_server = server
-        db_path = self.flask_app.config.get("DATABASE")
-        if db_path and server.db_path != db_path:
-            server.update_database_path(db_path)
-        return server
-
-    def __call__(self, environ, start_response):
-        path = environ.get("PATH_INFO", "")
-        if path.startswith("/mcp"):
-            server = self._get_server()
-            asgi_app = server.server.http_app("/mcp")
-            wsgi_app = ASGIMiddleware(asgi_app)
-            return wsgi_app(environ, start_response)
-        return self._next(environ, start_response)
-
-
-app.wsgi_app = MCPMountMiddleware(app)
 
 
 @app.after_request
@@ -990,6 +955,7 @@ if __name__ == '__main__':
                 create_new_db(os.path.splitext(os.path.basename(env_db))[0])
             else:
                 ensure_schema()
+        start_mcp_sqlite(app.config['DATABASE'], MCP_PORT)
     host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
     port = int(os.environ.get('RETRORECON_PORT', '5000'))
     app.run(debug=True, host=host, port=port)
