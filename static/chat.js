@@ -64,6 +64,9 @@ window.retroChat = (function() {
     const data = await resp.json();
     if (data.message) {
       appendMessage('LLM: ' + data.message);
+      if (Array.isArray(data.tools)) {
+        data.tools.forEach(t => appendToolCard(t));
+      }
     } else if (data.error) {
       const hint = data.hint ? '\n' + data.hint : '';
       appendMessage('Error: ' + data.error + hint);
@@ -76,6 +79,26 @@ window.retroChat = (function() {
     const pre = document.createElement('pre');
     pre.textContent = text;
     messages.appendChild(pre);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function appendToolCard(tool) {
+    const card = document.createElement('div');
+    card.className = 'tool-call';
+    const header = document.createElement('div');
+    header.className = 'tool-call__name';
+    const params = tool.args && Object.keys(tool.args).length
+      ? ' ' + JSON.stringify(tool.args)
+      : '';
+    header.textContent = tool.name.replace('_', '/') + params;
+    const pre = document.createElement('pre');
+    const result = typeof tool.result === 'string'
+      ? tool.result
+      : JSON.stringify(tool.result, null, 2);
+    pre.textContent = result;
+    card.appendChild(header);
+    card.appendChild(pre);
+    messages.appendChild(card);
     messages.scrollTop = messages.scrollHeight;
   }
 

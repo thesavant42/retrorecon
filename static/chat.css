@@ -63,3 +63,16 @@
 .retrorecon-root .chat-overlay__input-field {
   flex: 1;
 }
+
+.retrorecon-root .tool-call {
+  background: rgba(var(--bg-rgb) / var(--panel-opacity, 0.95));
+  border: 1px solid var(--color-contrast);
+  border-radius: 4px;
+  padding: 0.25em 0.5em;
+  margin: 0.25em 0;
+}
+
+.retrorecon-root .tool-call__name {
+  font-weight: bold;
+  margin-bottom: 0.25em;
+}

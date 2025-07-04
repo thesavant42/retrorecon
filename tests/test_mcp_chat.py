@@ -61,7 +61,7 @@ def test_llm_request(monkeypatch, tmp_path):
 
     server = RetroReconMCPServer(config=cfg)
     resp = server.answer_question("What tables exist?")
-    assert resp == {"message": "hi there"}
+    assert resp.get("message") == "hi there"
     assert captured["url"] == "http://llm/chat/completions"
     assert captured["headers"]["Authorization"] == "Bearer key"
     assert captured["timeout"] == cfg.timeout
