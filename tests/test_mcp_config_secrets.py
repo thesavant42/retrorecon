@@ -13,7 +13,8 @@ def test_mcp_config_from_secrets_file(monkeypatch, tmp_path):
     secrets.write_text(json.dumps({
         'RETRORECON_MCP_MODEL': 'test-model',
         'RETRORECON_MCP_API_BASE': 'http://example.com/v1',
-        'RETRORECON_MCP_TEMPERATURE': 0.55
+        'RETRORECON_MCP_TEMPERATURE': 0.55,
+        'RETRORECON_MCP_TIMEOUT': 42
     }))
     monkeypatch.setenv('RETRORECON_SECRETS_FILE', str(secrets))
 
@@ -27,5 +28,6 @@ def test_mcp_config_from_secrets_file(monkeypatch, tmp_path):
     assert cfg.model == 'test-model'
     assert cfg.api_base == 'http://example.com/v1'
     assert cfg.temperature == 0.55
+    assert cfg.timeout == 42
 
     monkeypatch.delenv('RETRORECON_SECRETS_FILE', raising=False)

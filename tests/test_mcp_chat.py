@@ -48,6 +48,7 @@ def test_llm_request(monkeypatch, tmp_path):
         captured["url"] = url
         captured["json"] = json
         captured["headers"] = headers
+        captured["timeout"] = timeout
         class Resp:
             status_code = 200
             def raise_for_status(self):
@@ -63,3 +64,4 @@ def test_llm_request(monkeypatch, tmp_path):
     assert resp == {"message": "hi there"}
     assert captured["url"] == "http://llm/chat/completions"
     assert captured["headers"]["Authorization"] == "Bearer key"
+    assert captured["timeout"] == cfg.timeout
