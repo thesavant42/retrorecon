@@ -67,19 +67,22 @@ class RetroReconMCPServer:
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
-        resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
-        resp.raise_for_status()
-        data = resp.json()
-        logger.debug("LLM response: %s", json.dumps(data))
-        try:
-            message_data = data["choices"][0]["message"]
-        except Exception as exc:  # pragma: no cover - handle unexpected schema
-            logger.error("Invalid LLM response: %s", exc)
-            raise RuntimeError("Invalid LLM response")
-
-        # Handle tool calls if present
         tool_logs: list[dict[str, Any]] = []
-        if message_data.get("tool_calls"):
+
+        while True:
+            resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
+            resp.raise_for_status()
+            data = resp.json()
+            logger.debug("LLM response: %s", json.dumps(data))
+            try:
+                message_data = data["choices"][0]["message"]
+            except Exception as exc:  # pragma: no cover - handle unexpected schema
+                logger.error("Invalid LLM response: %s", exc)
+                raise RuntimeError("Invalid LLM response")
+
+            if not message_data.get("tool_calls"):
+                break
+
             tool_msgs: list[dict[str, Any]] = []
             for call in message_data["tool_calls"]:
                 name = call["function"]["name"]
@@ -97,10 +100,6 @@ class RetroReconMCPServer:
 
             payload["messages"].append(message_data)
             payload["messages"].extend(tool_msgs)
-            resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
-            resp.raise_for_status()
-            data = resp.json()
-            message_data = data["choices"][0]["message"]
 
         return message_data.get("content", "").strip(), tool_logs
 
