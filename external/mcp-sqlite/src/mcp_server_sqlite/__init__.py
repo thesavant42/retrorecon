@@ -11,7 +11,10 @@ def main():
                        help='Path to SQLite database file')
     
     args = parser.parse_args()
-    asyncio.run(server.main(args.db_path))
+    try:
+        asyncio.run(server.main(args.db_path))
+    except KeyboardInterrupt:
+        server.logger.info("SQLite MCP Server interrupted")
 
 
 # Optionally expose other important items at package level
