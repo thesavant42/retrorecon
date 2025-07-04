@@ -5,6 +5,7 @@ import json
 import datetime
 from typing import Dict, Any, List, Optional
 import anyio
+from anyio.abc import AsyncResource
 
 from fastmcp import FastMCP, Client
 from mcp.types import TextContent
@@ -48,6 +49,34 @@ class RetroReconMCPServer:
             self.model,
             self.row_limit,
         )
+
+    def _make_transport(self, srv) -> AsyncResource:
+        """Return an appropriate transport for *srv*."""
+        transport = srv.to_transport()
+        try:
+            from fastmcp.client.transports import NpxStdioTransport, UvxStdioTransport
+        except Exception:  # pragma: no cover - fallback when imports missing
+            return transport
+
+        if srv.command == "npx" and srv.args:
+            package = srv.args[-1]
+            extra = [a for a in srv.args[:-1] if not a.startswith("-")]
+            transport = NpxStdioTransport(
+                package=package,
+                args=extra or None,
+                project_directory=srv.cwd,
+                env_vars=srv.env or None,
+            )
+        elif srv.command == "uvx" and srv.args:
+            tool = srv.args[0]
+            extra = srv.args[1:]
+            transport = UvxStdioTransport(
+                tool_name=tool,
+                args=extra or None,
+                project_directory=srv.cwd,
+                env_vars=srv.env or None,
+            )
+        return transport
 
     def _llm_chat(self, message: str) -> tuple[str, list[dict[str, Any]]]:
         """Send *message* to the configured model and return the reply along with tool logs."""
@@ -112,7 +141,8 @@ class RetroReconMCPServer:
         if self.config.mcp_servers:
             for name, srv in self.config.mcp_servers.mcpServers.items():
                 try:
-                    client = Client(srv.to_transport())
+                    transport = self._make_transport(srv)
+                    client = Client(transport)
                     proxy = FastMCP.as_proxy(client)
                     # perform simple health check
                     async def _check():
