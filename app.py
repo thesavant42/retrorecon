@@ -56,12 +56,11 @@ from retrorecon import (
     status as status_mod,
 )
 from retrorecon.filters import manifest_links, oci_obj, manifest_table, wb_timestamp
-from mcp_manager import start_mcp_sqlite, MCP_PORT
+from mcp_manager import start_mcp_sqlite
 
 app = Flask(__name__)
 sys.modules.setdefault('app', sys.modules[__name__])
 app.start_mcp_sqlite = start_mcp_sqlite
-app.MCP_PORT = MCP_PORT
 app.config.from_object(Config)
 app.add_template_filter(manifest_links, name="manifest_links")
 app.add_template_filter(oci_obj, name="oci_obj")
@@ -155,7 +154,7 @@ def _create_temp_db() -> None:
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
-    start_mcp_sqlite(app.config['DATABASE'], MCP_PORT)
+    start_mcp_sqlite(app.config['DATABASE'])
 
 
 if not env_db:
@@ -955,7 +954,7 @@ if __name__ == '__main__':
                 create_new_db(os.path.splitext(os.path.basename(env_db))[0])
             else:
                 ensure_schema()
-        start_mcp_sqlite(app.config['DATABASE'], MCP_PORT)
+        start_mcp_sqlite(app.config['DATABASE'])
     host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
     port = int(os.environ.get('RETRORECON_PORT', '5000'))
     app.run(debug=True, host=host, port=port)

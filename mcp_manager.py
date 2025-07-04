@@ -4,16 +4,17 @@ import subprocess
 import atexit
 from typing import Optional
 
-MCP_PORT = 12345
+# The server currently communicates over stdio only so no port is needed.
+
 _mcp_proc: Optional[subprocess.Popen] = None
 
 
-def start_mcp_sqlite(db_path: str, port: int = MCP_PORT) -> None:
+def start_mcp_sqlite(db_path: str) -> None:
     """Start the mcp-sqlite server for *db_path*.
 
-    The vendored server currently communicates over standard input/output and
-    ignores the ``port`` argument. The parameter is kept for backward
-    compatibility with older documentation but no network listener is started.
+    The vendored server communicates over standard input/output. Earlier
+    versions exposed a ``port`` argument but no network listener is currently
+    started.
     """
     global _mcp_proc
     stop_mcp_sqlite()
