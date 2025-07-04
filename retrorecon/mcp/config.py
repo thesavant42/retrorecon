@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 @dataclass
@@ -13,6 +13,7 @@ class MCPConfig:
     row_limit: int = 100
     api_key: Optional[str] = None
     timeout: int = 20
+    alt_api_bases: list[str] = field(default_factory=list)
 
 
 def load_config() -> MCPConfig:
@@ -33,6 +34,8 @@ def load_config() -> MCPConfig:
         timeout = int(os.getenv("RETRORECON_MCP_TIMEOUT", "20"))
     except ValueError:
         timeout = 20
+    alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
+    alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,
@@ -41,4 +44,5 @@ def load_config() -> MCPConfig:
         row_limit=row_limit,
         api_key=api_key,
         timeout=timeout,
+        alt_api_bases=alt_api_bases,
     )
