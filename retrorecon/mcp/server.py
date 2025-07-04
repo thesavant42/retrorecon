@@ -32,6 +32,7 @@ class RetroReconMCPServer:
         self.temperature = self.config.temperature
         self.row_limit = self.config.row_limit
         self.api_key = self.config.api_key
+        self.timeout = self.config.timeout
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
 
@@ -51,7 +52,7 @@ class RetroReconMCPServer:
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
-        resp = httpx.post(url, json=payload, headers=headers, timeout=20)
+        resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
         resp.raise_for_status()
         data = resp.json()
         try:

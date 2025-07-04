@@ -12,6 +12,7 @@ class MCPConfig:
     temperature: float = 0.1
     row_limit: int = 100
     api_key: Optional[str] = None
+    timeout: int = 20
 
 
 def load_config() -> MCPConfig:
@@ -28,6 +29,10 @@ def load_config() -> MCPConfig:
         row_limit = int(os.getenv("RETRORECON_MCP_ROW_LIMIT", "100"))
     except ValueError:
         row_limit = 100
+    try:
+        timeout = int(os.getenv("RETRORECON_MCP_TIMEOUT", "20"))
+    except ValueError:
+        timeout = 20
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,
@@ -35,4 +40,5 @@ def load_config() -> MCPConfig:
         temperature=temperature,
         row_limit=row_limit,
         api_key=api_key,
+        timeout=timeout,
     )
