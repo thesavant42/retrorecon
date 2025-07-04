@@ -13,6 +13,15 @@ while getopts "l:" opt; do
   esac
 done
 
+shift $((OPTIND -1))
+
+# Accept optional DB path after -l
+if [ -z "$1" ]; then
+  DB_PATH="$(pwd)/db/waybax.db"
+else
+  DB_PATH="$1"
+fi
+
 if [ ! -d venv ]; then
   python3 -m venv venv
 fi
@@ -24,25 +33,10 @@ export RETRORECON_LOG_LEVEL=DEBUG
 export RETRORECON_LISTEN="$LISTEN_ADDR"
 
 python_cmd="venv/bin/python"
-# Setup vendored MCP SQLite server
-MCP_DIR="external/mcp-sqlite"
-MCP_VENV="${MCP_VENV:-$MCP_DIR/.venv}"
-if [ ! -d "$MCP_VENV" ]; then
-  python3 -m venv "$MCP_VENV"
-fi
-"$MCP_VENV/bin/pip" install --upgrade pip
-"$MCP_VENV/bin/pip" install -e "$MCP_DIR"
-
-# Resolve database path for MCP server
-DB_PATH="${RETRORECON_DB:-$(pwd)/db/waybax.db}"
+export RETRORECON_DB="$DB_PATH"
 if [ ! -f "$DB_PATH" ]; then
   echo "Database not found at $DB_PATH"
 fi
-
-# Start MCP server in background and ensure cleanup
-"$MCP_VENV/bin/python" -m mcp_server_sqlite --db-path "$DB_PATH" &
-MCP_PID=$!
-trap 'kill $MCP_PID' EXIT
 
 # On WSL, using win32 path may create issues; always use the venv python
 "$python_cmd" app.py

@@ -79,14 +79,14 @@ These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 `launch_app.sh` and `launch_app.bat` previously started the vendored Model
 Context Protocol server. This logic now lives inside the Flask application.
 Whenever a database is loaded or switched RetroRecon launches
-`mcp-server-sqlite` as a subprocess on port `12346` pointing at the active
+`mcp-server-sqlite` as a subprocess on port `12345` pointing at the active
 database. The server is terminated automatically when the app shuts down.
 
-LLMs can connect to MCP at `127.0.0.1:12346`. Include a line such as:
+LLMs can connect to MCP at `127.0.0.1:12345`. Include a line such as:
 
 ```
 You have access to the currently loaded retrorecon SQLite database via MCP at
-127.0.0.1:12346. Use this endpoint for SQL queries.
+127.0.0.1:12345. Use this endpoint for SQL queries.
 ```
 
 in your system prompt or tool configuration.
