@@ -109,6 +109,7 @@ class RetroReconMCPServer:
         self.server.add_tool(self._create_read_query_tool())
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
+        self.server.add_tool(self._create_time_now_tool())
         if self.config.mcp_servers:
             for name, srv in self.config.mcp_servers.mcpServers.items():
                 try:
@@ -235,6 +236,25 @@ class RetroReconMCPServer:
             describe_table,
             name="describe_table",
             description="Describe table columns",
+        )
+
+    def _create_time_now_tool(self):
+        async def time_now(timezone: str | None = None) -> TextContent:
+            tz_name = timezone or "UTC"
+            mapped = to_iana(tz_name) if tz_name else None
+            if mapped:
+                tz_name = mapped
+            try:
+                tz = ZoneInfo(tz_name)
+            except ZoneInfoNotFoundError:
+                tz = ZoneInfo("UTC")
+            now = datetime.datetime.now(tz)
+            return TextContent(type="text", text=now.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+        return FunctionTool.from_function(
+            time_now,
+            name="time_now",
+            description="Return the current time in a given timezone",
         )
 
     # connection helpers
