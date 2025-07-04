@@ -4,6 +4,15 @@ cd /d "%~dp0"
 set LISTEN_ADDR=127.0.0.1
 if "%1"=="-l" (
     set LISTEN_ADDR=%2
+    shift
+    shift
+)
+
+REM Accept optional DB path as first argument after -l
+if "%1"=="" (
+    set DB_PATH=%cd%\db\waybax.db
+) else (
+    set DB_PATH=%1
 )
 
 git pull
@@ -29,11 +38,7 @@ if not exist %MCP_VENV% (
 %MCP_VENV%\Scripts\python -m pip install --upgrade pip
 %MCP_VENV%\Scripts\pip install -e %MCP_DIR%
 
-if "%RETRORECON_DB%"=="" (
-    set DB_PATH=%cd%\db\waybax.db
-) else (
-    set DB_PATH=%RETRORECON_DB%
-)
+set RETRORECON_DB=%DB_PATH%
 
 for /f %%p in ('powershell -NoProfile -Command "($p=Start-Process -FilePath '%MCP_VENV%\Scripts\python.exe' -ArgumentList '-m mcp_server_sqlite --db-path \"%DB_PATH%\"' -PassThru); $p.Id"') do set MCP_PID=%%p
 

@@ -13,6 +13,15 @@ while getopts "l:" opt; do
   esac
 done
 
+shift $((OPTIND -1))
+
+# Accept optional DB path after -l
+if [ -z "$1" ]; then
+  DB_PATH="$(pwd)/db/waybax.db"
+else
+  DB_PATH="$1"
+fi
+
 if [ ! -d venv ]; then
   python3 -m venv venv
 fi
@@ -30,11 +39,11 @@ MCP_VENV="${MCP_VENV:-$MCP_DIR/.venv}"
 if [ ! -d "$MCP_VENV" ]; then
   python3 -m venv "$MCP_VENV"
 fi
+
 "$MCP_VENV/bin/pip" install --upgrade pip
 "$MCP_VENV/bin/pip" install -e "$MCP_DIR"
 
-# Resolve database path for MCP server
-DB_PATH="${RETRORECON_DB:-$(pwd)/db/waybax.db}"
+export RETRORECON_DB="$DB_PATH"
 if [ ! -f "$DB_PATH" ]; then
   echo "Database not found at $DB_PATH"
 fi
