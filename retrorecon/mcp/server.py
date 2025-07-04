@@ -3,7 +3,7 @@ import sqlite3
 import logging
 import json
 from typing import Dict, Any, List, Optional
-from anyio.from_thread import run as await_to_sync
+import anyio
 
 from fastmcp import FastMCP
 from mcp.types import TextContent
@@ -160,14 +160,14 @@ class RetroReconMCPServer:
         if name == "read_query":
             query = args.get("query", "")
             params = args.get("params")
-            content = await_to_sync(self.handle_read_query)(query, params)
+            content = anyio.run(self.handle_read_query, query, params)
             return {"text": content.text}
         if name == "list_tables":
-            content = await_to_sync(self.handle_list_tables)()
+            content = anyio.run(self.handle_list_tables)
             return {"text": content.text}
         if name == "describe_table":
             table = args.get("table", "")
-            content = await_to_sync(self.handle_describe_table)(table)
+            content = anyio.run(self.handle_describe_table, table)
             return {"text": content.text}
         return {"error": f"Unknown tool: {name}"}
 
