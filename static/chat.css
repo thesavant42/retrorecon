@@ -55,6 +55,10 @@
   word-break: break-word;
 }
 
+.retrorecon-root .chat-overlay__messages pre.llm-message {
+  color: var(--accent-color);
+}
+
 .retrorecon-root .chat-overlay__input {
   display: flex;
   border-top: 1px solid var(--color-contrast);
@@ -71,8 +75,8 @@
   padding: 0.25em 0.5em;
   margin: 0.25em 0;
 }
-
-.retrorecon-root .tool-call__name {
+.retrorecon-root .tool-call summary {
   font-weight: bold;
   margin-bottom: 0.25em;
+  cursor: pointer;
 }
