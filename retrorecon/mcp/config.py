@@ -52,7 +52,7 @@ def load_config() -> MCPConfig:
             "memory": {
                 "command": "npx",
                 "args": ["-y", "@modelcontextprotocol/server-memory"],
-                "env": {"MEMORY_FILE_PATH": "/sandbox/memory.json"}
+                "env": {"MEMORY_FILE_PATH": "C:\\sandbox\\memory.json"}
             },
             "sequential-thinking": {
                 "command": "npx",
