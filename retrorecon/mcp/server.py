@@ -60,7 +60,7 @@ class RetroReconMCPServer:
 
         if srv.command == "npx" and srv.args:
             package = srv.args[-1]
-            extra = [a for a in srv.args[:-1] if not a.startswith("-")]
+            extra = srv.args[:-1]
             transport = NpxStdioTransport(
                 package=package,
                 args=extra or None,
