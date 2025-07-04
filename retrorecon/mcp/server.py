@@ -161,14 +161,14 @@ class RetroReconMCPServer:
             query = args.get("query", "")
             params = args.get("params")
             content = anyio.run(self.handle_read_query, query, params)
-            return {"text": content.text}
+            return {"type": "text", "text": content.text}
         if name == "list_tables":
             content = anyio.run(self.handle_list_tables)
-            return {"text": content.text}
+            return {"type": "text", "text": content.text}
         if name == "describe_table":
             table = args.get("table", "")
             content = anyio.run(self.handle_describe_table, table)
-            return {"text": content.text}
+            return {"type": "text", "text": content.text}
         return {"error": f"Unknown tool: {name}"}
 
     # tools
