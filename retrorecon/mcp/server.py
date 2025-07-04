@@ -39,6 +39,7 @@ class RetroReconMCPServer:
         self.api_key = self.config.api_key
         self.timeout = self.config.timeout
         self.server = FastMCP("RetroRecon SQLite Explorer")
+        self._mounted: dict[str, FastMCP] = {}
         self._setup_tools()
         logger.debug(
             "MCPServer init db=%s api_base=%s model=%s row_limit=%d",
@@ -113,7 +114,18 @@ class RetroReconMCPServer:
                 try:
                     client = Client(srv.to_transport())
                     proxy = FastMCP.as_proxy(client)
-                    self.server.mount(proxy, prefix="mcp")
+                    # perform simple health check
+                    async def _check():
+                        async with anyio.fail_after(5):
+                            await proxy._list_tools()
+
+                    try:
+                        anyio.run(_check)
+                    except Exception as exc:  # pragma: no cover - skip unhealthy
+                        logger.error("Failed health check for server %s: %s", name, exc)
+                        continue
+                    self.server.mount(proxy, prefix=name)
+                    self._mounted[name] = proxy
                     logger.debug("Mounted MCP server %s", name)
                 except Exception as exc:  # pragma: no cover - log only
                     logger.error("Failed to mount server %s: %s", name, exc)
@@ -126,49 +138,26 @@ class RetroReconMCPServer:
 
     def _openai_tools(self) -> list[dict[str, Any]]:
         """Return tool specifications for OpenAI tool calling."""
-        return [
-            {
-                "type": "function",
-                "function": {
-                    "name": "read_query",
-                    "description": "Execute a SELECT query on the RetroRecon database",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "query": {"type": "string"},
-                            "params": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Optional query parameters",
-                            },
-                        },
-                        "required": ["query"],
+        try:
+            tools = anyio.run(self.server._list_tools)
+        except Exception as exc:  # pragma: no cover - log and continue
+            logger.error("Failed to list tools: %s", exc)
+            tools = []
+
+        specs: list[dict[str, Any]] = []
+        for tool in tools:
+            params = tool.parameters or {"type": "object", "properties": {}}
+            specs.append(
+                {
+                    "type": "function",
+                    "function": {
+                        "name": getattr(tool, "key", tool.name),
+                        "description": tool.description or "",
+                        "parameters": params,
                     },
-                },
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "list_tables",
-                    "description": "List tables in the current database",
-                    "parameters": {"type": "object", "properties": {}},
-                },
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "describe_table",
-                    "description": "Describe table columns",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "table": {"type": "string"},
-                        },
-                        "required": ["table"],
-                    },
-                },
-            },
-        ]
+                }
+            )
+        return specs
 
     def _call_tool(self, name: str, args: dict[str, Any]) -> dict[str, Any] | str:
         """Execute a tool by name and return its result as a JSON-able object."""
@@ -189,15 +178,17 @@ class RetroReconMCPServer:
             mapped = to_iana(tz_name) if tz_name else None
             if mapped:
                 args["timezone"] = mapped
+        async def _run_call():
+            from fastmcp.server.context import Context
+            async with Context(self.server):
+                return await self.server._call_tool(name, args)
+
         try:
-            result = anyio.run(self.server._call_tool, name, args)
+            result = anyio.run(_run_call)
             if result.structured_content:
                 return result.structured_content
             if result.content:
-                blocks = [
-                    getattr(b, "text", str(b))
-                    for b in result.content
-                ]
+                blocks = [getattr(b, "text", str(b)) for b in result.content]
                 return {"type": "text", "text": "\n".join(blocks)}
         except Exception as exc:
             logger.error("External tool failed: %s", exc)

@@ -14,3 +14,12 @@ separate `mcp-server-sqlite` process is launched.
    entirely inside the application.
 4. Set `RETRORECON_LOG_LEVEL=DEBUG` before launching to view MCP debug output in
    the console.
+
+## Dynamic Tool Discovery
+
+The embedded server now aggregates tools from all configured MCP services at
+runtime. When a new service is mounted (locally or remotely), its tool list is
+queried during startup. Healthy services are mounted under their configuration
+name and their tools automatically become available to the LLM with the prefix
+`<name>_`. No manual code changes are required for additional modules—simply add
+an entry in the MCP configuration.
