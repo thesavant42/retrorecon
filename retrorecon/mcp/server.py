@@ -2,12 +2,14 @@ import os
 import sqlite3
 import logging
 import json
+import datetime
 from typing import Dict, Any, List, Optional
 import anyio
 
 from fastmcp import FastMCP, Client
 from mcp.types import TextContent
 import httpx
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 try:
     from fastmcp.tools import FunctionTool
 except Exception:  # pragma: no cover - fallback for older fastmcp
@@ -192,6 +194,14 @@ class RetroReconMCPServer:
                 return {"type": "text", "text": "\n".join(blocks)}
         except Exception as exc:
             logger.error("External tool failed: %s", exc)
+            if name.startswith("time"):
+                tz_name = args.get("timezone", "UTC")
+                try:
+                    tz = ZoneInfo(tz_name)
+                except ZoneInfoNotFoundError:
+                    tz = ZoneInfo("UTC")
+                now = datetime.datetime.now(tz)
+                return {"type": "text", "text": now.strftime("%Y-%m-%d %H:%M:%S %Z")}
             return {"error": str(exc)}
         return {"error": f"Unknown tool: {name}"}
 

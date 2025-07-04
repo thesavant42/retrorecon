@@ -65,3 +65,20 @@ def test_llm_request(monkeypatch, tmp_path):
     assert captured["url"] == "http://llm/chat/completions"
     assert captured["headers"]["Authorization"] == "Bearer key"
     assert captured["timeout"] == cfg.timeout
+
+
+def test_time_fallback(monkeypatch, tmp_path):
+    cfg = load_config()
+    cfg.db_path = str(tmp_path / "empty.db")
+    with open(cfg.db_path, "wb"):
+        pass
+    server = RetroReconMCPServer(config=cfg)
+
+    def fake_call(name, args):
+        raise Exception("Unknown time zone")
+
+    monkeypatch.setattr(server.server, "_call_tool", fake_call)
+
+    resp = server._call_tool("time_now", {"timezone": "America/Los_Angeles"})
+    assert resp["type"] == "text"
+    assert "UTC" in resp["text"] or "P" in resp["text"]
