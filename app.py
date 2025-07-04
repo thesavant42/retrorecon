@@ -154,7 +154,7 @@ def _create_temp_db() -> None:
     if os.path.exists(app.config['DATABASE']):
         os.remove(app.config['DATABASE'])
     init_db()
-    start_mcp_sqlite(app.config['DATABASE'])
+    app.mcp_server = start_mcp_sqlite(app.config['DATABASE'])
 
 
 if not env_db:
@@ -954,7 +954,7 @@ if __name__ == '__main__':
                 create_new_db(os.path.splitext(os.path.basename(env_db))[0])
             else:
                 ensure_schema()
-        start_mcp_sqlite(app.config['DATABASE'])
+        app.mcp_server = start_mcp_sqlite(app.config['DATABASE'])
     host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
     port = int(os.environ.get('RETRORECON_PORT', '5000'))
     app.run(debug=True, host=host, port=port)

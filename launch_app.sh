@@ -33,16 +33,6 @@ export RETRORECON_LOG_LEVEL=DEBUG
 export RETRORECON_LISTEN="$LISTEN_ADDR"
 
 python_cmd="venv/bin/python"
-# Setup vendored MCP SQLite server
-MCP_DIR="external/mcp-sqlite"
-MCP_VENV="${MCP_VENV:-$MCP_DIR/.venv}"
-if [ ! -d "$MCP_VENV" ]; then
-  python3 -m venv "$MCP_VENV"
-fi
-
-"$MCP_VENV/bin/pip" install --upgrade pip
-"$MCP_VENV/bin/pip" install -e "$MCP_DIR"
-
 export RETRORECON_DB="$DB_PATH"
 if [ ! -f "$DB_PATH" ]; then
   echo "Database not found at $DB_PATH"

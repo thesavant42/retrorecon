@@ -1,20 +1,14 @@
 # RetroRecon MCP Setup Guide
 
-This guide explains how to ensure the bundled `mcp-server-sqlite` starts correctly.
-The server is launched automatically by the Flask application and communicates over
-standard input/output—no TCP port is exposed.
+This guide explains how RetroRecon's embedded MCP server works.
+The application now uses the `RetroReconMCPServer` class directly so no
+separate `mcp-server-sqlite` process is launched.
 
 ## Steps
 
-1. Run `launch_app.sh` (Linux/macOS) or `launch_app.bat` (Windows).
-   These scripts create a virtual environment under `external/mcp-sqlite` and
-   install the server in editable mode.
-2. The Flask app will spawn `mcp-server-sqlite` whenever a database is created or
-   loaded. If you see a "program not found" error, verify that the virtual
-   environment exists and contains the package:
-   ```bash
-   ls external/mcp-sqlite/.venv
-   ```
-   Re-run the launch script if necessary.
-3. There is no need to configure a port or connect LM Studio to this server. It
-   is an internal helper used solely by RetroRecon.
+1. Run `launch_app.sh` (Linux/macOS) or `launch_app.bat` (Windows) to install
+   the Python dependencies.
+2. The Flask app automatically instantiates `RetroReconMCPServer` whenever a
+   database is created or loaded. No separate background process is required.
+3. There is no need to configure a port or connect LM Studio; the server runs
+   entirely inside the application.
