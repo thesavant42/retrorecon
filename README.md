@@ -78,10 +78,9 @@ These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 
 `launch_app.sh` and `launch_app.bat` previously started the vendored Model
 Context Protocol server. This logic now lives inside the Flask application.
-Whenever a database is loaded or switched RetroRecon launches
-`mcp-server-sqlite` as a subprocess pointing at the active database. The
-server communicates over standard input/output and is terminated
-automatically when the app shuts down. No TCP port is exposed.
+Whenever a database is loaded or switched RetroRecon uses the built-in
+`RetroReconMCPServer` class pointing at the active database. No external
+process is launched; all communication happens directly in Python.
 
 You may mention in your system prompt that an MCP server is available within
 the application for executing safe SQL queries against the current database.

@@ -27,17 +27,6 @@ venv\Scripts\pip install -r requirements.txt
 set RETRORECON_LOG_LEVEL=DEBUG
 set RETRORECON_LISTEN=%LISTEN_ADDR%
 
-set MCP_DIR=external\mcp-sqlite
-if "%MCP_VENV%"=="" (
-    set MCP_VENV=%MCP_DIR%\.venv
-)
-if not exist %MCP_VENV% (
-    python -m venv %MCP_VENV%
-)
-
-%MCP_VENV%\Scripts\python -m pip install --upgrade pip
-%MCP_VENV%\Scripts\pip install -e %MCP_DIR%
-
 set RETRORECON_DB=%DB_PATH%
 
 venv\Scripts\python app.py
