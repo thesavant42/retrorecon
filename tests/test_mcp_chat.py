@@ -1,5 +1,6 @@
 from retrorecon.mcp.server import RetroReconMCPServer
 from retrorecon.mcp.config import load_config
+from mcp.types import TextContent
 
 
 def test_answer_question_non_sql(tmp_path):
@@ -79,6 +80,30 @@ def test_time_fallback(monkeypatch, tmp_path):
 
     monkeypatch.setattr(server.server, "_call_tool", fake_call)
 
-    resp = server._call_tool("time_now", {"timezone": "America/Los_Angeles"})
+    resp = server._call_tool("time_now", {"timezone": "Pacific Standard Time"})
     assert resp["type"] == "text"
     assert "UTC" in resp["text"] or "P" in resp["text"]
+
+
+def test_windows_timezone_mapping(monkeypatch, tmp_path):
+    cfg = load_config()
+    cfg.db_path = str(tmp_path / "empty.db")
+    with open(cfg.db_path, "wb"):
+        pass
+    server = RetroReconMCPServer(config=cfg)
+
+    captured = {}
+
+    class FakeResult:
+        structured_content = None
+        content = [TextContent(type="text", text="hello")]
+
+    def fake_call(name, args):
+        captured["tz"] = args.get("timezone")
+        return FakeResult()
+
+    monkeypatch.setattr(server.server, "_call_tool", fake_call)
+
+    resp = server._call_tool("time_now", {"timezone": "Pacific Standard Time"})
+    assert captured["tz"] == "America/Los_Angeles"
+    assert resp["type"] == "text"

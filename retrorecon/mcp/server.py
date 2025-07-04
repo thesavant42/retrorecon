@@ -10,6 +10,8 @@ from fastmcp import FastMCP, Client
 from mcp.types import TextContent
 import httpx
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from ..windows_tz import to_iana
 try:
     from fastmcp.tools import FunctionTool
 except Exception:  # pragma: no cover - fallback for older fastmcp
@@ -182,6 +184,11 @@ class RetroReconMCPServer:
             table = args.get("table", "")
             content = anyio.run(self.handle_describe_table, table)
             return {"type": "text", "text": content.text}
+        if name.startswith("time"):
+            tz_name = args.get("timezone")
+            mapped = to_iana(tz_name) if tz_name else None
+            if mapped:
+                args["timezone"] = mapped
         try:
             result = anyio.run(self.server._call_tool, name, args)
             if result.structured_content:
@@ -196,6 +203,9 @@ class RetroReconMCPServer:
             logger.error("External tool failed: %s", exc)
             if name.startswith("time"):
                 tz_name = args.get("timezone", "UTC")
+                mapped = to_iana(tz_name)
+                if mapped:
+                    tz_name = mapped
                 try:
                     tz = ZoneInfo(tz_name)
                 except ZoneInfoNotFoundError:

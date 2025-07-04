@@ -46,6 +46,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | HTTPolaroid Snapshots         | Capture a single URL with full headers, screenshot and assets into a zip |
 | Markdown Editor               | Edit and preview project docs with a resizable editor |
 | Domain Sort (Subdomain View)  | Recursively group hosts by root domain |
+| Time Zone Flexibility         | `mcp/time` understands IANA and Windows zone names |
 
 ---
 
