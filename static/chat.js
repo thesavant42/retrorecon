@@ -87,6 +87,12 @@ window.retroChat = (function() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('show')) {
       hide();
+    } else if (e.key === '~' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      if (overlay.classList.contains('show')) {
+        hide();
+      } else {
+        show();
+      }
     }
   });
 
