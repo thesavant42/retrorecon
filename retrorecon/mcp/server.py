@@ -53,6 +53,13 @@ class RetroReconMCPServer:
     def _make_transport(self, srv) -> AsyncResource:
         """Return an appropriate transport for *srv*."""
         transport = srv.to_transport()
+        logger.debug(
+            "create transport command=%s args=%s env=%s cwd=%s",
+            getattr(srv, "command", getattr(srv, "url", "")),
+            getattr(srv, "args", None),
+            getattr(srv, "env", None),
+            getattr(srv, "cwd", None),
+        )
         try:
             from fastmcp.client.transports import NpxStdioTransport, UvxStdioTransport
         except Exception:  # pragma: no cover - fallback when imports missing
@@ -83,6 +90,8 @@ class RetroReconMCPServer:
         if not self.api_base:
             raise RuntimeError("API base not configured")
         url = f"{self.api_base}/chat/completions"
+        api_bases = [self.api_base] + list(self.config.alt_api_bases or [])
+        base_idx = 0
         payload = {
             "model": self.model,
             "messages": [
@@ -99,8 +108,17 @@ class RetroReconMCPServer:
         tool_logs: list[dict[str, Any]] = []
 
         while True:
-            resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
-            resp.raise_for_status()
+            try:
+                resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
+                resp.raise_for_status()
+            except Exception as exc:
+                logger.error("LLM request failed via %s: %s", url, exc)
+                base_idx += 1
+                if base_idx >= len(api_bases):
+                    raise
+                url = f"{api_bases[base_idx]}/chat/completions"
+                logger.debug("retrying LLM request via %s", url)
+                continue
             data = resp.json()
             logger.debug("LLM response: %s", json.dumps(data))
             try:
@@ -134,6 +152,12 @@ class RetroReconMCPServer:
 
     # tool setup
     def _setup_tools(self) -> None:
+        logger.debug(
+            "initializing tools db=%s model=%s servers=%s",
+            self.db_path,
+            self.model,
+            list(self.config.mcp_servers.mcpServers.keys()) if self.config.mcp_servers else [],
+        )
         self.server.add_tool(self._create_read_query_tool())
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
@@ -141,6 +165,7 @@ class RetroReconMCPServer:
         if self.config.mcp_servers:
             for name, srv in self.config.mcp_servers.mcpServers.items():
                 try:
+                    logger.debug("mounting MCP server %s", name)
                     transport = self._make_transport(srv)
                     client = Client(transport)
                     proxy = FastMCP.as_proxy(client)
@@ -191,6 +216,7 @@ class RetroReconMCPServer:
 
     def _call_tool(self, name: str, args: dict[str, Any]) -> dict[str, Any] | str:
         """Execute a tool by name and return its result as a JSON-able object."""
+        logger.debug("call tool %s args=%s", name, args)
         if name == "read_query":
             query = args.get("query", "")
             params = args.get("params")
@@ -216,9 +242,11 @@ class RetroReconMCPServer:
         try:
             result = anyio.run(_run_call)
             if result.structured_content:
+                logger.debug("tool %s returned structured", name)
                 return result.structured_content
             if result.content:
                 blocks = [getattr(b, "text", str(b)) for b in result.content]
+                logger.debug("tool %s returned text", name)
                 return {"type": "text", "text": "\n".join(blocks)}
         except Exception as exc:
             logger.error("External tool failed: %s", exc)
@@ -232,8 +260,10 @@ class RetroReconMCPServer:
                 except ZoneInfoNotFoundError:
                     tz = ZoneInfo("UTC")
                 now = datetime.datetime.now(tz)
+                logger.debug("time fallback timezone=%s", tz.key)
                 return {"type": "text", "text": now.strftime("%Y-%m-%d %H:%M:%S %Z")}
             return {"error": str(exc)}
+        logger.error("Unknown tool requested: %s", name)
         return {"error": f"Unknown tool: {name}"}
 
     # tools
