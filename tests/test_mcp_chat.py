@@ -107,3 +107,58 @@ def test_windows_timezone_mapping(monkeypatch, tmp_path):
     resp = server._call_tool("time_now", {"timezone": "Pacific Standard Time"})
     assert captured["tz"] == "America/Los_Angeles"
     assert resp["type"] == "text"
+
+
+def test_multiple_tool_calls(monkeypatch, tmp_path):
+    cfg = load_config()
+    cfg.db_path = str(tmp_path / "empty.db")
+    cfg.api_base = "http://llm"
+    with open(cfg.db_path, "wb"):
+        pass
+
+    call_count = 0
+
+    def fake_post(url, json, headers, timeout):
+        nonlocal call_count
+        call_count += 1
+
+        class Resp:
+            status_code = 200
+
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                if call_count == 1:
+                    return {
+                        "choices": [
+                            {"message": {"content": None, "tool_calls": [{"id": "1", "function": {"name": "first", "arguments": "{}"}}]}}
+                        ]
+                    }
+                elif call_count == 2:
+                    return {
+                        "choices": [
+                            {"message": {"content": None, "tool_calls": [{"id": "2", "function": {"name": "second", "arguments": "{}"}}]}}
+                        ]
+                    }
+                else:
+                    return {"choices": [{"message": {"content": "done"}}]}
+
+        return Resp()
+
+    monkeypatch.setattr("httpx.post", fake_post)
+
+    server = RetroReconMCPServer(config=cfg)
+
+    calls = []
+
+    def fake_tool(name, args):
+        calls.append(name)
+        return {"type": "text", "text": name}
+
+    monkeypatch.setattr(server, "_call_tool", fake_tool)
+
+    resp = server.answer_question("multi")
+    assert resp["message"] == "done"
+    assert calls == ["first", "second"]
+    assert len(resp["tools"]) == 2
