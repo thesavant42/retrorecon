@@ -857,8 +857,13 @@
 
     function pollStatus(){
       fetch('/status')
-        .then(r => r.json())
+        .then(r => r.status === 204 ? null : r.json())
         .then(data => {
+          if(!data){
+            statusDelay = Math.min(statusDelay * 2, 30000);
+            statusTimer = setTimeout(pollStatus, statusDelay);
+            return;
+          }
           if(data.code){
             showStatus(data.message || data.code);
             statusDelay = 1000;
