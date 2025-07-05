@@ -5,9 +5,7 @@ import json
 import datetime
 from typing import Dict, Any, List, Optional
 import anyio
-from anyio.abc import AsyncResource
-
-from fastmcp import FastMCP, Client
+from fastmcp import FastMCP
 from mcp.types import TextContent
 import httpx
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -40,7 +38,6 @@ class RetroReconMCPServer:
         self.api_key = self.config.api_key
         self.timeout = self.config.timeout
         self.server = FastMCP("RetroRecon SQLite Explorer")
-        self._mounted: dict[str, FastMCP] = {}
         self._setup_tools()
         logger.debug(
             "MCPServer init db=%s api_base=%s model=%s row_limit=%d",
@@ -50,40 +47,6 @@ class RetroReconMCPServer:
             self.row_limit,
         )
 
-    def _make_transport(self, srv) -> AsyncResource:
-        """Return an appropriate transport for *srv*."""
-        transport = srv.to_transport()
-        logger.debug(
-            "create transport command=%s args=%s env=%s cwd=%s",
-            getattr(srv, "command", getattr(srv, "url", "")),
-            getattr(srv, "args", None),
-            getattr(srv, "env", None),
-            getattr(srv, "cwd", None),
-        )
-        try:
-            from fastmcp.client.transports import NpxStdioTransport, UvxStdioTransport
-        except Exception:  # pragma: no cover - fallback when imports missing
-            return transport
-
-        if srv.command == "npx" and srv.args:
-            package = srv.args[-1]
-            extra = srv.args[:-1]
-            transport = NpxStdioTransport(
-                package=package,
-                args=extra or None,
-                project_directory=srv.cwd,
-                env_vars=srv.env or None,
-            )
-        elif srv.command == "uvx" and srv.args:
-            tool = srv.args[0]
-            extra = srv.args[1:]
-            transport = UvxStdioTransport(
-                tool_name=tool,
-                tool_args=extra or None,
-                project_directory=srv.cwd,
-                env_vars=srv.env or None,
-            )
-        return transport
 
     def _llm_chat(self, message: str) -> tuple[str, list[dict[str, Any]]]:
         """Send *message* to the configured model and return the reply along with tool logs."""
@@ -153,37 +116,14 @@ class RetroReconMCPServer:
     # tool setup
     def _setup_tools(self) -> None:
         logger.debug(
-            "initializing tools db=%s model=%s servers=%s",
+            "initializing tools db=%s model=%s",
             self.db_path,
             self.model,
-            list(self.config.mcp_servers.mcpServers.keys()) if self.config.mcp_servers else [],
         )
         self.server.add_tool(self._create_read_query_tool())
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
         self.server.add_tool(self._create_time_now_tool())
-        if self.config.mcp_servers:
-            for name, srv in self.config.mcp_servers.mcpServers.items():
-                try:
-                    logger.debug("mounting MCP server %s", name)
-                    transport = self._make_transport(srv)
-                    client = Client(transport)
-                    proxy = FastMCP.as_proxy(client)
-                    # perform simple health check
-                    async def _check():
-                        with anyio.fail_after(5):
-                            await proxy._list_tools()
-
-                    try:
-                        anyio.run(_check)
-                    except Exception as exc:  # pragma: no cover - skip unhealthy
-                        logger.error("Failed health check for server %s: %s", name, exc)
-                        continue
-                    self.server.mount(proxy, prefix=name)
-                    self._mounted[name] = proxy
-                    logger.debug("Mounted MCP server %s", name)
-                except Exception as exc:  # pragma: no cover - log only
-                    logger.error("Failed to mount server %s: %s", name, exc)
         logger.debug("MCP tools registered")
 
     def update_database_path(self, db_path: str) -> None:

@@ -2,9 +2,6 @@ import os
 from dataclasses import dataclass, field
 from typing import Optional
 import json
-
-from fastmcp.utilities.mcp_config import MCPConfig as MCPServersConfig
-
 @dataclass
 class MCPConfig:
     """Configuration values for the MCP server."""
@@ -17,7 +14,7 @@ class MCPConfig:
     api_key: Optional[str] = None
     timeout: int = 20
     alt_api_bases: list[str] = field(default_factory=list)
-    mcp_servers: MCPServersConfig | None = None
+    mcp_servers: dict | None = None
 
 
 def load_config() -> MCPConfig:
@@ -41,29 +38,7 @@ def load_config() -> MCPConfig:
     alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
     alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
 
-    servers_env = os.getenv("RETRORECON_MCP_SERVERS")
-    if servers_env:
-        try:
-            servers_cfg = MCPServersConfig.from_dict(json.loads(servers_env))
-        except Exception:
-            servers_cfg = None
-    else:
-        servers_cfg = MCPServersConfig.from_dict({
-            "memory": {
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-memory"],
-                "env": {"MEMORY_FILE_PATH": "memory.json"}
-            },
-            "sequential-thinking": {
-                "command": "npx",
-                "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-            },
-            "time": {
-                "command": "uvx",
-                "args": ["mcp-server-time"],
-                "env": {"TZ": "America/Los_Angeles"}
-            }
-        })
+    servers_cfg = None
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,

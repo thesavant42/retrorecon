@@ -4,46 +4,14 @@ This document provides guidance on troubleshooting Model Context Protocol (MCP) 
 
 ## 1. Understanding the RetroRecon MCP Integration
 
-RetroRecon integrates MCP servers directly within its Flask application, as indicated by the `RetroReconMCPServer` class in `retrorecon/mcp/server.py`. This class inherits from `FastMCP`, a Pythonic framework for building MCP servers. The application is designed to use a built-in MCP server for SQL queries against its active database and can also connect to external MCP servers configured in `retrorecon/mcp/config.py`.
+RetroRecon integrates an MCP server directly within its Flask application via the `RetroReconMCPServer` class in `retrorecon/mcp/server.py`. Earlier versions attempted to mount additional FastMCP servers, but this feature has been removed. The built-in server still handles SQL queries and a simple time function.
 
 Key observations from the codebase:
 
 *   **`RetroReconMCPServer`**: This class (in `retrorecon/mcp/server.py`) acts as RetroRecon's internal MCP server. It includes tools for `_query_sqlite`, `_get_current_datetime`, and `_fetch_url_content`. The `_fetch_url_content` tool is particularly relevant for the `mcp/fetch` use case.
-*   **`MCPConfig`**: Defined in `retrorecon/mcp/config.py`, this dataclass holds configuration for the MCP server, including `api_base`, `model`, `temperature`, `row_limit`, `api_key`, `timeout`, and `alt_api_bases`. Crucially, it also contains a `mcp_servers` list, which is where external MCP servers are defined.
-*   **External Server Configuration**: The `mcp_servers` list in `config.py` currently includes configurations for `memory` and `sequential-thinking` servers, each with its own `name`, `api_base`, `model`, and `description`.
+*   **`MCPConfig`**: Defined in `retrorecon/mcp/config.py`, this dataclass holds configuration for the MCP server, including `api_base`, `model`, `temperature`, `row_limit`, `api_key`, `timeout`, and `alt_api_bases`.
+*   **External Server Configuration**: Support for additional FastMCP servers has been removed, so the `mcp_servers` field is unused.
 
-## 2. Troubleshooting `memory` and `sequential-thinking` Server Issues
-
-The user reports that `memory` and `sequential-thinking` servers are not available when queried, despite running without issue in standalone mode. This suggests a communication or configuration problem between RetroRecon and these external MCP servers. The key new information is that these are **STDIO modules**, meaning they communicate via Standard Input/Output, not network sockets. This fundamentally changes how RetroRecon needs to interact with them.
-
-### Why `api_base` on port 8000/8001 was incorrect for STDIO modules:
-
-STDIO servers, unlike HTTP servers, do not listen on network ports. They are typically run as child processes, and the host application communicates with them by writing to their standard input and reading from their standard output. Therefore, configuring an `api_base` URL (like `http://localhost:8000/v1`) for an STDIO server is incorrect and will prevent RetroRecon from properly connecting to it.
-
-### Potential Causes and Troubleshooting Steps for STDIO Servers:
-
-1.  **Incorrect Configuration in `config.py`**: The `api_base` field in `retrorecon/mcp/config.py` is designed for HTTP-based MCP servers. For STDIO servers, you need to ensure RetroRecon is configured to launch and communicate with them using the appropriate STDIO transport mechanism.
-    *   **Action**: RetroRecon's `MCPConfig` and `MCPServersConfig` likely need to be extended to support different `transport` types (e.g., `stdio`, `http`, `sse`). The current `api_base` field is only suitable for HTTP or SSE transports. You will need to modify the `MCPConfig` and the logic that loads these servers to recognize and handle STDIO servers differently.
-    *   **Programming Agent Recommendation**: The `MCPServersConfig` dataclass in `retrorecon/mcp/config.py` needs to be updated to include a `transport` field, which defaults to `http` but can be set to `stdio` for STDIO modules. The `RetroReconMCPServer` (or the part of RetroRecon that initializes external MCP clients) must then use this `transport` information to create the correct `FastMCP.Client` instance (e.g., `Client(transport=StdioTransport(command=["npx", "@modelcontextprotocol/server-memory"]))`).
-
-2.  **Launching the STDIO Server as a Child Process**: RetroRecon needs to be able to execute the STDIO server as a child process and manage its stdin/stdout streams. The `npx -y @modelcontextprotocol/server-memory` command you provided is the correct way to launch the `memory` server.
-    *   **Action**: Ensure RetroRecon has the necessary permissions to execute external commands. The path to `npx` (or the equivalent executable for the STDIO server) must be in RetroRecon's environment `PATH` or specified as an absolute path.
-    *   **Commands to run (on Windows 11 Command Prompt/PowerShell)**:
-        ```cmd
-        where npx
-        ```
-        This command will show the full path to the `npx` executable. This path might be needed in RetroRecon's configuration if it's not in the system's PATH.
-
-3.  **FastMCP Client Configuration for STDIO**: The `FastMCP` library supports different client transports. For STDIO, a `StdioTransport` needs to be used, which takes the command to execute the STDIO server as an argument.
-    *   **Programming Agent Recommendation**: The `RetroReconMCPServer` (or the component responsible for connecting to external MCP servers) needs to be modified to instantiate `FastMCP.Client` with `StdioTransport` when `transport` is set to `stdio` in the `config.py`. The `command` argument for `StdioTransport` would be the command to run the STDIO server (e.g., `["npx", "@modelcontextprotocol/server-memory"]`).
-
-4.  **RetroRecon Logging**: Increase the logging level in RetroRecon to get more verbose output about its attempts to connect to MCP servers, especially when dealing with different transport types.
-    *   **Action**: Modify RetroRecon's logging configuration (likely in `retrorecon/__init__.py` or a similar central configuration file) to `DEBUG` level. This would involve finding the `logging.basicConfig` call and changing `level=logging.INFO` to `level=logging.DEBUG`.
-    *   **Commands to run**: After modifying the logging level, run RetroRecon as usual and capture the console output.
-        ```cmd
-        .\launch_app.bat -l 0.0.0.0 > retrorecon_debug_log.txt 2>&1
-        ```
-        Then, please provide the `retrorecon_debug_log.txt` file. This log will be crucial to see if RetroRecon is attempting to launch the STDIO servers and if there are any errors during that process or during communication.
 
 ## 3. Adding a New MCP Server from Scratch: `mcp/fetch` Use Case
 
