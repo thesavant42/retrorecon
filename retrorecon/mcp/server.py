@@ -261,7 +261,9 @@ class RetroReconMCPServer:
         if not self.db_path:
             raise ValueError("Database path not configured")
         logger.debug("opening sqlite connection to %s", self.db_path)
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
 
     # validation
     def validate_query(self, query: str) -> bool:
