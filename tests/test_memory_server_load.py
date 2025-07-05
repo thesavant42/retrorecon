@@ -1,5 +1,6 @@
 import json
 import sys
+import asyncio
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -12,25 +13,35 @@ def test_memory_server_started(monkeypatch, tmp_path):
         {
             "name": "memory",
             "transport": "stdio",
-            "command": ["echo", "memory"],
+            "command": ["basic-memory", "mcp", "--transport", "stdio"],
         }
     ]))
     monkeypatch.setenv("RETRORECON_MCP_SERVERS_FILE", str(cfg_file))
 
-    popen_called = {}
+    captured = {}
 
-    class DummyProc:
-        def __init__(self, *args, **kwargs):
-            popen_called['cmd'] = args[0]
-        def terminate(self):
-            pass
-        def wait(self, timeout=None):
-            pass
+    class DummyTransport:
+        def __init__(self, command, args):
+            captured['command'] = command
+            captured['args'] = args
 
-    monkeypatch.setattr(mcp_manager.subprocess, 'Popen', lambda *a, **k: DummyProc(*a, **k))
+    class DummyClient:
+        def __init__(self, transport):
+            captured['transport'] = transport
+        async def _connect(self):
+            pass
+        async def list_tools_mcp(self):
+            class R:
+                tools = []
+            return R()
+
+    monkeypatch.setattr(mcp_manager, 'StdioTransport', DummyTransport)
+    monkeypatch.setattr(mcp_manager, 'Client', DummyClient)
+    monkeypatch.setattr(mcp_manager.anyio, 'run', lambda func: asyncio.run(func()))
     mcp_manager.stop_mcp_sqlite()
 
-    server = mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))
-    assert popen_called['cmd'] == ["echo", "memory"]
+    mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))
+    assert captured['command'] == "basic-memory"
+    assert captured['args'] == ["mcp", "--transport", "stdio"]
     mcp_manager.stop_mcp_sqlite()
     monkeypatch.delenv("RETRORECON_MCP_SERVERS_FILE")

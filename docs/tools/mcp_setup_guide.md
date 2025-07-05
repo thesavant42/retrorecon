@@ -34,7 +34,7 @@ Each entry specifies how the server should be launched or contacted:
 ```yaml
 - name: memory
   transport: stdio
-  command: ["npx", "@modelcontextprotocol/server-memory"]
+  command: ["basic-memory", "mcp", "--transport", "stdio"]
   model: memory
   description: A memory server for storing and retrieving information.
 ```
@@ -51,7 +51,7 @@ subprocess. A simplified example looks like this:
 import subprocess
 
 proc = subprocess.Popen(
-    ["npx", "@modelcontextprotocol/server-memory"],
+    ["basic-memory", "mcp", "--transport", "stdio"],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True,
