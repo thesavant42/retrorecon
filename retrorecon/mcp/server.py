@@ -125,20 +125,28 @@ class RetroReconMCPServer:
     def _openai_tools(self) -> list[dict[str, Any]]:
         """Return tool specifications for OpenAI tool calling."""
         try:
-            tools = anyio.run(self.server._list_tools)
+            list_fn = getattr(self.server, "_list_tools", None)
+            if list_fn is None:
+                list_fn = getattr(self.server, "list_tools")
+            tools = anyio.run(list_fn)
         except Exception as exc:  # pragma: no cover - log and continue
             logger.error("Failed to list tools: %s", exc)
             tools = []
 
         specs: list[dict[str, Any]] = []
         for tool in tools:
-            params = tool.parameters or {"type": "object", "properties": {}}
+            params = getattr(tool, "parameters", {"type": "object", "properties": {}})
+            try:
+                name = getattr(tool, "key")
+            except AttributeError:
+                name = getattr(tool, "name", getattr(tool, "__name__", ""))
+            description = getattr(tool, "description", "")
             specs.append(
                 {
                     "type": "function",
                     "function": {
-                        "name": getattr(tool, "key", tool.name),
-                        "description": tool.description or "",
+                        "name": name,
+                        "description": description,
                         "parameters": params,
                     },
                 }
