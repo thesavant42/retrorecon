@@ -1,6 +1,6 @@
 import atexit
 import logging
-from typing import Optional, List
+from typing import Optional, List, Any
 
 import anyio
 from mcp.client.session_group import (
@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 _mcp_server: Optional[RetroReconMCPServer] = None
 _memory_group: Optional[ClientSessionGroup] = None
 _memory_portal: Optional[BlockingPortal] = None
+# Optional context manager returned by ``start_blocking_portal``.
+_memory_portal_cm: Optional[Any] = None
 
 
 def start_mcp_sqlite(db_path: str) -> RetroReconMCPServer:
@@ -86,13 +88,24 @@ def _start_memory_module(cfg) -> None:
                 sse_read_timeout=mem.get("sse_read_timeout", 300),
             )
 
-        portal = start_blocking_portal()
+        portal_ctx = start_blocking_portal()
+        # ``start_blocking_portal`` returns a context manager in normal usage.
+        # Test suites may monkeypatch it to return a plain portal instance, so
+        # handle both cases here.
+        if hasattr(portal_ctx, "__enter__"):
+            portal = portal_ctx.__enter__()
+        else:
+            portal = portal_ctx
+            portal_ctx = None
+
         group = ClientSessionGroup()
         portal.call(group.__aenter__)
         portal.call(group.connect_to_server, params)
         tools = list(group.tools.keys())
         _memory_group = group
         _memory_portal = portal
+        global _memory_portal_cm
+        _memory_portal_cm = portal_ctx
         target = " ".join(cmd) if transport == "stdio" else mem.get("url", "")
         logger.debug("Memory MCP module started: %s", target)
         if tools:
@@ -105,7 +118,7 @@ def _start_memory_module(cfg) -> None:
 
 def _stop_memory_module() -> None:
     """Terminate the memory MCP client if running."""
-    global _memory_group, _memory_portal
+    global _memory_group, _memory_portal, _memory_portal_cm
     if _memory_group is None or _memory_portal is None:
         return
     try:
@@ -115,6 +128,9 @@ def _stop_memory_module() -> None:
     finally:
         logger.debug("Memory MCP module stopped")
         _memory_group = None
-        if _memory_portal is not None:
+        if _memory_portal_cm is not None:
+            _memory_portal_cm.__exit__(None, None, None)
+            _memory_portal_cm = None
+        elif _memory_portal is not None:
             _memory_portal.stop()
-            _memory_portal = None
+        _memory_portal = None
