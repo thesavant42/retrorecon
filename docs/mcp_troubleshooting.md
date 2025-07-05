@@ -70,7 +70,7 @@ The `mcp/fetch` server typically exposes a tool (or tools) that can take a URL a
                 {
                     "name": "memory",
                     "transport": "stdio", # New field
-                    "command": ["npx", "@modelcontextprotocol/server-memory"], # New field
+                    "command": ["basic-memory", "mcp", "--transport", "stdio"], # New field
                     "model": "memory",
                     "description": "A memory server for storing and retrieving information.",
                 },
@@ -148,10 +148,10 @@ By addressing the fundamental difference in communication mechanisms for STDIO v
 
 To help diagnose the `memory` and `sequential-thinking` server issues, please run the following commands in your Windows 11 Command Prompt or PowerShell and provide the output:
 
-### Verify `npx` Path:
+### Verify `basic-memory` Command:
 
 ```cmd
-where npx
+where basic-memory
 ```
 
 ### RetroRecon Debug Logging:
