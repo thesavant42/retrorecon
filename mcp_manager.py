@@ -16,10 +16,17 @@ from retrorecon.mcp import RetroReconMCPServer, load_config
 logger = logging.getLogger(__name__)
 
 _mcp_server: Optional[RetroReconMCPServer] = None
+# Active MCP server for memory module
 _memory_group: Optional[ClientSessionGroup] = None
 _memory_portal: Optional[BlockingPortal] = None
 # Optional context manager returned by ``start_blocking_portal``.
 _memory_portal_cm: Optional[Any] = None
+
+# Active MCP server for fetch module
+_fetch_group: Optional[ClientSessionGroup] = None
+_fetch_portal: Optional[BlockingPortal] = None
+# Optional context manager returned by ``start_blocking_portal`` for fetch module
+_fetch_portal_cm: Optional[Any] = None
 
 
 def start_mcp_sqlite(db_path: str) -> RetroReconMCPServer:
@@ -30,6 +37,7 @@ def start_mcp_sqlite(db_path: str) -> RetroReconMCPServer:
         cfg.db_path = db_path
         _mcp_server = RetroReconMCPServer(config=cfg)
         _start_memory_module(cfg)
+        _start_fetch_module(cfg)
     else:
         _mcp_server.update_database_path(db_path)
     return _mcp_server
@@ -45,6 +53,11 @@ def get_memory_group() -> Optional[ClientSessionGroup]:
     return _memory_group
 
 
+def get_fetch_group() -> Optional[ClientSessionGroup]:
+    """Return the active MCP client session group for fetch module."""
+    return _fetch_group
+
+
 def stop_mcp_sqlite() -> None:
     """Cleanup the embedded MCP server instance."""
     global _mcp_server
@@ -52,6 +65,7 @@ def stop_mcp_sqlite() -> None:
         _mcp_server.cleanup()
     _mcp_server = None
     _stop_memory_module()
+    _stop_fetch_module()
 
 
 atexit.register(stop_mcp_sqlite)
@@ -134,3 +148,79 @@ def _stop_memory_module() -> None:
         elif _memory_portal is not None:
             _memory_portal.stop()
         _memory_portal = None
+
+
+def _start_fetch_module(cfg) -> None:
+    """Launch the fetch MCP module if configured and announce its tools."""
+    global _fetch_group, _fetch_portal
+    if _fetch_group is not None:
+        return
+    servers = cfg.mcp_servers or []
+    fetch = next((s for s in servers if s.get("name") == "fetch"), None)
+    if not fetch:
+        return
+    transport = fetch.get("transport", "stdio")
+    cmd: List[str] = fetch.get("command") or []
+    try:
+        if transport == "stdio":
+            if not cmd:
+                return
+            params = StdioServerParameters(command=cmd[0], args=cmd[1:])
+        elif transport == "sse":
+            params = SseServerParameters(
+                url=fetch.get("url", ""),
+                headers=fetch.get("headers"),
+                timeout=fetch.get("timeout", 5),
+                sse_read_timeout=fetch.get("sse_read_timeout", 300),
+            )
+        else:
+            params = StreamableHttpParameters(
+                url=fetch.get("url", ""),
+                headers=fetch.get("headers"),
+                timeout=fetch.get("timeout", 30),
+                sse_read_timeout=fetch.get("sse_read_timeout", 300),
+            )
+
+        portal_ctx = start_blocking_portal()
+        if hasattr(portal_ctx, "__enter__"):
+            portal = portal_ctx.__enter__()
+        else:
+            portal = portal_ctx
+            portal_ctx = None
+
+        group = ClientSessionGroup()
+        portal.call(group.__aenter__)
+        portal.call(group.connect_to_server, params)
+        tools = list(group.tools.keys())
+        _fetch_group = group
+        _fetch_portal = portal
+        global _fetch_portal_cm
+        _fetch_portal_cm = portal_ctx
+        target = " ".join(cmd) if transport == "stdio" else fetch.get("url", "")
+        logger.debug("Fetch MCP module started: %s", target)
+        if tools:
+            logger.debug("Fetch MCP tools: %s", ", ".join(tools))
+    except FileNotFoundError:
+        logger.error("Fetch MCP command not found: %s", " ".join(cmd))
+    except Exception as exc:
+        logger.error("Failed to start fetch MCP module: %s", exc)
+
+
+def _stop_fetch_module() -> None:
+    """Terminate the fetch MCP client if running."""
+    global _fetch_group, _fetch_portal, _fetch_portal_cm
+    if _fetch_group is None or _fetch_portal is None:
+        return
+    try:
+        _fetch_portal.call(_fetch_group.__aexit__, None, None, None)
+    except Exception:
+        pass
+    finally:
+        logger.debug("Fetch MCP module stopped")
+        _fetch_group = None
+        if _fetch_portal_cm is not None:
+            _fetch_portal_cm.__exit__(None, None, None)
+            _fetch_portal_cm = None
+        elif _fetch_portal is not None:
+            _fetch_portal.stop()
+        _fetch_portal = None
