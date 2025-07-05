@@ -3,15 +3,19 @@ import logging
 from typing import Optional, List
 
 import anyio
-from fastmcp import Client
-from fastmcp.client.transports import StdioTransport
+from mcp.client.session_group import (
+    ClientSessionGroup,
+    StdioServerParameters,
+    SseServerParameters,
+    StreamableHttpParameters,
+)
 
 from retrorecon.mcp import RetroReconMCPServer, load_config
 
 logger = logging.getLogger(__name__)
 
 _mcp_server: Optional[RetroReconMCPServer] = None
-_memory_client: Optional[Client] = None
+_memory_group: Optional[ClientSessionGroup] = None
 
 
 def start_mcp_sqlite(db_path: str) -> RetroReconMCPServer:
@@ -32,6 +36,11 @@ def get_mcp_server() -> Optional[RetroReconMCPServer]:
     return _mcp_server
 
 
+def get_memory_group() -> Optional[ClientSessionGroup]:
+    """Return the active MCP client session group for memory module."""
+    return _memory_group
+
+
 def stop_mcp_sqlite() -> None:
     """Cleanup the embedded MCP server instance."""
     global _mcp_server
@@ -46,55 +55,65 @@ atexit.register(stop_mcp_sqlite)
 
 def _start_memory_module(cfg) -> None:
     """Launch the memory MCP module if configured and announce its tools."""
-    global _memory_client
-    if _memory_client is not None:
+    global _memory_group
+    if _memory_group is not None:
         return
     servers = cfg.mcp_servers or []
     mem = next((s for s in servers if s.get("name") == "memory"), None)
-    if not mem or mem.get("transport") != "stdio":
+    if not mem:
         return
+    transport = mem.get("transport", "stdio")
     cmd: List[str] = mem.get("command") or []
-    if not cmd:
-        return
     try:
-        transport = StdioTransport(command=cmd[0], args=cmd[1:])
-        client = Client(transport)
+        if transport == "stdio":
+            if not cmd:
+                return
+            params = StdioServerParameters(command=cmd[0], args=cmd[1:])
+        elif transport == "sse":
+            params = SseServerParameters(
+                url=mem.get("url", ""),
+                headers=mem.get("headers"),
+                timeout=mem.get("timeout", 5),
+                sse_read_timeout=mem.get("sse_read_timeout", 300),
+            )
+        else:
+            params = StreamableHttpParameters(
+                url=mem.get("url", ""),
+                headers=mem.get("headers"),
+                timeout=mem.get("timeout", 30),
+                sse_read_timeout=mem.get("sse_read_timeout", 300),
+            )
 
-        async def _init_client() -> tuple[Client, List[str]]:
-            with anyio.fail_after(10):
-                await client._connect()
-            tools: List[str] = []
-            try:
-                with anyio.fail_after(5):
-                    result = await client.list_tools_mcp()
-                    tools = [t.name for t in result.tools]
-            except Exception as exc:
-                logger.error("Failed to list memory MCP tools: %s", exc)
-            return client, tools
+        async def _init_group() -> tuple[ClientSessionGroup, List[str]]:
+            group = ClientSessionGroup()
+            await group.__aenter__()
+            await group.connect_to_server(params)
+            tools = list(group.tools.keys())
+            return group, tools
 
-        _memory_client, tools = anyio.run(_init_client)
-        logger.debug("Memory MCP module started: %s", cmd)
+        _memory_group, tools = anyio.run(_init_group)
+        target = " ".join(cmd) if transport == "stdio" else mem.get("url", "")
+        logger.debug("Memory MCP module started: %s", target)
         if tools:
             logger.debug("Memory MCP tools: %s", ", ".join(tools))
     except FileNotFoundError:
-        logger.error("Memory MCP command not found: %s", cmd)
+        logger.error("Memory MCP command not found: %s", " ".join(cmd))
     except Exception as exc:
         logger.error("Failed to start memory MCP module: %s", exc)
 
 
 def _stop_memory_module() -> None:
     """Terminate the memory MCP client if running."""
-    global _memory_client
-    if _memory_client is None:
+    global _memory_group
+    if _memory_group is None:
         return
     try:
         async def _disconnect() -> None:
-            with anyio.fail_after(5):
-                await _memory_client._disconnect()
+            await _memory_group.__aexit__(None, None, None)
 
         anyio.run(_disconnect)
     except Exception:
         pass
     finally:
         logger.debug("Memory MCP module stopped")
-        _memory_client = None
+        _memory_group = None

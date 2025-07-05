@@ -5,21 +5,12 @@ import json
 import datetime
 from typing import Dict, Any, List, Optional
 import anyio
-from fastmcp import FastMCP
-from mcp.types import TextContent
+from mcp.server.fastmcp import FastMCP
+from mcp import types
 import httpx
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from ..windows_tz import to_iana
-try:
-    from fastmcp.tools import FunctionTool
-except Exception:  # pragma: no cover - fallback for older fastmcp
-    class FunctionTool:
-        """Minimal stub when fastmcp lacks FunctionTool."""
-
-        @staticmethod
-        def from_function(func, name=None, description=None):
-            return func
 from .config import MCPConfig, load_config
 
 logger = logging.getLogger(__name__)
@@ -177,7 +168,7 @@ class RetroReconMCPServer:
         async def _run_call():
             from fastmcp.server.context import Context
             async with Context(self.server):
-                return await self.server._call_tool(name, args)
+                return await self.server.call_tool(name, args)
 
         try:
             result = anyio.run(_run_call)
@@ -208,37 +199,25 @@ class RetroReconMCPServer:
 
     # tools
     def _create_read_query_tool(self):
-        async def read_query(query: str, params: list[Any] | None = None) -> TextContent:
+        async def read_query(query: str, params: list[Any] | None = None) -> types.TextContent:
             return await self.handle_read_query(query, params)
 
-        return FunctionTool.from_function(
-            read_query,
-            name="read_query",
-            description="Execute a SELECT query on the RetroRecon database",
-        )
+        return read_query
 
     def _create_list_tables_tool(self):
-        async def list_tables() -> TextContent:
+        async def list_tables() -> types.TextContent:
             return await self.handle_list_tables()
 
-        return FunctionTool.from_function(
-            list_tables,
-            name="list_tables",
-            description="List tables in the current database",
-        )
+        return list_tables
 
     def _create_describe_table_tool(self):
-        async def describe_table(table: str) -> TextContent:
+        async def describe_table(table: str) -> types.TextContent:
             return await self.handle_describe_table(table)
 
-        return FunctionTool.from_function(
-            describe_table,
-            name="describe_table",
-            description="Describe table columns",
-        )
+        return describe_table
 
     def _create_time_now_tool(self):
-        async def time_now(timezone: str | None = None) -> TextContent:
+        async def time_now(timezone: str | None = None) -> types.TextContent:
             tz_name = timezone or "UTC"
             mapped = to_iana(tz_name) if tz_name else None
             if mapped:
@@ -248,13 +227,9 @@ class RetroReconMCPServer:
             except ZoneInfoNotFoundError:
                 tz = ZoneInfo("UTC")
             now = datetime.datetime.now(tz)
-            return TextContent(type="text", text=now.strftime("%Y-%m-%d %H:%M:%S %Z"))
+            return types.TextContent(type="text", text=now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 
-        return FunctionTool.from_function(
-            time_now,
-            name="time_now",
-            description="Return the current time in a given timezone",
-        )
+        return time_now
 
     # connection helpers
     def get_connection(self):
@@ -335,38 +310,38 @@ class RetroReconMCPServer:
             }
 
     # handlers
-    async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> TextContent:
+    async def handle_read_query(self, query: str, params: Optional[List[Any]] = None) -> types.TextContent:
         logger.debug("handle_read_query %s", query)
         try:
             results = self.execute_query(query, params)
             if results["count"] == 0:
-                return TextContent(type="text", text="No results found for the query.")
+                return types.TextContent(type="text", text="No results found for the query.")
             formatted = self._format_query_results(results)
-            return TextContent(type="text", text=formatted)
+            return types.TextContent(type="text", text=formatted)
         except Exception as exc:
             logger.error("Query execution failed: %s", exc)
-            return TextContent(type="text", text=f"Query execution failed: {exc}")
+            return types.TextContent(type="text", text=f"Query execution failed: {exc}")
 
-    async def handle_list_tables(self) -> TextContent:
+    async def handle_list_tables(self) -> types.TextContent:
         logger.debug("handle_list_tables")
         try:
             q = "SELECT name FROM sqlite_master WHERE type='table'"
             results = self.execute_query(q)
             tables = [r[0] for r in results["rows"]]
-            return TextContent(type="text", text="\n".join(tables))
+            return types.TextContent(type="text", text="\n".join(tables))
         except Exception as exc:
             logger.error("List tables failed: %s", exc)
-            return TextContent(type="text", text=f"Failed to list tables: {exc}")
+            return types.TextContent(type="text", text=f"Failed to list tables: {exc}")
 
-    async def handle_describe_table(self, table: str) -> TextContent:
+    async def handle_describe_table(self, table: str) -> types.TextContent:
         logger.debug("handle_describe_table %s", table)
         try:
             q = f"PRAGMA table_info({table})"
             results = self.execute_query(q)
-            return TextContent(type="text", text=self._format_query_results(results))
+            return types.TextContent(type="text", text=self._format_query_results(results))
         except Exception as exc:
             logger.error("Describe table failed: %s", exc)
-            return TextContent(type="text", text=f"Failed to describe table: {exc}")
+            return types.TextContent(type="text", text=f"Failed to describe table: {exc}")
 
     # formatting helper
     def _format_query_results(self, results: Dict[str, Any]) -> str:
