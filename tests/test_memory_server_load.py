@@ -37,7 +37,15 @@ def test_memory_server_started(monkeypatch, tmp_path):
 
     monkeypatch.setattr(mcp_manager, 'StdioTransport', DummyTransport)
     monkeypatch.setattr(mcp_manager, 'Client', DummyClient)
+
+    from contextlib import asynccontextmanager
+
+    @asynccontextmanager
+    async def DummyFailAfter(*args, **kwargs):
+        yield
+
     monkeypatch.setattr(mcp_manager.anyio, 'run', lambda func: asyncio.run(func()))
+    monkeypatch.setattr(mcp_manager.anyio, 'fail_after', lambda *a, **k: DummyFailAfter())
     mcp_manager.stop_mcp_sqlite()
 
     mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))
