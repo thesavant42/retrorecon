@@ -20,32 +20,25 @@ def test_memory_server_started(monkeypatch, tmp_path):
 
     captured = {}
 
-    class DummyTransport:
-        def __init__(self, command, args):
-            captured['command'] = command
-            captured['args'] = args
+    class DummyGroup:
+        async def __aenter__(self):
+            captured['entered'] = True
+            return self
 
-    class DummyClient:
-        def __init__(self, transport):
-            captured['transport'] = transport
-        async def _connect(self):
-            pass
-        async def list_tools_mcp(self):
-            class R:
-                tools = []
-            return R()
+        async def __aexit__(self, exc_type, exc, tb):
+            captured['exited'] = True
 
-    monkeypatch.setattr(mcp_manager, 'StdioTransport', DummyTransport)
-    monkeypatch.setattr(mcp_manager, 'Client', DummyClient)
+        async def connect_to_server(self, params):
+            captured['command'] = params.command
+            captured['args'] = params.args
 
-    from contextlib import contextmanager
+        @property
+        def tools(self):
+            return {}
 
-    @contextmanager
-    def DummyFailAfter(*args, **kwargs):
-        yield
+    monkeypatch.setattr(mcp_manager, 'ClientSessionGroup', lambda: DummyGroup())
 
     monkeypatch.setattr(mcp_manager.anyio, 'run', lambda func: asyncio.run(func()))
-    monkeypatch.setattr(mcp_manager.anyio, 'fail_after', lambda *a, **k: DummyFailAfter())
     mcp_manager.stop_mcp_sqlite()
 
     mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))

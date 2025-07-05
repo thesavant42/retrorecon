@@ -78,7 +78,7 @@ def test_time_fallback(monkeypatch, tmp_path):
     def fake_call(name, args):
         raise Exception("Unknown time zone")
 
-    monkeypatch.setattr(server.server, "_call_tool", fake_call)
+    monkeypatch.setattr(server.server, "call_tool", fake_call)
 
     resp = server._call_tool("time_now", {"timezone": "Pacific Standard Time"})
     assert resp["type"] == "text"
@@ -102,7 +102,7 @@ def test_windows_timezone_mapping(monkeypatch, tmp_path):
         captured["tz"] = args.get("timezone")
         return FakeResult()
 
-    monkeypatch.setattr(server.server, "_call_tool", fake_call)
+    monkeypatch.setattr(server.server, "call_tool", fake_call)
 
     resp = server._call_tool("time_now", {"timezone": "Pacific Standard Time"})
     assert captured["tz"] == "America/Los_Angeles"
