@@ -9,6 +9,7 @@ from mcp.client.session_group import (
     SseServerParameters,
     StreamableHttpParameters,
 )
+from anyio.from_thread import start_blocking_portal, BlockingPortal
 
 from retrorecon.mcp import RetroReconMCPServer, load_config
 
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 _mcp_server: Optional[RetroReconMCPServer] = None
 _memory_group: Optional[ClientSessionGroup] = None
+_memory_portal: Optional[BlockingPortal] = None
 
 
 def start_mcp_sqlite(db_path: str) -> RetroReconMCPServer:
@@ -55,7 +57,7 @@ atexit.register(stop_mcp_sqlite)
 
 def _start_memory_module(cfg) -> None:
     """Launch the memory MCP module if configured and announce its tools."""
-    global _memory_group
+    global _memory_group, _memory_portal
     if _memory_group is not None:
         return
     servers = cfg.mcp_servers or []
@@ -84,14 +86,13 @@ def _start_memory_module(cfg) -> None:
                 sse_read_timeout=mem.get("sse_read_timeout", 300),
             )
 
-        async def _init_group() -> tuple[ClientSessionGroup, List[str]]:
-            group = ClientSessionGroup()
-            await group.__aenter__()
-            await group.connect_to_server(params)
-            tools = list(group.tools.keys())
-            return group, tools
-
-        _memory_group, tools = anyio.run(_init_group)
+        portal = start_blocking_portal()
+        group = ClientSessionGroup()
+        portal.call(group.__aenter__)
+        portal.call(group.connect_to_server, params)
+        tools = list(group.tools.keys())
+        _memory_group = group
+        _memory_portal = portal
         target = " ".join(cmd) if transport == "stdio" else mem.get("url", "")
         logger.debug("Memory MCP module started: %s", target)
         if tools:
@@ -104,16 +105,16 @@ def _start_memory_module(cfg) -> None:
 
 def _stop_memory_module() -> None:
     """Terminate the memory MCP client if running."""
-    global _memory_group
-    if _memory_group is None:
+    global _memory_group, _memory_portal
+    if _memory_group is None or _memory_portal is None:
         return
     try:
-        async def _disconnect() -> None:
-            await _memory_group.__aexit__(None, None, None)
-
-        anyio.run(_disconnect)
+        _memory_portal.call(_memory_group.__aexit__, None, None, None)
     except Exception:
         pass
     finally:
         logger.debug("Memory MCP module stopped")
         _memory_group = None
+        if _memory_portal is not None:
+            _memory_portal.stop()
+            _memory_portal = None
