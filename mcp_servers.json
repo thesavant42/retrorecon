@@ -1,0 +1,9 @@
+[
+  {
+    "name": "memory",
+    "transport": "stdio",
+    "command": ["npx", "@modelcontextprotocol/server-memory"],
+    "model": "memory",
+    "description": "A memory server for storing and retrieving information."
+  }
+]

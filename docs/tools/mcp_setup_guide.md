@@ -25,3 +25,54 @@ queried during startup. Healthy services are mounted under their configuration
 name and their tools automatically become available to the LLM with the prefix
 `<name>_`. No manual code changes are required for additional modules—simply add
 an entry in the MCP configuration.
+
+## MCP Server Configuration Example
+
+External servers can be defined in a YAML file such as `mcp_servers.yaml`.
+Each entry specifies how the server should be launched or contacted:
+
+```yaml
+- name: memory
+  transport: stdio
+  command: ["npx", "@modelcontextprotocol/server-memory"]
+  model: memory
+  description: A memory server for storing and retrieving information.
+```
+
+Place this file where your RetroRecon instance can load it (for example in the
+project root) and ensure the application reads it on startup.
+
+## Launching the Server
+
+When using the `stdio` transport, RetroRecon starts the MCP server as a
+subprocess. A simplified example looks like this:
+
+```python
+import subprocess
+
+proc = subprocess.Popen(
+    ["npx", "@modelcontextprotocol/server-memory"],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    text=True,
+)
+```
+
+RetroRecon keeps the process handle and communicates with the server through the
+captured `stdin` and `stdout` streams.
+
+## Listing Available Tools
+
+To query a running server for its tool metadata, create a FastMCP client. The
+client can introspect the server and return its registered tools:
+
+```python
+from fastmcp import StdioClient
+
+client = StdioClient(proc.stdout, proc.stdin)
+metadata = client.get_metadata()
+print(metadata.tools)
+```
+
+The returned list contains tool names and schemas, which RetroRecon uses to
+register each tool under the `<server>_` prefix for the LLM.
