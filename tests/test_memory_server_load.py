@@ -38,7 +38,16 @@ def test_memory_server_started(monkeypatch, tmp_path):
 
     monkeypatch.setattr(mcp_manager, 'ClientSessionGroup', lambda: DummyGroup())
 
-    monkeypatch.setattr(mcp_manager.anyio, 'run', lambda func: asyncio.run(func()))
+    class DummyPortal:
+        def call(self, func, *args, **kwargs):
+            if asyncio.iscoroutinefunction(func):
+                return asyncio.run(func(*args, **kwargs))
+            return func(*args, **kwargs)
+
+        def stop(self):
+            captured['stopped'] = True
+
+    monkeypatch.setattr(mcp_manager, 'start_blocking_portal', lambda: DummyPortal())
     mcp_manager.stop_mcp_sqlite()
 
     mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))
