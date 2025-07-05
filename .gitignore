@@ -5,6 +5,7 @@ db/*.db
 *.json
 !data/demo_data.json
 !secrets.example.json
+!mcp_servers.json
 !frontend/package.json
 !frontend/.stylelintrc.json
 frontend/node_modules/

@@ -1,7 +1,10 @@
 import os
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List, Dict
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 @dataclass
 class MCPConfig:
     """Configuration values for the MCP server."""
@@ -14,7 +17,7 @@ class MCPConfig:
     api_key: Optional[str] = None
     timeout: int = 20
     alt_api_bases: list[str] = field(default_factory=list)
-    mcp_servers: dict | None = None
+    mcp_servers: List[Dict[str, object]] | None = None
 
 
 def load_config() -> MCPConfig:
@@ -39,6 +42,13 @@ def load_config() -> MCPConfig:
     alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
 
     servers_cfg = None
+    cfg_file = os.getenv("RETRORECON_MCP_SERVERS_FILE", "mcp_servers.json")
+    if os.path.exists(cfg_file):
+        try:
+            with open(cfg_file, "r", encoding="utf-8") as fh:
+                servers_cfg = json.load(fh)
+        except Exception as exc:
+            logger.error("Failed to load MCP server config: %s", exc)
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,
