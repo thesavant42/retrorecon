@@ -38,10 +38,10 @@ def test_memory_server_started(monkeypatch, tmp_path):
     monkeypatch.setattr(mcp_manager, 'StdioTransport', DummyTransport)
     monkeypatch.setattr(mcp_manager, 'Client', DummyClient)
 
-    from contextlib import asynccontextmanager
+    from contextlib import contextmanager
 
-    @asynccontextmanager
-    async def DummyFailAfter(*args, **kwargs):
+    @contextmanager
+    def DummyFailAfter(*args, **kwargs):
         yield
 
     monkeypatch.setattr(mcp_manager.anyio, 'run', lambda func: asyncio.run(func()))

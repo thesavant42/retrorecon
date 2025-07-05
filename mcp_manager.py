@@ -61,11 +61,11 @@ def _start_memory_module(cfg) -> None:
         client = Client(transport)
 
         async def _init_client() -> tuple[Client, List[str]]:
-            async with anyio.fail_after(10):
+            with anyio.fail_after(10):
                 await client._connect()
             tools: List[str] = []
             try:
-                async with anyio.fail_after(5):
+                with anyio.fail_after(5):
                     result = await client.list_tools_mcp()
                     tools = [t.name for t in result.tools]
             except Exception as exc:
@@ -89,7 +89,7 @@ def _stop_memory_module() -> None:
         return
     try:
         async def _disconnect() -> None:
-            async with anyio.fail_after(5):
+            with anyio.fail_after(5):
                 await _memory_client._disconnect()
 
         anyio.run(_disconnect)
