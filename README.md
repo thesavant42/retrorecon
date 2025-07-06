@@ -52,6 +52,11 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 
 ## ⏱️ Quickstart
 
+### IMPORTANT! READ ME
+Windows: MCP Servers using stdio need the full path to the command interpreter!
+Python = `venv\\Scripts\\python.exe`
+npx = `C:\\Program Files\\nodejs\\npx.exe`  
+
 ```bash
 git clone https://github.com/thesavant42/retrorecon.git
 cd retrorecon
