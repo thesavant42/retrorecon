@@ -1,5 +1,6 @@
 import atexit
 import logging
+import sys
 from typing import Optional, List, Any
 
 import anyio
@@ -115,7 +116,11 @@ def _start_memory_module(cfg) -> None:
         async def _initialize() -> ClientSessionGroup:
             group = ClientSessionGroup()
             await group.__aenter__()
-            await group.connect_to_server(params)
+            try:
+                await group.connect_to_server(params)
+            except Exception:
+                await group.__aexit__(*sys.exc_info())
+                raise
             return group
 
         try:
@@ -202,7 +207,11 @@ def _start_fetch_module(cfg) -> None:
         async def _initialize() -> ClientSessionGroup:
             group = ClientSessionGroup()
             await group.__aenter__()
-            await group.connect_to_server(params)
+            try:
+                await group.connect_to_server(params)
+            except Exception:
+                await group.__aexit__(*sys.exc_info())
+                raise
             return group
 
         try:
