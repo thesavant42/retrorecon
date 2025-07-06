@@ -112,9 +112,13 @@ def _start_memory_module(cfg) -> None:
             portal = portal_ctx
             portal_ctx = None
 
-        group = ClientSessionGroup()
-        portal.call(group.__aenter__)
-        portal.call(group.connect_to_server, params)
+        async def _initialize() -> ClientSessionGroup:
+            group = ClientSessionGroup()
+            await group.__aenter__()
+            await group.connect_to_server(params)
+            return group
+
+        group = portal.call(_initialize)
         tools = list(group.tools.keys())
         _memory_group = group
         _memory_portal = portal
@@ -188,9 +192,13 @@ def _start_fetch_module(cfg) -> None:
             portal = portal_ctx
             portal_ctx = None
 
-        group = ClientSessionGroup()
-        portal.call(group.__aenter__)
-        portal.call(group.connect_to_server, params)
+        async def _initialize() -> ClientSessionGroup:
+            group = ClientSessionGroup()
+            await group.__aenter__()
+            await group.connect_to_server(params)
+            return group
+
+        group = portal.call(_initialize)
         tools = list(group.tools.keys())
         _fetch_group = group
         _fetch_portal = portal
