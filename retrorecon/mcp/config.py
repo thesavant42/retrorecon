@@ -15,7 +15,7 @@ class MCPConfig:
     temperature: float = 0.1
     row_limit: int = 100
     api_key: Optional[str] = None
-    timeout: int = 20
+    timeout: int = 60
     alt_api_bases: list[str] = field(default_factory=list)
     mcp_servers: List[Dict[str, object]] | None = None
 
@@ -35,9 +35,9 @@ def load_config() -> MCPConfig:
     except ValueError:
         row_limit = 100
     try:
-        timeout = int(os.getenv("RETRORECON_MCP_TIMEOUT", "20"))
+        timeout = int(os.getenv("RETRORECON_MCP_TIMEOUT", "60"))
     except ValueError:
-        timeout = 20
+        timeout = 60
     alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
     alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
 
