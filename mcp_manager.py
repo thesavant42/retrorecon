@@ -118,7 +118,14 @@ def _start_memory_module(cfg) -> None:
             await group.connect_to_server(params)
             return group
 
-        group = portal.call(_initialize)
+        try:
+            group = portal.call(_initialize)
+        except Exception as exc:
+            if portal_ctx is not None:
+                portal_ctx.__exit__(None, None, None)
+            else:
+                portal.stop()
+            raise
         tools = list(group.tools.keys())
         _memory_group = group
         _memory_portal = portal
@@ -198,7 +205,14 @@ def _start_fetch_module(cfg) -> None:
             await group.connect_to_server(params)
             return group
 
-        group = portal.call(_initialize)
+        try:
+            group = portal.call(_initialize)
+        except Exception:
+            if portal_ctx is not None:
+                portal_ctx.__exit__(None, None, None)
+            else:
+                portal.stop()
+            raise
         tools = list(group.tools.keys())
         _fetch_group = group
         _fetch_portal = portal
