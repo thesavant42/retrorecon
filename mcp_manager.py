@@ -125,7 +125,7 @@ def _start_memory_module(cfg) -> None:
 
         try:
             group = portal.call(_initialize)
-        except Exception as exc:
+        except BaseException as exc:
             if portal_ctx is not None:
                 portal_ctx.__exit__(None, None, None)
             else:
@@ -153,7 +153,7 @@ def _stop_memory_module() -> None:
         return
     try:
         _memory_portal.call(_memory_group.__aexit__, None, None, None)
-    except Exception:
+    except BaseException:
         pass
     finally:
         logger.debug("Memory MCP module stopped")
@@ -216,7 +216,7 @@ def _start_fetch_module(cfg) -> None:
 
         try:
             group = portal.call(_initialize)
-        except Exception:
+        except BaseException:
             if portal_ctx is not None:
                 portal_ctx.__exit__(None, None, None)
             else:
@@ -244,7 +244,7 @@ def _stop_fetch_module() -> None:
         return
     try:
         _fetch_portal.call(_fetch_group.__aexit__, None, None, None)
-    except Exception:
+    except BaseException:
         pass
     finally:
         logger.debug("Fetch MCP module stopped")
