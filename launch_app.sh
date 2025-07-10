@@ -4,23 +4,24 @@ cd "$(dirname "$0")"
 
 git pull
 
-LISTEN_ADDR="127.0.0.1"
-while getopts "l:" opt; do
-  case $opt in
-    l)
-      LISTEN_ADDR="$OPTARG"
-      ;;
-  esac
-done
+LISTEN_ADDR=""
+DB_PATH=""
 
-shift $((OPTIND -1))
-
-# Accept optional DB path after -l
-if [ -z "$1" ]; then
-  DB_PATH="$(pwd)/db/waybax.db"
-else
-  DB_PATH="$1"
+if [ -f launch_config.json ]; then
+  LISTEN_ADDR=$(python3 - <<'EOF'
+import json,sys
+print(json.load(open('launch_config.json')).get('listen_addr',''))
+EOF
+  )
+  DB_PATH=$(python3 - <<'EOF'
+import json,sys
+print(json.load(open('launch_config.json')).get('db_path',''))
+EOF
+  )
 fi
+
+[ -z "$LISTEN_ADDR" ] && LISTEN_ADDR="127.0.0.1"
+[ -z "$DB_PATH" ] && DB_PATH="$(pwd)/db/waybax.db"
 
 if [ ! -d venv ]; then
   python3 -m venv venv

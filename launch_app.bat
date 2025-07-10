@@ -1,19 +1,15 @@
 @echo off
 cd /d "%~dp0"
 
-set LISTEN_ADDR=127.0.0.1
-if "%1"=="-l" (
-    set LISTEN_ADDR=%2
-    shift
-    shift
-)
+set LISTEN_ADDR=
+set DB_PATH=
 
-REM Accept optional DB path as first argument after -l
-if "%1"=="" (
-    set DB_PATH=%cd%\db\waybax.db
-) else (
-    set DB_PATH=%1
-)
+REM Load options from launch_config.json if present
+for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command "(Get-Content -Raw launch_config.json | ConvertFrom-Json).listen_addr" 2^>nul`) do set LISTEN_ADDR=%%A
+for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command "(Get-Content -Raw launch_config.json | ConvertFrom-Json).db_path" 2^>nul`) do set DB_PATH=%%A
+
+if "%LISTEN_ADDR%"=="" set LISTEN_ADDR=127.0.0.1
+if "%DB_PATH%"=="" set DB_PATH=%cd%\db\waybax.db
 
 git pull
 
