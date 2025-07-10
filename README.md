@@ -70,11 +70,11 @@ Use `--help` to view available options for filtering, exporting, and source map 
 
 ## 🖥️ Running the Web Interface
 
-Launch the Flask UI with the provided scripts. The optional `-l` flag sets the listening address (default `127.0.0.1`).
+Launch the Flask UI with the provided scripts. Edit `launch_config.example.json` (copy to `launch_config.json`) to adjust the listening address or database path.
 
 ```bash
-./launch_app.sh -l 0.0.0.0   # Linux/macOS
-.\launch_app.bat -l 0.0.0.0  # Windows
+./launch_app.sh            # Linux/macOS
+.\launch_app.bat           # Windows
 ```
 
 These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.

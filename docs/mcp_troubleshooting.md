@@ -161,7 +161,7 @@ First, you will need to modify the RetroRecon logging configuration to `DEBUG` l
 After modifying the logging level, run RetroRecon as usual and capture the console output:
 
 ```cmd
-.\launch_app.bat -l 0.0.0.0 > retrorecon_debug_log.txt 2>&1
+.\launch_app.bat > retrorecon_debug_log.txt 2>&1
 ```
 
 Then, please provide the `retrorecon_debug_log.txt` file.

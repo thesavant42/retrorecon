@@ -8,6 +8,7 @@ db/*.db
 !mcp_servers.json
 !frontend/package.json
 !frontend/.stylelintrc.json
+!launch_config.example.json
 frontend/node_modules/
 node_modules/
 frontend/package-lock.json
