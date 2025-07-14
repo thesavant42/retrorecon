@@ -87,6 +87,11 @@ def _start_memory_module(cfg) -> None:
         if transport == "stdio":
             if not cmd:
                 return
+            if len(cmd) >= 3 and cmd[1] == "-m":
+                import importlib.util
+                if importlib.util.find_spec(cmd[2]) is None:
+                    logger.error("MCP module not installed: %s", cmd[2])
+                    return
             params = StdioServerParameters(command=cmd[0], args=cmd[1:])
         elif transport == "sse":
             params = SseServerParameters(
@@ -126,11 +131,15 @@ def _start_memory_module(cfg) -> None:
         try:
             group = portal.call(_initialize)
         except BaseException as exc:
-            if portal_ctx is not None:
-                portal_ctx.__exit__(None, None, None)
-            else:
-                portal.stop()
-            raise
+            try:
+                if portal_ctx is not None:
+                    portal_ctx.__exit__(type(exc), exc, exc.__traceback__)
+                else:
+                    portal.stop()
+            except BaseException:
+                pass
+            logger.error("Failed to start memory MCP module: %s", exc)
+            return
         tools = list(group.tools.keys())
         _memory_group = group
         _memory_portal = portal
@@ -181,6 +190,11 @@ def _start_fetch_module(cfg) -> None:
         if transport == "stdio":
             if not cmd:
                 return
+            if len(cmd) >= 3 and cmd[1] == "-m":
+                import importlib.util
+                if importlib.util.find_spec(cmd[2]) is None:
+                    logger.error("MCP module not installed: %s", cmd[2])
+                    return
             params = StdioServerParameters(command=cmd[0], args=cmd[1:])
         elif transport == "sse":
             params = SseServerParameters(
@@ -216,12 +230,16 @@ def _start_fetch_module(cfg) -> None:
 
         try:
             group = portal.call(_initialize)
-        except BaseException:
-            if portal_ctx is not None:
-                portal_ctx.__exit__(None, None, None)
-            else:
-                portal.stop()
-            raise
+        except BaseException as exc:
+            try:
+                if portal_ctx is not None:
+                    portal_ctx.__exit__(type(exc), exc, exc.__traceback__)
+                else:
+                    portal.stop()
+            except BaseException:
+                pass
+            logger.error("Failed to start fetch MCP module: %s", exc)
+            return
         tools = list(group.tools.keys())
         _fetch_group = group
         _fetch_portal = portal

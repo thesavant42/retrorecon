@@ -2,14 +2,14 @@
   {
     "name": "memory",
     "transport": "stdio",
-    "command": [".\\venv\\Scripts\\python.exe", "-m", "basic-memory", "mcp", "--transport", "stdio"],
+    "command": ["python", "-m", "basic-memory", "mcp", "--transport", "stdio"],
     "model": "memory",
     "description": "A memory server for storing and retrieving information."
   },
   {
     "name": "fetch",
     "transport": "stdio",
-    "command": [".\\venv\\Scripts\\python.exe", "-m", "mcp_server_fetch"],
+    "command": ["python", "-m", "mcp_server_fetch"],
     "description": "Fetch web content and convert to markdown."
   }
 ]
