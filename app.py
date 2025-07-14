@@ -590,13 +590,13 @@ def fetch_cdx() -> Response:
         if resume_key:
             url += f"&resumeKey={resume_key}"
 
-        status_mod.push_status('cdx_api_waiting', domain)
+        status_mod.push_status('cdx_api_waiting', f"Fetching CDX data for {domain}...")
         try:
-            status_mod.push_status('cdx_api_downloading', url)
+            status_mod.push_status('cdx_api_downloading', f"Downloading CDX page {page + 1} for {domain}...")
             resp = requests.get(url, timeout=20)
             resp.raise_for_status()
             data = resp.json()
-            status_mod.push_status('cdx_api_download_complete', url)
+            status_mod.push_status('cdx_api_download_complete', f"Downloaded CDX page {page + 1} for {domain}")
         except Exception as e:
             flash(f"Error fetching CDX data: {e}", "error")
             return redirect(url_for('index'))
@@ -635,15 +635,15 @@ def fetch_cdx() -> Response:
             inserted += 1
 
         page += 1
-        status_mod.push_status('cdx_page_processed', str(page))
+        status_mod.push_status('cdx_page_processed', f"Processed page {page} for {domain}, inserted {inserted} URLs so far")
 
         if not next_key:
             break
         resume_key = next_key
-        status_mod.push_status('cdx_resume_key', resume_key)
+        status_mod.push_status('cdx_resume_key', f"Continuing CDX import for {domain}...")
 
     message = f"Fetched CDX for {domain}: inserted {inserted} new URLs."
-    status_mod.push_status('cdx_import_complete', str(inserted))
+    status_mod.push_status('cdx_import_complete', f"CDX import complete for {domain}: {inserted} new URLs added")
     try:
         subdomain_utils.scrape_from_urls(domain)
     except Exception:

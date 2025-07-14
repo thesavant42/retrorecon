@@ -94,6 +94,43 @@ body {
   font-weight: bold;
   color: var(--accent-color);
   margin-left: 0;
+  max-width: 25em;
+  overflow: hidden;
+}
+
+/* Status text specific styling */
+.retrorecon-root #import-status-text {
+  display: inline-block;
+  max-width: 20em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: relative;
+}
+
+/* Scrolling animation for long status messages */
+.retrorecon-root #import-status-text.scrolling {
+  white-space: nowrap;
+  animation: scroll-text 8s linear infinite;
+}
+
+@keyframes scroll-text {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(0); }
+  80% { transform: translateX(calc(-100% + 20em)); }
+  100% { transform: translateX(calc(-100% + 20em)); }
+}
+
+/* Ensure navbar info section doesn't overflow */
+.retrorecon-root .navbar__info {
+  margin-left: 0;
+  margin-right: 1em;
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  min-width: 0;
+  flex-shrink: 1;
 }
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
@@ -392,13 +429,6 @@ body {
   justify-content: center;
   justify-self: center;
   gap: 5px;
-}
-.retrorecon-root .navbar__info {
-  margin-left: 0;
-  margin-right: 1em;
-  display: flex;
-  align-items: center;
-  justify-self: start;
 }
 .retrorecon-root .navbar__title h1 {
   margin: 0;

@@ -790,12 +790,22 @@
       const nums = document.getElementById('import-progress-numbers');
       const span = document.getElementById('import-progress-numbers-span');
       const status = (data && data.status) ? data.status : 'idle';
-      text.textContent = data.detail || status;
+      const message = data.detail || status;
+      
+      text.textContent = message;
+      
+      // Check if message is too long and needs scrolling
+      text.classList.remove('scrolling');
+      if (message.length > 40) {
+        text.classList.add('scrolling');
+      }
+      
       block.style.display = 'flex';
       if(status === 'idle'){
         barContainer.classList.add('d-none');
         nums.classList.add('d-none');
         bar.style.width = '0';
+        text.classList.remove('scrolling');
       } else {
         barContainer.classList.remove('d-none');
         if(data.total){
@@ -842,8 +852,18 @@
     function showStatus(msg){
       const text = document.getElementById('import-status-text');
       text.textContent = msg;
+      
+      // Check if message is too long and needs scrolling
+      text.classList.remove('scrolling');
+      if (msg.length > 40) {
+        text.classList.add('scrolling');
+      }
+      
       if(statusClear) clearTimeout(statusClear);
-      statusClear = setTimeout(() => { text.textContent = 'idle'; }, 3000);
+      statusClear = setTimeout(() => { 
+        text.textContent = 'idle'; 
+        text.classList.remove('scrolling');
+      }, 3000);
     }
     window.showStatus = showStatus;
 
