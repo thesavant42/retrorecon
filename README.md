@@ -97,6 +97,14 @@ rerun the launch script.
 For a quick walkthrough of the common workflow see
 [docs/new_user_guide.md](docs/new_user_guide.md).
 
+### MCP Server Configuration
+
+External MCP services are defined in a central `mcp_servers.json` file. The
+application loads this file from the project root by default or from the path
+specified by the `RETRORECON_MCP_SERVERS_FILE` environment variable. Each entry
+describes the server name, transport type and connection details. The built-in
+MCP manager starts any enabled services automatically when a database is loaded.
+
 ### Capture a Snap
 
 The **HTTPolaroid** tool can be triggered from the UI under `Tools → Active Recon`. It fetches a URL in a headless browser, follows redirects and saves the page, assets, headers and screenshot into a single zip file for download.
