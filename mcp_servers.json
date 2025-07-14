@@ -1,8 +1,8 @@
 [
   {
     "name": "fetch",
-    "transport": "stdio",
-    "command": ["python", "-m", "mcp_server_fetch"],
+    "transport": "sse",
+    "url": "http://localhost:3000/sse",
     "description": "Fetch web content and convert to markdown."
   }
 ]

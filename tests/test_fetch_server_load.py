@@ -12,8 +12,8 @@ def test_fetch_server_started(monkeypatch, tmp_path):
     cfg_file.write_text(json.dumps([
         {
             "name": "fetch",
-            "transport": "stdio",
-            "command": ["python", "-m", "mcp_server_fetch"],
+            "transport": "sse",
+            "url": "http://localhost:3000/sse"
         }
     ]))
     monkeypatch.setenv("RETRORECON_MCP_SERVERS_FILE", str(cfg_file))
@@ -29,8 +29,7 @@ def test_fetch_server_started(monkeypatch, tmp_path):
             captured['exited'] = True
 
         async def connect_to_server(self, params):
-            captured['command'] = params.command
-            captured['args'] = params.args
+            captured['url'] = params.url
 
         @property
         def tools(self):
@@ -51,7 +50,6 @@ def test_fetch_server_started(monkeypatch, tmp_path):
     mcp_manager.stop_mcp_sqlite()
 
     mcp_manager.start_mcp_sqlite(str(tmp_path / "db.sqlite"))
-    assert captured['command'] == "python"
-    assert captured['args'] == ["-m", "mcp_server_fetch"]
+    assert captured['url'] == "http://localhost:3000/sse"
     mcp_manager.stop_mcp_sqlite()
     monkeypatch.delenv("RETRORECON_MCP_SERVERS_FILE")
