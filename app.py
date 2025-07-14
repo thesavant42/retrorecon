@@ -948,13 +948,20 @@ def add_no_cache_headers(response: Response) -> Response:
     return response
 
 if __name__ == '__main__':
-    if env_db and app.config.get('DATABASE'):
-        with app.app_context():
-            if not os.path.exists(app.config['DATABASE']):
-                create_new_db(os.path.splitext(os.path.basename(env_db))[0])
-            else:
-                ensure_schema()
-        app.mcp_server = start_mcp_sqlite(app.config['DATABASE'])
-    host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
-    port = int(os.environ.get('RETRORECON_PORT', '5000'))
-    app.run(debug=True, host=host, port=port)
+    # Check if we're being run directly (not imported by launcher)
+    if len(sys.argv) > 1 and sys.argv[1] == '--direct':
+        # Direct mode - run without launcher setup
+        if env_db and app.config.get('DATABASE'):
+            with app.app_context():
+                if not os.path.exists(app.config['DATABASE']):
+                    create_new_db(os.path.splitext(os.path.basename(env_db))[0])
+                else:
+                    ensure_schema()
+            app.mcp_server = start_mcp_sqlite(app.config['DATABASE'])
+        host = os.environ.get('RETRORECON_LISTEN', '127.0.0.1')
+        port = int(os.environ.get('RETRORECON_PORT', '5000'))
+        app.run(debug=True, host=host, port=port)
+    else:
+        # Normal mode - use launcher for setup
+        from retrorecon.launcher import main
+        main()

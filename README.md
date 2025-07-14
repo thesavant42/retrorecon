@@ -70,6 +70,32 @@ Use `--help` to view available options for filtering, exporting, and source map 
 
 ## 🖥️ Running the Web Interface
 
+### Prerequisites
+
+The launcher scripts (`launch_app.sh` and `launch_app.bat`) require:
+- **Python virtual environment**: Create with `python -m venv venv`
+- **Dependencies installed**: Run `pip install -r requirements.txt` inside the virtual environment
+- **Git**: For automatic updates at startup
+
+The scripts will check for these prerequisites and warn if they're missing, but **will not auto-install** them.
+
+### Quick Setup
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate  # Linux/macOS
+# or
+venv\Scripts\activate.bat  # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Launch
+
 Launch the Flask UI with the provided scripts. Edit `launch_config.example.json` (copy to `launch_config.json`) to adjust the listening address or database path.
 
 ```bash
@@ -82,17 +108,13 @@ These scripts export `RETRORECON_LISTEN` so `app.py` binds accordingly.
 
 ### Vendored MCP SQLite Server
 
-`launch_app.sh` and `launch_app.bat` previously started the vendored Model
-Context Protocol server. This logic now lives inside the Flask application.
-Whenever a database is loaded or switched RetroRecon uses the built-in
-`RetroReconMCPServer` class pointing at the active database. No external
-process is launched; all communication happens directly in Python.
+`launch_app.sh` and `launch_app.bat` are now minimal wrappers that start the Flask application using the virtual environment's Python interpreter. All setup logic (git pull, configuration loading, environment variable setup, and database warnings) has been moved to Python code in the `retrorecon.launcher` module.
 
-You may mention in your system prompt that an MCP server is available within
-the application for executing safe SQL queries against the current database.
+RetroRecon uses the built-in `RetroReconMCPServer` class pointing at the active database. No external process is launched; all communication happens directly in Python.
 
-If dependency installation fails, delete the virtual environment directory and
-rerun the launch script.
+You may mention in your system prompt that an MCP server is available within the application for executing safe SQL queries against the current database.
+
+**Important**: The launcher scripts assume you have already created a virtual environment (`venv`) and installed the required packages. If you encounter dependency errors, ensure your virtual environment is properly set up as described in the Prerequisites section above.
 
 For a quick walkthrough of the common workflow see
 [docs/new_user_guide.md](docs/new_user_guide.md).
