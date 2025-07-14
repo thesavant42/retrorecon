@@ -97,6 +97,8 @@ def setup_environment_variables(config: Dict[str, Any]) -> None:
         db_path = os.path.join(os.getcwd(), 'db', 'waybax.db')
     elif not os.path.isabs(db_path):
         # If path is relative, make it relative to current directory
+        # First convert any Windows-style separators to the OS-specific separator
+        db_path = db_path.replace('\\', os.sep).replace('/', os.sep)
         db_path = os.path.join(os.getcwd(), db_path)
     
     # Normalize path separators for the current OS
