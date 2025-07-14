@@ -133,7 +133,8 @@ def _start_memory_module(cfg) -> None:
         except BaseException as exc:
             try:
                 if portal_ctx is not None:
-                    portal_ctx.__exit__(type(exc), exc, exc.__traceback__)
+                    # Ensure the portal is closed cleanly without re-raising
+                    portal_ctx.__exit__(None, None, None)
                 else:
                     portal.stop()
             except BaseException:
@@ -233,7 +234,8 @@ def _start_fetch_module(cfg) -> None:
         except BaseException as exc:
             try:
                 if portal_ctx is not None:
-                    portal_ctx.__exit__(type(exc), exc, exc.__traceback__)
+                    # Clean shutdown of the portal avoids cancel-scope errors
+                    portal_ctx.__exit__(None, None, None)
                 else:
                     portal.stop()
             except BaseException:

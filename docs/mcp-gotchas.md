@@ -20,3 +20,4 @@ During development each major test run is noted below.
 
 - **Test run 1**: After installing dependencies and running the test suite, all `tests/test_mcp_*` tests passed.
 - **Test run 2**: Verified that launching the MCP server logs a clear error when `basic-memory` is missing. No unhandled exceptions occurred.
+- **Test run 3**: Updated shutdown logic to close the portal with `__exit__(None, None, None)`. Launching with a missing module no longer produces cancel scope errors.
