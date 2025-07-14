@@ -16,4 +16,3 @@ zstandard
 fastmcp>=0.1.0
 a2wsgi
 tzdata
-mcp-server-fetch

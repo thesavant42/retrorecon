@@ -10,10 +10,6 @@ This document summarizes issues discovered when working with the Model Context P
 
 If the configured STDIO command references a module that is not installed (for example `basic-memory`) the memory module fails to start. The startup code now checks for the module using `importlib.util.find_spec` and logs `"MCP module not installed"` instead of raising an exception.
 
-## 3. Fetch server warnings
-
-When starting the fetch MCP server a warning `Could not fetch resources: Method not found` may appear. This does not prevent usage of the `fetch` tool, but it is noisy. It originates from the MCP client library when optional endpoints are missing.
-
 ***
 
 During development each major test run is noted below.

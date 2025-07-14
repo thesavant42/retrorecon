@@ -1,6 +1,6 @@
 # RetroRecon MCP Server Troubleshooting and Implementation Guide
 
-This document provides guidance on troubleshooting Model Context Protocol (MCP) server issues within the RetroRecon application and outlines the steps to integrate new MCP servers, using `mcp/fetch` as a practical example.
+This document provides guidance on troubleshooting Model Context Protocol (MCP) server issues within the RetroRecon application. The default setup uses the `fetch-mcp` Node module as an SSE service for web content retrieval.
 
 ## 1. Understanding the RetroRecon MCP Integration
 
@@ -8,94 +8,24 @@ RetroRecon integrates an MCP server directly within its Flask application via th
 
 Key observations from the codebase:
 
-*   **`RetroReconMCPServer`**: This class (in `retrorecon/mcp/server.py`) acts as RetroRecon's internal MCP server. It includes tools for `_query_sqlite`, `_get_current_datetime`, and `_fetch_url_content`. The `_fetch_url_content` tool is particularly relevant for the `mcp/fetch` use case.
+*   **`RetroReconMCPServer`**: This class (in `retrorecon/mcp/server.py`) acts as RetroRecon's internal MCP server. It includes tools for `_query_sqlite`, `_get_current_datetime`, and `_fetch_url_content`.
 *   **`MCPConfig`**: Defined in `retrorecon/mcp/config.py`, this dataclass holds configuration for the MCP server, including `api_base`, `model`, `temperature`, `row_limit`, `api_key`, `timeout`, and `alt_api_bases`.
 *   **External Server Configuration**: Support for additional FastMCP servers has been removed, so the `mcp_servers` field is unused.
 
 
-## 3. Adding a New MCP Server from Scratch: `mcp/fetch` Use Case
+## 3. External Fetch Server
 
-To add a new MCP server, you'll need to define its configuration in `retrorecon/mcp/config.py` and ensure that RetroRecon can properly interact with it. The `mcp/fetch` server, which provides web content fetching capabilities, is an excellent use case. Note that `mcp/fetch` can also be an STDIO module, or an HTTP server. For this example, we will assume it is an HTTP server for demonstration purposes, but the principles for STDIO apply as described above.
+RetroRecon relies on the `fetch-mcp` package to retrieve web content. The service exposes an SSE endpoint (by default `http://localhost:3000/sse`). Add an entry like the following to `mcp_servers.json` and ensure the Node server is running:
 
-### 3.1. Understanding `mcp/fetch`
-
-The `mcp/fetch` server typically exposes a tool (or tools) that can take a URL as input and return its content. The `RetroReconMCPServer` already has a `_fetch_url_content` tool, which demonstrates the functionality. For an external `mcp/fetch` server, you would be leveraging a separate service that provides this capability.
-
-### 3.2. Steps to Add `mcp/fetch` Server (assuming HTTP transport):
-
-1.  **Choose or Implement an `mcp/fetch` Server**: You can either use an existing `mcp/fetch` server implementation (e.g., from the `modelcontextprotocol` GitHub organization or PyPI) or create your own. For this guide, we'll assume you have a `mcp/fetch` server running and accessible at a specific `api_base` URL.
-
-    *   **Example (Conceptual `mcp/fetch` server using FastMCP)**:
-        ```python
-        # fetch_server.py
-        from fastmcp import FastMCP
-        import httpx
-        from mcp.types import TextContent
-
-        mcp = FastMCP("fetch-server")
-
-        @mcp.tool()
-        async def fetch_url(url: str) -> TextContent:
-            """Fetches the content of a given URL.
-
-            Args:
-                url: The URL to fetch.
-
-            Returns:
-                The content of the URL as a TextContent object.
-            """
-            try:
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(url)
-                    response.raise_for_status()
-                    return TextContent(text=response.text)
-            except httpx.RequestError as e:
-                return TextContent(text=f"Error fetching URL {url}: {e}")
-            except httpx.HTTPStatusError as e:
-                return TextContent(text=f"HTTP error fetching URL {url}: {e}")
-
-        if __name__ == "__main__":
-            mcp.run()
-        ```
-        To run this conceptual server, you would typically execute `python fetch_server.py` in a terminal, and it would listen on a default port (e.g., 8000 or 8001, depending on FastMCP's default or if specified).
-
-2.  **Configure `retrorecon/mcp/config.py`**: Open the `retrorecon/mcp/config.py` file and add a new entry to the `mcp_servers` list for your `mcp/fetch` server. Ensure the `api_base` points to where your `mcp/fetch` server is running.
-
-    *   **Modified `config.py` (example, assuming `transport` field is added to `MCPServersConfig`)**:
-        ```python
-        # ... (existing imports and MCPConfig class)
-
-        mcp_servers: MCPServersConfig = MCPServersConfig(
-            servers=[
-                {
-                    "name": "memory",
-                    "transport": "stdio", # New field
-                    "command": ["basic-memory", "mcp", "--transport", "stdio"], # New field
-                    "model": "memory",
-                    "description": "A memory server for storing and retrieving information.",
-                },
-                {
-                    "name": "sequential-thinking",
-                    "transport": "stdio", # New field
-                    "command": ["npx", "@modelcontextprotocol/server-sequential-thinking"], # New field
-                    "model": "sequential-thinking",
-                    "description": "A server for sequential thinking and reasoning.",
-                },
-                {
-                    "name": "fetch",
-                    "transport": "http", # Explicitly set for HTTP server
-                    "api_base": "http://localhost:8002/v1", # Assuming your fetch server runs on port 8002
-                    "model": "fetch", # Or whatever model name your fetch server uses
-                    "description": "A server for fetching web content.",
-                },
-            ]
-        )
-        ```
-        **Important**: Adjust `http://localhost:8002/v1` to the actual address and port where your `mcp/fetch` server is running. For STDIO servers, replace `api_base` with `command` and set `transport` to `stdio`.
-
-3.  **Restart RetroRecon**: After modifying `config.py`, you must restart the RetroRecon application for the changes to take effect.
-
-4.  **Verify Integration**: Once RetroRecon is restarted, you should be able to interact with the `fetch` server through RetroRecon's MCP client. The exact method of interaction will depend on how RetroRecon exposes its MCP client to the user interface or internal logic. If RetroRecon has a mechanism to list available MCP tools, you should see the `fetch_url` tool (or whatever you named it in your `mcp/fetch` server implementation).
+```json
+[
+  {
+    "name": "fetch",
+    "transport": "sse",
+    "url": "http://localhost:3000/sse"
+  }
+]
+```
 
 ## 4. Recommendations for Programming Agent
 
@@ -142,7 +72,7 @@ To the programming agent, the following recommendations are provided to address 
 
 ## 5. Conclusion
 
-By addressing the fundamental difference in communication mechanisms for STDIO versus HTTP/SSE MCP servers, and by implementing a more flexible and robust framework for integrating new MCP servers, RetroRecon can significantly enhance its capabilities and provide a more seamless experience for users. The `mcp/fetch` use case serves as a prime example of how external MCP servers can extend RetroRecon's functionality, allowing it to interact with a wider range of data sources and services.
+By addressing the fundamental difference in communication mechanisms for STDIO versus HTTP/SSE MCP servers, and by implementing a more flexible and robust framework for integrating new MCP servers, RetroRecon can significantly enhance its capabilities and provide a more seamless experience for users. These improvements allow the application to interact with a wider range of data sources and services.
 
 ## Appendix: Commands for User to Run
 
