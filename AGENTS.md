@@ -166,7 +166,74 @@ python scripts/audit_css.py > reports/report.json
 When creating new CSS, follow `STYLE_GUIDE.md` which mandates that selectors be scoped under `.retrorecon-root` using BEM-style naming. Running `npm run lint` checks for inline styles and standard Stylelint rules.
 
 
-## 12. ScreenshotAgent
+## 12. FetchMCPAgent
+**Purpose**: Dynamically fetch web content and convert it to markdown using the MCP (Model Context Protocol) fetch service.
+
+**Configuration**: The `fetch` MCP is configured to register dynamically via Server-Sent Events (SSE) at `http://127.0.0.1:3000/sse` and supports lazy loading to optimize resource usage.
+
+**Input Schema**
+```json
+{
+  "url": "<string>",
+  "options": {
+    "user_agent": "<string>",
+    "timeout": <int>
+  }
+}
+```
+
+**Example Usage**
+```python
+# Dynamic fetch requests can be made to any accessible URL
+fetch_group = get_fetch_group()
+if fetch_group:
+    result = fetch_group.call_tool("fetch", {"url": "http://ifconfig.me"})
+```
+
+**Expected Output**
+- Markdown-formatted content from the fetched URL
+- Error handling for unreachable or invalid URLs
+- Support for custom user agents and timeout configurations
+
+**Architecture Notes**
+- Integrates with LMStudio-Server for AI processing
+- Uses SSE transport for real-time communication
+- Supports dynamic target URLs without hardcoded endpoints
+
+## 13. SQLiteMCPAgent  
+**Purpose**: Provide embedded MCP server functionality for querying RetroRecon SQLite databases with natural language processing capabilities.
+
+**Configuration**: The SQLite MCP server is embedded within RetroRecon and configured through environment variables and the `MCPConfig` class.
+
+**Input Schema**
+```json
+{
+  "query": "<string>",
+  "database_path": "<string>",
+  "row_limit": <int>
+}
+```
+
+**Example Usage**
+```python
+# Query the RetroRecon database using the embedded MCP server
+mcp_server = get_mcp_server()
+if mcp_server:
+    result = mcp_server.query_database("Find all URLs from example.com")
+```
+
+**Expected Output**
+- Structured database query results
+- Natural language processing of query intentions
+- Respect for configured row limits and timeouts
+
+**Architecture Notes**
+- Embedded directly within RetroRecon application
+- Interfaces with LMStudio-Server for query interpretation
+- Supports multiple API bases for failover functionality
+- Maintains database connection pooling for performance
+
+## 14. ScreenshotAgent
 **Purpose**: Capture website screenshots in a headless browser.
 
 **Input Schema**
@@ -184,7 +251,7 @@ client.post('/tools/screenshot', data={'url': 'https://example.com'})
 **Expected Output**
 - JSON like `{ "id": 1 }` representing the screenshot record.
 
-## 13. SiteZipAgent
+## 15. SiteZipAgent
 **Purpose**: Crawl a page and download all assets as a ZIP archive.
 
 **Input Schema**
@@ -202,7 +269,7 @@ client.post('/tools/site2zip', data={'url': 'https://example.com'})
 **Expected Output**
 - JSON like `{ "id": 5 }` with the capture ID.
 
-## 14. SubdomainFetcher
+## 16. SubdomainFetcher
 **Purpose**: Retrieve subdomains for a domain from crt.sh or VirusTotal.
 
 **Input Schema**

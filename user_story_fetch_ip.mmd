@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant User as User
+    participant RetroRecon as RetroRecon
+    participant LMStudio as LMStudio-Server
+    participant FetchMCP as Fetch MCP
+    participant IfConfig as ifconfig.me
+    participant SQLiteMCP as SQLite MCP
+    participant Database as RetroRecon DB
+
+    Note over User, Database: User Story: Fetch Public IP Address
+
+    User->>RetroRecon: Request public IP information
+    RetroRecon->>LMStudio: Process user query
+    LMStudio->>FetchMCP: Request IP data via SSE
+    Note over FetchMCP: http://127.0.0.1:3000/sse
+    
+    FetchMCP->>IfConfig: HTTP GET http://ifconfig.me
+    IfConfig-->>FetchMCP: Return public IP address
+    FetchMCP-->>LMStudio: Return IP data as markdown
+    
+    LMStudio->>SQLiteMCP: Store/query IP data
+    SQLiteMCP->>Database: Execute SQL operations
+    Database-->>SQLiteMCP: Return query results
+    SQLiteMCP-->>LMStudio: Return structured data
+    
+    LMStudio-->>RetroRecon: Return processed response
+    RetroRecon-->>User: Display IP information
+
+    Note over User, Database: Dynamic Configuration Features
+    Note over FetchMCP: • SSE transport for real-time communication
+    Note over FetchMCP: • Lazy loading for resource optimization
+    Note over FetchMCP: • No hardcoded URLs - dynamic target support
+    Note over SQLiteMCP: • Embedded MCP server within RetroRecon
+    Note over SQLiteMCP: • Natural language query processing
+    Note over SQLiteMCP: • Configurable row limits and timeouts

@@ -30,6 +30,7 @@ class ModuleSpec:
     enabled: bool = True
     lazy_start: bool = False
     retry: Dict[str, Any] | None = None
+    description: str | None = None
 
 
 class MCPModuleManager:
@@ -53,6 +54,7 @@ class MCPModuleManager:
                     enabled=mod.get("enabled", True),
                     lazy_start=mod.get("lazy_start", False),
                     retry=mod.get("retry"),
+                    description=mod.get("description"),
                 )
             self.modules[spec.name] = spec
         self.groups: Dict[str, Optional[ClientSessionGroup]] = {n: None for n in self.modules}
