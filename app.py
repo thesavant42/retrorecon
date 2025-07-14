@@ -920,6 +920,7 @@ from retrorecon.routes import (
     help_bp,
     dynamic_bp,
     chat_bp,
+    mcp_management_bp,
 )
 app.register_blueprint(notes_bp)
 app.register_blueprint(tools_bp)
@@ -937,6 +938,7 @@ app.register_blueprint(overview_bp)
 app.register_blueprint(help_bp)
 app.register_blueprint(dynamic_bp)
 app.register_blueprint(chat_bp)
+app.register_blueprint(mcp_management_bp)
 
 
 

@@ -1,6 +1,7 @@
 import atexit
 import logging
 import sys
+import time
 from dataclasses import dataclass
 from typing import Optional, Dict, Any
 
@@ -19,6 +20,23 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class ModuleStatus:
+    """Status information for an MCP module."""
+    name: str
+    enabled: bool
+    running: bool
+    transport: str
+    last_started: Optional[float] = None
+    last_error: Optional[str] = None
+    health_check_url: Optional[str] = None
+    tools: list[str] = None
+
+    def __post_init__(self):
+        if self.tools is None:
+            self.tools = []
+
+
+@dataclass
 class ModuleSpec:
     name: str
     transport: str = "stdio"
@@ -30,6 +48,7 @@ class ModuleSpec:
     enabled: bool = True
     lazy_start: bool = False
     retry: Dict[str, Any] | None = None
+    health_check_url: str | None = None
 
 
 class MCPModuleManager:
@@ -53,11 +72,14 @@ class MCPModuleManager:
                     enabled=mod.get("enabled", True),
                     lazy_start=mod.get("lazy_start", False),
                     retry=mod.get("retry"),
+                    health_check_url=mod.get("health_check_url"),
                 )
             self.modules[spec.name] = spec
         self.groups: Dict[str, Optional[ClientSessionGroup]] = {n: None for n in self.modules}
         self.portals: Dict[str, Optional[BlockingPortal]] = {n: None for n in self.modules}
         self.portal_cms: Dict[str, Optional[Any]] = {n: None for n in self.modules}
+        self.module_start_times: Dict[str, float] = {}
+        self.module_last_errors: Dict[str, str] = {}
 
     def start_all(self) -> None:
         for name, spec in self.modules.items():
@@ -70,54 +92,82 @@ class MCPModuleManager:
         spec = self.modules.get(name)
         if not spec or not spec.enabled:
             return
-        try:
-            params = self._create_params(spec)
-            portal_ctx = start_blocking_portal()
-            if hasattr(portal_ctx, "__enter__"):
-                portal = portal_ctx.__enter__()
-            else:
-                portal = portal_ctx
-                portal_ctx = None
+        
+        # Get retry configuration
+        retry_config = spec.retry or {}
+        max_attempts = retry_config.get("attempts", 3)
+        retry_delay = retry_config.get("delay", 1)
+        
+        last_exception = None
+        for attempt in range(max_attempts):
+            try:
+                params = self._create_params(spec)
+                portal_ctx = start_blocking_portal()
+                if hasattr(portal_ctx, "__enter__"):
+                    portal = portal_ctx.__enter__()
+                else:
+                    portal = portal_ctx
+                    portal_ctx = None
 
-            async def _initialize() -> ClientSessionGroup:
-                group = ClientSessionGroup()
-                await group.__aenter__()
+                async def _initialize() -> ClientSessionGroup:
+                    group = ClientSessionGroup()
+                    await group.__aenter__()
+                    try:
+                        await group.connect_to_server(params)
+                    except Exception:
+                        await group.__aexit__(*sys.exc_info())
+                        raise
+                    return group
+
+                group = portal.call(_initialize)
+                
+                # Success - break out of retry loop
+                tools = list(group.tools.keys())
+                self.groups[name] = group
+                self.portals[name] = portal
+                self.portal_cms[name] = portal_ctx
+                self.module_start_times[name] = time.time()
+                self.module_last_errors.pop(name, None)  # Clear any previous error
+                target = " ".join(spec.command or []) if spec.transport == "stdio" else spec.url or ""
+                logger.debug("%s MCP module started: %s", spec.name.capitalize(), target)
+                if tools:
+                    logger.debug("%s MCP tools: %s", spec.name.capitalize(), ", ".join(tools))
+                if attempt > 0:
+                    logger.info("%s MCP module started after %d attempts", spec.name.capitalize(), attempt + 1)
+                return
+                
+            except FileNotFoundError as exc:
+                last_exception = exc
+                self.module_last_errors[name] = f"Command not found: {' '.join(spec.command or [])}"
+                logger.error("MCP module command not found: %s", " ".join(spec.command or []))
                 try:
-                    await group.connect_to_server(params)
-                except Exception:
-                    await group.__aexit__(*sys.exc_info())
-                    raise
-                return group
-
-            group = portal.call(_initialize)
-        except FileNotFoundError:
-            logger.error("MCP module command not found: %s", " ".join(spec.command or []))
-            try:
-                if portal_ctx is not None:
-                    portal_ctx.__exit__(None, None, None)
+                    if portal_ctx is not None:
+                        portal_ctx.__exit__(None, None, None)
+                    else:
+                        portal.stop()
+                except BaseException:
+                    pass
+                # FileNotFoundError is not recoverable, don't retry
+                return
+            except BaseException as exc:
+                last_exception = exc
+                self.module_last_errors[name] = str(exc)
+                try:
+                    if portal_ctx is not None:
+                        portal_ctx.__exit__(None, None, None)
+                    else:
+                        portal.stop()
+                except BaseException:
+                    pass
+                
+                if attempt < max_attempts - 1:
+                    logger.warning("Failed to start %s MCP module (attempt %d/%d): %s. Retrying in %d seconds...", 
+                                 spec.name, attempt + 1, max_attempts, exc, retry_delay)
+                    time.sleep(retry_delay)
                 else:
-                    portal.stop()
-            except BaseException:
-                pass
-            return
-        except BaseException as exc:
-            try:
-                if portal_ctx is not None:
-                    portal_ctx.__exit__(None, None, None)
-                else:
-                    portal.stop()
-            except BaseException:
-                pass
-            logger.error("Failed to start %s MCP module: %s", spec.name, exc)
-            return
-        tools = list(group.tools.keys())
-        self.groups[name] = group
-        self.portals[name] = portal
-        self.portal_cms[name] = portal_ctx
-        target = " ".join(spec.command or []) if spec.transport == "stdio" else spec.url or ""
-        logger.debug("%s MCP module started: %s", spec.name.capitalize(), target)
-        if tools:
-            logger.debug("%s MCP tools: %s", spec.name.capitalize(), ", ".join(tools))
+                    logger.error("Failed to start %s MCP module after %d attempts: %s", 
+                               spec.name, max_attempts, exc)
+                    return
 
     def stop(self, name: str) -> None:
         group = self.groups.get(name)
@@ -132,6 +182,7 @@ class MCPModuleManager:
         finally:
             logger.debug("%s MCP module stopped", name.capitalize())
             self.groups[name] = None
+            self.module_start_times.pop(name, None)
             if portal_ctx is not None:
                 portal_ctx.__exit__(None, None, None)
             elif portal is not None:
@@ -142,6 +193,77 @@ class MCPModuleManager:
     def stop_all(self) -> None:
         for name in list(self.modules.keys()):
             self.stop(name)
+
+    def restart(self, name: str) -> None:
+        """Restart a specific module."""
+        self.stop(name)
+        self.start(name)
+
+    def get_module_status(self, name: str) -> Optional[ModuleStatus]:
+        """Get the status of a specific module."""
+        spec = self.modules.get(name)
+        if not spec:
+            return None
+        
+        group = self.groups.get(name)
+        is_running = group is not None
+        tools = list(group.tools.keys()) if group else []
+        
+        return ModuleStatus(
+            name=name,
+            enabled=spec.enabled,
+            running=is_running,
+            transport=spec.transport,
+            last_started=self.module_start_times.get(name),
+            last_error=self.module_last_errors.get(name),
+            health_check_url=spec.health_check_url,
+            tools=tools
+        )
+
+    def get_all_module_status(self) -> Dict[str, ModuleStatus]:
+        """Get the status of all modules."""
+        result = {}
+        for name in self.modules:
+            status = self.get_module_status(name)
+            if status:
+                result[name] = status
+        return result
+
+    def check_module_health(self, name: str) -> bool:
+        """Check if a module is healthy."""
+        group = self.groups.get(name)
+        if not group:
+            return False
+        
+        try:
+            # Basic health check: try to list tools
+            tools = list(group.tools.keys())
+            return True
+        except Exception as exc:
+            logger.warning("Health check failed for %s: %s", name, exc)
+            self.module_last_errors[name] = f"Health check failed: {exc}"
+            return False
+
+    def check_all_health(self) -> Dict[str, bool]:
+        """Check the health of all running modules."""
+        result = {}
+        for name in self.modules:
+            if self.groups.get(name):
+                result[name] = self.check_module_health(name)
+        return result
+
+    def restart_unhealthy_modules(self) -> list[str]:
+        """Restart any unhealthy modules and return the list of restarted modules."""
+        restarted = []
+        health_status = self.check_all_health()
+        
+        for name, is_healthy in health_status.items():
+            if not is_healthy:
+                logger.info("Restarting unhealthy module: %s", name)
+                self.restart(name)
+                restarted.append(name)
+        
+        return restarted
 
     def get_group(self, name: str) -> Optional[ClientSessionGroup]:
         group = self.groups.get(name)

@@ -4,7 +4,11 @@
     "enabled": true,
     "transport": "stdio",
     "command": ["basic-memory", "mcp", "--transport", "stdio"],
-    "lazy_start": false
+    "lazy_start": false,
+    "retry": {
+      "attempts": 3,
+      "delay": 2
+    }
   },
   {
     "name": "fetch",
@@ -12,6 +16,10 @@
     "transport": "sse",
     "url": "http://localhost:3000/sse",
     "lazy_start": true,
+    "retry": {
+      "attempts": 5,
+      "delay": 3
+    },
     "description": "Fetch web content and convert to markdown."
   }
 ]
