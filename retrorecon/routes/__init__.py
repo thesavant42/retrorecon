@@ -14,5 +14,6 @@ from .overview import bp as overview_bp
 from .help import bp as help_bp
 from .dynamic import bp as dynamic_bp
 from .chat import bp as chat_bp
+from .mcp_management import bp as mcp_management_bp
 
-__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'oci_explorer_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp', 'swagger_bp', 'overview_bp', 'help_bp', 'dynamic_bp', 'chat_bp']
+__all__ = ['notes_bp', 'tools_bp', 'db_bp', 'settings_bp', 'domains_bp', 'docker_bp', 'oci_explorer_bp', 'dag_bp', 'oci_bp', 'dagdotdev_bp', 'urls_bp', 'swagger_bp', 'overview_bp', 'help_bp', 'dynamic_bp', 'chat_bp', 'mcp_management_bp']

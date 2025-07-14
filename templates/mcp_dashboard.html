@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MCP Module Management Dashboard</title>
+    <style>
+        .retrorecon-root {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .mcp-dashboard__header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .mcp-dashboard__title {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .mcp-dashboard__subtitle {
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+        }
+        
+        .mcp-modules__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .mcp-module__card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .mcp-module__name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        
+        .mcp-module__status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .mcp-module__status--running {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .mcp-module__status--stopped {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .mcp-module__status--failed {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .mcp-module__status--starting {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .mcp-module__description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .mcp-module__info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .mcp-module__tools {
+            margin-bottom: 15px;
+        }
+        
+        .mcp-module__tools-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .mcp-module__tools-list {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .mcp-module__actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .mcp-module__button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .mcp-module__button--primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .mcp-module__button--primary:hover {
+            background: #2980b9;
+        }
+        
+        .mcp-module__button--secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .mcp-module__button--secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .mcp-module__button--danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .mcp-module__button--danger:hover {
+            background: #c0392b;
+        }
+        
+        .mcp-module__error {
+            background: #fde5e5;
+            border: 1px solid #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .mcp-dashboard__loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .mcp-dashboard__refresh {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        
+        .mcp-dashboard__refresh:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="retrorecon-root">
+        <div class="mcp-dashboard__header">
+            <h1 class="mcp-dashboard__title">MCP Module Management</h1>
+            <p class="mcp-dashboard__subtitle">Monitor and control MCP server modules</p>
+        </div>
+        
+        <button class="mcp-dashboard__refresh" onclick="loadStatus()" title="Refresh">⟳</button>
+        
+        <div id="modules-container" class="mcp-dashboard__loading">
+            Loading modules...
+        </div>
+    </div>
+
+    <script>
+        let statusData = {};
+        
+        async function loadStatus() {
+            try {
+                const response = await fetch('/mcp/status');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusData = data;
+                    renderModules();
+                } else {
+                    showError('Failed to load module status: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            }
+        }
+        
+        function renderModules() {
+            const container = document.getElementById('modules-container');
+            
+            if (Object.keys(statusData).length === 0) {
+                container.innerHTML = '<div class="mcp-dashboard__loading">No modules configured</div>';
+                return;
+            }
+            
+            let html = '<div class="mcp-modules__grid">';
+            
+            for (const [name, info] of Object.entries(statusData)) {
+                html += renderModule(name, info);
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function renderModule(name, info) {
+            const statusClass = `mcp-module__status--${info.status}`;
+            const lastStartTime = info.last_start_time ? new Date(info.last_start_time * 1000).toLocaleString() : 'Never';
+            const lastHealthCheck = info.last_health_check ? new Date(info.last_health_check * 1000).toLocaleString() : 'Never';
+            
+            return `
+                <div class="mcp-module__card">
+                    <h3 class="mcp-module__name">${name}</h3>
+                    <div class="mcp-module__status ${statusClass}">${info.status}</div>
+                    
+                    ${info.description ? `<div class="mcp-module__description">${info.description}</div>` : ''}
+                    
+                    <div class="mcp-module__info">
+                        <strong>Last Started:</strong> ${lastStartTime}<br>
+                        <strong>Last Health Check:</strong> ${lastHealthCheck}<br>
+                        <strong>Restart Count:</strong> ${info.restart_count}<br>
+                        <strong>Tools:</strong> ${info.tools.length}
+                    </div>
+                    
+                    ${info.tools.length > 0 ? `
+                        <div class="mcp-module__tools">
+                            <div class="mcp-module__tools-title">Available Tools:</div>
+                            <div class="mcp-module__tools-list">${info.tools.join(', ')}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="mcp-module__actions">
+                        <button class="mcp-module__button mcp-module__button--primary" onclick="startModule('${name}')">
+                            Start
+                        </button>
+                        <button class="mcp-module__button mcp-module__button--secondary" onclick="stopModule('${name}')">
+                            Stop
+                        </button>
+                        <button class="mcp-module__button mcp-module__button--primary" onclick="restartModule('${name}')">
+                            Restart
+                        </button>
+                        <button class="mcp-module__button mcp-module__button--danger" onclick="disableModule('${name}')">
+                            Disable
+                        </button>
+                    </div>
+                    
+                    ${info.last_error ? `<div class="mcp-module__error">Error: ${info.last_error}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        async function performAction(action, moduleName) {
+            try {
+                const response = await fetch(`/mcp/${action}/${moduleName}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Refresh status after action
+                    setTimeout(loadStatus, 1000);
+                } else {
+                    showError(data.error || 'Action failed');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            }
+        }
+        
+        function startModule(name) {
+            performAction('start', name);
+        }
+        
+        function stopModule(name) {
+            performAction('stop', name);
+        }
+        
+        function restartModule(name) {
+            performAction('restart', name);
+        }
+        
+        function disableModule(name) {
+            if (confirm(`Are you sure you want to disable module ${name}?`)) {
+                performAction('disable', name);
+            }
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('modules-container');
+            container.innerHTML = `<div class="mcp-module__error">${message}</div>`;
+        }
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadStatus, 30000);
+        
+        // Initial load
+        loadStatus();
+    </script>
+</body>
+</html>
