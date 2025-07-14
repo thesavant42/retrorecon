@@ -18,6 +18,7 @@ class MCPConfig:
     timeout: int = 60
     alt_api_bases: list[str] = field(default_factory=list)
     mcp_servers: List[Dict[str, object]] | None = None
+    servers_file: str | None = None
 
 
 def load_config() -> MCPConfig:
@@ -59,4 +60,5 @@ def load_config() -> MCPConfig:
         timeout=timeout,
         alt_api_bases=alt_api_bases,
         mcp_servers=servers_cfg,
+        servers_file=cfg_file,
     )

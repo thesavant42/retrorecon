@@ -28,8 +28,10 @@ an entry in the MCP configuration.
 
 ## MCP Server Configuration Example
 
-External servers can be defined in a YAML file such as `mcp_servers.yaml`.
-Each entry specifies how the server should be launched or contacted:
+External servers are defined in a single JSON or YAML file such as
+`mcp_servers.json`. Set the path with the `RETRORECON_MCP_SERVERS_FILE`
+environment variable if needed. Each entry specifies how the server should be
+launched or contacted:
 
 ```yaml
 - name: memory

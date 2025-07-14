@@ -10,7 +10,9 @@ Key observations from the codebase:
 
 *   **`RetroReconMCPServer`**: This class (in `retrorecon/mcp/server.py`) acts as RetroRecon's internal MCP server. It includes tools for `_query_sqlite`, `_get_current_datetime`, and `_fetch_url_content`.
 *   **`MCPConfig`**: Defined in `retrorecon/mcp/config.py`, this dataclass holds configuration for the MCP server, including `api_base`, `model`, `temperature`, `row_limit`, `api_key`, `timeout`, and `alt_api_bases`.
-*   **External Server Configuration**: Support for additional FastMCP servers has been removed, so the `mcp_servers` field is unused.
+*   **External Server Configuration**: Additional FastMCP servers are defined in
+    `mcp_servers.json` (or the file specified by
+    `RETRORECON_MCP_SERVERS_FILE`).
 
 
 ## 3. External Fetch Server
