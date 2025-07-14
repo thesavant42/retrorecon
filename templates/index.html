@@ -727,7 +727,7 @@
       let link = '';
       switch(val){
         case 'archive':
-          link = 'https://web.archive.org/web/*/' + encodeURIComponent(url);
+          link = 'https://web.archive.org/web/*/' + encodeURI(url);
           break;
         case 'shodan':
           link = 'https://www.shodan.io/search?query=' + encodeURIComponent(url);
