@@ -92,14 +92,6 @@
           <form method="GET" action="/save_db" class="menu-row" id="save-db-form">
             <button type="submit" class="menu-btn">Save Project As...</button>
           </form>
-         <form method="POST" action="/load_saved_db" class="menu-row" id="load-saved-db-form">
-            <select name="db_file" id="load-saved-db-select" class="form-select menu-btn">
-              <option value="">Open Project...</option>
-              {% for db in saved_dbs %}
-              <option value="{{ db }}">{{ db }}</option>
-              {% endfor %}
-            </select>
-          </form>
           <div class="menu-row"><input type="text" id="db-filter" class="form-input w-100" placeholder="Filter projects..."></div>
           <div id="db-list">
             {% for db in saved_dbs %}
@@ -1059,15 +1051,6 @@
       });
     }
 
-    const savedSelect = document.getElementById('load-saved-db-select');
-    const savedForm = document.getElementById('load-saved-db-form');
-    if (savedSelect && savedForm) {
-      savedSelect.addEventListener('change', () => {
-        if (savedSelect.value) {
-          savedForm.submit();
-        }
-      });
-    }
     const savedBarSelect = document.getElementById('load-saved-db-bar-select');
     const savedBarForm = document.getElementById('load-saved-db-bar-form');
     if (savedBarSelect && savedBarForm) {
