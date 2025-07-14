@@ -21,10 +21,11 @@ function initDomainSort(){
 
   function setStatus(msg){
     if(statusDiv) statusDiv.textContent = msg;
+    if(window.showStatus) window.showStatus(msg);
   }
 
   async function refresh(){
-    const resp = await fetch('/domain_sort');
+    const resp = await fetch('/domain_sort', {method:'POST'});
     outputDiv.innerHTML = await resp.text();
   }
 
