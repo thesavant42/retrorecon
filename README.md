@@ -47,6 +47,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | Markdown Editor               | Edit and preview project docs with a resizable editor |
 | Domain Sort (Subdomain View)  | Recursively group hosts by root domain |
 | Time Zone Flexibility         | `mcp/time` understands IANA and Windows zone names |
+| MCP Configuration UI          | Manage Model Context Protocol servers through a web interface with hot-reload |
 
 ---
 
@@ -135,6 +136,54 @@ retrorecon/
 ## 🔍 Sample Output
 
 Coming soon – screenshots of the report interface and extraction logs.
+
+---
+
+## 🔧 MCP Configuration Management
+
+RetroRecon includes a built-in web interface for managing Model Context Protocol (MCP) servers. This feature allows you to:
+
+- **View server status** - See which MCP servers are running/stopped
+- **Edit configurations** - Modify server settings without editing files
+- **Add/remove servers** - Dynamically manage your MCP server lineup
+- **Hot-reload** - Apply changes without restarting the application
+
+### Supported Transport Types
+
+- **SSE (Server-Sent Events)** - For real-time streaming connections
+- **HTTP** - Standard HTTP-based communication
+- **Stdio** - Direct process communication via stdin/stdout
+
+### Access the Interface
+
+1. Navigate to RetroRecon in your browser
+2. Click **Tools** → **MCP Configuration**
+3. View current server status and edit configurations
+4. Click **Save Configuration** to apply changes with hot-reload
+
+### Configuration Examples
+
+**SSE Server:**
+```json
+{
+  "name": "fetch",
+  "transport": "sse",
+  "url": "http://127.0.0.1:3000/sse",
+  "enabled": true,
+  "lazy_start": true
+}
+```
+
+**Stdio Server:**
+```json
+{
+  "name": "memory",
+  "transport": "stdio", 
+  "command": ["python", "-m", "mcp_memory_server"],
+  "enabled": true,
+  "lazy_start": false
+}
+```
 
 ---
 
