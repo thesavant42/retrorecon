@@ -67,8 +67,7 @@ function autoloadLastDb(current){
   }
   const last = getLastDb();
   if(!last) return;
-  const selector = document.getElementById('load-saved-db-bar-select') ||
-                   document.getElementById('load-saved-db-select');
+  const selector = document.getElementById('load-saved-db-bar-select');
   if(selector){
     const found = Array.from(selector.options).some(opt => opt.value === last);
     if(!found){
