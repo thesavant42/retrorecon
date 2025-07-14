@@ -1,17 +1,19 @@
 [
   {
-    "name": "memory",
-    "enabled": true,
-    "transport": "stdio",
-    "command": ["basic-memory", "mcp", "--transport", "stdio"],
-    "lazy_start": false
-  },
-  {
     "name": "fetch",
     "enabled": true,
     "transport": "sse",
-    "url": "http://localhost:3000/sse",
+    "url": "http://127.0.0.1:3000/sse", 
     "lazy_start": true,
-    "description": "Fetch web content and convert to markdown."
+    "retry": {
+      "attempts": 5,
+      "delay": 3
+    }
+  },
+  {
+    "name": "sqlite",
+    "enabled": true,
+    "transport": "stdio",
+    "lazy_start": false
   }
 ]

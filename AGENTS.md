@@ -219,3 +219,34 @@ client.post('/subdomains', data={'domain': 'example.com', 'source': 'crtsh'})
 ```
 **Expected Output**
 - JSON list of discovered subdomain records.
+
+# Agents and Interactions
+
+This document clarifies how the RetroRecon system interacts with its components, including the LAPTOP, LMStudio-Server, and external services.
+
+## MCP Modules
+### Fetch MCP
+- **Purpose**: Provides functionality to dynamically fetch content from arbitrary URLs.
+- **Configuration**:
+  - Registers itself via SSE at `http://127.0.0.1:3000/sse`.
+  - Accepts target URLs dynamically when a fetch request is made.
+- **Example Flow**:
+  1. User requests `fetch` to retrieve content from `http://ifconfig.me`.
+  2. RetroRecon forwards this request to the `fetch` MCP.
+  3. `fetch` MCP processes the request and returns the result.
+
+### SQLite MCP
+- **Purpose**: Allows RetroRecon to query SQLite databases.
+- **Configuration**:
+  - Communicates via `stdio`.
+  - Critical for exposing SQLite data to LAN-only LLMs on the LMStudio-Server.
+
+## LAPTOP
+- **RetroRecon Application**:
+  - Hosts MCP modules like `fetch` and `sqlite`.
+  - Provides an interface at `http://127.0.0.1:5000/`.
+
+## LMStudio-Server
+- **LLM API**:
+  - Hosted at `http://192.168.1.98:1234/v1`.
+  - Provides OpenAI-compatible API for models.

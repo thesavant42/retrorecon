@@ -1,0 +1,41 @@
+graph TD
+    A[User] --> B[RetroRecon Application]
+    B --> C[Fetch MCP]
+    C --> D[http://ifconfig.me]
+    D --> C
+    C --> B
+    B --> E[SQLite MCP]
+    E --> F[Local SQLite Database]
+    F --> E
+    E --> B
+    B --> G[LMStudio-Server]
+    G --> H[OpenAI-compatible API]
+    H --> I[LLM Model: qwen2.5-coldbrew-aetheria-test2_tools]
+    I --> H
+    H --> G
+    G --> B
+    B --> A
+
+    subgraph "LAPTOP (127.0.0.1)"
+        B
+        C
+        E
+        F
+    end
+
+    subgraph "LMStudio-Server (192.168.1.98:1234/v1)"
+        G
+        H
+        I
+    end
+
+    subgraph "External Services"
+        D
+    end
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style E fill:#e8f5e8
+    style G fill:#fff3e0
+    style D fill:#ffebee

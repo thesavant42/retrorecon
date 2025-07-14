@@ -219,6 +219,13 @@ def get_fetch_group() -> Optional[ClientSessionGroup]:
     return None
 
 
+def get_sqlite_group() -> Optional[ClientSessionGroup]:
+    manager = get_module_manager()
+    if manager is not None:
+        return manager.get_group("sqlite")
+    return None
+
+
 def stop_mcp_sqlite() -> None:
     """Cleanup the embedded MCP server instance."""
     global _mcp_server, _module_manager
