@@ -219,6 +219,7 @@
           <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="markdown-editor-link">Markdown Editor</a></div>
           <div class="menu-row"><a href="#" class="menu-btn" id="chat-link">Database Chat</a></div>
+          <div class="menu-row"><a href="#" class="menu-btn" id="mcp-config-link">MCP Configuration</a></div>
           <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
             <input type="hidden" name="map_url" id="webpack-url-input" />
             <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
@@ -419,6 +420,29 @@
       </div>
     </div>
     <div id="tags-list" class="notes-list mt-05"></div>
+  </div>
+
+  <!-- MCP Configuration Overlay -->
+  <div id="mcp-config-overlay" class="notes-overlay hidden">
+    <div class="notes-header">
+      <h3>MCP Configuration</h3>
+      <button type="button" class="btn overlay-close-btn" id="mcp-config-close-btn">Close</button>
+    </div>
+    <div class="mcp-config-container">
+      <div class="mcp-config-status">
+        <h4>Server Status</h4>
+        <div id="mcp-server-status">Loading...</div>
+      </div>
+      <div class="mcp-config-editor">
+        <h4>Configuration</h4>
+        <div id="mcp-config-servers"></div>
+        <div class="mcp-config-actions">
+          <button type="button" class="btn" id="mcp-add-server-btn">Add Server</button>
+          <button type="button" class="btn" id="mcp-save-config-btn">Save Configuration</button>
+          <button type="button" class="btn" id="mcp-reload-config-btn">Reload from File</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   {% include 'chat_overlay.html' %}
@@ -1223,6 +1247,268 @@
 
       if(location.pathname === '/tools/jwt' || openTool === 'jwt'){
         showJwtTools(true);
+      }
+
+      // MCP Configuration
+      const mcpConfigLink = document.getElementById('mcp-config-link');
+      let mcpConfigLoaded = false;
+      let mcpConfigData = {servers: []};
+
+      async function showMcpConfig(skipPush) {
+        if (!mcpConfigLoaded) {
+          mcpConfigLoaded = true;
+          await loadMcpConfig();
+          await loadMcpStatus();
+        }
+        const ov = document.getElementById('mcp-config-overlay');
+        ov.classList.remove('hidden');
+        if (!skipPush) {
+          history.pushState({tool: 'mcp-config'}, '', '/tools/mcp-config');
+        }
+      }
+
+      function hideMcpConfig() {
+        const ov = document.getElementById('mcp-config-overlay');
+        if (ov) ov.classList.add('hidden');
+      }
+
+      async function loadMcpConfig() {
+        try {
+          const resp = await fetch('/api/mcp/config');
+          mcpConfigData = await resp.json();
+          renderMcpConfig();
+        } catch (error) {
+          console.error('Failed to load MCP config:', error);
+          document.getElementById('mcp-config-servers').innerHTML = '<div class="error">Failed to load configuration</div>';
+        }
+      }
+
+      async function loadMcpStatus() {
+        try {
+          const resp = await fetch('/api/mcp/status');
+          const statusData = await resp.json();
+          renderMcpStatus(statusData);
+        } catch (error) {
+          console.error('Failed to load MCP status:', error);
+          document.getElementById('mcp-server-status').innerHTML = '<div class="error">Failed to load status</div>';
+        }
+      }
+
+      function renderMcpStatus(statusData) {
+        const statusDiv = document.getElementById('mcp-server-status');
+        if (!statusData.servers || statusData.servers.length === 0) {
+          statusDiv.innerHTML = '<div>No servers configured</div>';
+          return;
+        }
+
+        const statusHtml = statusData.servers.map(server => `
+          <div class="mcp-server-status-item">
+            <span class="server-name">${server.name}</span>
+            <span class="server-status ${server.running ? 'running' : 'stopped'}">${server.running ? 'Running' : 'Stopped'}</span>
+            <span class="server-transport">${server.transport}</span>
+            ${server.tools && server.tools.length > 0 ? `<span class="server-tools">${server.tools.length} tools</span>` : ''}
+          </div>
+        `).join('');
+
+        statusDiv.innerHTML = statusHtml;
+      }
+
+      function renderMcpConfig() {
+        const serversDiv = document.getElementById('mcp-config-servers');
+        
+        if (!mcpConfigData.servers || mcpConfigData.servers.length === 0) {
+          serversDiv.innerHTML = '<div class="mcp-no-servers">No servers configured. Click "Add Server" to add one.</div>';
+          return;
+        }
+
+        const serversHtml = mcpConfigData.servers.map((server, index) => `
+          <div class="mcp-server-config" data-index="${index}">
+            <div class="mcp-server-header">
+              <h5>Server: ${server.name}</h5>
+              <button type="button" class="btn btn-small mcp-remove-server" data-index="${index}">Remove</button>
+            </div>
+            <div class="mcp-server-fields">
+              <div class="form-group">
+                <label>Name:</label>
+                <input type="text" class="form-input mcp-server-name" value="${server.name}" data-index="${index}">
+              </div>
+              <div class="form-group">
+                <label>Transport:</label>
+                <select class="form-select mcp-server-transport" data-index="${index}">
+                  <option value="sse" ${server.transport === 'sse' ? 'selected' : ''}>SSE</option>
+                  <option value="stdio" ${server.transport === 'stdio' ? 'selected' : ''}>Stdio</option>
+                  <option value="http" ${server.transport === 'http' ? 'selected' : ''}>HTTP</option>
+                </select>
+              </div>
+              <div class="form-group mcp-url-field" style="display: ${server.transport === 'stdio' ? 'none' : 'block'}">
+                <label>URL:</label>
+                <input type="url" class="form-input mcp-server-url" value="${server.url || ''}" data-index="${index}">
+              </div>
+              <div class="form-group mcp-command-field" style="display: ${server.transport === 'stdio' ? 'block' : 'none'}">
+                <label>Command:</label>
+                <input type="text" class="form-input mcp-server-command" value="${server.command ? server.command.join(' ') : ''}" data-index="${index}" placeholder="python -m module">
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" class="form-checkbox mcp-server-enabled" ${server.enabled ? 'checked' : ''} data-index="${index}">
+                  Enabled
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" class="form-checkbox mcp-server-lazy" ${server.lazy_start ? 'checked' : ''} data-index="${index}">
+                  Lazy Start
+                </label>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        serversDiv.innerHTML = serversHtml;
+        
+        // Add event listeners for transport changes
+        document.querySelectorAll('.mcp-server-transport').forEach(select => {
+          select.addEventListener('change', (e) => {
+            const index = e.target.dataset.index;
+            const transport = e.target.value;
+            const serverDiv = document.querySelector(`[data-index="${index}"]`);
+            const urlField = serverDiv.querySelector('.mcp-url-field');
+            const commandField = serverDiv.querySelector('.mcp-command-field');
+            
+            if (transport === 'stdio') {
+              urlField.style.display = 'none';
+              commandField.style.display = 'block';
+            } else {
+              urlField.style.display = 'block';
+              commandField.style.display = 'none';
+            }
+          });
+        });
+
+        // Add event listeners for remove buttons
+        document.querySelectorAll('.mcp-remove-server').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            mcpConfigData.servers.splice(index, 1);
+            renderMcpConfig();
+          });
+        });
+      }
+
+      function collectMcpConfig() {
+        const servers = [];
+        document.querySelectorAll('.mcp-server-config').forEach(serverDiv => {
+          const index = serverDiv.dataset.index;
+          const name = serverDiv.querySelector('.mcp-server-name').value.trim();
+          const transport = serverDiv.querySelector('.mcp-server-transport').value;
+          const url = serverDiv.querySelector('.mcp-server-url').value.trim();
+          const command = serverDiv.querySelector('.mcp-server-command').value.trim();
+          const enabled = serverDiv.querySelector('.mcp-server-enabled').checked;
+          const lazy_start = serverDiv.querySelector('.mcp-server-lazy').checked;
+
+          if (name) {
+            const server = {
+              name,
+              transport,
+              enabled,
+              lazy_start
+            };
+
+            if (transport === 'stdio') {
+              if (command) {
+                server.command = command.split(' ').filter(c => c.trim());
+              }
+            } else {
+              if (url) {
+                server.url = url;
+              }
+            }
+
+            servers.push(server);
+          }
+        });
+        return servers;
+      }
+
+      async function saveMcpConfig() {
+        try {
+          const servers = collectMcpConfig();
+          const resp = await fetch('/api/mcp/config', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({servers})
+          });
+
+          const result = await resp.json();
+          
+          if (resp.ok) {
+            alert('Configuration saved successfully!');
+            await loadMcpStatus(); // Refresh status
+          } else {
+            alert('Error saving configuration: ' + (result.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Failed to save MCP config:', error);
+          alert('Failed to save configuration: ' + error.message);
+        }
+      }
+
+      if (mcpConfigLink) {
+        mcpConfigLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          showMcpConfig();
+        });
+      }
+
+      // MCP Configuration event listeners
+      document.addEventListener('DOMContentLoaded', () => {
+        const mcpConfigOverlay = document.getElementById('mcp-config-overlay');
+        const mcpConfigCloseBtn = document.getElementById('mcp-config-close-btn');
+        const mcpAddServerBtn = document.getElementById('mcp-add-server-btn');
+        const mcpSaveConfigBtn = document.getElementById('mcp-save-config-btn');
+        const mcpReloadConfigBtn = document.getElementById('mcp-reload-config-btn');
+
+        if (mcpConfigCloseBtn) {
+          mcpConfigCloseBtn.addEventListener('click', hideMcpConfig);
+        }
+
+        if (mcpAddServerBtn) {
+          mcpAddServerBtn.addEventListener('click', () => {
+            mcpConfigData.servers.push({
+              name: '',
+              transport: 'sse',
+              url: '',
+              enabled: true,
+              lazy_start: false
+            });
+            renderMcpConfig();
+          });
+        }
+
+        if (mcpSaveConfigBtn) {
+          mcpSaveConfigBtn.addEventListener('click', saveMcpConfig);
+        }
+
+        if (mcpReloadConfigBtn) {
+          mcpReloadConfigBtn.addEventListener('click', async () => {
+            await loadMcpConfig();
+            await loadMcpStatus();
+          });
+        }
+      });
+
+      window.addEventListener('popstate', () => {
+        if (location.pathname === '/tools/mcp-config') {
+          showMcpConfig(true);
+        } else {
+          hideMcpConfig();
+        }
+      });
+
+      if (location.pathname === '/tools/mcp-config' || openTool === 'mcp-config') {
+        showMcpConfig(true);
       }
 
       const markdownLink = document.getElementById('markdown-editor-link');

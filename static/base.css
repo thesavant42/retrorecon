@@ -1488,3 +1488,166 @@ body.bg-hidden {
   font-style: italic;
   color: var(--fg-color);
 }
+
+/* MCP Configuration Styles */
+.retrorecon-root .mcp-config-container {
+  padding: 1em;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.retrorecon-root .mcp-config-status {
+  margin-bottom: 2em;
+  padding: 1em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: rgba(var(--bg-rgb), 0.1);
+}
+
+.retrorecon-root .mcp-config-status h4 {
+  margin: 0 0 1em 0;
+  font-size: 16px !important;
+  font-weight: bold;
+}
+
+.retrorecon-root .mcp-server-status-item {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.retrorecon-root .mcp-server-status-item:last-child {
+  border-bottom: none;
+}
+
+.retrorecon-root .server-name {
+  font-weight: bold;
+  min-width: 150px;
+}
+
+.retrorecon-root .server-status {
+  padding: 0.2em 0.5em;
+  border-radius: var(--radius);
+  font-size: 12px !important;
+  min-width: 70px;
+  text-align: center;
+}
+
+.retrorecon-root .server-status.running {
+  background-color: #4caf50;
+  color: white !important;
+}
+
+.retrorecon-root .server-status.stopped {
+  background-color: #f44336;
+  color: white !important;
+}
+
+.retrorecon-root .server-transport {
+  background-color: var(--color-accent);
+  color: var(--color-base) !important;
+  padding: 0.2em 0.5em;
+  border-radius: var(--radius);
+  font-size: 12px !important;
+}
+
+.retrorecon-root .server-tools {
+  font-size: 12px !important;
+  color: var(--color-accent) !important;
+}
+
+.retrorecon-root .mcp-config-editor {
+  margin-top: 2em;
+}
+
+.retrorecon-root .mcp-config-editor h4 {
+  margin: 0 0 1em 0;
+  font-size: 16px !important;
+  font-weight: bold;
+}
+
+.retrorecon-root .mcp-no-servers {
+  padding: 2em;
+  text-align: center;
+  font-style: italic;
+  color: var(--color-contrast);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.retrorecon-root .mcp-server-config {
+  margin-bottom: 2em;
+  padding: 1em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: rgba(var(--bg-rgb), 0.05);
+}
+
+.retrorecon-root .mcp-server-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.retrorecon-root .mcp-server-header h5 {
+  margin: 0;
+  font-size: 14px !important;
+  font-weight: bold;
+}
+
+.retrorecon-root .mcp-server-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.retrorecon-root .mcp-server-fields .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.retrorecon-root .mcp-server-fields .form-group label {
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  font-size: 13px !important;
+}
+
+.retrorecon-root .mcp-server-fields .form-group input,
+.retrorecon-root .mcp-server-fields .form-group select {
+  padding: 0.5em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-base);
+  color: var(--color-contrast) !important;
+}
+
+.retrorecon-root .mcp-server-fields .form-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5em;
+}
+
+.retrorecon-root .mcp-config-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--color-border);
+}
+
+.retrorecon-root .btn-small {
+  padding: 0.3em 0.8em;
+  font-size: 12px !important;
+}
+
+.retrorecon-root .error {
+  color: #f44336 !important;
+  padding: 1em;
+  border: 1px solid #f44336;
+  border-radius: var(--radius);
+  background-color: rgba(244, 67, 54, 0.1);
+}
