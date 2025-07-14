@@ -1,12 +1,5 @@
 [
   {
-    "name": "memory",
-    "transport": "stdio",
-    "command": ["python", "-m", "basic-memory", "mcp", "--transport", "stdio"],
-    "model": "memory",
-    "description": "A memory server for storing and retrieving information."
-  },
-  {
     "name": "fetch",
     "transport": "stdio",
     "command": ["python", "-m", "mcp_server_fetch"],
