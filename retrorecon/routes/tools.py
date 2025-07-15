@@ -36,6 +36,12 @@ def text_tools_full_page():
     return app.index()
 
 
+@bp.route('/tools/mcp-config', methods=['GET'])
+def mcp_config_full_page():
+    """Serve the full page with MCP Config overlay loaded."""
+    return app.index()
+
+
 def _get_text_param():
     text = request.form.get('text', '')
     if len(text.encode('utf-8')) > app.TEXT_TOOLS_LIMIT:
