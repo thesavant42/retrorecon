@@ -25,10 +25,19 @@
   --background-color: var(--color-base);
   --font-color: var(--color-contrast);
   --primary-color: var(--color-accent);
+
+  /* Dynamic styling variables */
+  --dynamic-bg-image: none;
 }
 
 body {
   margin: 0;
+}
+
+/* Dynamic background styling */
+body.retrorecon-dynamic-bg {
+  background: var(--dynamic-bg-image) no-repeat center center fixed;
+  background-size: cover;
 }
 
 .retrorecon-root h1,
@@ -1650,4 +1659,16 @@ body.bg-hidden {
   border: 1px solid #f44336;
   border-radius: var(--radius);
   background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Dynamic theme swatch styling */
+.retrorecon-root .theme-swatch {
+  background: var(--theme-swatch-bg, transparent) !important;
+  color: var(--theme-swatch-color, inherit) !important;
+}
+
+/* MCP form field visibility */
+.retrorecon-root .mcp-url-field.mcp-field-hidden,
+.retrorecon-root .mcp-command-field.mcp-field-hidden {
+  display: none !important;
 }

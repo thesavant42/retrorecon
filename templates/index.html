@@ -15,25 +15,9 @@
   {% endif %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
-  {% if current_background %}
-  <style>
-    body {
-      background: url('{{ url_for('static', filename='img/' + current_background) }}') no-repeat center center fixed;
-      background-size: cover;
-    }
-  </style>
-  {% endif %}
-  <style>
-    /* stylelint-disable */
-    {% for t in themes %}
-    {% set cols = theme_swatches.get(t) %}
-    #theme-opt-{{ loop.index }} { background: {{ cols[0] }}; color: {{ cols[1] }}; }
-    {% endfor %}
-    /* stylelint-enable */
-  </style>
   <link rel="shortcut icon" href="{{ url_for('core.favicon_ico') }}">
 </head>
-<body class="app" data-db="{{ db_name }}">
+<body class="app{% if current_background %} retrorecon-dynamic-bg{% endif %}" data-db="{{ db_name }}"{% if current_background %} data-bg="{{ current_background }}"{% endif %}>
   <div class="retrorecon-root">
     <div id="dropdown-shade" class="dropdown-shade hidden"></div>
 {% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) %}
@@ -144,7 +128,7 @@
             <select id="theme-select" class="form-select menu-btn">
               {% for t in themes %}
               {% set cols = theme_swatches.get(t) %}
-              <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
+              <option id="theme-opt-{{ loop.index }}" class="theme-swatch" value="{{ t }}" data-bg="{{ cols[0] }}" data-color="{{ cols[1] }}" {% if t == current_theme %}selected{% endif %}>
                 {{ t.replace('theme-','').replace('.css','') }}
               </option>
               {% endfor %}
@@ -1340,11 +1324,11 @@
                   <option value="http" ${server.transport === 'http' ? 'selected' : ''}>HTTP</option>
                 </select>
               </div>
-              <div class="form-group mcp-url-field" style="display: ${server.transport === 'stdio' ? 'none' : 'block'}">
+              <div class="form-group mcp-url-field ${server.transport === 'stdio' ? 'mcp-field-hidden' : ''}">
                 <label>URL:</label>
                 <input type="url" class="form-input mcp-server-url" value="${server.url || ''}" data-index="${index}">
               </div>
-              <div class="form-group mcp-command-field" style="display: ${server.transport === 'stdio' ? 'block' : 'none'}">
+              <div class="form-group mcp-command-field ${server.transport === 'stdio' ? '' : 'mcp-field-hidden'}">
                 <label>Command:</label>
                 <input type="text" class="form-input mcp-server-command" value="${server.command ? server.command.join(' ') : ''}" data-index="${index}" placeholder="python -m module">
               </div>
@@ -1376,11 +1360,11 @@
             const commandField = serverDiv.querySelector('.mcp-command-field');
             
             if (transport === 'stdio') {
-              urlField.style.display = 'none';
-              commandField.style.display = 'block';
+              urlField.classList.add('mcp-field-hidden');
+              commandField.classList.remove('mcp-field-hidden');
             } else {
-              urlField.style.display = 'block';
-              commandField.style.display = 'none';
+              urlField.classList.remove('mcp-field-hidden');
+              commandField.classList.add('mcp-field-hidden');
             }
           });
         });
@@ -2095,6 +2079,26 @@
       if(urlTable && typeof makeResizableTable === 'function'){
         makeResizableTable(urlTable, 'url-col-widths');
       }
+    });
+
+    // Dynamic styling setup
+    document.addEventListener('DOMContentLoaded', function(){
+      // Set dynamic background image
+      const bgImage = document.body.getAttribute('data-bg');
+      if(bgImage) {
+        document.documentElement.style.setProperty('--dynamic-bg-image', `url('/static/img/${bgImage}')`);
+      }
+
+      // Set theme swatch colors
+      const themeOptions = document.querySelectorAll('.theme-swatch');
+      themeOptions.forEach(option => {
+        const bg = option.getAttribute('data-bg');
+        const color = option.getAttribute('data-color');
+        if(bg && color) {
+          option.style.setProperty('--theme-swatch-bg', bg);
+          option.style.setProperty('--theme-swatch-color', color);
+        }
+      });
     });
   </script>
 </div>

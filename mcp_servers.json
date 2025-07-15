@@ -1,10 +1,8 @@
 [
   {
-    "name": "fetch",
     "enabled": true,
+    "name": "new-server",
     "transport": "sse",
-    "url": "http://127.0.0.1:3000/sse",
-    "lazy_start": true,
-    "description": "Fetch web content and convert to markdown."
+    "url": "http://localhost:3000/sse"
   }
 ]
