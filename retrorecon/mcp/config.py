@@ -73,7 +73,6 @@ def load_config() -> MCPConfig:
             servers_cfg = []
     else:
         logger.debug("MCP server config not found at %s", cfg_file)
-        servers_cfg = []
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,
