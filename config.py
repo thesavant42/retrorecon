@@ -29,7 +29,11 @@ def load_secrets_file(path: str = "secrets.json") -> None:
         raise RuntimeError(f"Failed to load secrets file: {exc}") from exc
 
     for key, value in data.items():
-        os.environ.setdefault(key, str(value))
+        # Properly serialize JSON arrays/objects to JSON strings
+        if isinstance(value, (list, dict)):
+            os.environ.setdefault(key, json.dumps(value))
+        else:
+            os.environ.setdefault(key, str(value))
 
 
 # Load secrets before configuring the application

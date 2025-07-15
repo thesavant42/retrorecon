@@ -44,11 +44,25 @@ def load_config() -> MCPConfig:
         timeout = 60
     alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
     alt_api_bases = []
-    for base in [b.strip() for b in alt_env.split(",") if b.strip()]:
-        if not base.startswith(("http://", "https://")):
-            logger.warning("Alternative API base missing protocol, adding http://: %s", base)
-            base = "http://" + base
-        alt_api_bases.append(base)
+    
+    # Handle both JSON array string and comma-separated string formats
+    if alt_env.strip():
+        try:
+            # Try to parse as JSON array first (from secrets.json)
+            parsed = json.loads(alt_env)
+            if isinstance(parsed, list):
+                bases_to_process = parsed
+            else:
+                bases_to_process = [str(parsed)]
+        except json.JSONDecodeError:
+            # Fall back to comma-separated string format
+            bases_to_process = [b.strip() for b in alt_env.split(",") if b.strip()]
+        
+        for base in bases_to_process:
+            if not base.startswith(("http://", "https://")):
+                logger.warning("Alternative API base missing protocol, adding http://: %s", base)
+                base = "http://" + base
+            alt_api_bases.append(base)
 
     servers_cfg = None
     cfg_file = os.getenv("RETRORECON_MCP_SERVERS_FILE", "mcp_servers.json")
