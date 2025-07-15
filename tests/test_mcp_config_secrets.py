@@ -33,3 +33,12 @@ def test_mcp_config_from_secrets_file(monkeypatch, tmp_path):
     assert cfg.alt_api_bases == ['http://alt1.example.com/v1', 'http://alt2.example.com/v1']
 
     monkeypatch.delenv('RETRORECON_SECRETS_FILE', raising=False)
+
+
+def test_alt_api_base_missing_protocol(monkeypatch):
+    monkeypatch.setenv('RETRORECON_MCP_ALT_API_BASES', 'alt1.example.com/v1')
+    from retrorecon.mcp.config import load_config
+
+    cfg = load_config()
+    assert cfg.alt_api_bases == ['http://alt1.example.com/v1']
+    monkeypatch.delenv('RETRORECON_MCP_ALT_API_BASES', raising=False)
