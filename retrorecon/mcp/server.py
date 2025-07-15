@@ -31,7 +31,7 @@ class RetroReconMCPServer:
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
         logger.debug(
-            "MCPServer init db=%s api_base=%s model=%s row_limit=%d",
+            "Initializing MCP server: database=%s, llm_endpoint=%s, model=%s, row_limit=%d",
             self.db_path,
             self.api_base,
             self.model,
@@ -70,8 +70,13 @@ class RetroReconMCPServer:
                 base_idx += 1
                 if base_idx >= len(api_bases):
                     raise
-                url = f"{api_bases[base_idx]}/chat/completions"
-                logger.debug("retrying LLM request via %s", url)
+                # Ensure we're getting a string, not a list
+                next_base = api_bases[base_idx]
+                if isinstance(next_base, list):
+                    logger.error("Invalid API base format (list instead of string): %s", next_base)
+                    raise RuntimeError("Invalid API base configuration")
+                url = f"{next_base}/chat/completions"
+                logger.debug("Retrying LLM request with fallback endpoint: %s", url)
                 continue
             data = resp.json()
             logger.debug("LLM response: %s", json.dumps(data))
@@ -107,7 +112,7 @@ class RetroReconMCPServer:
     # tool setup
     def _setup_tools(self) -> None:
         logger.debug(
-            "initializing tools db=%s model=%s",
+            "Initializing MCP tools for database=%s, model=%s",
             self.db_path,
             self.model,
         )
@@ -120,7 +125,7 @@ class RetroReconMCPServer:
     def update_database_path(self, db_path: str) -> None:
         self.db_path = db_path
         self.config.db_path = db_path
-        logger.debug("database path updated: %s", db_path)
+        logger.debug("MCP server database path updated to: %s", db_path)
 
     def _openai_tools(self) -> list[dict[str, Any]]:
         """Return tool specifications for OpenAI tool calling."""
@@ -243,7 +248,7 @@ class RetroReconMCPServer:
     def get_connection(self):
         if not self.db_path:
             raise ValueError("Database path not configured")
-        logger.debug("opening sqlite connection to %s", self.db_path)
+        logger.debug("Opening SQLite database connection to: %s", self.db_path)
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
         return conn
@@ -251,7 +256,7 @@ class RetroReconMCPServer:
     # validation
     def validate_query(self, query: str) -> bool:
         query_upper = query.upper().strip()
-        logger.debug("validate query: %s", query_upper)
+        logger.debug("Validating SQL query: %s", query_upper)
         if not query_upper.startswith("SELECT"):
             return False
         prohibited = ["INSERT", "UPDATE", "DELETE", "DROP", "CREATE", "ALTER"]
@@ -262,7 +267,7 @@ class RetroReconMCPServer:
         """Execute a validated SELECT statement."""
         if not self.validate_query(query):
             raise ValueError("Query validation failed")
-        logger.debug("execute query: %s params=%s", query, params)
+        logger.debug("Executing SQL query: %s, parameters: %s", query, params)
         with self.get_connection() as conn:
             c = conn.cursor()
             if "LIMIT" not in query.upper():
@@ -270,7 +275,7 @@ class RetroReconMCPServer:
             c.execute(query, params or [])
             rows = c.fetchall()
             columns = [d[0] for d in c.description]
-            logger.debug("query returned %d rows", len(rows))
+            logger.debug("SQL query returned %d rows", len(rows))
             return {"columns": columns, "rows": rows, "count": len(rows)}
 
     def answer_question(self, question: str) -> Dict[str, Any]:
@@ -303,15 +308,15 @@ class RetroReconMCPServer:
             return {"message": "Try asking about tables or data in plain English."}
 
         try:
-            logger.debug("chat question: %s", question)
+            logger.debug("Processing chat question: %s", question)
             reply, tools = self._llm_chat(question)
-            logger.debug("chat reply: %s", reply)
+            logger.debug("LLM chat response: %s", reply)
             resp = {"message": reply}
             if tools:
                 resp["tools"] = tools
             return resp
         except Exception as exc:
-            logger.error("LLM request failed: %s", exc)
+            logger.error("LLM chat request failed: %s", exc)
             return {
                 "error": "LLM request failed",
                 "hint": str(exc),

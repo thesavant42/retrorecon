@@ -1,0 +1,33 @@
+{
+  "_comment": "MCP (Model Context Protocol) Server Configuration",
+  "_description": "This configuration file defines external MCP servers that can be used by RetroRecon's chat interface. Each server provides additional tools and capabilities beyond the built-in SQLite database tools.",
+  "_schema": {
+    "name": "Unique identifier for the server",
+    "enabled": "Boolean - whether this server should be loaded",
+    "transport": "Connection method: 'sse' (Server-Sent Events), 'stdio' (command-line), or 'http'",
+    "url": "For 'sse' and 'http' transports - the endpoint URL",
+    "command": "For 'stdio' transport - array of command and arguments to run",
+    "lazy_start": "Boolean - if true, server starts only when first used",
+    "timeout": "Optional - connection timeout in seconds",
+    "sse_read_timeout": "Optional - SSE read timeout in seconds",
+    "headers": "Optional - HTTP headers for requests",
+    "description": "Human-readable description of what this server provides"
+  },
+  "servers": [
+    {
+      "name": "fetch",
+      "enabled": true,
+      "transport": "sse",
+      "url": "http://127.0.0.1:3000/sse",
+      "lazy_start": true,
+      "description": "Fetch web content and convert to markdown. Provides tools for web scraping and content conversion."
+    },
+    {
+      "name": "memory",
+      "enabled": false,
+      "transport": "stdio",
+      "command": ["python", "-m", "mcp_memory_server"],
+      "description": "Persistent memory storage for conversation context and user preferences."
+    }
+  ]
+}

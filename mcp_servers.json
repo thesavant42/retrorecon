@@ -5,6 +5,6 @@
     "transport": "sse",
     "url": "http://127.0.0.1:3000/sse",
     "lazy_start": true,
-    "description": "Fetch web content and convert to markdown."
+    "description": "Fetch web content and convert to markdown. This server provides tools for web scraping and content conversion that can be used by the MCP chat interface to retrieve and process web pages, APIs, and other online resources. It runs as a Server-Sent Events (SSE) service and starts only when needed (lazy_start)."
   }
 ]

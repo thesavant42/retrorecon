@@ -26,7 +26,7 @@ def load_config() -> MCPConfig:
     db_path = os.getenv("RETRORECON_MCP_DB")
     api_base = os.getenv("RETRORECON_MCP_API_BASE", "http://192.168.1.98:1234/v1")
     if api_base and not api_base.startswith(("http://", "https://")):
-        logger.warning("api_base missing protocol: %s", api_base)
+        logger.warning("Primary API base missing protocol, adding http://: %s", api_base)
         api_base = "http://" + api_base
     model = os.getenv("RETRORECON_MCP_MODEL", "qwen2.5-coldbrew-aetheria-test2_tools")
     try:
@@ -46,7 +46,7 @@ def load_config() -> MCPConfig:
     alt_api_bases = []
     for base in [b.strip() for b in alt_env.split(",") if b.strip()]:
         if not base.startswith(("http://", "https://")):
-            logger.warning("alt_api_base missing protocol: %s", base)
+            logger.warning("Alternative API base missing protocol, adding http://: %s", base)
             base = "http://" + base
         alt_api_bases.append(base)
 
@@ -57,10 +57,20 @@ def load_config() -> MCPConfig:
     if os.path.exists(cfg_file):
         try:
             with open(cfg_file, "r", encoding="utf-8") as fh:
-                servers_cfg = json.load(fh)
-            logger.debug("Loaded MCP server config from %s", cfg_file)
+                config_data = json.load(fh)
+            # Handle both old format (array) and new format (object with servers array)
+            if isinstance(config_data, list):
+                servers_cfg = config_data
+                logger.debug("Loaded MCP server config (legacy format) from %s", cfg_file)
+            elif isinstance(config_data, dict) and "servers" in config_data:
+                servers_cfg = config_data["servers"]
+                logger.debug("Loaded MCP server config (new format) from %s", cfg_file)
+            else:
+                logger.error("Invalid MCP server config format in '%s': expected array or object with 'servers' key", cfg_file)
+                servers_cfg = []
         except Exception as exc:
             logger.error("Failed to load MCP server config '%s': %s", cfg_file, exc)
+            servers_cfg = []
     else:
         logger.debug("MCP server config not found at %s", cfg_file)
     return MCPConfig(
