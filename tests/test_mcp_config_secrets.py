@@ -57,3 +57,18 @@ def test_alt_api_base_json_list(monkeypatch):
         'http://alt2.example.com/v1',
     ]
     monkeypatch.delenv('RETRORECON_MCP_ALT_API_BASES', raising=False)
+
+
+def test_alt_api_base_python_list_string(monkeypatch):
+    monkeypatch.setenv(
+        'RETRORECON_MCP_ALT_API_BASES',
+        "['http://alt1.example.com/v1','http://alt2.example.com/v1']",
+    )
+    from retrorecon.mcp.config import load_config
+
+    cfg = load_config()
+    assert cfg.alt_api_bases == [
+        'http://alt1.example.com/v1',
+        'http://alt2.example.com/v1',
+    ]
+    monkeypatch.delenv('RETRORECON_MCP_ALT_API_BASES', raising=False)
