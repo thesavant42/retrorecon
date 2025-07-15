@@ -53,7 +53,21 @@ def load_config() -> MCPConfig:
             else:
                 alt_api_bases = [str(parsed)]
         except json.JSONDecodeError:
-            alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
+            # Handle improperly quoted Python-style list strings
+            cleaned = alt_env.strip()
+            if cleaned.startswith("[") and cleaned.endswith("]"):
+                try:
+                    cleaned = cleaned.replace("'", '"')
+                    parsed = json.loads(cleaned)
+                    if isinstance(parsed, list):
+                        alt_api_bases = [str(b) for b in parsed]
+                    else:
+                        alt_api_bases = [str(parsed)]
+                except json.JSONDecodeError:
+                    cleaned = cleaned.strip("[]")
+                    alt_api_bases = [b.strip(" '\"") for b in cleaned.split(",") if b.strip()]
+            else:
+                alt_api_bases = [b.strip(" '\"") for b in alt_env.split(",") if b.strip()]
 
     normalized: list[str] = []
     for base in alt_api_bases:
