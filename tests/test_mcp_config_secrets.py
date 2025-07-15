@@ -30,7 +30,7 @@ def test_mcp_config_from_secrets_file(monkeypatch, tmp_path):
     assert cfg.api_base == 'http://example.com/v1'
     assert cfg.temperature == 0.55
     assert cfg.timeout == 42
-    assert cfg.alt_api_bases == ['http://alt1.example.com/v1', 'http://alt2.example.com/v1']
+    assert cfg.fallback_api_bases == ['http://alt1.example.com/v1', 'http://alt2.example.com/v1']
 
     monkeypatch.delenv('RETRORECON_SECRETS_FILE', raising=False)
 
@@ -40,5 +40,23 @@ def test_alt_api_base_missing_protocol(monkeypatch):
     from retrorecon.mcp.config import load_config
 
     cfg = load_config()
-    assert cfg.alt_api_bases == ['http://alt1.example.com/v1']
+    assert cfg.fallback_api_bases == ['http://alt1.example.com/v1']
     monkeypatch.delenv('RETRORECON_MCP_ALT_API_BASES', raising=False)
+
+
+def test_fallback_api_base_missing_protocol(monkeypatch):
+    monkeypatch.setenv('RETRORECON_MCP_FALLBACK_API_BASES', 'fallback1.example.com/v1')
+    from retrorecon.mcp.config import load_config
+
+    cfg = load_config()
+    assert cfg.fallback_api_bases == ['http://fallback1.example.com/v1']
+    monkeypatch.delenv('RETRORECON_MCP_FALLBACK_API_BASES', raising=False)
+
+
+def test_flask_port_warning(monkeypatch):
+    monkeypatch.setenv('RETRORECON_MCP_API_BASE', 'http://127.0.0.1:5000/v1')
+    from retrorecon.mcp.config import load_config
+
+    cfg = load_config()
+    assert cfg.api_base == 'http://127.0.0.1:5000/v1'  # Should still work but with warning
+    monkeypatch.delenv('RETRORECON_MCP_API_BASE', raising=False)

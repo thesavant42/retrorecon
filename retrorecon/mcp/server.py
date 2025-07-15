@@ -31,7 +31,7 @@ class RetroReconMCPServer:
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
         logger.debug(
-            "MCPServer init db=%s api_base=%s model=%s row_limit=%d",
+            "MCPServer initialized: db_path=%s, llm_api_base=%s, llm_model=%s, max_row_limit=%d",
             self.db_path,
             self.api_base,
             self.model,
@@ -44,7 +44,7 @@ class RetroReconMCPServer:
         if not self.api_base:
             raise RuntimeError("API base not configured")
         url = f"{self.api_base}/chat/completions"
-        api_bases = [self.api_base] + list(self.config.alt_api_bases or [])
+        api_bases = [self.api_base] + list(self.config.fallback_api_bases or [])
         base_idx = 0
         payload = {
             "model": self.model,
@@ -107,7 +107,7 @@ class RetroReconMCPServer:
     # tool setup
     def _setup_tools(self) -> None:
         logger.debug(
-            "initializing tools db=%s model=%s",
+            "initializing MCP tools: db_path=%s, llm_model=%s, tools=[read_query, list_tables, describe_table, time_now]",
             self.db_path,
             self.model,
         )
@@ -115,7 +115,7 @@ class RetroReconMCPServer:
         self.server.add_tool(self._create_list_tables_tool())
         self.server.add_tool(self._create_describe_table_tool())
         self.server.add_tool(self._create_time_now_tool())
-        logger.debug("MCP tools registered")
+        logger.debug("MCP tools registered: [read_query, list_tables, describe_table, time_now]")
 
     def update_database_path(self, db_path: str) -> None:
         self.db_path = db_path
