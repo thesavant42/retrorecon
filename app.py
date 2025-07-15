@@ -422,6 +422,8 @@ def index() -> str:
         tool = 'about'
     elif request.path == '/tools/demo':
         tool = 'demo'
+    elif request.path == '/tools/mcp-config':
+        tool = 'mcp-config'
 
     sort = request.args.get('sort', 'id')
     direction = request.args.get('dir', 'desc').lower()
