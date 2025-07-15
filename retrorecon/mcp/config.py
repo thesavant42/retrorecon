@@ -25,6 +25,9 @@ def load_config() -> MCPConfig:
     """Load MCP configuration from environment variables."""
     db_path = os.getenv("RETRORECON_MCP_DB")
     api_base = os.getenv("RETRORECON_MCP_API_BASE", "http://192.168.1.98:1234/v1")
+    if api_base and not api_base.startswith(("http://", "https://")):
+        logger.warning("api_base missing protocol: %s", api_base)
+        api_base = "http://" + api_base
     model = os.getenv("RETRORECON_MCP_MODEL", "qwen2.5-coldbrew-aetheria-test2_tools")
     try:
         temperature = float(os.getenv("RETRORECON_MCP_TEMPERATURE", "0.1"))
@@ -40,16 +43,26 @@ def load_config() -> MCPConfig:
     except ValueError:
         timeout = 60
     alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
-    alt_api_bases = [b.strip() for b in alt_env.split(",") if b.strip()]
+    alt_api_bases = []
+    for base in [b.strip() for b in alt_env.split(",") if b.strip()]:
+        if not base.startswith(("http://", "https://")):
+            logger.warning("alt_api_base missing protocol: %s", base)
+            base = "http://" + base
+        alt_api_bases.append(base)
 
     servers_cfg = None
     cfg_file = os.getenv("RETRORECON_MCP_SERVERS_FILE", "mcp_servers.json")
+    if not os.path.isabs(cfg_file):
+        cfg_file = os.path.join(os.getcwd(), cfg_file)
     if os.path.exists(cfg_file):
         try:
             with open(cfg_file, "r", encoding="utf-8") as fh:
                 servers_cfg = json.load(fh)
+            logger.debug("Loaded MCP server config from %s", cfg_file)
         except Exception as exc:
-            logger.error("Failed to load MCP server config: %s", exc)
+            logger.error("Failed to load MCP server config '%s': %s", cfg_file, exc)
+    else:
+        logger.debug("MCP server config not found at %s", cfg_file)
     return MCPConfig(
         db_path=db_path,
         api_base=api_base,

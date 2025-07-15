@@ -153,7 +153,7 @@ class TestMCPConfigHelpers:
         mock_load_config.return_value = mock_config
         
         path = _get_config_file_path()
-        assert path == 'mcp_servers.json'
+        assert os.path.basename(path) == 'mcp_servers.json'
     
     @patch('retrorecon.routes.mcp_config.load_config')
     def test_get_config_file_path_custom(self, mock_load_config):
@@ -163,4 +163,4 @@ class TestMCPConfigHelpers:
         mock_load_config.return_value = mock_config
         
         path = _get_config_file_path()
-        assert path == 'custom_servers.json'
+        assert os.path.basename(path) == 'custom_servers.json'

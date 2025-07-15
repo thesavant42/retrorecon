@@ -14,7 +14,10 @@ bp = Blueprint('mcp_config', __name__, url_prefix='/api/mcp')
 def _get_config_file_path() -> str:
     """Get the path to the MCP configuration file."""
     config = load_config()
-    return config.servers_file or 'mcp_servers.json'
+    path = config.servers_file or 'mcp_servers.json'
+    if not os.path.isabs(path):
+        path = os.path.join(os.getcwd(), path)
+    return path
 
 
 def _validate_server_config(server: Dict[str, Any]) -> List[str]:
@@ -124,7 +127,7 @@ def get_config():
 def update_config():
     """Update the MCP configuration."""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
         if not data:
             return jsonify({'error': 'No data provided'}), 400
         
