@@ -3,6 +3,7 @@ import sqlite3
 import logging
 import json
 import datetime
+import ast
 from typing import Dict, Any, List, Optional
 import anyio
 from mcp.server.fastmcp import FastMCP
@@ -39,12 +40,51 @@ class RetroReconMCPServer:
         )
 
 
+    def _normalize_alt_api_bases(self, alt_api_bases: Any) -> List[str]:
+        """Normalize alt_api_bases to ensure it's always a list of strings."""
+        if not alt_api_bases:
+            return []
+        
+        # If it's already a list, return it
+        if isinstance(alt_api_bases, list):
+            return alt_api_bases
+        
+        # If it's a string, try to parse it
+        if isinstance(alt_api_bases, str):
+            # Try to parse as JSON first
+            try:
+                parsed = json.loads(alt_api_bases)
+                if isinstance(parsed, list):
+                    return parsed
+            except json.JSONDecodeError:
+                pass
+            
+            # Try to parse as Python literal (for string repr of list)
+            try:
+                parsed = ast.literal_eval(alt_api_bases)
+                if isinstance(parsed, list):
+                    return parsed
+            except (ValueError, SyntaxError):
+                pass
+            
+            # If it's a single string, wrap it in a list
+            return [alt_api_bases]
+        
+        # If it's something else, try to convert to list
+        try:
+            return list(alt_api_bases)
+        except:
+            return []
+
     def _llm_chat(self, message: str) -> tuple[str, list[dict[str, Any]]]:
         """Send *message* to the configured model and return the reply along with tool logs."""
         if not self.api_base:
             raise RuntimeError("API base not configured")
         url = f"{self.api_base}/chat/completions"
-        api_bases = [self.api_base] + list(self.config.alt_api_bases or [])
+        
+        # Normalize alt_api_bases to ensure it's always a list
+        normalized_alt_bases = self._normalize_alt_api_bases(self.config.alt_api_bases)
+        api_bases = [self.api_base] + normalized_alt_bases
         base_idx = 0
         payload = {
             "model": self.model,
