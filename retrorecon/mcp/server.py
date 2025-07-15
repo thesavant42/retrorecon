@@ -11,7 +11,7 @@ import httpx
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from ..windows_tz import to_iana
-from .config import MCPConfig, load_config
+from .config import MCPConfig, load_config, validate_config
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,12 @@ class RetroReconMCPServer:
         self.timeout = self.config.timeout
         self.server = FastMCP("RetroRecon SQLite Explorer")
         self._setup_tools()
+        
+        # Validate configuration
+        issues = validate_config(self.config)
+        if issues:
+            logger.warning("MCP server initialized with configuration issues: %s", "; ".join(issues))
+        
         logger.debug(
             "Initializing MCP server: database=%s, llm_endpoint=%s, model=%s, row_limit=%d",
             self.db_path,
@@ -61,15 +67,20 @@ class RetroReconMCPServer:
             headers["Authorization"] = f"Bearer {self.api_key}"
         tool_logs: list[dict[str, Any]] = []
 
+        # Log the API bases being used
+        logger.debug("Available API bases: %s", api_bases)
+        
         while True:
             try:
+                logger.debug("Attempting LLM request to: %s", url)
                 resp = httpx.post(url, json=payload, headers=headers, timeout=self.timeout)
                 resp.raise_for_status()
             except Exception as exc:
                 logger.error("LLM request failed via %s: %s", url, exc)
                 base_idx += 1
                 if base_idx >= len(api_bases):
-                    raise
+                    logger.error("All API bases exhausted. Tried: %s", api_bases)
+                    raise RuntimeError(f"All LLM API endpoints failed. Last error: {exc}")
                 # Ensure we're getting a string, not a list
                 next_base = api_bases[base_idx]
                 if isinstance(next_base, list):

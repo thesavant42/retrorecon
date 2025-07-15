@@ -21,6 +21,36 @@ class MCPConfig:
     servers_file: str | None = None
 
 
+def validate_config(config: MCPConfig) -> List[str]:
+    """Validate MCP configuration and return list of issues."""
+    issues = []
+    
+    # Check API base configuration
+    if not config.api_base:
+        issues.append("API base is not configured")
+    elif config.api_base == "http://127.0.0.1:5000":
+        issues.append("API base points to Flask app port (5000) instead of LLM server")
+    elif not config.api_base.startswith(("http://", "https://")):
+        issues.append(f"API base missing protocol: {config.api_base}")
+    
+    # Check alternative API bases
+    for i, alt_base in enumerate(config.alt_api_bases or []):
+        if isinstance(alt_base, list):
+            issues.append(f"Alternative API base {i} is a list instead of string: {alt_base}")
+        elif not alt_base.startswith(("http://", "https://")):
+            issues.append(f"Alternative API base {i} missing protocol: {alt_base}")
+    
+    # Check model configuration
+    if not config.model:
+        issues.append("Model is not configured")
+    
+    # Check timeout
+    if config.timeout <= 0:
+        issues.append(f"Invalid timeout: {config.timeout}")
+    
+    return issues
+
+
 def load_config() -> MCPConfig:
     """Load MCP configuration from environment variables."""
     db_path = os.getenv("RETRORECON_MCP_DB")
@@ -28,6 +58,9 @@ def load_config() -> MCPConfig:
     if api_base and not api_base.startswith(("http://", "https://")):
         logger.warning("Primary API base missing protocol, adding http://: %s", api_base)
         api_base = "http://" + api_base
+    
+    # Log configuration for debugging
+    logger.debug("MCP configuration: api_base=%s", api_base)
     model = os.getenv("RETRORECON_MCP_MODEL", "qwen2.5-coldbrew-aetheria-test2_tools")
     try:
         temperature = float(os.getenv("RETRORECON_MCP_TEMPERATURE", "0.1"))
@@ -44,11 +77,16 @@ def load_config() -> MCPConfig:
         timeout = 60
     alt_env = os.getenv("RETRORECON_MCP_ALT_API_BASES", "")
     alt_api_bases = []
+    if alt_env:
+        logger.debug("Processing alt API bases from env: %s", alt_env)
     for base in [b.strip() for b in alt_env.split(",") if b.strip()]:
         if not base.startswith(("http://", "https://")):
             logger.warning("Alternative API base missing protocol, adding http://: %s", base)
             base = "http://" + base
         alt_api_bases.append(base)
+    
+    if alt_api_bases:
+        logger.debug("Configured alternative API bases: %s", alt_api_bases)
 
     servers_cfg = None
     cfg_file = os.getenv("RETRORECON_MCP_SERVERS_FILE", "mcp_servers.json")
@@ -73,7 +111,8 @@ def load_config() -> MCPConfig:
             servers_cfg = []
     else:
         logger.debug("MCP server config not found at %s", cfg_file)
-    return MCPConfig(
+    
+    config = MCPConfig(
         db_path=db_path,
         api_base=api_base,
         model=model,
@@ -85,3 +124,10 @@ def load_config() -> MCPConfig:
         mcp_servers=servers_cfg,
         servers_file=cfg_file,
     )
+    
+    # Validate configuration and log issues
+    issues = validate_config(config)
+    if issues:
+        logger.warning("MCP configuration issues found: %s", "; ".join(issues))
+    
+    return config
