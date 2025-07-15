@@ -29,6 +29,8 @@
 
 body {
   margin: 0;
+  background: var(--dynamic-bg-url, none) no-repeat center center fixed;
+  background-size: cover;
 }
 
 .retrorecon-root h1,
@@ -1651,3 +1653,19 @@ body.bg-hidden {
   border-radius: var(--radius);
   background-color: rgba(244, 67, 54, 0.1);
 }
+
+/* Theme option styles - use CSS custom properties set by JavaScript */
+#theme-opt-1 { background: var(--theme-opt-1-bg); color: var(--theme-opt-1-color); }
+#theme-opt-2 { background: var(--theme-opt-2-bg); color: var(--theme-opt-2-color); }
+#theme-opt-3 { background: var(--theme-opt-3-bg); color: var(--theme-opt-3-color); }
+#theme-opt-4 { background: var(--theme-opt-4-bg); color: var(--theme-opt-4-color); }
+#theme-opt-5 { background: var(--theme-opt-5-bg); color: var(--theme-opt-5-color); }
+#theme-opt-6 { background: var(--theme-opt-6-bg); color: var(--theme-opt-6-color); }
+#theme-opt-7 { background: var(--theme-opt-7-bg); color: var(--theme-opt-7-color); }
+#theme-opt-8 { background: var(--theme-opt-8-bg); color: var(--theme-opt-8-color); }
+#theme-opt-9 { background: var(--theme-opt-9-bg); color: var(--theme-opt-9-color); }
+#theme-opt-10 { background: var(--theme-opt-10-bg); color: var(--theme-opt-10-color); }
+
+/* MCP configuration form field visibility */
+.retrorecon-root .mcp-url-field.mcp-hidden { display: none; }
+.retrorecon-root .mcp-command-field.mcp-hidden { display: none; }

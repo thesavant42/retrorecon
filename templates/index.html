@@ -16,21 +16,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
   {% if current_background %}
-  <style>
-    body {
-      background: url('{{ url_for('static', filename='img/' + current_background) }}') no-repeat center center fixed;
-      background-size: cover;
-    }
-  </style>
+  <script>
+    document.documentElement.style.setProperty('--dynamic-bg-url', 'url("{{ url_for('static', filename='img/' + current_background) }}")');
+  </script>
   {% endif %}
-  <style>
-    /* stylelint-disable */
+  <script>
+    // Set theme swatch colors using CSS custom properties
     {% for t in themes %}
     {% set cols = theme_swatches.get(t) %}
-    #theme-opt-{{ loop.index }} { background: {{ cols[0] }}; color: {{ cols[1] }}; }
+    document.documentElement.style.setProperty('--theme-opt-{{ loop.index }}-bg', '{{ cols[0] }}');
+    document.documentElement.style.setProperty('--theme-opt-{{ loop.index }}-color', '{{ cols[1] }}');
     {% endfor %}
-    /* stylelint-enable */
-  </style>
+  </script>
   <link rel="shortcut icon" href="{{ url_for('core.favicon_ico') }}">
 </head>
 <body class="app" data-db="{{ db_name }}">
@@ -1340,11 +1337,11 @@
                   <option value="http" ${server.transport === 'http' ? 'selected' : ''}>HTTP</option>
                 </select>
               </div>
-              <div class="form-group mcp-url-field" style="display: ${server.transport === 'stdio' ? 'none' : 'block'}">
+              <div class="form-group mcp-url-field ${server.transport === 'stdio' ? 'mcp-hidden' : ''}">
                 <label>URL:</label>
                 <input type="url" class="form-input mcp-server-url" value="${server.url || ''}" data-index="${index}">
               </div>
-              <div class="form-group mcp-command-field" style="display: ${server.transport === 'stdio' ? 'block' : 'none'}">
+              <div class="form-group mcp-command-field ${server.transport === 'stdio' ? '' : 'mcp-hidden'}">
                 <label>Command:</label>
                 <input type="text" class="form-input mcp-server-command" value="${server.command ? server.command.join(' ') : ''}" data-index="${index}" placeholder="python -m module">
               </div>
@@ -1376,11 +1373,11 @@
             const commandField = serverDiv.querySelector('.mcp-command-field');
             
             if (transport === 'stdio') {
-              urlField.style.display = 'none';
-              commandField.style.display = 'block';
+              urlField.classList.add('mcp-hidden');
+              commandField.classList.remove('mcp-hidden');
             } else {
-              urlField.style.display = 'block';
-              commandField.style.display = 'none';
+              urlField.classList.remove('mcp-hidden');
+              commandField.classList.add('mcp-hidden');
             }
           });
         });
@@ -2008,8 +2005,7 @@
         const bg = bgSelect.value;
         bgInput.value = bg;
         bgForm.submit();
-        document.body.style.background = "url('/static/img/" + bg + "') no-repeat center center fixed";
-        document.body.style.backgroundSize = 'cover';
+        document.documentElement.style.setProperty('--dynamic-bg-url', "url('/static/img/" + bg + "')");
       });
     }
 
