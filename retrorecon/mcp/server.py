@@ -69,7 +69,9 @@ class RetroReconMCPServer:
                 logger.error("LLM request failed via %s: %s", url, exc)
                 base_idx += 1
                 if base_idx >= len(api_bases):
-                    raise
+                    attempted = [str(base) for base in api_bases]
+                    logger.error("All API bases exhausted. Tried: %s", attempted)
+                    raise RuntimeError(f"All API bases exhausted. Tried: {attempted}")
                 # Ensure we're getting a string, not a list
                 next_base = api_bases[base_idx]
                 if isinstance(next_base, list):

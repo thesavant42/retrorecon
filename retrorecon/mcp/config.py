@@ -21,6 +21,18 @@ class MCPConfig:
     servers_file: str | None = None
 
 
+def validate_config(config: MCPConfig) -> None:
+    """Validate MCP configuration and warn about common issues."""
+    # Check for common configuration issues
+    if config.api_base == "http://127.0.0.1:5000":
+        logger.warning("API base points to Flask app port (5000) instead of LLM server")
+    
+    # Check for malformed alternative API bases
+    for i, alt_base in enumerate(config.alt_api_bases or []):
+        if isinstance(alt_base, list):
+            logger.warning("Alternative API base %d is a list instead of string: %s", i, alt_base)
+
+
 def load_config() -> MCPConfig:
     """Load MCP configuration from environment variables."""
     db_path = os.getenv("RETRORECON_MCP_DB")
@@ -100,7 +112,7 @@ def load_config() -> MCPConfig:
             servers_cfg = []
     else:
         logger.debug("MCP server config not found at %s", cfg_file)
-    return MCPConfig(
+    config = MCPConfig(
         db_path=db_path,
         api_base=api_base,
         model=model,
@@ -112,3 +124,5 @@ def load_config() -> MCPConfig:
         mcp_servers=servers_cfg,
         servers_file=cfg_file,
     )
+    validate_config(config)
+    return config
