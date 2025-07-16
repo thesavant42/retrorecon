@@ -592,13 +592,13 @@ def fetch_cdx() -> Response:
         if resume_key:
             url += f"&resumeKey={resume_key}"
 
-        status_mod.push_status('cdx_api_waiting', domain)
+        status_mod.push_status('cdx_api_waiting', f'[ cdx: {domain}:1000 ]')
         try:
-            status_mod.push_status('cdx_api_downloading', url)
+            status_mod.push_status('cdx_api_downloading', f'[ cdx: {domain}:1000 ]')
             resp = requests.get(url, timeout=20)
             resp.raise_for_status()
             data = resp.json()
-            status_mod.push_status('cdx_api_download_complete', url)
+            status_mod.push_status('cdx_api_download_complete', f'[ cdx: {domain}:1000 ]')
         except Exception as e:
             flash(f"Error fetching CDX data: {e}", "error")
             return redirect(url_for('index'))

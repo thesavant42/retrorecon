@@ -369,8 +369,7 @@ body {
 
 /* Navbar layout */
 .retrorecon-root .navbar {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   align-items: center;
   margin: 0 10px;
   width: 100%;
@@ -379,26 +378,34 @@ body {
   z-index: 1100;
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
   border-radius: var(--radius);
+  gap: 1em;
 }
 .retrorecon-root .navbar__menus {
   display: flex;
   gap: 0.6em;
-  justify-self: start;
 }
-.retrorecon-root .navbar__title {
-  text-align: center;
+.retrorecon-root #load-saved-db-bar-form {
   display: flex;
   align-items: center;
-  justify-content: center;
-  justify-self: center;
-  gap: 5px;
 }
-.retrorecon-root .navbar__info {
+.retrorecon-root #db-display {
+  white-space: nowrap;
+}
+.retrorecon-root #mcp-status-block {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.retrorecon-root #import-status-block {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 0.4em;
+  font-size: 1em;
+  letter-spacing: 0.04em;
+  font-weight: bold;
+  color: var(--accent-color);
   margin-left: 0;
-  margin-right: 1em;
-  display: flex;
-  align-items: center;
-  justify-self: start;
 }
 .retrorecon-root .navbar__title h1 {
   margin: 0;
@@ -1130,20 +1137,6 @@ body {
 }
 
 /* Import status bar */
-.retrorecon-root #import-status-block {
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  white-space: nowrap;
-  font-size: 1em;
-  letter-spacing: 0.04em;
-  font-weight: bold;
-  color: var(--accent-color);
-  background: var(--bg-color);
-  margin-left: 0;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
 .retrorecon-root #import-progress-bar-container {
   width: 120px;
   height: 8px;
