@@ -15,25 +15,9 @@
   {% endif %}
   <link rel="stylesheet" href="{{ url_for('static', filename='themes/' + current_theme) }}" />
   {% endif %}
-  {% if current_background %}
-  <style>
-    body {
-      background: url('{{ url_for('static', filename='img/' + current_background) }}') no-repeat center center fixed;
-      background-size: cover;
-    }
-  </style>
-  {% endif %}
-  <style>
-    /* stylelint-disable */
-    {% for t in themes %}
-    {% set cols = theme_swatches.get(t) %}
-    #theme-opt-{{ loop.index }} { background: {{ cols[0] }}; color: {{ cols[1] }}; }
-    {% endfor %}
-    /* stylelint-enable */
-  </style>
   <link rel="shortcut icon" href="{{ url_for('core.favicon_ico') }}">
 </head>
-<body class="app" data-db="{{ db_name }}">
+<body class="app{% if current_background %} has-background-image{% endif %}" data-db="{{ db_name }}"{% if current_background %} data-background-image="{{ url_for('static', filename='img/' + current_background) }}"{% endif %}>
   <div class="retrorecon-root">
     <div id="dropdown-shade" class="dropdown-shade hidden"></div>
 {% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching) %}
@@ -143,7 +127,6 @@
             <label for="theme-select" class="form-label menu-label">Theme:</label>
             <select id="theme-select" class="form-select menu-btn">
               {% for t in themes %}
-              {% set cols = theme_swatches.get(t) %}
               <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
                 {{ t.replace('theme-','').replace('.css','') }}
               </option>
@@ -471,6 +454,12 @@
     let allTags = [];
     let currentUrlId = null;
     let editingId = null;
+
+    // Set background image from data attribute
+    const backgroundImage = document.body.getAttribute('data-background-image');
+    if (backgroundImage) {
+      document.body.style.setProperty('--background-image-url', `url('${backgroundImage}')`);
+    }
 
     function renderNotes(data){
       notesList.innerHTML = '';
@@ -1340,11 +1329,11 @@
                   <option value="http" ${server.transport === 'http' ? 'selected' : ''}>HTTP</option>
                 </select>
               </div>
-              <div class="form-group mcp-url-field" style="display: ${server.transport === 'stdio' ? 'none' : 'block'}">
+              <div class="form-group mcp-url-field mcp-transport-${server.transport}">
                 <label>URL:</label>
                 <input type="url" class="form-input mcp-server-url" value="${server.url || ''}" data-index="${index}">
               </div>
-              <div class="form-group mcp-command-field" style="display: ${server.transport === 'stdio' ? 'block' : 'none'}">
+              <div class="form-group mcp-command-field mcp-transport-${server.transport}">
                 <label>Command:</label>
                 <input type="text" class="form-input mcp-server-command" value="${server.command ? server.command.join(' ') : ''}" data-index="${index}" placeholder="python -m module">
               </div>
@@ -1375,13 +1364,13 @@
             const urlField = serverDiv.querySelector('.mcp-url-field');
             const commandField = serverDiv.querySelector('.mcp-command-field');
             
-            if (transport === 'stdio') {
-              urlField.style.display = 'none';
-              commandField.style.display = 'block';
-            } else {
-              urlField.style.display = 'block';
-              commandField.style.display = 'none';
-            }
+            // Remove all transport classes
+            urlField.classList.remove('mcp-transport-stdio', 'mcp-transport-sse', 'mcp-transport-http');
+            commandField.classList.remove('mcp-transport-stdio', 'mcp-transport-sse', 'mcp-transport-http');
+            
+            // Add the current transport class
+            urlField.classList.add(`mcp-transport-${transport}`);
+            commandField.classList.add(`mcp-transport-${transport}`);
           });
         });
 
