@@ -80,163 +80,20 @@
   </div>
   {% endmacro %}
   <nav class="navbar">
-  <div class="navbar__menus">
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="file-menu">File ▼</button>
-      <div class="dropdown-content" id="file-menu">
-          <form method="POST" action="/new_db" class="menu-row" id="new-db-form">
-            <input type="hidden" name="db_name" id="new-db-name" />
-            <button type="submit" class="menu-btn">New Project</button>
-          </form>
-          <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Save Project</a></div>
-          <form method="GET" action="/save_db" class="menu-row" id="save-db-form">
-            <button type="submit" class="menu-btn">Save Project As...</button>
-          </form>
-          <div class="menu-row"><input type="text" id="db-filter" class="form-input w-100" placeholder="Filter projects..."></div>
-          <div id="db-list">
-            {% for db in saved_dbs %}
-            <div class="menu-row db-entry" data-db="{{ db }}">
-              <span>{{ db }}</span>
-              <button type="button" class="menu-btn ml-05 delete-db-btn" data-db="{{ db }}" {% if db == db_name %}disabled title="Cannot delete while active."{% endif %}>Delete</button>
-            </div>
-            {% endfor %}
-          </div>
-          <select id="url-export-formats" class="form-select menu-btn">
-            <option value="" selected>Export As...</option>
-            <option value="json">JSON</option>
-            <option value="csv">CSV</option>
-            <option value="md">Markdown</option>
-            <option value="xml">XML</option>
-            <option value="txt">Plain Text</option>
-          </select>
-          <form id="url-export-form" class="hidden" action="/export_urls" method="GET" target="_blank">
-            <input type="hidden" name="format" id="url-export-format" />
-            <input type="hidden" name="q" id="url-export-q" value="{{ q }}" />
-            <input type="hidden" name="select_all_matching" id="url-export-sam" value="{{ 'true' if select_all_matching else 'false' }}" />
-          </form>
-          <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Backup SQL</a></div>
+    <!-- Help menu (navbar_menus) -->
+    <div class="navbar__help-menu">
+      <div class="dropdown">
+        <button class="dropbtn" data-menu="help-menu">Help ▼</button>
+        <div class="dropdown-content" id="help-menu">
+            <div class="menu-row"><a href="#" class="menu-btn" id="help-readme-link">README</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="help-about-link">About</a></div>
+        </div>
       </div>
     </div>
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
-      <div class="dropdown-content" id="edit-menu">
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({})">Select All (Visible)</button></div>
-          <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (Matching)</button></div>
-          <div class="menu-header">Selected:</div>
-          <div class="menu-row bulk-btn-row">
-            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del</button>
-            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset 🏷️</button>
-          </div>
-          <div class="menu-row bulk-btn-row">
-            <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add 🏷️</button>
-            <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
-          </div>
-          <hr>
-          <div class="menu-header">Preferences</div>
-          <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
-            <input type="hidden" name="theme" id="set-theme-input" />
-          </form>
-          <form id="set-bg-form" method="POST" action="/set_background" class="d-none">
-            <input type="hidden" name="background" id="set-bg-input" />
-          </form>
-          <div class="theme-row menu-row mb-4px">
-            <label for="theme-select" class="form-label menu-label">Theme:</label>
-            <select id="theme-select" class="form-select menu-btn">
-              {% for t in themes %}
-              {% set cols = theme_swatches.get(t) %}
-              <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
-                {{ t.replace('theme-','').replace('.css','') }}
-              </option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="background-select" class="form-label menu-label">Background:</label>
-            <select id="background-select" class="form-select menu-btn">
-              {% for bg in backgrounds %}
-              <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="menu-row">
-            <label class="form-label menu-label">
-              <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
-              Show background image
-            </label>
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="font-size-input" class="form-label menu-label">Font size:</label>
-            <input type="number" id="font-size-input" min="10" max="18" step="1" value="14" class="form-input w-6em">
-          </div>
-          <div class="menu-row">
-            <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
-            <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="font-family-select" class="form-label menu-label">Font:</label>
-            <select id="font-family-select" class="form-select menu-btn">
-              <option value="monospace">monospace</option>
-              <option value="sans-serif">sans-serif</option>
-              <option value="serif">serif</option>
-            </select>
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="accent-color-input" class="form-label menu-label">Accent:</label>
-            <input type="color" id="accent-color-input" class="form-input menu-btn" value="#00aaff">
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="text-color-input" class="form-label menu-label">Text:</label>
-            <input type="color" id="text-color-input" class="form-input menu-btn" value="#ffffff">
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="bg-color-input" class="form-label menu-label">Background:</label>
-            <input type="color" id="bg-color-input" class="form-input menu-btn" value="#000000">
-          </div>
-          <div class="menu-row mb-4px">
-            <label for="border-color-input" class="form-label menu-label">Border:</label>
-            <input type="color" id="border-color-input" class="form-input menu-btn" value="#888888">
-          </div>
-          <div class="menu-row">
-            <button type="button" id="save-theme-btn" class="menu-btn">Save Theme</button>
-          </div>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
-      <div class="dropdown-content" id="tools-menu">
-          <div class="menu-header">OSINT</div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="domain-sort-link">Domain Sort</a></div>
-          <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
-            <input id="domain-input" type="hidden" name="domain" />
-            <button type="button" class="menu-btn" id="fetch-cdx-btn">Hindsight (CDX API)</button>
-          </form>
-          <div class="menu-row"><a href="#" class="menu-btn" id="oci-explorer-link">OCI Explorer</a></div>
-          <div class="menu-header">Active Recon</div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">Screenshotter</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="httpolaroid-link">HTTPolaroid</a></div>
-          <div class="menu-header">Utilities</div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="markdown-editor-link">Markdown Editor</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="chat-link">Database Chat</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="mcp-config-link">MCP Configuration</a></div>
-          <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
-            <input type="hidden" name="map_url" id="webpack-url-input" />
-            <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
-          </form>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" data-menu="help-menu">Help ▼</button>
-      <div class="dropdown-content" id="help-menu">
-          <div class="menu-row"><a href="#" class="menu-btn" id="help-readme-link">README</a></div>
-          <div class="menu-row"><a href="#" class="menu-btn" id="help-about-link">About</a></div>
-      </div>
-    </div>
-  </div>
-  <div class="navbar__title">
-      <span class="cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
-      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form" class="ml-5px">
+    
+    <!-- Load saved DB selector (load-saved-db-bar-select) -->
+    <div class="navbar__db-selector">
+      <form method="POST" action="/load_saved_db" id="load-saved-db-bar-form">
         <select name="db_file" id="load-saved-db-bar-select" class="form-select menu-btn">
           <option value="">Load Saved DB...</option>
           {% for db in saved_dbs %}
@@ -245,7 +102,22 @@
         </select>
       </form>
     </div>
-    <div class="navbar__info">
+    
+    <!-- Database display (db_display) -->
+    <div class="navbar__db-display">
+      <span class="cursor-pointer" id="db-display">[ {{ db_name }} ]</span>
+    </div>
+    
+    <!-- MCP status block (mcp-status-block) -->
+    <div class="navbar__mcp-status">
+      <div id="mcp-status-block" class="db-info">
+        <span class="ml-01"><strong>MCP:</strong></span>
+        <span id="mcp-status-text">checking…</span>
+      </div>
+    </div>
+    
+    <!-- Import status block (import-status-block) -->
+    <div class="navbar__import-status">
       <div id="import-status-block" class="db-info">
         <span class="ml-01"><strong>Status:</strong></span>
         <span id="import-status-text">idle</span>
@@ -256,9 +128,154 @@
           <span id="import-progress-numbers-span"></span>
         </div>
       </div>
-      <div id="mcp-status-block" class="db-info ml-1">
-        <span class="ml-01"><strong>MCP:</strong></span>
-        <span id="mcp-status-text">checking…</span>
+    </div>
+    
+    <!-- Additional menus moved to secondary row -->
+    <div class="navbar__secondary-menus">
+      <div class="dropdown">
+        <button class="dropbtn" data-menu="file-menu">File ▼</button>
+        <div class="dropdown-content" id="file-menu">
+            <form method="POST" action="/new_db" class="menu-row" id="new-db-form">
+              <input type="hidden" name="db_name" id="new-db-name" />
+              <button type="submit" class="menu-btn">New Project</button>
+            </form>
+            <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Save Project</a></div>
+            <form method="GET" action="/save_db" class="menu-row" id="save-db-form">
+              <button type="submit" class="menu-btn">Save Project As...</button>
+            </form>
+            <div class="menu-row"><input type="text" id="db-filter" class="form-input w-100" placeholder="Filter projects..."></div>
+            <div id="db-list">
+              {% for db in saved_dbs %}
+              <div class="menu-row db-entry" data-db="{{ db }}">
+                <span>{{ db }}</span>
+                <button type="button" class="menu-btn ml-05 delete-db-btn" data-db="{{ db }}" {% if db == db_name %}disabled title="Cannot delete while active."{% endif %}>Delete</button>
+              </div>
+              {% endfor %}
+            </div>
+            <select id="url-export-formats" class="form-select menu-btn">
+              <option value="" selected>Export As...</option>
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="md">Markdown</option>
+              <option value="xml">XML</option>
+              <option value="txt">Plain Text</option>
+            </select>
+            <form id="url-export-form" class="hidden" action="/export_urls" method="GET" target="_blank">
+              <input type="hidden" name="format" id="url-export-format" />
+              <input type="hidden" name="q" id="url-export-q" value="{{ q }}" />
+              <input type="hidden" name="select_all_matching" id="url-export-sam" value="{{ 'true' if select_all_matching else 'false' }}" />
+            </form>
+            <div class="menu-row"><a href="/save_db?name={{ db_name }}" class="menu-btn">Backup SQL</a></div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="dropbtn" data-menu="edit-menu">Edit ▼</button>
+        <div class="dropdown-content" id="edit-menu">
+            <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllPage({})">Select All (Visible)</button></div>
+            <div class="menu-row"><button class="menu-btn bulk-action-btn" type="button" onclick="toggleSelectAllMatching({checked:true})">Select All (Matching)</button></div>
+            <div class="menu-header">Selected:</div>
+            <div class="menu-row bulk-btn-row">
+              <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="delete">Del</button>
+              <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="clear_tags">Reset 🏷️</button>
+            </div>
+            <div class="menu-row bulk-btn-row">
+              <button class="menu-btn bulk-action-btn" type="submit" form="bulk-form" name="action" value="add_tag">Add 🏷️</button>
+              <input type="text" name="tag" id="bulk-tag-input" form="bulk-form" placeholder="Tag" class="form-input" />
+            </div>
+            <hr>
+            <div class="menu-header">Preferences</div>
+            <form id="set-theme-form" method="POST" action="/set_theme" class="d-none">
+              <input type="hidden" name="theme" id="set-theme-input" />
+            </form>
+            <form id="set-bg-form" method="POST" action="/set_background" class="d-none">
+              <input type="hidden" name="background" id="set-bg-input" />
+            </form>
+            <div class="theme-row menu-row mb-4px">
+              <label for="theme-select" class="form-label menu-label">Theme:</label>
+              <select id="theme-select" class="form-select menu-btn">
+                {% for t in themes %}
+                {% set cols = theme_swatches.get(t) %}
+                <option id="theme-opt-{{ loop.index }}" value="{{ t }}" {% if t == current_theme %}selected{% endif %}>
+                  {{ t.replace('theme-','').replace('.css','') }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="background-select" class="form-label menu-label">Background:</label>
+              <select id="background-select" class="form-select menu-btn">
+                {% for bg in backgrounds %}
+                <option value="{{ bg }}" {% if bg == current_background %}selected{% endif %}>{{ bg }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="menu-row">
+              <label class="form-label menu-label">
+                <input type="checkbox" id="bg-toggle" checked onchange="toggleBackground(this)" class="form-checkbox">
+                Show background image
+              </label>
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="font-size-input" class="form-label menu-label">Font size:</label>
+              <input type="number" id="font-size-input" min="10" max="18" step="1" value="14" class="form-input w-6em">
+            </div>
+            <div class="menu-row">
+              <label for="opacity-range" class="form-label menu-label">Panel opacity:</label>
+              <input type="range" id="opacity-range" min="10" max="100" value="{{ (panel_opacity * 100)|int }}" class="form-range">
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="font-family-select" class="form-label menu-label">Font:</label>
+              <select id="font-family-select" class="form-select menu-btn">
+                <option value="monospace">monospace</option>
+                <option value="sans-serif">sans-serif</option>
+                <option value="serif">serif</option>
+              </select>
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="accent-color-input" class="form-label menu-label">Accent:</label>
+              <input type="color" id="accent-color-input" class="form-input menu-btn" value="#00aaff">
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="text-color-input" class="form-label menu-label">Text:</label>
+              <input type="color" id="text-color-input" class="form-input menu-btn" value="#ffffff">
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="bg-color-input" class="form-label menu-label">Background:</label>
+              <input type="color" id="bg-color-input" class="form-input menu-btn" value="#000000">
+            </div>
+            <div class="menu-row mb-4px">
+              <label for="border-color-input" class="form-label menu-label">Border:</label>
+              <input type="color" id="border-color-input" class="form-input menu-btn" value="#888888">
+            </div>
+            <div class="menu-row">
+              <button type="button" id="save-theme-btn" class="menu-btn">Save Theme</button>
+            </div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="dropbtn" data-menu="tools-menu">Tools ▼</button>
+        <div class="dropdown-content" id="tools-menu">
+            <div class="menu-header">OSINT</div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="domain-sort-link">Domain Sort</a></div>
+            <form method="POST" action="/fetch_cdx" class="menu-row" id="fetch-cdx-form">
+              <input id="domain-input" type="hidden" name="domain" />
+              <button type="button" class="menu-btn" id="fetch-cdx-btn">Hindsight (CDX API)</button>
+            </form>
+            <div class="menu-row"><a href="#" class="menu-btn" id="oci-explorer-link">OCI Explorer</a></div>
+            <div class="menu-header">Active Recon</div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="screenshot-link">Screenshotter</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="httpolaroid-link">HTTPolaroid</a></div>
+            <div class="menu-header">Utilities</div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="text-tools-link">Text Tools</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="jwt-tools-link">JWT Tools</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="markdown-editor-link">Markdown Editor</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="chat-link">Database Chat</a></div>
+            <div class="menu-row"><a href="#" class="menu-btn" id="mcp-config-link">MCP Configuration</a></div>
+            <form method="POST" action="/tools/webpack-zip" class="menu-row" id="webpack-form">
+              <input type="hidden" name="map_url" id="webpack-url-input" />
+              <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
+            </form>
+        </div>
       </div>
     </div>
   </nav>

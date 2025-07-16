@@ -369,9 +369,7 @@ body {
 
 /* Navbar layout */
 .retrorecon-root .navbar {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
+  position: relative;
   margin: 0 10px;
   width: 100%;
   position: sticky;
@@ -379,30 +377,56 @@ body {
   z-index: 1100;
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
   border-radius: var(--radius);
+  min-height: var(--navbar-height);
 }
-.retrorecon-root .navbar__menus {
+
+/* Primary unified top row */
+.retrorecon-root .navbar .navbar__help-menu,
+.retrorecon-root .navbar .navbar__db-selector,
+.retrorecon-root .navbar .navbar__db-display,
+.retrorecon-root .navbar .navbar__mcp-status,
+.retrorecon-root .navbar .navbar__import-status {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Horizontal positioning for unified top row */
+.retrorecon-root .navbar .navbar__help-menu { left: 1em; }
+.retrorecon-root .navbar .navbar__db-selector { left: 8em; }
+.retrorecon-root .navbar .navbar__db-display { left: 22em; }
+.retrorecon-root .navbar .navbar__mcp-status { left: 34em; }
+.retrorecon-root .navbar .navbar__import-status { left: 46em; }
+
+/* Secondary menus row */
+.retrorecon-root .navbar .navbar__secondary-menus {
   display: flex;
   gap: 0.6em;
-  justify-self: start;
+  padding: 0.5em 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 3.5em;
 }
-.retrorecon-root .navbar__title {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-  gap: 5px;
+
+/* Status text truncation */
+.retrorecon-root .navbar .db-info {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.retrorecon-root .navbar__info {
-  margin-left: 0;
-  margin-right: 1em;
-  display: flex;
-  align-items: center;
-  justify-self: start;
+
+.retrorecon-root .navbar .db-info span:last-child {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
 }
-.retrorecon-root .navbar__title h1 {
-  margin: 0;
-}
+
+/* Remove obsolete navbar__title h1 style */
 
 /* Dropdown styling (menu) */
 .retrorecon-root .dropdown {
