@@ -94,6 +94,10 @@ body {
   font-weight: bold;
   color: var(--accent-color);
   margin-left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
@@ -369,9 +373,9 @@ body {
 
 /* Navbar layout */
 .retrorecon-root .navbar {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   align-items: center;
+  gap: 1em;
   margin: 0 10px;
   width: 100%;
   position: sticky;
@@ -379,26 +383,25 @@ body {
   z-index: 1100;
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
   border-radius: var(--radius);
+  padding: 0.5em;
 }
 .retrorecon-root .navbar__menus {
   display: flex;
   gap: 0.6em;
-  justify-self: start;
+  flex-shrink: 0;
 }
 .retrorecon-root .navbar__title {
-  text-align: center;
   display: flex;
   align-items: center;
-  justify-content: center;
-  justify-self: center;
   gap: 5px;
+  flex-shrink: 0;
 }
 .retrorecon-root .navbar__info {
-  margin-left: 0;
-  margin-right: 1em;
   display: flex;
   align-items: center;
-  justify-self: start;
+  gap: 1em;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 .retrorecon-root .navbar__title h1 {
   margin: 0;

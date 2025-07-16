@@ -594,11 +594,13 @@ def fetch_cdx() -> Response:
 
         status_mod.push_status('cdx_api_waiting', domain)
         try:
-            status_mod.push_status('cdx_api_downloading', url)
+            # Create a truncated status message format
+            cdx_status_msg = f"[ cdx: {domain} : limit 1000 ]"
+            status_mod.push_status('cdx_api_downloading', cdx_status_msg)
             resp = requests.get(url, timeout=20)
             resp.raise_for_status()
             data = resp.json()
-            status_mod.push_status('cdx_api_download_complete', url)
+            status_mod.push_status('cdx_api_download_complete', cdx_status_msg)
         except Exception as e:
             flash(f"Error fetching CDX data: {e}", "error")
             return redirect(url_for('index'))
