@@ -1340,11 +1340,11 @@
                   <option value="http" ${server.transport === 'http' ? 'selected' : ''}>HTTP</option>
                 </select>
               </div>
-              <div class="form-group mcp-url-field" style="display: ${server.transport === 'stdio' ? 'none' : 'block'}">
+              <div class="form-group mcp-url-field ${server.transport === 'stdio' ? 'hidden' : 'show-block'}">
                 <label>URL:</label>
                 <input type="url" class="form-input mcp-server-url" value="${server.url || ''}" data-index="${index}">
               </div>
-              <div class="form-group mcp-command-field" style="display: ${server.transport === 'stdio' ? 'block' : 'none'}">
+              <div class="form-group mcp-command-field ${server.transport === 'stdio' ? 'show-block' : 'hidden'}">
                 <label>Command:</label>
                 <input type="text" class="form-input mcp-server-command" value="${server.command ? server.command.join(' ') : ''}" data-index="${index}" placeholder="python -m module">
               </div>
@@ -1376,11 +1376,15 @@
             const commandField = serverDiv.querySelector('.mcp-command-field');
             
             if (transport === 'stdio') {
-              urlField.style.display = 'none';
-              commandField.style.display = 'block';
+              urlField.classList.add('hidden');
+              urlField.classList.remove('show-block');
+              commandField.classList.add('show-block');
+              commandField.classList.remove('hidden');
             } else {
-              urlField.style.display = 'block';
-              commandField.style.display = 'none';
+              urlField.classList.add('show-block');
+              urlField.classList.remove('hidden');
+              commandField.classList.add('hidden');
+              commandField.classList.remove('show-block');
             }
           });
         });

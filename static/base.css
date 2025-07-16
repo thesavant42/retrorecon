@@ -44,6 +44,7 @@ body {
 }
 
 .retrorecon-root .hidden { display: none; }
+.retrorecon-root .show-block { display: block; }
 
 .retrorecon-root .spinner {
   animation: spin 2s linear infinite;
