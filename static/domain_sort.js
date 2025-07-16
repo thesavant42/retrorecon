@@ -6,7 +6,7 @@ function initDomainSort(){
   const outputDiv = document.getElementById('domain-sort-output');
   const exportBtn = document.getElementById('domain-sort-export-btn');
   const closeBtn = document.getElementById('domain-sort-close-btn');
-  const statusDiv = document.getElementById('domain-sort-status');
+
   const importInput = document.getElementById('domain-import-input');
   const importBtn = document.getElementById('domain-import-btn');
 
@@ -20,7 +20,6 @@ function initDomainSort(){
   });
 
   function setStatus(msg){
-    if(statusDiv) statusDiv.textContent = msg;
     if(window.showStatus) window.showStatus(msg);
   }
 
