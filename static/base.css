@@ -1651,3 +1651,46 @@ body.bg-hidden {
   border-radius: var(--radius);
   background-color: rgba(244, 67, 54, 0.1);
 }
+
+/* MCP transport field visibility */
+.retrorecon-root .mcp-url-field.mcp-transport-stdio {
+  display: none;
+}
+
+.retrorecon-root .mcp-command-field.mcp-transport-stdio {
+  display: block;
+}
+
+.retrorecon-root .mcp-url-field.mcp-transport-sse,
+.retrorecon-root .mcp-url-field.mcp-transport-http {
+  display: block;
+}
+
+.retrorecon-root .mcp-command-field.mcp-transport-sse,
+.retrorecon-root .mcp-command-field.mcp-transport-http {
+  display: none;
+}
+
+/* Dynamic background image support */
+.retrorecon-root body.has-background-image {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  background-image: var(--background-image-url);
+}
+
+.retrorecon-root body.bg-hidden {
+  background-image: none !important;
+}
+
+/* Theme swatch colors for option elements */
+.retrorecon-root .theme-option {
+  padding: 0.5em;
+  margin: 0.1em;
+}
+
+.retrorecon-root .theme-option-colored {
+  background-color: var(--theme-bg-color) !important;
+  color: var(--theme-text-color) !important;
+}
