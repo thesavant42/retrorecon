@@ -12,7 +12,8 @@
   ],
   "rules": {
     "selector-disallowed-list": ["^[a-z]"],
-    "selector-class-pattern": "^[a-z0-9_-]+$"
+    "selector-class-pattern": "^[a-z0-9_-]+$",
+    "no-descending-specificity": null
   },
   "overrides": [
     {

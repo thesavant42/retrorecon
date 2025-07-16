@@ -95,6 +95,23 @@ body {
   color: var(--accent-color);
   margin-left: 0;
 }
+
+/* Navbar-specific db-info styles for status truncation */
+.retrorecon-root .navbar .db-info {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.retrorecon-root .navbar .db-info span:last-child {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
 .retrorecon-root .ml-01 { margin-left: 0.1em; }
 
 /* Generic form styles */
@@ -369,11 +386,10 @@ body {
 
 /* Navbar layout */
 .retrorecon-root .navbar {
-  position: relative;
-  margin: 0 10px;
-  width: 100%;
   position: sticky;
   top: 0;
+  margin: 0 10px;
+  width: 100%;
   z-index: 1100;
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
   border-radius: var(--radius);
@@ -408,22 +424,6 @@ body {
   padding: 0.5em 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 3.5em;
-}
-
-/* Status text truncation */
-.retrorecon-root .navbar .db-info {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.retrorecon-root .navbar .db-info span:last-child {
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: inline-block;
 }
 
 /* Remove obsolete navbar__title h1 style */
