@@ -1,7 +1,6 @@
 import asyncio
 import io
 import tarfile
-from datetime import datetime
 import stat
 from typing import Any, Dict, List, Optional
 import os
@@ -9,6 +8,14 @@ import os
 import aiohttp
 
 from .utils import parse_image_ref, registry_base_url, human_readable_size
+
+# Python 3.10 compatibility for UTC timezone
+try:
+    from datetime import datetime, UTC
+except ImportError:
+    # Fallback for Python 3.10 and earlier
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(
     total=int(os.environ.get("REGISTRY_TIMEOUT", "120"))
@@ -194,7 +201,7 @@ async def list_layer_files(
                 elif m.issym():
                     mode |= stat.S_IFLNK
                 perms = stat.filemode(mode)
-                ts = datetime.utcfromtimestamp(m.mtime).strftime("%Y-%m-%d %H:%M")
+                ts = datetime.fromtimestamp(m.mtime, UTC).strftime("%Y-%m-%d %H:%M")
                 items.append(f"{perms} {m.uid}/{m.gid} {m.size} {ts} {m.name}")
             return items
 
