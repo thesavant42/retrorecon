@@ -232,7 +232,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 16px;
+  font-size: 15px;
   gap: 0.6em;
 }
 
@@ -283,7 +283,7 @@
   margin-top: 0;
   text-align: center;
   color: var(--fg-color);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .retrorecon-root .fw-bold {
