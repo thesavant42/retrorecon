@@ -25,7 +25,7 @@
     <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
       <input type="hidden" name="count" id="items-count-input" />
     </form>
-    <select id="results-per-page-select" class="form-select menu-btn" form="set-items-form">
+    <select id="results-per-page-select-1" class="form-select menu-btn" form="set-items-form">
       {% for n in [5,10,15,20,25] %}
       <option value="{{ n }}" {% if items_per_page == n %}selected{% endif %}>{{ '%02d' % n }}</option>
       {% endfor %}
