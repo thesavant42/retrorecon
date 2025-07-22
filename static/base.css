@@ -426,16 +426,18 @@ body {
   opacity: 0.8;
 }
 .retrorecon-root .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: var(--select-bg-color);
-  min-width: 260px;
-  z-index: 100;
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid var(--select-border-color);
-  margin-top: 6px;
-  color: var(--select-border-color);
+display: none;
+position: absolute;
+background-color: var(--select-bg-color);
+min-width: 260px;
+width: max-content;
+max-width: 320px;
+z-index: 100;
+padding: 8px 12px;
+border-radius: 5px;
+border: 1px solid var(--select-border-color);
+margin-top: 6px;
+color: var(--select-border-color);
 }
 /* Square styling for all navbar controls */
 .retrorecon-root .navbar input,

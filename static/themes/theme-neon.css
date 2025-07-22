@@ -328,9 +328,11 @@ body.bg-hidden {
 
 /* Standardize dropdown menu styling */
 .retrorecon-root .dropdown-content {
-  background-color: var(--color-base);
-  color: var(--font-main);
-  border: 1px solid var(--font-accent);
+background-color: var(--color-base);
+color: var(--font-main);
+border: 1px solid var(--font-accent);
+width: max-content;
+max-width: 320px;
 }
 .retrorecon-root .dropdown-content .menu-btn,
 .retrorecon-root .dropdown-content a.menu-btn {
