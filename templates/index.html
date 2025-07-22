@@ -2085,7 +2085,17 @@
         makeResizableTable(urlTable, 'url-col-widths');
       }
     });
-  </script>
+    // Restore dropdown form submission for results-per-page
+    document.addEventListener('DOMContentLoaded', function() {
+      var perPageSelect = document.getElementById('results-per-page-select-1');
+      var perPageForm = document.getElementById('set-items-form');
+      if (perPageSelect && perPageForm) {
+        perPageSelect.addEventListener('change', function() {
+          perPageForm.submit();
+        });
+      }
+    });
+</script>
 </div>
 <script src="{{ url_for('static', filename='col_resize.js') }}"></script>
 <script src="{{ url_for('static', filename='chat.js') }}"></script>
