@@ -1,0 +1,2 @@
+[console_scripts]
+layerslayer = layerslayer.cli:main

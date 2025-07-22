@@ -48,15 +48,15 @@ body.bg-hidden {
   background: rgb(var(--bg-rgb)/var(--panel-opacity));
   color: var(--font-main);
   border-bottom: 1px solid var(--border-color);
-  font-size: 13.333px;
+  font-size: 15px;
 }
 
 .retrorecon-root .url-row-main td {
-  font-size: 13.333px;
+  font-size: 15px;
 }
 
 .retrorecon-root .url-row-main.url-result td {
-  font-size: 13.333px;
+  font-size: 15px;
   font-weight: bold;
   color: var(--accent-color);
 }
@@ -100,7 +100,7 @@ body.bg-hidden {
   border: none;
   color: var(--fg-color);
   padding: 0.4em 0.6em;
-  font-size: 13.333px;
+  font-size: 15px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -124,11 +124,11 @@ body.bg-hidden {
 .retrorecon-root .navbar .menu-label {
   font-family: inherit;
   color: var(--font-main);
-  font-size: 13.333px;
+  font-size: 15px;
 }
 .retrorecon-root .navbar .menu-btn {
   font-family: inherit;
-  font-size: 13.333px;
+  font-size: 15px;
 }
 
 
@@ -236,7 +236,7 @@ body.bg-hidden {
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 1.2em;
+  font-size: 16px;
   gap: 0.6em;
 }
 
@@ -287,7 +287,7 @@ body.bg-hidden {
   margin-top: 0;
   text-align: center;
   color: var(--fg-color);
-  font-size: 0.97em;
+  font-size: 16px;
 }
 
 .retrorecon-root .fw-bold {
