@@ -2085,12 +2085,14 @@
         makeResizableTable(urlTable, 'url-col-widths');
       }
     });
-    // Restore dropdown form submission for results-per-page
+    // Restore dropdown form submission for results-per-page, setting hidden input value
     document.addEventListener('DOMContentLoaded', function() {
       var perPageSelect = document.getElementById('results-per-page-select-1');
       var perPageForm = document.getElementById('set-items-form');
-      if (perPageSelect && perPageForm) {
+      var itemsCountInput = document.getElementById('items-count-input');
+      if (perPageSelect && perPageForm && itemsCountInput) {
         perPageSelect.addEventListener('change', function() {
+          itemsCountInput.value = perPageSelect.value;
           perPageForm.submit();
         });
       }
