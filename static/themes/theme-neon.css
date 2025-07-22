@@ -29,10 +29,6 @@
   font-family: var(--font-family-base, 'Share Tech Mono', 'Consolas', monospace);
 }
 
-body.bg-hidden {
-  background-image: none !important;
-  background-color: var(--color-base) !important;
-}
 
 .retrorecon-root .panel,
 .retrorecon-root .card,
