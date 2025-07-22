@@ -133,7 +133,8 @@ body {
   width: 180px;
 }
 .retrorecon-root #results-per-page-select {
-  width: 50px;
+width: max-content;
+max-width: 120px;
 }
 .retrorecon-root .form-range {
   width: 100%;
@@ -530,10 +531,8 @@ color: var(--select-border-color);
 
 /* Consistent styling for select dropdowns used as menu buttons */
 .retrorecon-root select.menu-btn {
-  background: var(--select-bg-color);
-  color: var(--fg-color);
-  border: 1px solid var(--select-border-color);
-  padding: 0.2em 0.4em;
+width: max-content;
+max-width: 120px;
 }
 .retrorecon-root select.menu-btn option {
   background: var(--select-bg-color);
