@@ -39,8 +39,8 @@ body {
 
 /* Force all text to white 14px */
 .retrorecon-root * {
-  color: #ffffff !important;
-  font-size: 14px !important;
+  color: #000000 !important;
+  font-size: 15px !important;
 }
 
 .retrorecon-root .hidden { display: none; }
