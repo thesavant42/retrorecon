@@ -1,24 +1,25 @@
 /* Neon midnight dark theme */
 :root {
-  --bg-main: #00000000;
+  --bg-main: #000000;
   --bg-panel: rgb(var(--bg-rgb)/var(--panel-opacity));
   --font-main: #ffffff;
-  --font-accent: #8be9fd;
-  --border-color: rgba(139, 233, 253, 0.4);
+  --color-accent: #8be9fd;
+  --font-accent:  var(--color-accent);
+  --border-color: rgb(139 233 253 / 55%);
   --input-bg: rgb(34 39 50 / 0%);
-  --input-border: #8be9fd;
+  --input-border: var(--color-accent);
 
   /* compatibility with base styles */
   --bg-color: rgba(0, 0, 0, 0.31);
   --bg-rgb: 0 0 0;
-  --panel-opacity: 0.92;
+  --panel-opacity: 0.7;
   --fg-color: var(--font-main);
   --accent-color: var(--color-accent);
 
   /* Generic variable names for dynamic theming */
   --color-bg: var(--bg-color);
   --color-text: var(--fg-color);
-  --color-accent: #8be9fd;
+  --accent-color: var(--color-accent);
   --color-border: var(--border-color);
   --font-family-base: var(--font-main);
 }
