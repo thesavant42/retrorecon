@@ -6,7 +6,7 @@
 
   /* Backwards compatible variables */
   --bg-color: var(--color-base);
-  --bg-rgb: 0 0 0;
+  --bg-rgb: 255 255 255;
   --fg-color: var(--color-contrast);
   --accent-color: var(--color-accent);
   --panel-opacity: 0.25;
@@ -39,7 +39,7 @@ body {
 
 /* Force all text to white 14px */
 .retrorecon-root * {
-  color: #ffffff !important;
+  color: var( --color-contrast) !important;
   font-size: 15px !important;
 }
 
@@ -211,7 +211,7 @@ max-width: 120px;
   padding: 0 0 10px;
   overflow-x: hidden;
   overflow-y: auto;
-  color: #ffffff;
+  color: var( --color-contrast);
   line-height: 1.5;
 }
 
