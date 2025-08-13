@@ -76,15 +76,6 @@
             <form method="GET" action="/save_db" class="menu-row" id="save-db-form">
               <button type="submit" class="menu-btn">Save Project As...</button>
             </form>
-            <div class="menu-row"><input type="text" id="db-filter" class="form-input w-100" placeholder="Filter projects..."></div>
-            <div id="db-list">
-              {% for db in saved_dbs %}
-              <div class="menu-row db-entry" data-db="{{ db }}">
-                <span>{{ db }}</span>
-                <button type="button" class="menu-btn ml-05 delete-db-btn" data-db="{{ db }}" {% if db == db_name %}disabled title="Cannot delete while active."{% endif %}>Delete</button>
-              </div>
-              {% endfor %}
-            </div>
             <select id="url-export-formats" class="form-select menu-btn">
               <option value="" selected>Export As...</option>
               <option value="json">JSON</option>
@@ -1074,31 +1065,6 @@
       });
     }
 
-    const dbFilter = document.getElementById('db-filter');
-    if (dbFilter) {
-      dbFilter.addEventListener('input', () => {
-        const val = dbFilter.value.toLowerCase();
-        document.querySelectorAll('#db-list .db-entry').forEach(div => {
-          div.classList.toggle('hidden', !div.dataset.db.toLowerCase().includes(val));
-        });
-      });
-    }
-    document.querySelectorAll('.delete-db-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const name = btn.dataset.db;
-        if (!confirm(`You're about to permanently delete '${name}'. This cannot be undone.`)) return;
-        const params = new URLSearchParams();
-        params.append('db_file', name);
-        const resp = await fetch('/delete_db', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
-        if (resp.ok) {
-          alert(`✅ '${name}' successfully deleted.`);
-          location.reload();
-        } else {
-          const text = await resp.text();
-          alert(`❌ Failed to delete '${name}': ${text}`);
-        }
-      });
-    });
 
     const importBtn = document.getElementById('import-file-btn');
     const importInput = document.getElementById('import-file-input');
