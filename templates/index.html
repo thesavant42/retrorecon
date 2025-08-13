@@ -22,10 +22,10 @@
     <div id="dropdown-shade" class="dropdown-shade hidden"></div>
 {% macro render_pagination(page, total_pages, q, total_count, items_per_page, select_all_matching, position) %}
   <div class="pagination mt-05">
-    <form id="set-items-form" method="POST" action="/set_items_per_page" class="d-none">
+    <form id="set-items-form-{{ position }}" method="POST" action="/set_items_per_page" class="d-none">
       <input type="hidden" name="count" id="items-count-input-{{ position }}" />
     </form>
-    <select id="results-per-page-select-{{ position }}" class="form-select menu-btn" form="set-items-form">
+    <select id="results-per-page-select-{{ position }}" class="form-select menu-btn" form="set-items-form-{{ position }}">
       {% for n in [5,10,15,20,25] %}
       <option value="{{ n }}" {% if items_per_page == n %}selected{% endif %}>{{ '%02d' % n }}</option>
       {% endfor %}
@@ -81,6 +81,7 @@
               <option value="json">JSON</option>
               <option value="csv">CSV</option>
               <option value="md">Markdown</option>
+              <option value="html">HTML</option>
               <option value="xml">XML</option>
               <option value="txt">Plain Text</option>
             </select>
@@ -2008,22 +2009,7 @@
       });
     }
 
-    const perPageInput = document.getElementById('items-count-input');
-    if(perPageInput){
-      document.querySelectorAll('#results-per-page-select').forEach(sel => {
-        sel.addEventListener('change', function(){
-          if(typeof tagsOverlay !== 'undefined' && !tagsOverlay.classList.contains('hidden')){
-            tagsOverlay.classList.add('hidden');
-            tagsOverlay.classList.remove('show');
-          }
-          if(typeof notesOverlay !== 'undefined' && !notesOverlay.classList.contains('hidden')){
-            notesOverlay.classList.add('hidden');
-          }
-          perPageInput.value = this.value;
-          document.getElementById('set-items-form').submit();
-        });
-      });
-    }
+    // Pagination dropdown handling is done in the DOMContentLoaded section below
 
     // Sorting functionality
     document.querySelectorAll('.url-table th.sortable').forEach(th => {
@@ -2053,20 +2039,15 @@
     });
     // Restore dropdown form submission for results-per-page, setting hidden input value for both paginations
     document.addEventListener('DOMContentLoaded', function() {
-      var perPageForm = document.getElementById('set-items-form');
-      var selects = [
-        document.getElementById('results-per-page-select-1'),
-        document.getElementById('results-per-page-select-2')
-      ];
-      var inputs = [
-        document.getElementById('items-count-input-1'),
-        document.getElementById('items-count-input-2')
-      ];
-      selects.forEach(function(sel, idx) {
-        var input = inputs[idx];
-        if (sel && perPageForm && input) {
-          sel.addEventListener('change', function() {
-            input.value = sel.value;
+      var positions = ['1', '2'];
+      positions.forEach(function(position) {
+        var perPageForm = document.getElementById('set-items-form-' + position);
+        var select = document.getElementById('results-per-page-select-' + position);
+        var input = document.getElementById('items-count-input-' + position);
+        
+        if (select && perPageForm && input) {
+          select.addEventListener('change', function() {
+            input.value = select.value;
             perPageForm.submit();
           });
         }
