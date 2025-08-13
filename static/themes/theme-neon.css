@@ -148,179 +148,25 @@
   min-width: 0;
 }
 
-.retrorecon-root .tag-pill {
-  display: inline-block;
-  padding: 1px 4px;
-  background: var(--bg-color);
-  opacity: 1;
-  border-radius: 10px;
-  border: 1px solid var(--color-contrast);
-  margin-right: 4px;
-  font-size: 0.475em;
-  margin-bottom: 4px;
-  color: var(--fg-color);
-}
-
-.retrorecon-root .tag-pill form {
-  display: inline;
-}
-
-.retrorecon-root .tag-pill button {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 0.5em;
-  margin-left: 1px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.retrorecon-root .search-bar button {
-  font-size: 1.05em;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid var(--color-contrast);
-  background: var(--bg-color);
-  color: var(--fg-color);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.retrorecon-root .tag-pill button:hover {
-  opacity: 0.8;
-}
-
+/* Theme-specific overrides only - duplicated rules removed */
 .retrorecon-root .search-history .tag-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0px 0px;
-  font-size: 0.275em;
-  font-weight: 600;
-  margin-right: 0;
-  margin-bottom: 0px;
-  color: var(--fg-color);
-  border: 1px solid var(--color-contrast);
-  border-radius: 0;
   background: linear-gradient(135deg, #ff2caf, #6a4cff);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.retrorecon-root .tag-pill:hover,
-.retrorecon-root .search-history .tag-pill:hover {
-  opacity: 0.9;
-}
-
-
-.retrorecon-root .search-history .tag-pill button {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 0.4em;
-  margin-left: 0.175em;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.retrorecon-root .search-history .tag-pill button:hover {
-  opacity: 0.8;
+  border-radius: 0;
 }
 
 .retrorecon-root .pagination {
-  margin: 1em;
-  border-radius: 4px;
-  transition: background 0.2s;
-  color: var(--fg-color);
-  background: rgb(var(--bg-rgb)/var(--panel-opacity));
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
   font-size: 15px;
+  margin: 1em;
   gap: 0.6em;
 }
 
 .retrorecon-root .url-table {
-  width: 100%;
-  border-collapse: collapse;
   background: rgba(0, 0, 0, 0.36);
   margin-bottom: 0.7em;
 }
 
-.retrorecon-root .explode-btn,
-.retrorecon-root .copy-btn,
-.retrorecon-root .delete-btn,
-.retrorecon-root .btn-wayback,
-.retrorecon-root .shodan-btn,
-.retrorecon-root .vt-btn,
-.retrorecon-root .github-btn,
-.retrorecon-root .google-btn,
-.retrorecon-root .crtsh-btn {
-  background: var(--bg-color);
-  border: 1px solid var(--color-contrast);
-  border-radius: 7px;
-  color: var(--color-accent);
-  font-size: 1em;
-  line-height: 1.15em;
-  padding: 2px 11px;
-  margin-left: 0.1em;
-  margin-right: 0.1em;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.retrorecon-root #bulk-tag-input {
-  font-size: 0.98em;
-  padding: 2px 8px;
-  border-radius: 5px;
-  border: 1px solid var(--fg-color);
-  background: var(--bg-color);
-  color: var(--fg-color);
-}
-
-.retrorecon-root .bulk-action-btn {
-  font-size: 1em;
-  padding: 2px 11px;
-}
-
 .retrorecon-root .footer {
-  margin-top: 0;
-  text-align: center;
-  color: var(--fg-color);
   font-size: 15px;
-}
-
-.retrorecon-root .fw-bold {
-  font-weight: bold;
-}
-
-.retrorecon-root #domain-input {
-  width: 250px;
-}
-
-.retrorecon-root .form-file {
-  border: 1px solid var(--fg-color);
-  border-radius: 5px;
-  background: var(--bg-color);
-  color: var(--fg-color);
-  padding: 2px 6px;
-}
-
-.retrorecon-root #map-url-input {
-  width: 250px;
-  max-width: 100%;
-  border: 1px solid var(--fg-color);
-  border-radius: 5px;
-  background: var(--bg-color);
-  color: var(--fg-color);
-  padding: 2px 6px;
-}
-
-.retrorecon-root #download-url-input {
-  width: 250px;
-  max-width: 100%;
-  border: 1px solid var(--fg-color);
-  border-radius: 5px;
-  background: var(--bg-color);
-  color: var(--fg-color);
-  padding: 2px 6px;
 }
 
 /* Standardize dropdown menu styling */

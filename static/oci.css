@@ -1,9 +1,6 @@
 /* File: static/oci.css */
-:root {
-  color-scheme: light dark;
-}
-
 .retrorecon-root {
+  color-scheme: light dark;
   font-family: var(--font-family-base, monospace);
   padding: 12px;
   position: relative;

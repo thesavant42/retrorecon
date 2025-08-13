@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")"
 
-git pull
+# git pull - removed to prevent overwriting local changes
 
 LISTEN_ADDR=""
 DB_PATH=""

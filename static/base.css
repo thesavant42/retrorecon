@@ -1672,7 +1672,7 @@ max-width: 120px;
 }
 
 /* Dynamic background image support */
-.retrorecon-root body.has-background-image {
+body.has-background-image {
   background-repeat: no-repeat;
   background-position: center center;
   background-attachment: fixed;
@@ -1680,7 +1680,7 @@ max-width: 120px;
   background-image: var(--background-image-url);
 }
 
-.retrorecon-root body.bg-hidden {
+body.bg-hidden {
   background-image: none !important;
 }
 

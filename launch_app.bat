@@ -11,7 +11,7 @@ for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command "(Get-Content
 if "%LISTEN_ADDR%"=="" set LISTEN_ADDR=127.0.0.1
 if "%DB_PATH%"=="" set DB_PATH=%cd%\db\waybax.db
 
-git pull
+REM git pull - removed to prevent overwriting local changes
 
 if not exist venv (
     python -m venv venv
