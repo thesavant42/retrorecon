@@ -2,7 +2,7 @@
 ![Screenshot](docs/screenshots/01-rr-text-logo.png)
 
 
-A Flask web application for exploring Wayback Machine data. It fetches CDX records, stores them in SQLite, and provides a UI to search, tag and manage the results.
+A Flask web application for exploring Wayback Machine data and analyzing HAR files. It fetches CDX records, imports HAR archives, stores them in SQLite, and provides a UI to search, tag and manage the results.
 
 
 ![Screenshot](docs/screenshots/Screenshot-001.png)
@@ -16,7 +16,8 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 ## 🔦 What It Does (At a Glance)
 
 - 🔍 **Crawls archived URLs** from the Wayback Machine (via CDX API)
-- 🕶️ **Groups and filters results** by file type, timestamp, tags, or path
+- 📊 **Imports HAR files** for browser traffic analysis and performance monitoring
+- �️ **Groups and filters results** by file type, timestamp, tags, or path
 - 🧾 **Extracts & analyzes source maps** and JavaScript files for secrets
 - 📁 **Saves everything locally** for offline inspection and auditing
 - 🔍 **Flags suspicious patterns**, such as leaked API keys, environment files, and exposed `.map` files
@@ -27,8 +28,10 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 
 - **Security Research** – Discover forgotten `.env` files, exposed sourcemaps, or previously public endpoints
 - **OSINT Investigations** – Build a historical snapshot of a domain or identify deleted content
-- **Digital Forensics** – Trace changes in a site’s frontend or backend over time
+- **Digital Forensics** – Trace changes in a site's frontend or backend over time
 - **Web Development Post-Mortems** – Compare JavaScript bundles, audit version regressions, and timeline UI changes
+- **Browser Traffic Analysis** – Import and analyze HAR files from browser debugging sessions
+- **Performance Monitoring** – Study request patterns, response times, and identify slow endpoints
 
 ---
 
@@ -37,6 +40,7 @@ RetroRecon digs through the internet’s attic to find forgotten, buried, or qui
 | Feature                        | Description                                                                 |
 |-------------------------------|-----------------------------------------------------------------------------|
 | Wayback Archive Indexing      | Pulls structured snapshots via CDX API                                     |
+| HAR File Import               | Import and analyze HTTP Archive files with full request/response details   |
 | Local Source Map Extraction   | Finds and restores `.map` files for easier JS debugging                     |
 | Suspicious Pattern Detection  | Scans downloaded files for API keys, JWTs, secrets, etc.                   |
 | Filtering & Grouping          | Smart filters by type (e.g., `.js`, `.env`, `.php`, `.map`, etc.)          |
@@ -109,6 +113,65 @@ MCP manager starts any enabled services automatically when a database is loaded.
 ### Capture a Snap
 
 The **HTTPolaroid** tool can be triggered from the UI under `Tools → Active Recon`. It fetches a URL in a headless browser, follows redirects and saves the page, assets, headers and screenshot into a single zip file for download.
+
+### Import HAR Files
+
+RetroRecon supports importing HTTP Archive (HAR) files to analyze browser traffic, performance metrics, and request patterns. HAR files contain detailed information about web requests including:
+
+- Request/response headers, methods, and status codes
+- Response times and performance metrics
+- MIME types and content information
+- Full request/response bodies
+
+#### How to Import HAR Files
+
+1. **Generate HAR File**: Export from browser DevTools (F12 → Network → Export HAR)
+2. **Import via UI**: Click `Tools → Import JSON/HAR File` and select your `.har` file
+3. **Background Processing**: Large HAR files are processed in the background with progress tracking
+4. **View Results**: HAR entries appear with orange "HAR" badges in the Source column
+
+#### HAR-Specific Features
+
+- **Enhanced Columns**: Method, Timestamp, HTTP Status, MIME Type, Response Time (ms), Source Type
+- **Smart Filtering**: Use filter pills like "HAR Only", "POST", "2xx", "4xx+", "Slow" for quick analysis
+- **Performance Analysis**: Identify slow requests (>1s response time) and error responses
+- **Request Method Analysis**: Filter by GET, POST, PUT, DELETE, etc.
+- **Status Code Grouping**: Quickly find 2xx successes, 4xx client errors, or 5xx server errors
+
+#### Supported HAR Format
+
+RetroRecon supports the HAR 1.2 specification and extracts the following data from each entry:
+
+```json
+{
+  "log": {
+    "entries": [
+      {
+        "request": {
+          "method": "GET|POST|PUT|DELETE|...",
+          "url": "https://example.com/api/endpoint"
+        },
+        "response": {
+          "status": 200,
+          "content": {
+            "mimeType": "application/json"
+          }
+        },
+        "time": 150,
+        "startedDateTime": "2023-01-01T12:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+#### Search and Filter HAR Data
+
+- **Source Filter**: `source_type:"har"` - Show only HAR-imported entries
+- **Method Filter**: `request_method:"POST"` - Filter by HTTP method
+- **Status Filter**: `status_code:>=400` - Find error responses
+- **Performance Filter**: `response_time_ms:>1000` - Find slow requests
+- **Combined Filters**: `source_type:"har" AND status_code:>=400` - HAR errors only
 
 ---
 

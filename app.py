@@ -54,6 +54,7 @@ from retrorecon import (
     httpolaroid_utils,
     subdomain_utils,
     status as status_mod,
+    har_utils,
 )
 from retrorecon.filters import manifest_links, oci_obj, manifest_table, wb_timestamp
 from mcp_manager import start_mcp_sqlite
@@ -464,6 +465,9 @@ def index() -> str:
             'timestamp': 'timestamp',
             'status_code': 'status_code',
             'mime_type': 'mime_type',
+            'request_method': 'request_method',
+            'response_time_ms': 'response_time_ms',
+            'source_type': 'source_type',
             'id': 'id'
         }
         sort_col = sort_map.get(sort, 'id')
@@ -481,7 +485,8 @@ def index() -> str:
 
         offset = (page - 1) * items_per_page
         select_sql = f"""
-            SELECT id, url, timestamp, status_code, mime_type, tags
+            SELECT id, url, timestamp, status_code, mime_type, tags,
+                   request_method, response_time_ms, content_size, source_type
             FROM urls
             {where_sql}
             ORDER BY {sort_col} {direction.upper()}
@@ -727,10 +732,62 @@ def _background_import(file_content: bytes) -> None:
     except Exception as e:
         set_import_progress('failed', str(e), 0, 0)
 
+
+def _background_har_import(file_content: bytes) -> None:
+    """Background thread handler for HAR file imports."""
+    try:
+        # Parse HAR file and extract entries
+        records = har_utils.parse_har_file(file_content)
+        
+        total = len(records)
+        set_import_progress('in_progress', f'Processing HAR file...', 0, total)
+        
+        db = sqlite3.connect(app.config['DATABASE'])
+        c = db.cursor()
+        inserted = 0
+        
+        for idx, rec in enumerate(records):
+            try:
+                c.execute(
+                    """INSERT OR IGNORE INTO urls (
+                        url, domain, timestamp, status_code, mime_type, tags,
+                        request_method, response_time_ms, content_size,
+                        request_headers, response_headers, source_type
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        rec['url'],
+                        rec['domain'],
+                        rec.get('timestamp'),
+                        rec.get('status_code'),
+                        rec.get('mime_type'),
+                        rec['tags'],
+                        rec['request_method'],
+                        rec.get('response_time_ms'),
+                        rec.get('content_size'),
+                        rec.get('request_headers'),
+                        rec.get('response_headers'),
+                        rec['source_type']
+                    )
+                )
+                inserted += 1
+            except Exception as e:
+                # Skip invalid entries but continue processing
+                continue
+            
+            # Update progress every 10 records or on last
+            if idx % 10 == 0 or idx + 1 == total:
+                set_import_progress('in_progress', f'Processed {idx + 1} of {total} entries...', idx + 1, total)
+        
+        db.commit()
+        db.close()
+        set_import_progress('done', f"Imported {inserted} of {total} HAR entries.", inserted, total)
+    except Exception as e:
+        set_import_progress('failed', f"HAR import failed: {str(e)}", 0, 0)
+
 @app.route('/import_file', methods=['POST'])
 @app.route('/import_json', methods=['POST'])
 def import_file() -> Response:
-    """Import a JSON list of records into the current database."""
+    """Import a JSON list of records or HAR file into the current database."""
     file = (
         request.files.get('import_file')
         or request.files.get('json_file')
@@ -742,8 +799,8 @@ def import_file() -> Response:
     filename = file.filename or ''
     ext = filename.rsplit('.', 1)[-1].lower()
 
-    if ext != 'json':
-        flash('Please upload a JSON file.', 'error')
+    if ext not in ['json', 'har']:
+        flash('Please upload a JSON or HAR file.', 'error')
         return redirect(url_for('index'))
 
     if not _db_loaded():
@@ -752,10 +809,18 @@ def import_file() -> Response:
 
     clear_import_progress()
     file_content = file.read()
-    set_import_progress('starting', 'Starting import...', 0, 0)
-    thread = threading.Thread(target=_background_import, args=(file_content,))
+    
+    # Determine file type and processing function
+    if ext == 'har':
+        set_import_progress('starting', 'Starting HAR import...', 0, 0)
+        thread = threading.Thread(target=_background_har_import, args=(file_content,))
+        flash('HAR import started! Progress will be shown below.', 'success')
+    else:
+        set_import_progress('starting', 'Starting JSON import...', 0, 0)
+        thread = threading.Thread(target=_background_import, args=(file_content,))
+        flash('JSON import started! Progress will be shown below.', 'success')
+    
     thread.start()
-    flash('Import started! Progress will be shown below.', 'success')
     return redirect(url_for('index'))
 
 @app.route('/import_progress', methods=['GET'])

@@ -65,6 +65,23 @@ def ensure_schema() -> None:
                 conn.execute("ALTER TABLE domains ADD COLUMN cdx_indexed INTEGER DEFAULT 0")
             if 'tags' not in cols:
                 conn.execute("ALTER TABLE domains ADD COLUMN tags TEXT DEFAULT ''")
+            
+            # Add HAR-specific columns to urls table
+            cur = conn.execute("PRAGMA table_info(urls)")
+            cols = [row[1] for row in cur.fetchall()]
+            if 'request_method' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN request_method TEXT DEFAULT 'GET'")
+            if 'response_time_ms' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN response_time_ms INTEGER")
+            if 'content_size' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN content_size INTEGER")
+            if 'request_headers' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN request_headers TEXT")
+            if 'response_headers' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN response_headers TEXT")
+            if 'source_type' not in cols:
+                conn.execute("ALTER TABLE urls ADD COLUMN source_type TEXT DEFAULT 'cdx'")
+            
             cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='text_notes'")
             if not cur.fetchone():
                 conn.execute(

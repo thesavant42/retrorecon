@@ -199,6 +199,10 @@
               <input type="hidden" name="map_url" id="webpack-url-input" />
               <button type="button" class="menu-btn" id="webpack-btn">Webpack Exploder</button>
             </form>
+            <div class="menu-header">Import</div>
+            <div class="menu-row">
+              <button type="button" class="menu-btn" id="import-file-btn">Import JSON/HAR File</button>
+            </div>
         </div>
       </div>
       <div class="dropdown">
@@ -250,7 +254,17 @@
           <button type="button" id="manage-tags-btn" class="btn">Tags…</button>
         </div>
       </div>
-      <div id="search-history" class="search-history"></div>
+      <div class="search-actions mt-05">
+        <div class="search-history" id="search-history"></div>
+        <div class="har-filters" id="har-filters">
+          <span class="har-filter-pill" data-filter='source_type:"har"' title="Show only HAR entries">📊 HAR Only</span>
+          <span class="har-filter-pill" data-filter='request_method:"GET"' title="Show only GET requests">GET</span>
+          <span class="har-filter-pill" data-filter='request_method:"POST"' title="Show only POST requests">POST</span>
+          <span class="har-filter-pill" data-filter='status_code:>=200 AND status_code:<300' title="Show 2xx responses">2xx</span>
+          <span class="har-filter-pill" data-filter='status_code:>=400' title="Show 4xx/5xx errors">4xx+</span>
+          <span class="har-filter-pill" data-filter='response_time_ms:>1000' title="Show slow requests (>1s)">Slow</span>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -277,9 +291,12 @@
               <colgroup>
                 <col class="w-2em" />
                 <col />
-                <col />
-                <col />
-                <col />
+                <col class="w-4em" />
+                <col class="w-8em" />
+                <col class="w-4em" />
+                <col class="w-6em" />
+                <col class="w-6em" />
+                <col class="w-4em" />
               </colgroup>
               <thead>
                 <tr>
@@ -287,9 +304,12 @@
                     <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this)" onclick="event.stopPropagation()" class="form-checkbox" />
                   </th>
                   <th class="sortable" data-sort="url">URL{% if current_sort=='url' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="request_method">Method{% if current_sort=='request_method' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
                   <th class="text-center sortable" data-sort="timestamp">Timestamp{% if current_sort=='timestamp' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
                   <th class="text-center sortable" data-sort="status_code">HTTP{% if current_sort=='status_code' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
                   <th class="text-center sortable" data-sort="mime_type">MIME{% if current_sort=='mime_type' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="response_time_ms">Time (ms){% if current_sort=='response_time_ms' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
+                  <th class="text-center sortable" data-sort="source_type">Source{% if current_sort=='source_type' %} {{ '▲' if current_dir=='asc' else '▼' }}{% endif %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -299,6 +319,7 @@
                     <input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ url.id }}" onclick="event.stopPropagation()" />
                   </td>
                   <td class="url-result"><div class="cell-content">{{ url.url }}</div></td>
+                  <td class="text-center"><div class="cell-content">{{ url.request_method or 'GET' }}</div></td>
                   <td class="text-center"><div class="cell-content">
                     {% if url.timestamp %}
                     <span title="{{ url.timestamp }}">{{ url.timestamp|wb_timestamp }}</span>
@@ -306,10 +327,18 @@
                   </div></td>
                   <td class="status text-center {% if url.status_code %}status-{{ (url.status_code|string)[:1] }}{% endif %}"><div class="cell-content">{{ url.status_code if url.status_code else '-' }}</div></td>
                   <td class="text-center"><div class="cell-content">{{ url.mime_type or '-' }}</div></td>
+                  <td class="text-center"><div class="cell-content">{{ url.response_time_ms if url.response_time_ms else '-' }}</div></td>
+                  <td class="text-center"><div class="cell-content">
+                    {% if url.source_type == 'har' %}
+                      <span class="har-badge">HAR</span>
+                    {% else %}
+                      CDX
+                    {% endif %}
+                  </div></td>
                 </tr>
                 <tr class="url-row-buttons">
                   <td></td>
-                  <td colspan="4">
+                  <td colspan="7">
                     <div class="url-tools-row nowrap">
                       <select class="form-select tool-select menu-btn" data-url="{{ url.url }}">
                         <option value="">Tools…</option>
@@ -366,6 +395,11 @@
     </div>
   </div>
 </div>
+
+  <!-- Hidden import form -->
+  <form method="POST" action="/import_file" enctype="multipart/form-data" id="import-form" class="hidden">
+    <input type="file" id="import-file-input" name="import_file" accept=".json,.har" />
+  </form>
 
   <div id="notes-overlay" class="notes-overlay hidden">
     <textarea id="note-input" class="form-input notes-textarea" rows="6" placeholder="Add a note..."></textarea>
@@ -989,6 +1023,25 @@
       document.getElementById('search-form').submit();
     });
     loadHistory();
+
+    // HAR filter pills functionality
+    document.querySelectorAll('.har-filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const filter = pill.getAttribute('data-filter');
+        const searchBox = document.getElementById('searchbox');
+        let current = searchBox.value.trim();
+        
+        // Add the filter to the search box
+        if (current) {
+          current += ' AND ' + filter;
+        } else {
+          current = filter;
+        }
+        
+        searchBox.value = current;
+        document.getElementById('search-form').submit();
+      });
+    });
 
     const saveForm = document.getElementById('save-db-form');
     if (saveForm) {

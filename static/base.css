@@ -1694,3 +1694,47 @@ body.bg-hidden {
   background-color: var(--theme-bg-color) !important;
   color: var(--theme-text-color) !important;
 }
+
+/* HAR-specific styling */
+.retrorecon-root .har-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: white !important;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8em !important;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.retrorecon-root .har-info-row {
+  background: rgba(255, 107, 53, 0.1);
+  border-left: 3px solid #ff6b35;
+}
+
+.retrorecon-root .har-filter-pill {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: white !important;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em !important;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.3);
+  margin-right: 8px;
+  margin-bottom: 4px;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+
+.retrorecon-root .har-filter-pill:hover {
+  opacity: 0.8;
+}
+
+.retrorecon-root .har-stats {
+  color: var(--color-accent);
+  font-weight: bold;
+  margin-left: 0.5em;
+}

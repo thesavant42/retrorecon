@@ -5,7 +5,13 @@ CREATE TABLE IF NOT EXISTS urls (
     timestamp TEXT,
     status_code INTEGER,
     mime_type TEXT,
-    tags TEXT DEFAULT ''
+    tags TEXT DEFAULT '',
+    request_method TEXT DEFAULT 'GET',
+    response_time_ms INTEGER,
+    content_size INTEGER,
+    request_headers TEXT,
+    response_headers TEXT,
+    source_type TEXT DEFAULT 'cdx'
 );
 
 CREATE TABLE IF NOT EXISTS jobs (
