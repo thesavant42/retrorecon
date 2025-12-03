@@ -1,6 +1,6 @@
 # 🕶️⌛ RetroRecon
 ![Screenshot](docs/screenshots/01-rr-text-logo.png)
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/thesavant42/retrorecon)
 
 A Flask web application for exploring Wayback Machine data and analyzing HAR files. It fetches CDX records, imports HAR archives, stores them in SQLite, and provides a UI to search, tag and manage the results.
 
